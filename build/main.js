@@ -514,7 +514,7 @@ class AgentDvr extends utils.Adapter {
       await this.ensurePath(id);
       await this.setObjectNotExistsAsync(id, {
         type: "state",
-        common: { name, type: "number", role: "value", read: true, write: true, states },
+        common: { name, type: "number", role: "level", read: true, write: true, states },
         native: {}
       });
       await this.setStateAsync(id, { val: 0, ack: true });
@@ -661,7 +661,7 @@ class AgentDvr extends utils.Adapter {
           common: {
             name: "Snapshot (Base64)",
             type: "string",
-            role: "media.picture",
+            role: "state",
             read: true,
             write: false
           },
