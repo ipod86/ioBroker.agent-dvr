@@ -1,0 +1,106 @@
+{
+	"common": {
+		"name": "agent-dvr",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "Agent DVR",
+			"de": "Agent DVR",
+			"ru": "Агент DVR",
+			"pt": "Agente DVR",
+			"nl": "Agent DVR",
+			"fr": "Agent DVR",
+			"it": "DVR dell'agente",
+			"es": "DVR del agente",
+			"pl": "Agent DVR",
+			"uk": "Агентський відеореєстратор",
+			"zh-cn": "代理 DVR"
+		},
+		"desc": {
+			"en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
+			"de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
+			"ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
+			"pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
+			"nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
+			"fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
+			"it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
+			"es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
+			"pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
+			"uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
+			"zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
+		},
+		"authors": ["ipod86 <david@graef.email>"],
+		"keywords": ["Agentdvr", "ispy", "ptz"],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "agent-dvr.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.agent-dvr/main/admin/agent-dvr.png",
+		"readme": "https://github.com/ipod86/ioBroker.agent-dvr/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "alarm",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "poll",
+		"adminUI": {
+			"config": "json"
+		},
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=7.0.23"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
