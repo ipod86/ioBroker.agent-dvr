@@ -36,5 +36,6 @@
     "cfgMaxArray": "Comprimento máximo do array a expandir",
     "cfgEventTagsDynamic": "Detetar automaticamente tags de eventos das gravações",
     "cfgEventTagsIgnore": "Tags de eventos a ignorar (separadas por vírgulas)",
-    "cfgEventTags": "Tags de eventos fixas a criar sempre (separadas por vírgulas)"
+    "cfgEventTags": "Tags de eventos fixas a criar sempre (separadas por vírgulas)",
+    "cfgEnableSnapshotB64": "Snapshot como Base64 (estado media.picture por câmera)"
 }

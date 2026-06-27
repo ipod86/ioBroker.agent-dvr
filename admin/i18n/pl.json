@@ -36,5 +36,6 @@
     "cfgMaxArray": "Maks. długość tablicy do rozwinięcia",
     "cfgEventTagsDynamic": "Automatyczne wykrywanie tagów zdarzeń z nagrań",
     "cfgEventTagsIgnore": "Tagi zdarzeń do zignorowania (oddzielone przecinkami)",
-    "cfgEventTags": "Stałe tagi zdarzeń do zawsze tworzenia (oddzielone przecinkami)"
+    "cfgEventTags": "Stałe tagi zdarzeń do zawsze tworzenia (oddzielone przecinkami)",
+    "cfgEnableSnapshotB64": "Snapshot jako Base64 (stan media.picture na kamerę)"
 }

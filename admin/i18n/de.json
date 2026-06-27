@@ -36,5 +36,6 @@
     "cfgMaxArray": "Max. Array-Länge zum Erweitern",
     "cfgEventTagsDynamic": "Ereignis-Tags automatisch aus Aufnahmen erkennen",
     "cfgEventTagsIgnore": "Zu ignorierende Ereignis-Tags (kommagetrennt)",
-    "cfgEventTags": "Feste Ereignis-Tags, die immer erstellt werden (kommagetrennt)"
+    "cfgEventTags": "Feste Ereignis-Tags, die immer erstellt werden (kommagetrennt)",
+    "cfgEnableSnapshotB64": "Snapshot als Base64 (media.picture-State pro Kamera)"
 }

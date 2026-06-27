@@ -113,6 +113,7 @@
 		"enableSystemControls": true,
 		"enablePtz": true,
 		"enableUrls": true,
+		"enableSnapshotB64": false,
 		"enableEventDps": true,
 		"enablePush": true,
 		"enableOverview": true,

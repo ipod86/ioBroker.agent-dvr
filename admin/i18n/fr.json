@@ -36,5 +36,6 @@
     "cfgMaxArray": "Longueur maximale du tableau à développer",
     "cfgEventTagsDynamic": "Détecter automatiquement les tags d'événements depuis les enregistrements",
     "cfgEventTagsIgnore": "Tags d'événements à ignorer (séparés par des virgules)",
-    "cfgEventTags": "Tags d'événements fixes à toujours créer (séparés par des virgules)"
+    "cfgEventTags": "Tags d'événements fixes à toujours créer (séparés par des virgules)",
+    "cfgEnableSnapshotB64": "Snapshot en Base64 (état media.picture par caméra)"
 }

@@ -36,5 +36,6 @@
     "cfgMaxArray": "Max. arraylengte om uit te breiden",
     "cfgEventTagsDynamic": "Gebeurtenistags automatisch detecteren uit opnames",
     "cfgEventTagsIgnore": "Te negeren gebeurtenistags (kommagescheiden)",
-    "cfgEventTags": "Vaste gebeurtenistags die altijd worden aangemaakt (kommagescheiden)"
+    "cfgEventTags": "Vaste gebeurtenistags die altijd worden aangemaakt (kommagescheiden)",
+    "cfgEnableSnapshotB64": "Snapshot als Base64 (media.picture state per camera)"
 }

@@ -36,5 +36,6 @@
     "cfgMaxArray": "要展开的最大数组长度",
     "cfgEventTagsDynamic": "从录像中自动检测事件标签",
     "cfgEventTagsIgnore": "要忽略的事件标签（逗号分隔）",
-    "cfgEventTags": "始终创建的固定事件标签（逗号分隔）"
+    "cfgEventTags": "始终创建的固定事件标签（逗号分隔）",
+    "cfgEnableSnapshotB64": "快照为 Base64（每个摄像头的 media.picture 状态）"
 }

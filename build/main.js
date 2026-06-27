@@ -383,6 +383,43 @@ class AgentDvr extends utils.Adapter {
       }
     });
   }
+  apiGetBuffer(path) {
+    return new Promise((resolve) => {
+      const timeout = Math.max(1e3, Math.min(3e4, this.config.httpTimeoutMs || 8e3));
+      const opts = {
+        hostname: this.config.ip,
+        port: this.config.port || 8090,
+        path,
+        method: "GET",
+        timeout
+      };
+      if (this.authHeader) {
+        opts.headers = { Authorization: this.authHeader };
+      }
+      try {
+        const req = http.request(opts, (res) => {
+          const chunks = [];
+          res.on("data", (c) => chunks.push(c));
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 400) {
+              resolve({ ok: false, error: `HTTP ${res.statusCode}` });
+            } else {
+              resolve({ ok: true, data: Buffer.concat(chunks) });
+            }
+          });
+          res.on("error", (e) => resolve({ ok: false, error: e.message }));
+        });
+        req.on("error", (e) => resolve({ ok: false, error: e.message }));
+        req.on("timeout", () => {
+          req.destroy();
+          resolve({ ok: false, error: "timeout" });
+        });
+        req.end();
+      } catch (e) {
+        resolve({ ok: false, error: String(e.message || e) });
+      }
+    });
+  }
   async ensureFolder(id, name, type = "channel") {
     if (this.ensuredFolders.has(id)) {
       return;
@@ -605,6 +642,29 @@ class AgentDvr extends utils.Adapter {
       await this.writeLeaf(`${fid}.urls.photo`, `${this.baseUrl}/photo.jpg?oid=${d.oid}`);
       await this.writeLeaf(`${fid}.urls.mjpeg`, `${this.baseUrl}/video.mjpg?oids=${d.oid}`);
       await this.writeLeaf(`${fid}.urls.mp4`, `${this.baseUrl}/video.mp4?oids=${d.oid}`);
+    }
+    if (this.config.enableSnapshotB64 && d.ot === 2) {
+      const snapId = `${fid}.snapshot_b64`;
+      if (!this.ensuredFolders.has(snapId)) {
+        await this.ensurePath(snapId);
+        await this.setObjectNotExistsAsync(snapId, {
+          type: "state",
+          common: {
+            name: "Snapshot (Base64)",
+            type: "string",
+            role: "media.picture",
+            read: true,
+            write: false
+          },
+          native: {}
+        });
+        this.ensuredFolders.add(snapId);
+      }
+      const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${d.oid}`);
+      if (imgRes.ok && imgRes.data) {
+        const b64 = `data:image/jpeg;base64,${imgRes.data.toString("base64")}`;
+        await this.setStateAsync(snapId, { val: b64, ack: true });
+      }
     }
     await this.updateCameraEvents(d, fid);
   }

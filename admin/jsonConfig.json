@@ -67,6 +67,11 @@
                     "label": "cfgEnableUrls",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
+                "enableSnapshotB64": {
+                    "type": "checkbox",
+                    "label": "cfgEnableSnapshotB64",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
                 "enableEventDps": {
                     "type": "checkbox",
                     "label": "cfgEnableEventDps",

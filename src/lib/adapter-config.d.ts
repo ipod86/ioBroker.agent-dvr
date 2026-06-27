@@ -13,6 +13,7 @@ declare global {
             enableSystemControls: boolean;
             enablePtz: boolean;
             enableUrls: boolean;
+            enableSnapshotB64: boolean;
             enableEventDps: boolean;
             enablePush: boolean;
             enableOverview: boolean;
