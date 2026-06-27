@@ -84,9 +84,21 @@ Der Adapter erzeugt folgende Datenpunkt-Struktur. `<cam>` steht für `cam_<oid>_
 
 ### Pro Kamera / Mikrofon
 
+Die rohen Gerätedaten aus AgentDVR werden rekursiv gespiegelt (Tiefe konfigurierbar, Standard 6). Der wichtigste Unterordner ist `<cam>.data.*`:
+
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
-| `<cam>.*` | verschiedene | R | Flache Geräteeigenschaften aus AgentDVR |
+| `<cam>.name` | string | R | Gerätename |
+| `<cam>.data.online` | boolean | R | Gerät ist online |
+| `<cam>.data.connected` | boolean | R | Stream ist verbunden |
+| `<cam>.data.recording` | boolean | R | Aufnahme läuft gerade |
+| `<cam>.data.detected` | boolean | R | Bewegung/Objekt erkannt |
+| `<cam>.data.detectorActive` | boolean | R | Bewegungsdetektor aktiv |
+| `<cam>.data.alertsActive` | boolean | R | Alarm aktiviert |
+| `<cam>.data.alerted` | boolean | R | Alarm wird gerade ausgelöst |
+| `<cam>.data.scheduleActive` | boolean | R | Zeitplan aktiv |
+| `<cam>.data.width` / `height` | number | R | Stream-Auflösung |
+| `<cam>.data.*` | verschiedene | R | Alle weiteren Geräteeigenschaften aus AgentDVR |
 | `<cam>.snapshot_b64` | string | R | Aktuelles Kamerabild als `data:image/jpeg;base64,…` (Rolle `media.picture`) |
 | `<cam>.control.record` | Button | W | Aufnahme starten |
 | `<cam>.control.recordStop` | Button | W | Aufnahme stoppen |

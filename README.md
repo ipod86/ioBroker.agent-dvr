@@ -86,9 +86,21 @@ The adapter creates the following data point tree. `<cam>` stands for `cam_<oid>
 
 ### Per camera / microphone
 
+The raw device data from AgentDVR is mirrored recursively (depth configurable, default 6). The most important sub-tree is `<cam>.data.*`:
+
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `<cam>.*` | various | R | Flattened device properties from AgentDVR |
+| `<cam>.name` | string | R | Device name |
+| `<cam>.data.online` | boolean | R | Device is online |
+| `<cam>.data.connected` | boolean | R | Stream is connected |
+| `<cam>.data.recording` | boolean | R | Currently recording |
+| `<cam>.data.detected` | boolean | R | Motion/object detected |
+| `<cam>.data.detectorActive` | boolean | R | Motion detector enabled |
+| `<cam>.data.alertsActive` | boolean | R | Alerts enabled |
+| `<cam>.data.alerted` | boolean | R | Alert currently active |
+| `<cam>.data.scheduleActive` | boolean | R | Schedule enabled |
+| `<cam>.data.width` / `height` | number | R | Stream resolution |
+| `<cam>.data.*` | various | R | All further device properties from AgentDVR |
 | `<cam>.snapshot_b64` | string | R | Current frame as `data:image/jpeg;base64,…` (role `media.picture`) |
 | `<cam>.control.record` | button | W | Start recording |
 | `<cam>.control.recordStop` | button | W | Stop recording |
