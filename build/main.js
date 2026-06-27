@@ -338,8 +338,6 @@ class AgentDvr extends utils.Adapter {
       this.runCommand(relId, entry, state.val).catch(
         (e) => this.log.warn(`Command error: ${e.message}`)
       );
-    } else {
-      this.log.debug(`onStateChange: no registry entry for ${relId}`);
     }
   }
   // ---- helpers ----
@@ -525,21 +523,12 @@ class AgentDvr extends utils.Adapter {
     this.registry.set(id, entry);
   }
   async fetchSnapshotB64(oid, snapId) {
-    var _a;
-    this.log.debug(`fetchSnapshotB64: oid=${oid} snapId=${snapId}`);
     const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}`);
     if (imgRes.ok && imgRes.data) {
-      if (imgRes.data.length < 5e3) {
-        this.log.warn(`fetchSnapshotB64: oid=${oid} returned only ${imgRes.data.length} bytes \u2014 camera offline or placeholder, skipping`);
-        return;
-      }
-      this.log.debug(`fetchSnapshotB64: ok, ${imgRes.data.length} bytes`);
       await this.setStateAsync(snapId, {
         val: `data:image/jpeg;base64,${imgRes.data.toString("base64")}`,
         ack: true
       });
-    } else {
-      this.log.warn(`fetchSnapshotB64: failed oid=${oid}: ${(_a = imgRes.error) != null ? _a : "no data"}`);
     }
   }
   async ensureFlag(id, name) {
@@ -1097,7 +1086,6 @@ class AgentDvr extends utils.Adapter {
     }
     if (entry.kind === "snapshotB64") {
       const snapId = `${entry.fid}.snapshot_b64`;
-      this.log.debug(`snapshotB64 command: relId=${relId} oid=${entry.oid} fid=${entry.fid} snapId=${snapId}`);
       await this.fetchSnapshotB64(entry.oid, snapId);
       await this.setStateAsync(relId, { val: false, ack: true });
       return;
