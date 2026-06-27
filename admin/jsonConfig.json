@@ -3,7 +3,7 @@
     "type": "tabs",
     "items": {
         "tabConnection": {
-            "type": "tab",
+            "type": "panel",
             "label": "tabConnection",
             "items": {
                 "ip": {
@@ -48,7 +48,7 @@
             }
         },
         "tabFeatures": {
-            "type": "tab",
+            "type": "panel",
             "label": "tabFeatures",
             "items": {
                 "enableSystemControls": {
@@ -92,7 +92,7 @@
             }
         },
         "tabWidget": {
-            "type": "tab",
+            "type": "panel",
             "label": "tabWidget",
             "items": {
                 "enableWidget": {
@@ -164,7 +164,7 @@
             }
         },
         "tabAdvanced": {
-            "type": "tab",
+            "type": "panel",
             "label": "tabAdvanced",
             "items": {
                 "maxDepth": {

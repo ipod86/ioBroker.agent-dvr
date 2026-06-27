@@ -100,39 +100,9 @@ Additional command line options for the release script are explained in the
 To get your adapter released in ioBroker, please refer to the documentation 
 of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
 
-### Test the adapter manually on a local ioBroker installation
-In order to install the adapter locally without publishing, the following steps are recommended:
-1. Create a GitHub repository for your adapter if you haven't already
-1. Push your code to the GitHub repository
-1. Use the ioBroker Admin interface or command line to install the adapter from GitHub:
-	* **Via Admin UI**: Go to the "Adapters" tab, click on "Custom Install" (GitHub icon), and enter your repository URL:
-		```
-		https://github.com/ipod86/ioBroker.agent-dvr
-		```
-		You can also install from a specific branch by adding `#branchname` at the end:
-		```
-		https://github.com/ipod86/ioBroker.agent-dvr#dev
-		```
-	* **Via Command Line**: Install using the `iob` command:
-		```bash
-		iob url https://github.com/ipod86/ioBroker.agent-dvr
-		```
-		Or from a specific branch:
-		```bash
-		iob url https://github.com/ipod86/ioBroker.agent-dvr#dev
-		```
-
-For later updates:
-1. Push your changes to GitHub
-1. Repeat the installation steps above (via Admin UI or `iob url` command) to update the adapter
-
 ## Changelog
-<!--
-	Placeholder for the next version (at the beginning of the line):
-	### **WORK IN PROGRESS**
--->
 
-### **WORK IN PROGRESS**
+### 0.0.1 (2026-06-27)
 * (ipod86) initial release
 
 ## License
