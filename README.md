@@ -105,6 +105,8 @@ of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#req
 ### 0.0.1 (2026-06-27)
 * (ipod86) initial release
 
+[Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
+
 ## License
 MIT License
 
