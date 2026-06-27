@@ -22,7 +22,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
-var http = __toESM(require("http"));
+var http = __toESM(require("node:http"));
 var import_widget_i18n = require("./lib/widget-i18n");
 const CAM_COMMANDS = [
   { id: "record", path: "/command/record", params: ["oid", "ot"], name: "Start recording" },

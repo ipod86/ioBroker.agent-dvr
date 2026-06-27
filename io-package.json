@@ -44,7 +44,7 @@
 			"zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
 		},
 		"authors": ["ipod86 <david@graef.email>"],
-		"keywords": ["Agentdvr", "ispy", "ptz"],
+		"keywords": ["ioBroker", "Agentdvr", "ispy", "ptz"],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"

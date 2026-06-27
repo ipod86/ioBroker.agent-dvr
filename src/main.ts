@@ -1,5 +1,5 @@
 import * as utils from '@iobroker/adapter-core';
-import * as http from 'http';
+import * as http from 'node:http';
 import { getWidgetLabels, type WidgetLabels } from './lib/widget-i18n';
 
 // =====================================================================

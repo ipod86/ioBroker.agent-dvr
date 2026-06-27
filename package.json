@@ -10,6 +10,7 @@
   "homepage": "https://github.com/ipod86/ioBroker.agent-dvr",
   "license": "MIT",
   "keywords": [
+    "ioBroker",
     "Agentdvr",
     "ispy",
     "ptz"
