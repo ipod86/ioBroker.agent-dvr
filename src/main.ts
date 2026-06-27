@@ -1142,35 +1142,31 @@ class AgentDvr extends utils.Adapter {
 			await this.flattenWrite(status, 'system.status', 0);
 		}
 
-		if (this.config.enableSystemControls) {
-			const profilesRes = await this.apiGet('/command/getProfiles');
-			const profilesJson = asJson(profilesRes.data);
-			if (profilesJson) {
-				const arr = Array.isArray(profilesJson)
-					? profilesJson
-					: Array.isArray(profilesJson.profiles)
-						? profilesJson.profiles
-						: null;
-				if (arr) {
-					const states: Record<number, string> = {};
-					for (const p of arr) {
-						if (p && typeof p === 'object') {
-							const po = p as Record<string, unknown>;
-							const ind = po.ind ?? po.index ?? po.id;
-							const pname = po.name ?? po.Name;
-							if (typeof ind === 'number' && (typeof pname === 'string' || typeof pname === 'number')) {
-								states[ind] = String(pname);
-							}
+		if (this.config.enableSystemControls && Array.isArray(json.profiles)) {
+			const states: Record<number, string> = {};
+			let activeInd: number | null = null;
+			for (const p of json.profiles) {
+				if (p && typeof p === 'object') {
+					const po = p as Record<string, unknown>;
+					const ind = po.id ?? po.ind ?? po.index;
+					const pname = po.name;
+					if (typeof ind === 'number' && (typeof pname === 'string' || typeof pname === 'number')) {
+						states[ind] = String(pname);
+						if (po.active === true) {
+							activeInd = ind;
 						}
 					}
-					if (Object.keys(states).length > 0) {
-						const sig = JSON.stringify(states);
-						if (sig !== this.profileSig) {
-							this.profileSig = sig;
-							await this.extendObjectAsync('system.profile.selector', { common: { states } });
-							await this.setStateAsync('system.profile.list', { val: sig, ack: true });
-						}
-					}
+				}
+			}
+			if (Object.keys(states).length > 0) {
+				const sig = JSON.stringify(states);
+				if (sig !== this.profileSig) {
+					this.profileSig = sig;
+					await this.extendObjectAsync('system.profile.selector', { common: { states } });
+					await this.setStateAsync('system.profile.list', { val: sig, ack: true });
+				}
+				if (activeInd !== null) {
+					await this.setStateAsync('system.profile.selector', { val: activeInd, ack: true });
 				}
 			}
 		}
