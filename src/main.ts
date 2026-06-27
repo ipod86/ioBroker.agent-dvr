@@ -653,6 +653,10 @@ class AgentDvr extends utils.Adapter {
 		this.log.debug(`fetchSnapshotB64: oid=${oid} snapId=${snapId}`);
 		const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}`);
 		if (imgRes.ok && imgRes.data) {
+			if (imgRes.data.length < 5000) {
+				this.log.warn(`fetchSnapshotB64: oid=${oid} returned only ${imgRes.data.length} bytes — camera offline or placeholder, skipping`);
+				return;
+			}
 			this.log.debug(`fetchSnapshotB64: ok, ${imgRes.data.length} bytes`);
 			await this.setStateAsync(snapId, {
 				val: `data:image/jpeg;base64,${imgRes.data.toString('base64')}`,
