@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "agent-dvr",
-		"version": "0.0.2",
+		"version": "0.0.3",
 		"news": {
+			"0.0.3": {
+				"en": "profile selector: fetch available profiles via getProfiles, writable dropdown",
+				"de": "Profil-Selektor: verfügbare Profile via getProfiles laden, beschreibbares Dropdown",
+				"ru": "селектор профилей: получение доступных профилей через getProfiles, редактируемый список",
+				"pt": "seletor de perfil: buscar perfis disponíveis via getProfiles, menu suspenso gravável",
+				"nl": "profielkiezer: beschikbare profielen ophalen via getProfiles, beschrijfbare keuzelijst",
+				"fr": "sélecteur de profil: récupérer les profils disponibles via getProfiles, liste déroulante modifiable",
+				"it": "selettore profilo: recupera profili disponibili tramite getProfiles, menu a discesa scrivibile",
+				"es": "selector de perfil: obtener perfiles disponibles via getProfiles, lista desplegable escribible",
+				"pl": "selektor profilu: pobieranie dostępnych profili przez getProfiles, zapisywalny dropdown",
+				"uk": "вибір профілю: отримання доступних профілів через getProfiles, записуваний список",
+				"zh-cn": "配置文件选择器：通过 getProfiles 获取可用配置文件，可写下拉菜单"
+			},
 			"0.0.2": {
 				"en": "setup npm trusted publishing and fix repochecker findings",
 				"de": "npm Trusted Publishing eingerichtet und Repochecker-Findings behoben",

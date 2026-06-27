@@ -105,6 +105,9 @@ of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#req
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.3 (2026-06-27)
+* (ipod86) feat: profile selector — fetch available profiles via getProfiles, writable number state with dynamic dropdown
+
 ### 0.0.2 (2026-06-27)
 * (ipod86) setup npm trusted publishing and fix repochecker findings
 

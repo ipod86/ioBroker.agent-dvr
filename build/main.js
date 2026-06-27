@@ -278,6 +278,7 @@ class AgentDvr extends utils.Adapter {
   registry = /* @__PURE__ */ new Map();
   ptzActive = /* @__PURE__ */ new Map();
   widgetSig = {};
+  profileSig = "";
   lastEventFn = {};
   camAspect = {};
   devById = /* @__PURE__ */ new Map();
@@ -471,6 +472,19 @@ class AgentDvr extends utils.Adapter {
   ensureButton(id, name, entry) {
     return this.ensureControl(id, name, entry, "button");
   }
+  async ensureSelector(id, name, entry, states) {
+    if (!this.ensuredFolders.has(id)) {
+      await this.ensurePath(id);
+      await this.setObjectNotExistsAsync(id, {
+        type: "state",
+        common: { name, type: "number", role: "value", read: true, write: true, states },
+        native: {}
+      });
+      await this.setStateAsync(id, { val: 0, ack: true });
+      this.ensuredFolders.add(id);
+    }
+    this.registry.set(id, entry);
+  }
   async ensureFlag(id, name) {
     if (this.ensuredFolders.has(id)) {
       return;
@@ -500,6 +514,28 @@ class AgentDvr extends utils.Adapter {
       await this.ensureFolder("system.control", "Control", "channel");
       for (const c of SYS_COMMANDS) {
         await this.ensureButton(`system.control.${c.id}`, c.name, { kind: "sys", path: c.path });
+      }
+      await this.ensureFolder("system.profile", "Profile", "channel");
+      await this.ensureSelector(
+        "system.profile.selector",
+        "Active profile",
+        { kind: "setProfile" },
+        { 0: "Home", 1: "Away", 2: "Night" }
+      );
+      if (!this.ensuredFolders.has("system.profile.list")) {
+        await this.setObjectNotExistsAsync("system.profile.list", {
+          type: "state",
+          common: {
+            name: "Available profiles (JSON)",
+            type: "string",
+            role: "json",
+            read: true,
+            write: false
+          },
+          native: {}
+        });
+        this.ensuredFolders.add("system.profile.list");
+        await this.setStateAsync("system.profile.list", { val: "[]", ack: true });
       }
     }
   }
@@ -829,6 +865,7 @@ class AgentDvr extends utils.Adapter {
   }
   // ---- main poll ----
   async poll() {
+    var _a, _b, _c;
     const res = await this.apiGet("/command/getObjects");
     const json = asJson(res.data);
     if (!res.ok || !json) {
@@ -863,6 +900,34 @@ class AgentDvr extends utils.Adapter {
     const status = asJson((await this.apiGet("/command/getStatus")).data);
     if (status) {
       await this.flattenWrite(status, "system.status", 0);
+    }
+    if (this.config.enableSystemControls) {
+      const profilesRes = await this.apiGet("/command/getProfiles");
+      const profilesJson = asJson(profilesRes.data);
+      if (profilesJson) {
+        const arr = Array.isArray(profilesJson) ? profilesJson : Array.isArray(profilesJson.profiles) ? profilesJson.profiles : null;
+        if (arr) {
+          const states = {};
+          for (const p of arr) {
+            if (p && typeof p === "object") {
+              const po = p;
+              const ind = (_b = (_a = po.ind) != null ? _a : po.index) != null ? _b : po.id;
+              const pname = (_c = po.name) != null ? _c : po.Name;
+              if (typeof ind === "number" && (typeof pname === "string" || typeof pname === "number")) {
+                states[ind] = String(pname);
+              }
+            }
+          }
+          if (Object.keys(states).length > 0) {
+            const sig = JSON.stringify(states);
+            if (sig !== this.profileSig) {
+              this.profileSig = sig;
+              await this.extendObjectAsync("system.profile.selector", { common: { states } });
+              await this.setStateAsync("system.profile.list", { val: sig, ack: true });
+            }
+          }
+        }
+      }
     }
     if (this.config.enableOverview) {
       const cams = devices.filter((d) => d.ot === 2);
@@ -931,6 +996,21 @@ class AgentDvr extends utils.Adapter {
     }
   }
   async runCommand(relId, entry, val) {
+    if (entry.kind === "setProfile") {
+      const ind = typeof val === "number" ? val : parseInt(String(val != null ? val : ""), 10);
+      if (!isNaN(ind)) {
+        const url2 = `/command/setProfile?ind=${ind}`;
+        const cmdRes2 = await this.apiGet(url2);
+        if (cmdRes2.ok) {
+          this.log.debug(`OK: ${url2}`);
+          await this.setStateAsync(relId, { val: ind, ack: true });
+        } else {
+          this.log.warn(`Command failed (${url2}): ${cmdRes2.error}`);
+        }
+        this.scheduleRefresh();
+      }
+      return;
+    }
     if (entry.kind === "push") {
       this.log.info(`Push trigger cam ${entry.oid}`);
       await this.setStateAsync(relId, { val: "", ack: true });

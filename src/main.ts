@@ -31,7 +31,7 @@ interface Device {
 	raw: Record<string, unknown>;
 }
 
-type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push';
+type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile';
 
 interface RegistryEntry {
 	kind: RegistryKind;
@@ -369,6 +369,7 @@ class AgentDvr extends utils.Adapter {
 	private readonly registry = new Map<string, RegistryEntry>();
 	private readonly ptzActive = new Map<string | number, string>();
 	private readonly widgetSig: Record<string, string> = {};
+	private profileSig = '';
 	private readonly lastEventFn: Record<string | number, string> = {};
 	private readonly camAspect: Record<string | number, string> = {};
 	private readonly devById = new Map<string | number, Device>();
@@ -436,7 +437,7 @@ class AgentDvr extends utils.Adapter {
 		const relId = this.getRelId(id);
 		const entry = this.registry.get(relId);
 		if (entry) {
-			this.runCommand(relId, entry, state.val as boolean).catch(e =>
+			this.runCommand(relId, entry, state.val).catch(e =>
 				this.log.warn(`Command error: ${(e as Error).message}`),
 			);
 		}
@@ -589,6 +590,25 @@ class AgentDvr extends utils.Adapter {
 		return this.ensureControl(id, name, entry, 'button');
 	}
 
+	private async ensureSelector(
+		id: string,
+		name: string,
+		entry: RegistryEntry,
+		states: Record<number, string>,
+	): Promise<void> {
+		if (!this.ensuredFolders.has(id)) {
+			await this.ensurePath(id);
+			await this.setObjectNotExistsAsync(id, {
+				type: 'state',
+				common: { name, type: 'number', role: 'value', read: true, write: true, states },
+				native: {},
+			});
+			await this.setStateAsync(id, { val: 0, ack: true });
+			this.ensuredFolders.add(id);
+		}
+		this.registry.set(id, entry);
+	}
+
 	private async ensureFlag(id: string, name: string): Promise<void> {
 		if (this.ensuredFolders.has(id)) {
 			return;
@@ -621,6 +641,28 @@ class AgentDvr extends utils.Adapter {
 			await this.ensureFolder('system.control', 'Control', 'channel');
 			for (const c of SYS_COMMANDS) {
 				await this.ensureButton(`system.control.${c.id}`, c.name, { kind: 'sys', path: c.path });
+			}
+			await this.ensureFolder('system.profile', 'Profile', 'channel');
+			await this.ensureSelector(
+				'system.profile.selector',
+				'Active profile',
+				{ kind: 'setProfile' },
+				{ 0: 'Home', 1: 'Away', 2: 'Night' },
+			);
+			if (!this.ensuredFolders.has('system.profile.list')) {
+				await this.setObjectNotExistsAsync('system.profile.list', {
+					type: 'state',
+					common: {
+						name: 'Available profiles (JSON)',
+						type: 'string',
+						role: 'json',
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+				this.ensuredFolders.add('system.profile.list');
+				await this.setStateAsync('system.profile.list', { val: '[]', ack: true });
 			}
 		}
 	}
@@ -1100,6 +1142,39 @@ class AgentDvr extends utils.Adapter {
 			await this.flattenWrite(status, 'system.status', 0);
 		}
 
+		if (this.config.enableSystemControls) {
+			const profilesRes = await this.apiGet('/command/getProfiles');
+			const profilesJson = asJson(profilesRes.data);
+			if (profilesJson) {
+				const arr = Array.isArray(profilesJson)
+					? profilesJson
+					: Array.isArray(profilesJson.profiles)
+						? profilesJson.profiles
+						: null;
+				if (arr) {
+					const states: Record<number, string> = {};
+					for (const p of arr) {
+						if (p && typeof p === 'object') {
+							const po = p as Record<string, unknown>;
+							const ind = po.ind ?? po.index ?? po.id;
+							const pname = po.name ?? po.Name;
+							if (typeof ind === 'number' && (typeof pname === 'string' || typeof pname === 'number')) {
+								states[ind] = String(pname);
+							}
+						}
+					}
+					if (Object.keys(states).length > 0) {
+						const sig = JSON.stringify(states);
+						if (sig !== this.profileSig) {
+							this.profileSig = sig;
+							await this.extendObjectAsync('system.profile.selector', { common: { states } });
+							await this.setStateAsync('system.profile.list', { val: sig, ack: true });
+						}
+					}
+				}
+			}
+		}
+
 		if (this.config.enableOverview) {
 			const cams = devices.filter(d => d.ot === 2);
 			const ovId = 'overview';
@@ -1173,7 +1248,23 @@ class AgentDvr extends utils.Adapter {
 		}
 	}
 
-	private async runCommand(relId: string, entry: RegistryEntry, val: boolean): Promise<void> {
+	private async runCommand(relId: string, entry: RegistryEntry, val: ioBroker.StateValue): Promise<void> {
+		if (entry.kind === 'setProfile') {
+			const ind = typeof val === 'number' ? val : parseInt(String(val ?? ''), 10);
+			if (!isNaN(ind)) {
+				const url = `/command/setProfile?ind=${ind}`;
+				const cmdRes = await this.apiGet(url);
+				if (cmdRes.ok) {
+					this.log.debug(`OK: ${url}`);
+					await this.setStateAsync(relId, { val: ind, ack: true });
+				} else {
+					this.log.warn(`Command failed (${url}): ${cmdRes.error}`);
+				}
+				this.scheduleRefresh();
+			}
+			return;
+		}
+
 		if (entry.kind === 'push') {
 			this.log.info(`Push trigger cam ${entry.oid}`);
 			await this.setStateAsync(relId, { val: '', ack: true });
