@@ -522,9 +522,8 @@ class AgentDvr extends utils.Adapter {
     }
     this.registry.set(id, entry);
   }
-  async fetchSnapshotB64(oid, snapId, w, h) {
-    const size = w && h ? `&w=${w}&h=${h}` : "";
-    const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}${size}`);
+  async fetchSnapshotB64(oid, snapId) {
+    const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}`);
     if (imgRes.ok && imgRes.data) {
       await this.setStateAsync(snapId, {
         val: `data:image/jpeg;base64,${imgRes.data.toString("base64")}`,
@@ -671,17 +670,13 @@ class AgentDvr extends utils.Adapter {
         await this.setStateAsync(snapId, { val: "", ack: true });
         this.ensuredFolders.add(snapId);
       }
-      const camW = typeof d.raw.width === "number" ? d.raw.width : void 0;
-      const camH = typeof d.raw.height === "number" ? d.raw.height : void 0;
       await this.ensureButton(`${fid}.control.refreshSnapshotB64`, "Refresh snapshot (Base64)", {
         kind: "snapshotB64",
         oid: d.oid,
-        fid,
-        w: camW,
-        h: camH
+        fid
       });
       if (this.config.enableSnapshotB64) {
-        await this.fetchSnapshotB64(d.oid, snapId, camW, camH);
+        await this.fetchSnapshotB64(d.oid, snapId);
       }
     }
     await this.updateCameraEvents(d, fid);
@@ -1091,7 +1086,7 @@ class AgentDvr extends utils.Adapter {
     }
     if (entry.kind === "snapshotB64") {
       const snapId = `${entry.fid}.snapshot_b64`;
-      await this.fetchSnapshotB64(entry.oid, snapId, entry.w, entry.h);
+      await this.fetchSnapshotB64(entry.oid, snapId);
       await this.setStateAsync(relId, { val: false, ack: true });
       return;
     }
