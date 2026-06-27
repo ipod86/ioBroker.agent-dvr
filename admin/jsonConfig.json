@@ -1,26 +1,205 @@
 {
-	"i18n": true,
-	"type": "panel",
-	"items": {
-		"option1": {
-			"type": "checkbox",
-			"label": "option1",
-			"newLine": true,
-			"xs": 12,
-			"sm": 12,
-			"md": 6,
-			"lg": 4,
-			"xl": 4
-		},
-		"option2": {
-			"type": "text",
-			"label": "option2",
-			"newLine": true,
-			"xs": 12,
-			"sm": 12,
-			"md": 6,
-			"lg": 4,
-			"xl": 4
-		}
-	}
+    "i18n": true,
+    "type": "tabs",
+    "items": {
+        "tabConnection": {
+            "type": "tab",
+            "label": "tabConnection",
+            "items": {
+                "ip": {
+                    "type": "text",
+                    "label": "cfgIp",
+                    "newLine": true,
+                    "xs": 12, "sm": 12, "md": 6, "lg": 4, "xl": 4
+                },
+                "port": {
+                    "type": "number",
+                    "label": "cfgPort",
+                    "min": 1,
+                    "max": 65535,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "user": {
+                    "type": "text",
+                    "label": "cfgUser",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "pass": {
+                    "type": "password",
+                    "label": "cfgPass",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "pollSeconds": {
+                    "type": "number",
+                    "label": "cfgPollSeconds",
+                    "min": 5,
+                    "max": 3600,
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "httpTimeoutMs": {
+                    "type": "number",
+                    "label": "cfgHttpTimeoutMs",
+                    "min": 1000,
+                    "max": 30000,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                }
+            }
+        },
+        "tabFeatures": {
+            "type": "tab",
+            "label": "tabFeatures",
+            "items": {
+                "enableSystemControls": {
+                    "type": "checkbox",
+                    "label": "cfgEnableSystemControls",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "enablePtz": {
+                    "type": "checkbox",
+                    "label": "cfgEnablePtz",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "enableUrls": {
+                    "type": "checkbox",
+                    "label": "cfgEnableUrls",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "enableEventDps": {
+                    "type": "checkbox",
+                    "label": "cfgEnableEventDps",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "enablePush": {
+                    "type": "checkbox",
+                    "label": "cfgEnablePush",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "enableOverview": {
+                    "type": "checkbox",
+                    "label": "cfgEnableOverview",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "storeRawJson": {
+                    "type": "checkbox",
+                    "label": "cfgStoreRawJson",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                }
+            }
+        },
+        "tabWidget": {
+            "type": "tab",
+            "label": "tabWidget",
+            "items": {
+                "enableWidget": {
+                    "type": "checkbox",
+                    "label": "cfgEnableWidget",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetMode": {
+                    "type": "select",
+                    "label": "cfgWidgetMode",
+                    "options": [
+                        { "value": "nojs", "label": "cfgWidgetModeNojs" },
+                        { "value": "js",   "label": "cfgWidgetModeJs" }
+                    ],
+                    "xs": 12, "sm": 6, "md": 6, "lg": 5, "xl": 5
+                },
+                "widgetAnzahl": {
+                    "type": "number",
+                    "label": "cfgWidgetAnzahl",
+                    "min": 1,
+                    "max": 500,
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "widgetMinCol": {
+                    "type": "number",
+                    "label": "cfgWidgetMinCol",
+                    "min": 80,
+                    "max": 600,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "widgetMaxModalWidth": {
+                    "type": "number",
+                    "label": "cfgWidgetMaxModalWidth",
+                    "min": 300,
+                    "max": 2000,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "widgetShowTags": {
+                    "type": "checkbox",
+                    "label": "cfgWidgetShowTags",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetTagPosition": {
+                    "type": "select",
+                    "label": "cfgWidgetTagPosition",
+                    "options": [
+                        { "value": "top-left",     "label": "cfgTagPosTopLeft" },
+                        { "value": "top-right",    "label": "cfgTagPosTopRight" },
+                        { "value": "bottom-left",  "label": "cfgTagPosBotLeft" },
+                        { "value": "bottom-right", "label": "cfgTagPosBotRight" }
+                    ],
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetLiveAspect": {
+                    "type": "text",
+                    "label": "cfgWidgetLiveAspect",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "widgetPlayerUrl": {
+                    "type": "text",
+                    "label": "cfgWidgetPlayerUrl",
+                    "newLine": true,
+                    "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8
+                }
+            }
+        },
+        "tabAdvanced": {
+            "type": "tab",
+            "label": "tabAdvanced",
+            "items": {
+                "maxDepth": {
+                    "type": "number",
+                    "label": "cfgMaxDepth",
+                    "min": 1,
+                    "max": 10,
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "maxArray": {
+                    "type": "number",
+                    "label": "cfgMaxArray",
+                    "min": 1,
+                    "max": 500,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "eventTagsDynamic": {
+                    "type": "checkbox",
+                    "label": "cfgEventTagsDynamic",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "eventTagsIgnore": {
+                    "type": "text",
+                    "label": "cfgEventTagsIgnore",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 6, "lg": 4, "xl": 4
+                },
+                "eventTags": {
+                    "type": "text",
+                    "label": "cfgEventTags",
+                    "xs": 12, "sm": 6, "md": 6, "lg": 4, "xl": 4
+                }
+            }
+        }
+    }
 }
