@@ -1,5 +1,6 @@
 import * as utils from '@iobroker/adapter-core';
 import * as http from 'http';
+import { getWidgetLabels, type WidgetLabels } from './lib/widget-i18n';
 
 // =====================================================================
 //  Agent DVR -> ioBroker Adapter
@@ -322,7 +323,7 @@ function initRoot(root){
       b.addEventListener('click',function(){state.tag=state.tag===val?'':val;updateTagBtns();render();});
       tagsBox.appendChild(b);
     };
-    mk('All','');tags.forEach(function(t){mk(t,t);});
+    mk(cfg.labels&&cfg.labels.all||'All','');tags.forEach(function(t){mk(t,t);});
   }
   function updateTagBtns(){var bs=tagsBox.querySelectorAll('.advtagbtn');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-tag')===state.tag);}
   updateTagBtns();
@@ -331,13 +332,13 @@ function initRoot(root){
   function render(){
     var html='';
     if(live){var ar=cfg.live_aspect||'',arStyle=ar?' style="aspect-ratio:'+ar.replace('/',' / ')+'"':'',arCls=ar?' advimgfix':'';
-      html+='<div class="advcelljs" data-live="1"><span class="advimgjs'+arCls+'"'+arStyle+'><img loading="lazy" src="'+esc(live.thumb)+'"><span class="advtagjs" style="top:5px;left:5px">&#9679; LIVE</span><span class="advplayjs"></span></span><span class="advcapjs">'+esc(live.name)+'</span></div>';}
+      html+='<div class="advcelljs" data-live="1"><span class="advimgjs'+arCls+'"'+arStyle+'><img loading="lazy" src="'+esc(live.thumb)+'"><span class="advtagjs" style="top:5px;left:5px">&#9679; '+(cfg.labels&&cfg.labels.live||'LIVE')+'</span><span class="advplayjs"></span></span><span class="advcapjs">'+esc(live.name)+'</span></div>';}
     items.forEach(function(it,i){
       if(state.tag&&String(it.tag||'').toLowerCase().indexOf(state.tag.toLowerCase())<0)return;
       if(state.q){var hay=((it.date||'')+' '+(it.time||'')+' '+(it.tag||'')).toLowerCase();if(hay.indexOf(state.q)<0)return;}
       html+='<div class="advcelljs" data-i="'+i+'"><span class="advimgjs"><img loading="lazy" src="'+esc(it.thumb)+'">'+badge(it)+'<span class="advplayjs"></span></span><span class="advcapjs">'+esc(it.date)+' '+esc(it.time)+'<br>'+esc(it.dur)+'s &middot; '+esc(it.size)+' MB</span></div>';
     });
-    grid.innerHTML=html||'<div class="advemptyjs">No recordings</div>';
+    grid.innerHTML=html||'<div class="advemptyjs">'+(cfg.labels&&cfg.labels.noRecordings||'No recordings')+'</div>';
     var cells=grid.querySelectorAll('.advcelljs');
     for(var k=0;k<cells.length;k++)(function(cell){
       cell.addEventListener('click',function(){
@@ -362,6 +363,7 @@ class AgentDvr extends utils.Adapter {
 	private refreshTimer: ioBroker.Timeout | undefined = undefined;
 	private authHeader: string | null = null;
 	private baseUrl = '';
+	private wt: WidgetLabels = getWidgetLabels('en');
 
 	private readonly ensuredFolders = new Set<string>();
 	private readonly registry = new Map<string, RegistryEntry>();
@@ -383,6 +385,10 @@ class AgentDvr extends utils.Adapter {
 
 	private async onReady(): Promise<void> {
 		void this.setState('info.connection', false, true);
+
+		const sysConfig = await this.getForeignObjectAsync('system.config');
+		const rawLang = (sysConfig?.common as unknown as { language?: string } | undefined)?.language;
+		this.wt = getWidgetLabels(rawLang ?? 'en');
 
 		const pollSeconds = Math.max(5, Math.min(3600, this.config.pollSeconds || 30));
 		this.baseUrl = `http://${this.config.ip}:${this.config.port || 8090}`;
@@ -778,12 +784,14 @@ class AgentDvr extends utils.Adapter {
 					`<video class="advvideo" controls preload="none" playsinline src="${p.video}"></video>` +
 					`<div class="advinfo">${escHtml(p.date)} ${escHtml(p.time)} &middot; ${escHtml(p.dur)}s &middot; ${escHtml(p.sizeMB)} MB${
 						p.tag ? ` &middot; ${escHtml(p.tag)}` : ''
-					} &middot; <a href="${p.video}" download target="_blank">Download</a></div></div></div>`
+					} &middot; <a href="${p.video}" download target="_blank">${this.wt.download}</a></div></div></div>`
 				);
 			})
 			.join('');
 
-		const grid = items ? `<div class="advgrid">${items}</div>` : `<div class="advempty">No recordings</div>`;
+		const grid = items
+			? `<div class="advgrid">${items}</div>`
+			: `<div class="advempty">${this.wt.noRecordings}</div>`;
 		return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
 	}
 
@@ -811,13 +819,14 @@ class AgentDvr extends utils.Adapter {
 			live_aspect: this.camAspect[oid] || this.config.widgetLiveAspect || '',
 			player_url: (this.config.widgetPlayerUrl || '').trim(),
 			tag_position: this.config.widgetTagPosition || 'bottom-left',
+			labels: { noRecordings: this.wt.noRecordings, all: this.wt.all, live: this.wt.live },
 		};
 		const data = JSON.stringify({ items, live: null, cfg }).replace(/</g, '\\u003c');
 		const boot = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 		return (
 			`<style>${galleryCssJs(minCol)}</style>` +
 			`<div class="advroot"><script type="application/json" class="advdata">${data}</script>` +
-			`<div class="advbar"><input class="advsearchjs" type="text" placeholder="Search …"><div class="advtagsjs"></div></div>` +
+			`<div class="advbar"><input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}"><div class="advtagsjs"></div></div>` +
 			`<div class="advgridjs"></div></div>` +
 			`<script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script>` +
 			`<img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`
@@ -842,7 +851,7 @@ class AgentDvr extends utils.Adapter {
 				const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
 				const inner =
 					`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
-					`<span class="advtag" style="top:5px;left:5px">&#9679; LIVE</span><span class="advplay"></span></span>` +
+					`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
 					`<span class="advcap">${name}</span>`;
 				return (
 					`<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}>` +

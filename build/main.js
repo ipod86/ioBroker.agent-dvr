@@ -23,6 +23,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
 var http = __toESM(require("http"));
+var import_widget_i18n = require("./lib/widget-i18n");
 const CAM_COMMANDS = [
   { id: "record", path: "/command/record", params: ["oid", "ot"], name: "Start recording" },
   { id: "recordStop", path: "/command/recordStop", params: ["oid", "ot"], name: "Stop recording" },
@@ -235,7 +236,7 @@ function initRoot(root){
       b.addEventListener('click',function(){state.tag=state.tag===val?'':val;updateTagBtns();render();});
       tagsBox.appendChild(b);
     };
-    mk('All','');tags.forEach(function(t){mk(t,t);});
+    mk(cfg.labels&&cfg.labels.all||'All','');tags.forEach(function(t){mk(t,t);});
   }
   function updateTagBtns(){var bs=tagsBox.querySelectorAll('.advtagbtn');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-tag')===state.tag);}
   updateTagBtns();
@@ -244,13 +245,13 @@ function initRoot(root){
   function render(){
     var html='';
     if(live){var ar=cfg.live_aspect||'',arStyle=ar?' style="aspect-ratio:'+ar.replace('/',' / ')+'"':'',arCls=ar?' advimgfix':'';
-      html+='<div class="advcelljs" data-live="1"><span class="advimgjs'+arCls+'"'+arStyle+'><img loading="lazy" src="'+esc(live.thumb)+'"><span class="advtagjs" style="top:5px;left:5px">&#9679; LIVE</span><span class="advplayjs"></span></span><span class="advcapjs">'+esc(live.name)+'</span></div>';}
+      html+='<div class="advcelljs" data-live="1"><span class="advimgjs'+arCls+'"'+arStyle+'><img loading="lazy" src="'+esc(live.thumb)+'"><span class="advtagjs" style="top:5px;left:5px">&#9679; '+(cfg.labels&&cfg.labels.live||'LIVE')+'</span><span class="advplayjs"></span></span><span class="advcapjs">'+esc(live.name)+'</span></div>';}
     items.forEach(function(it,i){
       if(state.tag&&String(it.tag||'').toLowerCase().indexOf(state.tag.toLowerCase())<0)return;
       if(state.q){var hay=((it.date||'')+' '+(it.time||'')+' '+(it.tag||'')).toLowerCase();if(hay.indexOf(state.q)<0)return;}
       html+='<div class="advcelljs" data-i="'+i+'"><span class="advimgjs"><img loading="lazy" src="'+esc(it.thumb)+'">'+badge(it)+'<span class="advplayjs"></span></span><span class="advcapjs">'+esc(it.date)+' '+esc(it.time)+'<br>'+esc(it.dur)+'s &middot; '+esc(it.size)+' MB</span></div>';
     });
-    grid.innerHTML=html||'<div class="advemptyjs">No recordings</div>';
+    grid.innerHTML=html||'<div class="advemptyjs">'+(cfg.labels&&cfg.labels.noRecordings||'No recordings')+'</div>';
     var cells=grid.querySelectorAll('.advcelljs');
     for(var k=0;k<cells.length;k++)(function(cell){
       cell.addEventListener('click',function(){
@@ -272,6 +273,7 @@ class AgentDvr extends utils.Adapter {
   refreshTimer = void 0;
   authHeader = null;
   baseUrl = "";
+  wt = (0, import_widget_i18n.getWidgetLabels)("en");
   ensuredFolders = /* @__PURE__ */ new Set();
   registry = /* @__PURE__ */ new Map();
   ptzActive = /* @__PURE__ */ new Map();
@@ -288,7 +290,11 @@ class AgentDvr extends utils.Adapter {
   }
   // ---- lifecycle ----
   async onReady() {
+    var _a;
     void this.setState("info.connection", false, true);
+    const sysConfig = await this.getForeignObjectAsync("system.config");
+    const rawLang = (_a = sysConfig == null ? void 0 : sysConfig.common) == null ? void 0 : _a.language;
+    this.wt = (0, import_widget_i18n.getWidgetLabels)(rawLang != null ? rawLang : "en");
     const pollSeconds = Math.max(5, Math.min(3600, this.config.pollSeconds || 30));
     this.baseUrl = `http://${this.config.ip}:${this.config.port || 8090}`;
     if (this.config.user || this.config.pass) {
@@ -607,9 +613,9 @@ class AgentDvr extends utils.Adapter {
         const href = playerUrl.replace(/{video}/g, encodeURIComponent(p.video)).replace(/{videoRaw}/g, p.video).replace(/{fn}/g, encodeURIComponent(p.fn)).replace(/{date}/g, encodeURIComponent(p.date)).replace(/{time}/g, encodeURIComponent(p.time)).replace(/{duration}/g, encodeURIComponent(p.dur)).replace(/{size}/g, encodeURIComponent(String(p.sizeMB))).replace(/{tags}/g, encodeURIComponent(p.tag));
         return `<a class="advcell" href="${escHtml(href)}" target="_blank" rel="noopener">${inner}</a>`;
       }
-      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${p.video}"></video><div class="advinfo">${escHtml(p.date)} ${escHtml(p.time)} &middot; ${escHtml(p.dur)}s &middot; ${escHtml(p.sizeMB)} MB${p.tag ? ` &middot; ${escHtml(p.tag)}` : ""} &middot; <a href="${p.video}" download target="_blank">Download</a></div></div></div>`;
+      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${p.video}"></video><div class="advinfo">${escHtml(p.date)} ${escHtml(p.time)} &middot; ${escHtml(p.dur)}s &middot; ${escHtml(p.sizeMB)} MB${p.tag ? ` &middot; ${escHtml(p.tag)}` : ""} &middot; <a href="${p.video}" download target="_blank">${this.wt.download}</a></div></div></div>`;
     }).join("");
-    const grid = items ? `<div class="advgrid">${items}</div>` : `<div class="advempty">No recordings</div>`;
+    const grid = items ? `<div class="advgrid">${items}</div>` : `<div class="advempty">${this.wt.noRecordings}</div>`;
     return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
   }
   buildGalleryHtmlJs(d, events) {
@@ -635,11 +641,12 @@ class AgentDvr extends utils.Adapter {
       max_modal_width: maxW,
       live_aspect: this.camAspect[oid] || this.config.widgetLiveAspect || "",
       player_url: (this.config.widgetPlayerUrl || "").trim(),
-      tag_position: this.config.widgetTagPosition || "bottom-left"
+      tag_position: this.config.widgetTagPosition || "bottom-left",
+      labels: { noRecordings: this.wt.noRecordings, all: this.wt.all, live: this.wt.live }
     };
     const data = JSON.stringify({ items, live: null, cfg }).replace(/</g, "\\u003c");
     const boot = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    return `<style>${galleryCssJs(minCol)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar"><input class="advsearchjs" type="text" placeholder="Search \u2026"><div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
+    return `<style>${galleryCssJs(minCol)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar"><input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}"><div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
   }
   buildOverviewHtml(cams) {
     const ts = Date.now();
@@ -656,7 +663,7 @@ class AgentDvr extends utils.Adapter {
       const ar = arRaw ? String(arRaw).replace("/", " / ") : "";
       const fix = ar ? " advimgfix" : "";
       const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
-      const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; LIVE</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
+      const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
       return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     }).join("");
     const grid = tiles ? `<div class="advgrid">${tiles}</div>` : `<div class="advempty">No cameras</div>`;
