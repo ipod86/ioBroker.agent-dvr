@@ -31,7 +31,7 @@ interface Device {
 	raw: Record<string, unknown>;
 }
 
-type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile';
+type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile' | 'snapshotB64';
 
 interface RegistryEntry {
 	kind: RegistryKind;
@@ -647,6 +647,16 @@ class AgentDvr extends utils.Adapter {
 		this.registry.set(id, entry);
 	}
 
+	private async fetchSnapshotB64(oid: number | string, snapId: string): Promise<void> {
+		const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}`);
+		if (imgRes.ok && imgRes.data) {
+			await this.setStateAsync(snapId, {
+				val: `data:image/jpeg;base64,${imgRes.data.toString('base64')}`,
+				ack: true,
+			});
+		}
+	}
+
 	private async ensureFlag(id: string, name: string): Promise<void> {
 		if (this.ensuredFolders.has(id)) {
 			return;
@@ -782,7 +792,7 @@ class AgentDvr extends utils.Adapter {
 			await this.writeLeaf(`${fid}.urls.mp4`, `${this.baseUrl}/video.mp4?oids=${d.oid}`);
 		}
 
-		if (this.config.enableSnapshotB64 && d.ot === 2) {
+		if (d.ot === 2) {
 			const snapId = `${fid}.snapshot_b64`;
 			if (!this.ensuredFolders.has(snapId)) {
 				await this.ensurePath(snapId);
@@ -797,12 +807,16 @@ class AgentDvr extends utils.Adapter {
 					},
 					native: {},
 				});
+				await this.setStateAsync(snapId, { val: '', ack: true });
 				this.ensuredFolders.add(snapId);
 			}
-			const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${d.oid}`);
-			if (imgRes.ok && imgRes.data) {
-				const b64 = `data:image/jpeg;base64,${imgRes.data.toString('base64')}`;
-				await this.setStateAsync(snapId, { val: b64, ack: true });
+			await this.ensureButton(`${fid}.control.refreshSnapshotB64`, 'Refresh snapshot (Base64)', {
+				kind: 'snapshotB64',
+				oid: d.oid,
+				fid,
+			});
+			if (this.config.enableSnapshotB64) {
+				await this.fetchSnapshotB64(d.oid, snapId);
 			}
 		}
 
@@ -1320,6 +1334,13 @@ class AgentDvr extends utils.Adapter {
 				}
 				this.scheduleRefresh();
 			}
+			return;
+		}
+
+		if (entry.kind === 'snapshotB64') {
+			const snapId = `${entry.fid}.snapshot_b64`;
+			await this.fetchSnapshotB64(entry.oid!, snapId);
+			await this.setStateAsync(relId, { val: false, ack: true });
 			return;
 		}
 
