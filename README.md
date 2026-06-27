@@ -12,101 +12,158 @@
 
 ## agent-dvr adapter for ioBroker
 
-Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.
+Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all cameras and microphones, mirrors every device property as data points, provides buttons for all common commands (record, arm, PTZ, …), delivers push-triggered gallery updates on new recordings, and generates a responsive HTML gallery widget per camera.
 
-## Developer manual
-This section is intended for the developer. It can be deleted later.
+## Features
 
-### DISCLAIMER
+- Auto-discovery of all AgentDVR cameras and microphones on startup
+- All device properties mirrored as data points (flattened from the API)
+- Per-device control buttons: record, snapshot, detect, arm/disarm alerts, switch on/off, object detection, purge, …
+- System-level buttons: arm, disarm, all on/off, reload, storage management, restart, …
+- **Profile selector** — writable dropdown that reflects the current AgentDVR profile (Home / Away / Night / custom); changes apply immediately
+- **Snapshot as Base64** — `snapshot_b64` state (role `media.picture`) per camera, writable via button or auto-updated every poll cycle
+- PTZ control with hold-to-move switches (left, right, up, down, diagonals, zoom in/out, stop, center)
+- Stream URLs per camera (snapshot, photo, MJPEG, MP4)
+- Push trigger state — ioBroker scripts can react instantly when AgentDVR reports a new recording
+- HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
+- Overview widget combining all cameras in one HTML state
+- Raw API JSON state for advanced use cases
 
-Please make sure that you consider copyrights and trademarks when you use names or logos of a company and add a disclaimer to your README.
-You can check other adapters for examples or ask in the developer community. Using a name or logo of a company without permission may cause legal problems for you.
+## Configuration
 
-### Getting started
+| Setting | Description | Default |
+|---------|-------------|---------|
+| AgentDVR IP | IP address of the AgentDVR server | — |
+| Port | AgentDVR port | `8090` |
+| Username / Password | Optional HTTP basic auth | — |
+| Poll interval (s) | How often to fetch data from AgentDVR | `30` |
+| HTTP timeout (ms) | Timeout per API request | `8000` |
+| System control buttons | Create arm/disarm/restart/… buttons and the profile selector | `true` |
+| PTZ control buttons | Create per-camera PTZ hold-switches | `true` |
+| Generate stream URLs | Create URL states (snapshot, MJPEG, MP4) per camera | `true` |
+| Snapshot as Base64 | Auto-fetch and store the current frame as Base64 on every poll | `false` |
+| Event data points | Mirror recording metadata (latest event, count, …) | `true` |
+| Real-time push trigger | Create push-trigger state that scripts can subscribe to | `true` |
+| Overview widget | Single HTML state combining all camera live tiles | `true` |
+| Gallery widget per camera | HTML recording gallery per camera | `true` |
+| Store raw API JSON | Write the full getObjects response to `system.raw_getObjects` | `false` |
 
-You are almost done, only a few steps left:
-1. Create a new repository on GitHub with the name `ioBroker.agent-dvr`
-1. Initialize the current folder as a new git repository:  
-	```bash
-	git init -b main
-	git add .
-	git commit -m "Initial commit"
-	```
-1. Link your local repository with the one on GitHub:  
-	```bash
-	git remote add origin https://github.com/ipod86/ioBroker.agent-dvr
-	```
+## Data points
 
-1. Push all files to the GitHub repo:  
-	```bash
-	git push origin main
-	```
-1. Add a new secret under https://github.com/ipod86/ioBroker.agent-dvr/settings/secrets. It must be named `AUTO_MERGE_TOKEN` and contain a personal access token with push access to the repository, e.g. yours. You can create a new token under https://github.com/settings/tokens.
+The adapter creates the following data point tree. `<cam>` stands for `cam_<oid>_<name>`, e.g. `cam_8_Reolink`. Microphones use the same layout but with prefix `mic_<oid>_<name>`.
 
-1. Head over to [src/main.ts](src/main.ts) and start programming!
+### System
 
-### Best Practices
-We've collected some [best practices](https://github.com/ioBroker/ioBroker.repositories#development-and-coding-best-practices) regarding ioBroker development and coding in general. If you're new to ioBroker or Node.js, you should
-check them out. If you're already experienced, you should also take a look at them - you might learn something new :)
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `system.online` | boolean | R | Connection to AgentDVR established |
+| `system.lastUpdate` | string | R | ISO timestamp of last successful poll |
+| `system.lastPoll` | number | R | Unix timestamp of last poll |
+| `system.cameraCount` | number | R | Number of cameras discovered |
+| `system.disk_free_gb` | number | R | Free disk space in GB |
+| `system.settings.*` | various | R | Flattened AgentDVR server settings |
+| `system.stats.*` | various | R | CPU / RAM / disk stats |
+| `system.status.*` | various | R | System status (armed, devices, version, …) |
+| `system.raw_getObjects` | string | R | Raw getObjects JSON (if enabled) |
 
-### State Roles
-When creating state objects, it is important to use the correct role for the state. The role defines how the state should be interpreted by visualizations and other adapters. For a list of available roles and their meanings, please refer to the [state roles documentation](https://www.iobroker.net/#en/documentation/dev/stateroles.md).
+### System controls *(requires "System control buttons")*
 
-**Important:** Do not invent your own custom role names. If you need a role that is not part of the official list, please contact the ioBroker developer community for guidance and discussion about adding new roles.
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `system.control.arm` | button | W | Arm the system |
+| `system.control.disarm` | button | W | Disarm the system |
+| `system.control.allOn` | button | W | Switch all devices on |
+| `system.control.allOff` | button | W | Switch all devices off |
+| `system.control.reloadConfig` | button | W | Reload AgentDVR configuration |
+| `system.control.reloadObjects` | button | W | Reload objects |
+| `system.control.runStorageMgmt` | button | W | Run storage management |
+| `system.control.blockExternal` | button | W | Block external access |
+| `system.control.unblockExternal` | button | W | Unblock external access |
+| `system.control.restart` | button | W | Restart AgentDVR |
+| `system.control.refresh` | button | W | Force immediate poll |
+| `system.profile.selector` | number | R/W | Active profile index — dropdown populated from AgentDVR (0 = Home, 1 = Away, …) |
+| `system.profile.list` | string | R | Available profiles as JSON array |
 
-### Scripts in `package.json`
-Several npm scripts are predefined for your convenience. You can run them using `npm run <scriptname>`
-| Script name | Description |
-|-------------|-------------|
-| `build` | Compile the TypeScript sources. |
-| `watch` | Compile the TypeScript sources and watch for changes. |
-| `test:ts` | Executes the tests you defined in `*.test.ts` files. |
-| `test:package` | Ensures your `package.json` and `io-package.json` are valid. |
-| `test:integration` | Tests the adapter startup with an actual instance of ioBroker. |
-| `test` | Performs a minimal test run on package files and your tests. |
-| `check` | Performs a type-check on your code (without compiling anything). |
-| `lint` | Runs `ESLint` to check your code for formatting errors and potential bugs. |
-| `translate` | Translates texts in your adapter to all required languages, see [`@iobroker/adapter-dev`](https://github.com/ioBroker/adapter-dev#manage-translations) for more details. |
-| `release` | Creates a new release, see [`@alcalzone/release-script`](https://github.com/AlCalzone/release-script#usage) for more details. |
+### Per camera / microphone
 
-### Configuring the compilation
-The adapter template uses [esbuild](https://esbuild.github.io/) to compile TypeScript and/or React code. You can configure many compilation settings 
-either in `tsconfig.json` or by changing options for the build tasks. These options are described in detail in the
-[`@iobroker/adapter-dev` documentation](https://github.com/ioBroker/adapter-dev#compile-adapter-files).
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `<cam>.*` | various | R | Flattened device properties from AgentDVR |
+| `<cam>.snapshot_b64` | string | R | Current frame as `data:image/jpeg;base64,…` (role `media.picture`) |
+| `<cam>.control.record` | button | W | Start recording |
+| `<cam>.control.recordStop` | button | W | Stop recording |
+| `<cam>.control.recordRestart` | button | W | Restart recording |
+| `<cam>.control.triggerRecord` | button | W | Trigger recording (runs until timeout) |
+| `<cam>.control.snapshot` | button | W | Tell AgentDVR to save a snapshot to disk |
+| `<cam>.control.refreshSnapshotB64` | button | W | Fetch current frame and write to `snapshot_b64` |
+| `<cam>.control.detect` | button | W | Trigger motion detection |
+| `<cam>.control.alertOn` | button | W | Arm alerts |
+| `<cam>.control.alertOff` | button | W | Disarm alerts |
+| `<cam>.control.switchOn` | button | W | Switch device on |
+| `<cam>.control.switchOff` | button | W | Switch device off |
+| `<cam>.control.objectDetectOn` | button | W | Enable object detection |
+| `<cam>.control.objectDetectOff` | button | W | Disable object detection |
+| `<cam>.control.recOnAlert` | button | W | Enable "record on alert" |
+| `<cam>.control.recOnDetect` | button | W | Enable "record on detect" |
+| `<cam>.control.purge` | button | W | Delete all recordings in the device folder |
 
-### Writing tests
-When done right, testing code is invaluable, because it gives you the 
-confidence to change your code while knowing exactly if and when 
-something breaks. A good read on the topic of test-driven development 
-is https://hackernoon.com/introduction-to-test-driven-development-tdd-61a13bc92d92. 
-Although writing tests before the code might seem strange at first, but it has very 
-clear upsides.
+### PTZ *(cameras only, requires "PTZ control buttons")*
 
-The template provides you with basic tests for the adapter startup and package files.
-It is recommended that you add your own tests into the mix.
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `<cam>.control.ptz.left` | switch | R/W | Pan left (hold to keep moving) |
+| `<cam>.control.ptz.right` | switch | R/W | Pan right |
+| `<cam>.control.ptz.up` | switch | R/W | Tilt up |
+| `<cam>.control.ptz.down` | switch | R/W | Tilt down |
+| `<cam>.control.ptz.upLeft` | switch | R/W | Diagonal up-left |
+| `<cam>.control.ptz.upRight` | switch | R/W | Diagonal up-right |
+| `<cam>.control.ptz.downLeft` | switch | R/W | Diagonal down-left |
+| `<cam>.control.ptz.downRight` | switch | R/W | Diagonal down-right |
+| `<cam>.control.ptz.zoomIn` | switch | R/W | Zoom in |
+| `<cam>.control.ptz.zoomOut` | switch | R/W | Zoom out |
+| `<cam>.control.ptz.stop` | button | W | Stop PTZ movement |
+| `<cam>.control.ptz.center` | button | W | Move to center/home position |
 
-### Publishing the adapter
-Using GitHub Actions, you can enable automatic releases on npm whenever you push a new git tag that matches the form 
-`v<major>.<minor>.<patch>`. We **strongly recommend** that you do. The necessary steps are described in `.github/workflows/test-and-release.yml`.
+### Stream URLs *(cameras only, requires "Generate stream URLs")*
 
-Since you installed the release script, you can create a new
-release simply by calling:
-```bash
-npm run release
-```
-Additional command line options for the release script are explained in the
-[release-script documentation](https://github.com/AlCalzone/release-script#command-line).
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `<cam>.urls.snapshot` | string | R | URL to current JPEG snapshot (`/grab.jpg`) |
+| `<cam>.urls.photo` | string | R | URL to photo endpoint (`/photo.jpg`) |
+| `<cam>.urls.mjpeg` | string | R | URL to MJPEG live stream (`/video.mjpg`) |
+| `<cam>.urls.mp4` | string | R | URL to MP4 live stream (`/video.mp4`) |
 
-To get your adapter released in ioBroker, please refer to the documentation 
-of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
+### Events / Gallery *(cameras only)*
+
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `<cam>.events.*` | various | R | Latest recording metadata (filename, date, duration, tags, …) — requires "Event data points" |
+| `<cam>.push` | string | R | Push trigger — updated immediately when AgentDVR reports a new recording — requires "Real-time push trigger" |
+| `<cam>.gallery` | string | R | HTML gallery of recent recordings — requires "Gallery widget" |
+
+### Overview *(requires "Overview widget")*
+
+| Data point | Type | R/W | Description |
+|-----------|------|-----|-------------|
+| `overview` | string | R | HTML tile grid of all cameras with live stream links |
+
+## Snapshot as Base64
+
+The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;base64,…` string so it can be used directly in vis/vis-2 image widgets without a separate HTTP request from the browser.
+
+**Manual refresh:** Write `true` to `<cam>.control.refreshSnapshotB64` to fetch a new frame on demand — no adapter restart required.
+
+**Auto-refresh:** Enable *"Snapshot as Base64"* in the adapter configuration to refresh automatically on every poll cycle.
 
 ## Changelog
+
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
 ### 0.0.3 (2026-06-27)
-* (ipod86) feat: profile selector — fetch available profiles via getProfiles, writable number state with dynamic dropdown
+* (ipod86) feat: profile selector — reads profiles from getObjects, writable dropdown with active profile reflected on every poll
+* (ipod86) feat: snapshot_b64 state (media.picture) always present per camera + manual refresh button; auto-poll optional
 
 ### 0.0.2 (2026-06-27)
 * (ipod86) setup npm trusted publishing and fix repochecker findings
