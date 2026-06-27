@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "agent-dvr",
-		"version": "0.0.3",
+		"version": "0.0.4",
 		"news": {
+			"0.0.4": {
+				"en": "fix DP roles: snapshot_b64 role state, profile selector role level",
+				"de": "DP-Rollen korrigiert: snapshot_b64 role state, Profil-Selektor role level",
+				"ru": "исправлены роли DP: snapshot_b64 role state, селектор профиля role level",
+				"pt": "corrigir roles DP: snapshot_b64 role state, seletor de perfil role level",
+				"nl": "DP-rollen gecorrigeerd: snapshot_b64 role state, profielkiezer role level",
+				"fr": "correction des rôles DP: snapshot_b64 role state, sélecteur de profil role level",
+				"it": "corretto ruoli DP: snapshot_b64 role state, selettore profilo role level",
+				"es": "corregir roles DP: snapshot_b64 role state, selector de perfil role level",
+				"pl": "poprawiono role DP: snapshot_b64 role state, selektor profilu role level",
+				"uk": "виправлено ролі DP: snapshot_b64 role state, вибір профілю role level",
+				"zh-cn": "修正 DP 角色：snapshot_b64 角色 state，配置文件选择器角色 level"
+			},
 			"0.0.3": {
 				"en": "profile selector: fetch available profiles via getProfiles, writable dropdown",
 				"de": "Profil-Selektor: verfügbare Profile via getProfiles laden, beschreibbares Dropdown",

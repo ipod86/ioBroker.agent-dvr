@@ -171,6 +171,9 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.4 (2026-06-27)
+* (ipod86) fix: DP-Rollen korrigiert: snapshot_b64 → state (E1008), Profil-Selektor → level (E1011)
+
 ### 0.0.3 (2026-06-27)
 * (ipod86) feat: Profil-Selektor — liest Profile aus getObjects, beschreibbarer Dropdown mit aktivem Profil bei jedem Poll
 * (ipod86) feat: snapshot_b64-State (media.picture) immer vorhanden + manueller Refresh-Button; Auto-Poll optional
