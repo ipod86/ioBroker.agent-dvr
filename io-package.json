@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "agent-dvr",
-		"version": "0.0.1",
+		"version": "0.0.2",
 		"news": {
+			"0.0.2": {
+				"en": "setup npm trusted publishing and fix repochecker findings",
+				"de": "npm Trusted Publishing eingerichtet und Repochecker-Findings behoben",
+				"ru": "настройка npm Trusted Publishing и исправление находок репочекера",
+				"pt": "configuração de publicação confiável npm e correção de resultados do repochecker",
+				"nl": "npm trusted publishing instellen en repochecker-bevindingen corrigeren",
+				"fr": "configuration de la publication de confiance npm et correction des résultats du repochecker",
+				"it": "configurazione della pubblicazione attendibile npm e correzione dei risultati del repochecker",
+				"es": "configuración de publicación de confianza npm y corrección de hallazgos del repochecker",
+				"pl": "konfiguracja zaufanego publikowania npm i poprawki wyników repocheckera",
+				"uk": "налаштування довіреної публікації npm та виправлення знахідок репочекера",
+				"zh-cn": "设置 npm 可信发布并修复 repochecker 问题"
+			},
 			"0.0.1": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",

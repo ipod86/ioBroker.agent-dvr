@@ -101,6 +101,12 @@ To get your adapter released in ioBroker, please refer to the documentation
 of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
 
 ## Changelog
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### **WORK IN PROGRESS**
+-->
+### 0.0.2 (2026-06-27)
+* (ipod86) setup npm trusted publishing and fix repochecker findings
 
 ### 0.0.1 (2026-06-27)
 * (ipod86) initial release
