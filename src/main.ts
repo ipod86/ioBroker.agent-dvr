@@ -648,7 +648,7 @@ class AgentDvr extends utils.Adapter {
 	}
 
 	private async fetchSnapshotB64(oid: number | string, snapId: string): Promise<void> {
-		const imgRes = await this.apiGetBuffer(`/grab.jpg?oid=${oid}`);
+		const imgRes = await this.apiGetBuffer(`/photo.jpg?oid=${oid}`);
 		if (imgRes.ok && imgRes.data) {
 			await this.setStateAsync(snapId, {
 				val: `data:image/jpeg;base64,${imgRes.data.toString('base64')}`,
