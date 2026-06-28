@@ -879,11 +879,12 @@ document.addEventListener('keydown', e => {
 
 /* ─────────────────────────── Tab-Sichtbarkeit ───────────────── */
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) return;
-  document.querySelectorAll('.cam-tile img, #fs-img').forEach(img => {
-    if (!img.src) return;
-    const s = img.src; img.src = ''; img.src = s;
-  });
+  const imgs = [...document.querySelectorAll('.cam-tile img, #fs-img')];
+  if (document.hidden) {
+    imgs.forEach(img => { if (img.src) { img.dataset.s = img.src; img.src = ''; } });
+  } else {
+    imgs.forEach(img => { if (!img.src && img.dataset.s) { img.src = img.dataset.s; } });
+  }
 });
 
 /* ─────────────────────────── Boot ──────────────────────────── */
