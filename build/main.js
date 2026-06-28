@@ -628,6 +628,36 @@ class AgentDvr extends utils.Adapter {
   deviceFolder(d) {
     return `${d.ot === 1 ? "mic" : "cam"}_${sanitize(d.oid)}_${sanitize(d.name)}`;
   }
+  // ---- device status data points ----
+  STATUS_DPS = [
+    { key: "recording", role: "indicator.active", name: "Active recording" },
+    { key: "online", role: "indicator.reachable", name: "Online" },
+    { key: "connected", role: "indicator.connected", name: "Stream connected" },
+    { key: "detected", role: "indicator", name: "Motion detected" },
+    { key: "alerted", role: "indicator.alarm", name: "Alert active" }
+  ];
+  async writeStatusDps(d, fid) {
+    const data = d.raw.data;
+    if (!data || typeof data !== "object") {
+      return;
+    }
+    const sfid = `${fid}.status`;
+    if (!this.ensuredFolders.has(sfid)) {
+      await this.ensureFolder(sfid, "Status", "channel");
+    }
+    for (const dp of this.STATUS_DPS) {
+      if (!(dp.key in data)) {
+        continue;
+      }
+      const id = `${sfid}.${dp.key}`;
+      await this.setObjectNotExistsAsync(id, {
+        type: "state",
+        common: { name: dp.name, type: "boolean", role: dp.role, read: true, write: false, def: false },
+        native: {}
+      });
+      await this.setStateAsync(id, { val: !!data[dp.key], ack: true });
+    }
+  }
   // ---- build device data points ----
   async buildDevice(d) {
     const fid = this.deviceFolder(d);
@@ -637,6 +667,7 @@ class AgentDvr extends utils.Adapter {
       await this.detectAspect(d);
     }
     await this.flattenWrite(d.raw, fid, 0);
+    await this.writeStatusDps(d, fid);
     await this.ensureFolder(`${fid}.control`, "Control", "channel");
     for (const c of CAM_COMMANDS) {
       if (c.id === "snapshot" && d.ot !== 2) {
