@@ -10,7 +10,7 @@
   --border:#1e2a38;--border2:#253040;
   --accent:#2563eb;--accent-l:#3b82f6;--accent-glow:rgba(37,99,235,.25);
   --text:#dde4ef;--muted:#556070;--muted2:#3a4858;
-  --green:#22c55e;--red:#ef4444;--orange:#f59e0b;
+  --green:#22c55e;--red:#ef4444;--orange:#f97316;--yellow:#eab308;
   --radius:8px;--gap:6px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -49,6 +49,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
   transition:border-color .2s,box-shadow .2s}
 .cam-tile:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 16px var(--accent-glow)}
+.cam-tile.detected{border-color:var(--yellow);box-shadow:0 0 0 1px var(--yellow),0 0 14px rgba(234,179,8,.2)}
+.cam-tile.alerted{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange),0 0 14px rgba(249,115,22,.2)}
 .cam-tile.recording{border-color:var(--red)!important;box-shadow:0 0 0 1px var(--red),0 0 14px rgba(239,68,68,.25)!important}
 .cam-tile img{width:100%;height:100%;object-fit:contain;display:block}
 .cam-bottom{position:absolute;bottom:0;left:0;right:0;
@@ -70,6 +72,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .tile-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
 .rec-btn.active{background:rgba(239,68,68,.85)!important;border-color:var(--red)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(239,68,68,.4)!important}
 .rec-btn:hover{background:rgba(239,68,68,.7)!important;border-color:var(--red)!important}
+#fs-panel.detected::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--yellow);z-index:1}
+#fs-panel.alerted::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--orange);z-index:1}
 #fs-panel.recording::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--red);z-index:1}
 
 /* PTZ overlay */
@@ -111,7 +115,29 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
 .tag-chip:hover{border-color:var(--border);color:var(--text)}
 .tag-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
-#rec-count{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+#rec-count{font-size:12px;color:var(--muted);white-space:nowrap}
+.rec-view-btn{background:var(--s2);border:1px solid var(--border2);color:var(--muted);
+  width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all .15s;flex-shrink:0;margin-left:auto}
+.rec-view-btn:hover{color:var(--text);border-color:var(--border)}
+.rec-view-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
+
+/* ── Timeline ── */
+.tl-wrap{display:flex;flex-direction:column;gap:14px;padding-bottom:12px}
+.tl-day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:6px}
+.tl-bar{position:relative;height:28px;background:var(--s2);border:1px solid var(--border);
+  border-radius:4px;overflow:visible}
+.tl-tick{position:absolute;top:30px;font-size:10px;color:var(--muted2);transform:translateX(-50%);
+  pointer-events:none;white-space:nowrap}
+.tl-tick::before{content:'';position:absolute;top:-30px;left:50%;width:1px;height:28px;
+  background:var(--border);opacity:.5}
+.tl-block{position:absolute;top:2px;height:calc(100% - 4px);min-width:4px;
+  background:var(--accent);border-radius:3px;cursor:pointer;opacity:.85;
+  transition:opacity .15s,filter .15s}
+.tl-block:hover{opacity:1;filter:brightness(1.2)}
+.tl-block[data-tag="Motion"]{background:var(--yellow)}
+.tl-block[data-tag="Alert"]{background:var(--orange)}
 
 #rec-scroll{flex:1;overflow-y:auto;padding:10px 12px}
 #rec-scroll::-webkit-scrollbar{width:5px}
@@ -227,6 +253,18 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       </select>
       <div id="rec-tags"></div>
       <span id="rec-count"></span>
+      <button id="rec-view-grid" class="rec-view-btn active" title="Rasteransicht" onclick="setRecView('grid')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/>
+          <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
+        </svg>
+      </button>
+      <button id="rec-view-tl" class="rec-view-btn" title="Timeline" onclick="setRecView('timeline')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="0" y1="4" x2="14" y2="4"/><rect x="2" y="2" width="4" height="4" rx="1" fill="currentColor"/>
+          <line x1="0" y1="10" x2="14" y2="10"/><rect x="7" y="8" width="5" height="4" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
     <div id="rec-scroll">
       <div id="rec-grid" class="rec-grid"></div>
@@ -275,6 +313,7 @@ let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
 let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
 let recFilters  = { tag: '' };
+let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
 let ptzHeld     = null;
 let refreshTimer = null;
 
@@ -363,15 +402,32 @@ function trySocket() {
   if (typeof io === 'undefined') return;
   try {
     const s = io({ transports: ['websocket','polling'], reconnection: true });
-    s.on('connect',    () => { connDot(true);  s.emit('subscribe', INST + '.cam_*.data.online', () => {}); });
+    s.on('connect', () => {
+      connDot(true);
+      ['data.online','status.recording','status.detected','status.alerted'].forEach(p =>
+        s.emit('subscribe', INST + '.cam_*.' + p, () => {}));
+    });
     s.on('disconnect', () => connDot(false));
     s.on('stateChange', (id, state) => {
       if (!state || !id.startsWith(INST + '.')) return;
-      const ck = id.slice(INST.length + 1).split('.')[0];
+      const rel = id.slice(INST.length + 1);
+      const ck  = rel.split('.')[0];
       if (!cameras[ck]) return;
-      cameras[ck].online = !!state.val;
-      const d = document.querySelector(`[data-cam="${ck}"] .cam-dot`);
-      if (d) d.className = 'cam-dot ' + (state.val ? 'on' : 'off');
+      if (rel.endsWith('.data.online')) {
+        cameras[ck].online = !!state.val;
+        const d = document.querySelector('.cam-tile[data-cam="' + ck + '"] .cam-dot');
+        if (d) d.className = 'cam-dot ' + (state.val ? 'on' : 'off');
+      } else if (rel.endsWith('.status.recording')) {
+        cameras[ck].recording = !!state.val;
+        const t = document.querySelector('.cam-tile[data-cam="' + ck + '"]');
+        if (t) { const rb = t.querySelector('.rec-btn'); if (rb) setTileRecording(t, rb, !!state.val); }
+      } else if (rel.endsWith('.status.detected')) {
+        cameras[ck].detected = !!state.val;
+        setTileStatus(ck, 'detected', !!state.val);
+      } else if (rel.endsWith('.status.alerted')) {
+        cameras[ck].alerted = !!state.val;
+        setTileStatus(ck, 'alerted', !!state.val);
+      }
     });
   } catch (_) {}
 }
@@ -491,6 +547,8 @@ function makeTile(key, cam) {
   }
 
   tile.appendChild(btnBox);
+  if (cam.detected) tile.classList.add('detected');
+  if (cam.alerted)  tile.classList.add('alerted');
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
   tile.append(img, bottom);
@@ -626,6 +684,14 @@ function ensureLayoutObserver() {
   layoutObserver.observe(document.getElementById('cam-grid'));
 }
 
+/* ─────────────────────────── Motion / Alert status ─────────── */
+function setTileStatus(ck, cls, on) {
+  const t = document.querySelector('.cam-tile[data-cam="' + ck + '"]');
+  if (t) t.classList.toggle(cls, on);
+  const fs = document.getElementById('fs-panel');
+  if (fs.dataset.cam === ck) fs.classList.toggle(cls, on);
+}
+
 /* ─────────────────────────── Recording ─────────────────────── */
 function setTileRecording(tile, btn, recording) {
   tile.classList.toggle('recording', recording);
@@ -728,6 +794,8 @@ function buildRecCamSel() {
     const o = document.createElement('option'); o.value = k; o.textContent = cam.name;
     sel.appendChild(o);
   });
+  document.getElementById('rec-view-grid').classList.toggle('active', recViewMode === 'grid');
+  document.getElementById('rec-view-tl').classList.toggle('active', recViewMode === 'timeline');
   if (last && cameras[last]) { sel.value = last; loadAndFilterRec(); }
 }
 
@@ -780,12 +848,20 @@ function setActiveTag(tag) {
 
 function filterRec() { renderRec(); }
 
+function setRecView(mode) {
+  recViewMode = mode;
+  localStorage.setItem('advr_rec_view', mode);
+  document.getElementById('rec-view-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('rec-view-tl').classList.toggle('active', mode === 'timeline');
+  renderRec();
+}
+
 function renderRec() {
-  const q    = (document.getElementById('rec-search').value || '').toLowerCase();
-  const tag  = recFilters.tag;
-  const grid = document.getElementById('rec-grid');
+  const q      = (document.getElementById('rec-search').value || '').toLowerCase();
+  const tag    = recFilters.tag;
+  const grid   = document.getElementById('rec-grid');
   const camKey = document.getElementById('rec-cam-sel').value;
-  const cam  = cameras[camKey];
+  const cam    = cameras[camKey];
 
   const items = recAllItems.filter(r => {
     if (tag && r.tag !== tag) return false;
@@ -804,6 +880,9 @@ function renderRec() {
     return;
   }
 
+  if (recViewMode === 'timeline') { renderTimeline(items, cam); return; }
+
+  grid.className = 'rec-grid';
   items.forEach(rec => {
     const tile = document.createElement('div'); tile.className = 'rec-tile';
     const wrap = document.createElement('div'); wrap.className = 'rec-thumb-wrap';
@@ -829,6 +908,51 @@ function renderRec() {
     tile.append(wrap, info);
     tile.onclick = () => playRec(rec, cam);
     grid.appendChild(tile);
+  });
+}
+
+function renderTimeline(items, cam) {
+  const grid = document.getElementById('rec-grid');
+  grid.className = 'tl-wrap';
+
+  // Group by date, newest first
+  const byDate = {};
+  items.forEach(r => { (byDate[r.date] = byDate[r.date] || []).push(r); });
+  const dates = Object.keys(byDate).sort().reverse();
+
+  dates.forEach(date => {
+    const recs = byDate[date].sort((a, b) => a.time.localeCompare(b.time));
+
+    const row   = document.createElement('div'); row.className = 'tl-day';
+    const label = document.createElement('div'); label.className = 'tl-day-label'; label.textContent = date;
+    const bar   = document.createElement('div'); bar.className = 'tl-bar';
+
+    // Hour ticks at 0, 6, 12, 18h
+    [0, 6, 12, 18].forEach(h => {
+      const tick = document.createElement('span'); tick.className = 'tl-tick';
+      tick.style.left = (h / 24 * 100) + '%';
+      tick.textContent = String(h).padStart(2,'0') + ':00';
+      bar.appendChild(tick);
+    });
+
+    recs.forEach(rec => {
+      const [hh, mm, ss] = rec.time.split(':').map(Number);
+      const startSec = (hh || 0) * 3600 + (mm || 0) * 60 + (ss || 0);
+      const dur      = rec.dur || 60;
+      const left     = (startSec / 86400 * 100).toFixed(3);
+      const width    = Math.max(0.3, dur / 86400 * 100).toFixed(3);
+
+      const block = document.createElement('div'); block.className = 'tl-block';
+      block.style.left  = left + '%';
+      block.style.width = width + '%';
+      if (rec.tag) block.dataset.tag = rec.tag;
+      block.title = rec.time + (rec.dur ? '  ·  ' + rec.dur + 's' : '') + (rec.size ? '  ·  ' + rec.size + ' MB' : '') + (rec.tag ? '  ·  ' + rec.tag : '');
+      block.addEventListener('click', () => playRec(rec, cam));
+      bar.appendChild(block);
+    });
+
+    row.append(label, bar);
+    grid.appendChild(row);
   });
 }
 
