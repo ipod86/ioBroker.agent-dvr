@@ -44,6 +44,7 @@ declare global {
             dashShowOffline: boolean;
             dashGridCols: number;
             dashPtzVisible: boolean;
+            dashTagPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
             dashRefreshSec: number;
             dashStreamReconnect: boolean;
             dashColorBg: string;

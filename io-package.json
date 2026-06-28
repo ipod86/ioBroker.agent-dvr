@@ -169,6 +169,7 @@
 		"dashShowOffline": true,
 		"dashGridCols": 0,
 		"dashPtzVisible": false,
+		"dashTagPosition": "top-right",
 		"dashRefreshSec": 60,
 		"dashStreamReconnect": true,
 		"widgetColorCardBg": "rgba(127,127,127,0.15)",

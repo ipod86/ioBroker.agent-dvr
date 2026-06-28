@@ -370,6 +370,18 @@
                     "help": "cfgDashPtzVisible_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
+                "dashTagPosition": {
+                    "type": "select",
+                    "label": "cfgDashTagPosition",
+                    "help": "cfgDashTagPosition_tt",
+                    "options": [
+                        {"label": "cfgTagPosTopRight",  "value": "top-right"},
+                        {"label": "cfgTagPosTopLeft",   "value": "top-left"},
+                        {"label": "cfgTagPosBotRight",  "value": "bottom-right"},
+                        {"label": "cfgTagPosBotLeft",   "value": "bottom-left"}
+                    ],
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
                 "hdrDashStream": {
                     "type": "header",
                     "text": "hdrDashStream",

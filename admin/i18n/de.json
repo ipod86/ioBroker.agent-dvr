@@ -122,5 +122,7 @@
     "cfgDashColorOnline": "Online-Farbe",
     "cfgDashColorOnline_tt": "Farbe des Online-Status-Indikators",
     "cfgDashColorOffline": "Offline-Farbe",
-    "cfgDashColorOffline_tt": "Farbe des Offline-Status-Indikators"
+    "cfgDashColorOffline_tt": "Farbe des Offline-Status-Indikators",
+    "cfgDashTagPosition": "Tag-Badge-Position",
+    "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint"
 }

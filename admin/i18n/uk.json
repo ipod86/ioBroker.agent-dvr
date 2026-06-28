@@ -122,5 +122,7 @@
     "cfgDashColorOnline": "Online color",
     "cfgDashColorOnline_tt": "Color of the online status indicator",
     "cfgDashColorOffline": "Offline color",
-    "cfgDashColorOffline_tt": "Color of the offline status indicator"
+    "cfgDashColorOffline_tt": "Color of the offline status indicator",
+    "cfgDashTagPosition": "Tag badge position",
+    "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears"
 }

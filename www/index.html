@@ -130,10 +130,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   opacity:0;background:rgba(0,0,0,.35);transition:opacity .15s}
 .rec-tile:hover .rec-play-icon{opacity:1}
 .rec-play-icon svg{filter:drop-shadow(0 2px 6px #000)}
-.rec-badges{position:absolute;top:5px;right:5px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.rec-badges{position:absolute;top:var(--rec-badge-top,5px);bottom:var(--rec-badge-bot,auto);right:var(--rec-badge-right,5px);left:var(--rec-badge-left,auto);display:flex;flex-direction:column;align-items:var(--rec-badge-align,flex-end);gap:3px}
 .badge{background:rgba(0,0,0,.65);border-radius:4px;padding:2px 6px;font-size:10px;
   font-weight:500;letter-spacing:.3px;border:1px solid rgba(255,255,255,.1)}
 .badge.tag{color:var(--accent-l);border-color:rgba(37,99,235,.35)}
+.badge.dl{color:#fff;text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:3px;line-height:1}
+.badge.dl:hover{background:rgba(37,99,235,.7);border-color:var(--accent)}
 .rec-info{padding:8px 10px 9px}
 .rec-date{font-size:12px;font-weight:600;color:var(--text)}
 .rec-meta{font-size:11px;color:var(--muted);margin-top:2px}
@@ -290,6 +292,7 @@ let CFG = {
   dashColorBorder:     '',
   dashColorOnline:     '',
   dashColorOffline:    '',
+  dashTagPosition:     'top-right',
 };
 const DASH_CSS_VARS = {
   dashColorBg:      '--bg',
@@ -309,6 +312,12 @@ async function loadConfig() {
   for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
     if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
   }
+  const [bv, bh] = (CFG.dashTagPosition || 'top-right').split('-');
+  document.documentElement.style.setProperty('--rec-badge-top',   bv === 'top'    ? '5px' : 'auto');
+  document.documentElement.style.setProperty('--rec-badge-bot',   bv === 'bottom' ? '5px' : 'auto');
+  document.documentElement.style.setProperty('--rec-badge-right', bh === 'right'  ? '5px' : 'auto');
+  document.documentElement.style.setProperty('--rec-badge-left',  bh === 'left'   ? '5px' : 'auto');
+  document.documentElement.style.setProperty('--rec-badge-align', bh === 'right'  ? 'flex-end' : 'flex-start');
 }
 
 /* ─────────────────────────── Init ──────────────────────────── */
@@ -706,8 +715,18 @@ function renderRec() {
       <polygon points="16,12 30,20 16,28" fill="#fff"/>
     </svg>`;
     const badges = document.createElement('div'); badges.className = 'rec-badges';
-    if (rec.dur) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = rec.dur + 's'; badges.appendChild(b); }
-    if (rec.tag) { const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b); }
+    if (rec.tag) {
+      const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b);
+      const dlUrl = rec.video || rec.url || '';
+      if (dlUrl) {
+        const dl = document.createElement('a'); dl.className = 'badge dl';
+        dl.href = dlUrl.startsWith('http') ? dlUrl : BASE + dlUrl;
+        dl.download = ''; dl.title = 'Download';
+        dl.innerHTML = '<svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor"><path d="M4.5 0h1v6.3l2.1-2.1.7.7L5 8.2 1.7 4.9l.7-.7 2.1 2.1V0zM0 10h10v1H0v-1z"/></svg> DL';
+        dl.onclick = e => e.stopPropagation();
+        badges.appendChild(dl);
+      }
+    }
     wrap.append(img, play, badges);
 
     const info = document.createElement('div'); info.className = 'rec-info';
