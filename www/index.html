@@ -2,373 +2,715 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AgentDVR</title>
 <style>
-:root {
-    --bg:      #0d0d0d;
-    --surface: #1a1a1a;
-    --border:  #2e2e2e;
-    --accent:  #2196f3;
-    --text:    #e0e0e0;
-    --muted:   #777;
-    --green:   #4caf50;
-    --red:     #f44336;
-    --orange:  #ff9800;
+:root{
+  --bg:#080b0f;--s1:#0d1117;--s2:#131a22;--s3:#1a2332;
+  --border:#1e2a38;--border2:#253040;
+  --accent:#2563eb;--accent-l:#3b82f6;--accent-glow:rgba(37,99,235,.25);
+  --text:#dde4ef;--muted:#556070;--muted2:#3a4858;
+  --green:#22c55e;--red:#ef4444;--orange:#f59e0b;
+  --radius:8px;--gap:6px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px}
 
-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; align-items: center; gap: 12px; height: 48px; flex-shrink: 0; }
-header h1 { font-size: 15px; font-weight: 600; color: var(--accent); white-space: nowrap; }
-#conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; transition: background .3s; }
-#conn-dot.on { background: var(--green); }
-nav { display: flex; }
-nav button { background: none; border: none; color: var(--muted); padding: 0 14px; height: 48px; cursor: pointer; font-size: 13px; border-bottom: 2px solid transparent; }
-nav button.active { color: var(--text); border-bottom-color: var(--accent); }
-nav button:hover { color: var(--text); }
+/* ── Header ── */
+#hdr{height:50px;background:rgba(8,11,15,.97);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;padding:0 14px;flex-shrink:0;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:8px;margin-right:18px}
+.brand-icon{width:28px;height:28px;background:var(--accent);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.brand-name{font-size:15px;font-weight:700;letter-spacing:.3px;color:var(--text)}
+#nav{display:flex;gap:2px}
+.nav-btn{background:none;border:none;color:var(--muted);padding:6px 14px;border-radius:6px;
+  cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .15s}
+.nav-btn:hover{color:var(--text);background:var(--s2)}
+.nav-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12)}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:12px}
+#conn-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+#conn-dot{width:7px;height:7px;border-radius:50%;background:var(--red);transition:background .4s;flex-shrink:0}
+#conn-dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+#cam-count-badge{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
+  padding:2px 9px;font-size:11px;color:var(--muted)}
 
-main { flex: 1; overflow: hidden; min-height: 0; }
-.view { display: none; height: 100%; }
-.view.active { display: flex; flex-direction: column; }
+/* ── Layout ── */
+#app{display:flex;flex-direction:column;height:100dvh}
+main{flex:1;overflow:hidden;min-height:0;position:relative}
+.view{display:none;height:100%;flex-direction:column}
+.view.active{display:flex}
 
-/* Live view */
-#view-live { padding: 8px; gap: 6px; overflow: hidden; }
-#info-banner { flex-shrink: 0; display: none; background: #1a1200; border: 1px solid var(--orange); color: var(--orange); padding: 8px 12px; border-radius: 4px; font-size: 13px; line-height: 1.5; }
-#info-banner.visible { display: block; }
-#info-banner code { background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-#info-banner button { margin-top: 6px; background: var(--orange); color: #000; border: none; padding: 3px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; display: block; }
-#cam-toolbar { flex-shrink: 0; display: flex; gap: 5px; flex-wrap: wrap; }
-.chip { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 3px 10px; font-size: 12px; cursor: pointer; user-select: none; white-space: nowrap; }
-.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+/* ── Live view ── */
+#view-live{padding:var(--gap);gap:var(--gap);background:var(--bg)}
+#chip-bar{flex-shrink:0;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.chip{background:var(--s1);border:1px solid var(--border);border-radius:99px;
+  padding:4px 12px;font-size:12px;cursor:pointer;user-select:none;color:var(--muted);
+  transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 
-/* Camera grid — columns/rows set by JS */
-#cam-grid { flex: 1; min-height: 0; display: grid; gap: 6px; }
-.cam-tile { background: #000; border-radius: 4px; overflow: hidden; position: relative; cursor: zoom-in; min-width: 0; min-height: 0; }
-.cam-tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.cam-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,.7)); padding: 16px 7px 4px; font-size: 11px; pointer-events: none; }
-.dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; }
-.dot.on  { background: var(--green); }
-.dot.off { background: var(--red); }
-.empty-grid { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 14px; }
+#cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
+.cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
+  cursor:pointer;min-width:0;min-height:0;border:1px solid transparent;
+  transition:border-color .2s,box-shadow .2s}
+.cam-tile:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 16px var(--accent-glow)}
+.cam-tile img{width:100%;height:100%;object-fit:contain;display:block}
+.cam-bottom{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));
+  padding:18px 8px 5px;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}
+.cam-name{font-size:11px;font-weight:500;text-shadow:0 1px 3px #000;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.cam-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 4px currentColor}
+.cam-dot.on{background:var(--green);color:var(--green)}
+.cam-dot.off{background:var(--red);color:var(--red)}
 
-/* Recordings view */
-#view-rec { padding: 12px; overflow-y: auto; }
-#rec-toolbar { flex-shrink: 0; display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
-#rec-select { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-size: 13px; }
-.rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
-.rec-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; }
-.rec-tile:hover { border-color: var(--accent); }
-.rec-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; display: block; }
-.rec-info { padding: 6px 8px; font-size: 11px; color: var(--muted); line-height: 1.4; }
-.rec-info b { display: block; color: var(--text); font-size: 12px; }
+/* PTZ toggle button */
+.ptz-btn{position:absolute;top:7px;right:7px;width:28px;height:28px;border-radius:6px;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);color:#fff;
+  font-size:14px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;opacity:0;transition:opacity .2s,background .15s;pointer-events:all}
+.cam-tile:hover .ptz-btn{opacity:1}
+.ptz-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.6);border-color:var(--accent)}
 
-/* Modals */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; }
-.overlay.open { display: flex; }
-#modal-cam .modal { width: min(1400px, 99vw); background: #000; border-radius: 6px; padding: 6px; }
-#fullscreen-img { width: 100%; display: block; border-radius: 2px; max-height: 95dvh; object-fit: contain; }
-#modal-video .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; width: min(960px, 96vw); }
-#modal-video h2 { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-#video-el { width: 100%; background: #000; border-radius: 4px; max-height: 75dvh; display: block; }
-.btn-row { display: flex; justify-content: flex-end; margin-top: 10px; }
-.btn { padding: 6px 14px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; background: var(--border); color: var(--text); }
+/* PTZ overlay */
+.ptz-overlay{position:absolute;inset:0;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(2px);border-radius:var(--radius)}
+.ptz-overlay.open{display:flex}
+.ptz-pad{display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(3,42px);gap:3px}
+.ptz-key{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:6px;color:#fff;font-size:16px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;user-select:none;touch-action:none;
+  transition:background .1s,transform .1s}
+.ptz-key:active,.ptz-key.held{background:rgba(37,99,235,.6);border-color:var(--accent);transform:scale(.93)}
+.ptz-key.empty{background:none;border-color:transparent;cursor:default;pointer-events:none}
+.ptz-zoom{display:flex;gap:6px}
+.ptz-zoom .ptz-key{width:60px;height:36px;font-size:14px}
+.ptz-close{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;
+  background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
+  font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 
-#statusbar { background: var(--surface); border-top: 1px solid var(--border); padding: 3px 14px; font-size: 11px; color: var(--muted); flex-shrink: 0; }
-#statusbar.err { color: var(--red); }
+/* Empty state */
+.empty-state{display:flex;align-items:center;justify-content:center;color:var(--muted);
+  font-size:14px;height:100%;flex-direction:column;gap:8px}
+.empty-state svg{opacity:.3}
+
+/* ── Recordings view ── */
+#view-rec{background:var(--s1);overflow:hidden}
+#rec-filter-bar{flex-shrink:0;padding:10px 12px;background:var(--s1);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#rec-search{background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  padding:7px 12px;border-radius:var(--radius);font-size:13px;width:180px;outline:none;
+  transition:border-color .15s}
+#rec-search:focus{border-color:var(--accent)}
+#rec-cam-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  padding:7px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer}
+#rec-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag-chip{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
+  padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
+.tag-chip:hover{border-color:var(--border);color:var(--text)}
+.tag-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
+#rec-count{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap}
+
+#rec-scroll{flex:1;overflow-y:auto;padding:10px 12px}
+#rec-scroll::-webkit-scrollbar{width:5px}
+#rec-scroll::-webkit-scrollbar-track{background:transparent}
+#rec-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:8px}
+.rec-tile{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+.rec-tile:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.45);border-color:var(--border2)}
+.rec-tile:active{transform:translateY(0)}
+.rec-thumb-wrap{position:relative;aspect-ratio:16/9;overflow:hidden;background:#000}
+.rec-thumb{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.rec-tile:hover .rec-thumb{transform:scale(1.04)}
+.rec-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;background:rgba(0,0,0,.35);transition:opacity .15s}
+.rec-tile:hover .rec-play-icon{opacity:1}
+.rec-play-icon svg{filter:drop-shadow(0 2px 6px #000)}
+.rec-badges{position:absolute;top:5px;right:5px;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.badge{background:rgba(0,0,0,.65);border-radius:4px;padding:2px 6px;font-size:10px;
+  font-weight:500;letter-spacing:.3px;border:1px solid rgba(255,255,255,.1)}
+.badge.tag{color:var(--accent-l);border-color:rgba(37,99,235,.35)}
+.rec-info{padding:8px 10px 9px}
+.rec-date{font-size:12px;font-weight:600;color:var(--text)}
+.rec-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.rec-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
+
+/* ── Persistent video panel ── */
+#vid-panel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.88)}
+#vid-panel.open{display:flex}
+#vid-box{background:var(--s2);border:1px solid var(--border2);border-radius:12px;
+  padding:14px;width:min(1000px,97vw);box-shadow:0 24px 64px rgba(0,0,0,.7)}
+#vid-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#vid-title{font-size:13px;font-weight:600;flex:1}
+#vid-cam{font-size:11px;color:var(--muted)}
+#vid-close{width:30px;height:30px;border-radius:50%;background:var(--s3);border:1px solid var(--border2);
+  color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+#vid-close:hover{background:var(--red);border-color:var(--red)}
+#vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
+#vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;gap:12px}
+
+/* ── Fullscreen cam ── */
+#fs-panel{position:fixed;inset:0;z-index:250;display:none;background:#000;flex-direction:column}
+#fs-panel.open{display:flex}
+#fs-hdr{height:44px;background:rgba(0,0,0,.7);display:flex;align-items:center;
+  padding:0 12px;gap:12px;flex-shrink:0}
+#fs-name{font-size:14px;font-weight:600}
+#fs-close{margin-left:auto;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);
+  border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#fs-close:hover{background:rgba(255,255,255,.2)}
+#fs-img{flex:1;width:100%;object-fit:contain;display:block;min-height:0}
+
+/* ── Status bar ── */
+#sbar{height:24px;background:rgba(8,11,15,.97);border-top:1px solid var(--border);
+  display:flex;align-items:center;padding:0 14px;gap:16px;flex-shrink:0}
+#sbar-msg{font-size:11px;color:var(--muted);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#sbar-msg.err{color:var(--red)}
+
+/* ── Info banner ── */
+#info-banner{display:none;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);
+  color:var(--orange);padding:9px 14px;margin:var(--gap);margin-bottom:0;border-radius:var(--radius);
+  font-size:12px;line-height:1.6;flex-shrink:0}
+#info-banner.visible{display:block}
+#info-banner button{margin-top:6px;background:var(--orange);color:#000;border:none;padding:3px 10px;
+  border-radius:4px;cursor:pointer;font-size:12px}
+
+/* ── Scrollbar global ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 </head>
 <body>
+<div id="app">
 
-<header>
-    <div id="conn-dot" title="Live-Updates"></div>
-    <h1>&#9654; AgentDVR</h1>
-    <nav>
-        <button id="tab-live" class="active" onclick="showView('live')">Live</button>
-        <button id="tab-rec"  onclick="showView('rec')">Aufnahmen</button>
-    </nav>
-</header>
+<div id="hdr">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="6" stroke="#fff" stroke-width="1.5"/>
+        <circle cx="7" cy="7" r="2.5" fill="#fff"/>
+      </svg>
+    </div>
+    <span class="brand-name">AgentDVR</span>
+  </div>
+  <div id="nav">
+    <button class="nav-btn active" onclick="showView('live')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Live
+    </button>
+    <button class="nav-btn" onclick="showView('rec')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
+      Aufnahmen
+    </button>
+  </div>
+  <div class="hdr-r">
+    <span id="cam-count-badge">–</span>
+    <span id="conn-wrap"><div id="conn-dot"></div></span>
+  </div>
+</div>
 
 <main>
-    <div id="view-live" class="view active">
-        <div id="info-banner"></div>
-        <div id="cam-toolbar"></div>
-        <div id="cam-grid"></div>
+  <!-- Live -->
+  <div id="view-live" class="view active">
+    <div id="info-banner"></div>
+    <div id="chip-bar"></div>
+    <div id="cam-grid"></div>
+  </div>
+
+  <!-- Recordings -->
+  <div id="view-rec" class="view">
+    <div id="rec-filter-bar">
+      <input id="rec-search" type="search" placeholder="&#128269; Suchen…" oninput="filterRec()">
+      <select id="rec-cam-sel" onchange="loadAndFilterRec()">
+        <option value="">Kamera wählen…</option>
+      </select>
+      <div id="rec-tags"></div>
+      <span id="rec-count"></span>
     </div>
-    <div id="view-rec" class="view">
-        <div id="rec-toolbar">
-            <select id="rec-select"><option value="">Kamera wählen…</option></select>
-            <button class="btn" style="background:var(--accent);color:#fff" onclick="loadRecordings()">Laden</button>
-        </div>
-        <div id="rec-grid" class="rec-grid"></div>
+    <div id="rec-scroll">
+      <div id="rec-grid" class="rec-grid"></div>
     </div>
+  </div>
 </main>
 
-<div id="statusbar">Lade…</div>
+<div id="sbar"><span id="sbar-msg">Lade…</span></div>
+</div><!-- #app -->
 
-<div class="overlay" id="modal-cam">
-    <div class="modal" onclick="closeOverlay('modal-cam')">
-        <img id="fullscreen-img" src="" alt="">
+<!-- Video panel (persistent overlay, survives tab switch) -->
+<div id="vid-panel">
+  <div id="vid-box">
+    <div id="vid-hdr">
+      <div>
+        <div id="vid-title"></div>
+        <div id="vid-cam"></div>
+      </div>
+      <button id="vid-close" onclick="closeVideo()">&#10005;</button>
     </div>
+    <video id="vid-el" controls playsinline preload="auto"></video>
+    <div id="vid-meta"></div>
+  </div>
 </div>
-<div class="overlay" id="modal-video">
-    <div class="modal">
-        <h2 id="video-title"></h2>
-        <video id="video-el" controls playsinline preload="none"></video>
-        <div class="btn-row"><button class="btn" onclick="closeVideo()">Schlie&#223;en</button></div>
-    </div>
+
+<!-- Fullscreen live cam -->
+<div id="fs-panel">
+  <div id="fs-hdr">
+    <span id="fs-name"></span>
+    <button id="fs-close" onclick="closeFs()">&#10005;</button>
+  </div>
+  <img id="fs-img" src="" alt="">
 </div>
 
 <script>
 'use strict';
+/* ─────────────────────────── State ─────────────────────────── */
+let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
+let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
+let recAllItems = [];   // raw loaded items
+let recFilters  = { tag: '' };
+let ptzHeld     = null; // { camKey, dir }
 
-let INST    = 'agent-dvr.0';
-let BASE    = '';
-let cameras = {};
-let hidden  = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
-
-// ── Banner ──────────────────────────────────────────────────────────────────
-function showBanner(html, withRetry) {
-    const b = document.getElementById('info-banner');
-    b.innerHTML = html + (withRetry ? '<button onclick="location.reload()">Neu laden</button>' : '');
-    b.classList.add('visible');
-}
-function hideBanner() { document.getElementById('info-banner').classList.remove('visible'); }
-
-// ── Load data via REST ───────────────────────────────────────────────────────
+/* ─────────────────────────── Init ──────────────────────────── */
 async function loadData() {
-    status('Lade Kameras…');
-    try {
-        const r = await fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const data = await r.json();
-        if (data.error) throw new Error(data.error);
+  sbar('Lade Kameras…');
+  try {
+    const r = await fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+    INST = d.instance || 'agent-dvr.0';
+    BASE = d.base    || '';
+    cameras = d.cameras || {};
+    hasPtz  = !!d.hasPtz;
 
-        INST    = data.instance || 'agent-dvr.0';
-        BASE    = data.base    || '';
-        cameras = data.cameras || {};
-
-        const count = Object.keys(cameras).length;
-        if (!count) {
-            showBanner('<strong>Keine Kameras</strong><br>Adapter läuft, aber keine Kameras registriert.<br>AgentDVR erreichbar? (IP/Port prüfen)', true);
-            status('Keine Kameras · ' + INST, true);
-            return;
-        }
-
-        hideBanner();
-        status(count + ' Kamera(s) · ' + INST + (BASE ? ' · ' + BASE : ''));
-        renderChips();
-        renderGrid();
-        renderRecSelect();
-        trySocketLive();
-    } catch (e) {
-        showBanner('<strong>Ladefehler</strong><br>' + esc(e.message), true);
-        status('Fehler: ' + e.message, true);
+    const n = Object.keys(cameras).length;
+    if (!n) {
+      showBanner('<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.', true);
+      sbar('Keine Kameras · ' + INST, true);
+      return;
     }
+    hideBanner();
+    document.getElementById('cam-count-badge').textContent = n + ' Kamera' + (n !== 1 ? 's' : '');
+    sbar(n + ' Kamera(s) · ' + INST + (BASE ? ' · ' + BASE : ''));
+    syncChips();
+    syncGrid();
+    buildRecCamSel();
+    trySocket();
+  } catch (e) {
+    showBanner('<strong>Ladefehler</strong><br>' + esc(e.message), true);
+    sbar('Fehler: ' + e.message, true);
+  }
 }
 
-// ── Optional live updates via socket.io ─────────────────────────────────────
-function trySocketLive() {
-    if (typeof io === 'undefined') return;
-    try {
-        const s = io({ transports: ['websocket', 'polling'], reconnection: true });
-        s.on('connect',    () => { dot(true);  s.emit('subscribe', INST + '.cam_*.data.online', () => {}); });
-        s.on('disconnect', () => dot(false));
-        s.on('stateChange', (id, state) => {
-            if (!state || !id.startsWith(INST + '.')) return;
-            const camKey = id.slice(INST.length + 1).split('.')[0];
-            if (!cameras[camKey]) return;
-            cameras[camKey].online = !!state.val;
-            const d = document.querySelector(`[data-cam="${camKey}"] .dot`);
-            if (d) d.className = 'dot ' + (state.val ? 'on' : 'off');
-        });
-    } catch (_) {}
+/* ─────────────────────────── Socket (live dot updates) ─────── */
+function trySocket() {
+  if (typeof io === 'undefined') return;
+  try {
+    const s = io({ transports: ['websocket','polling'], reconnection: true });
+    s.on('connect',    () => { connDot(true);  s.emit('subscribe', INST + '.cam_*.data.online', () => {}); });
+    s.on('disconnect', () => connDot(false));
+    s.on('stateChange', (id, state) => {
+      if (!state || !id.startsWith(INST + '.')) return;
+      const ck = id.slice(INST.length + 1).split('.')[0];
+      if (!cameras[ck]) return;
+      cameras[ck].online = !!state.val;
+      const d = document.querySelector(`[data-cam="${ck}"] .cam-dot`);
+      if (d) d.className = 'cam-dot ' + (state.val ? 'on' : 'off');
+    });
+  } catch (_) {}
 }
 
-// ── Views ────────────────────────────────────────────────────────────────────
+/* ─────────────────────────── Views ─────────────────────────── */
 function showView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.getElementById('view-' + name).classList.add('active');
-    document.getElementById('tab-'  + name).classList.add('active');
-    if (name === 'live') updateGridLayout();
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.trim().toLowerCase().includes(name === 'live' ? 'live' : 'aufn'))?.classList.add('active');
+  if (name === 'live') updateLayout();
 }
 
-// ── Chips ─────────────────────────────────────────────────────────────────────
-function renderChips() {
-    const tb = document.getElementById('cam-toolbar');
-    tb.innerHTML = '';
-    if (!Object.keys(cameras).length) return;
-    addChip(tb, 'Alle', hidden.size === 0, () => { hidden.clear(); saveHidden(); renderChips(); renderGrid(); });
-    Object.entries(cameras).forEach(([key, cam]) => {
-        addChip(tb, cam.name, !hidden.has(key), () => {
-            hidden.has(key) ? hidden.delete(key) : hidden.add(key);
-            saveHidden(); renderChips(); renderGrid();
-        });
+/* ─────────────────────────── Chips ─────────────────────────── */
+function syncChips() {
+  const bar = document.getElementById('chip-bar');
+  bar.innerHTML = '';
+  if (!Object.keys(cameras).length) return;
+  addChip(bar, 'Alle', hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
+  Object.entries(cameras).forEach(([k, cam]) => {
+    addChip(bar, cam.name, !hidden.has(k), () => {
+      hidden.has(k) ? hidden.delete(k) : hidden.add(k);
+      save(); syncChips(); syncGrid();
     });
+  });
 }
-function addChip(parent, label, active, onclick) {
-    const c = document.createElement('span');
-    c.className = 'chip' + (active ? ' on' : '');
-    c.textContent = label;
-    c.onclick = onclick;
-    parent.appendChild(c);
+function addChip(p, label, on, fn) {
+  const c = document.createElement('span');
+  c.className = 'chip' + (on ? ' on' : '');
+  c.textContent = label; c.onclick = fn;
+  p.appendChild(c);
 }
-function saveHidden() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
+function save() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
 
-// ── Grid layout ───────────────────────────────────────────────────────────────
-let gridObserver = null;
+/* ─────────────────────────── Camera grid (smart update) ────── */
+function syncGrid() {
+  const grid = document.getElementById('cam-grid');
+  const want = Object.keys(cameras).filter(k => !hidden.has(k));
 
+  // Remove tiles no longer needed (without touching others → streams keep running)
+  [...grid.querySelectorAll('.cam-tile')].forEach(t => {
+    if (!want.includes(t.dataset.cam)) t.remove();
+  });
+
+  // Add missing tiles
+  const have = new Set([...grid.querySelectorAll('.cam-tile')].map(t => t.dataset.cam));
+  want.forEach(k => { if (!have.has(k)) grid.appendChild(makeTile(k, cameras[k])); });
+
+  if (!grid.querySelector('.cam-tile')) {
+    grid.innerHTML = `<div class="empty-state">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
+        <line x1="2" y1="2" x2="22" y2="22" stroke-width="1.5"/>
+      </svg>Keine Kameras sichtbar</div>`;
+  }
+  updateLayout();
+}
+
+function makeTile(key, cam) {
+  const tile = document.createElement('div');
+  tile.className = 'cam-tile'; tile.dataset.cam = key;
+
+  const img = document.createElement('img'); img.alt = cam.name;
+  if (cam.mjpegUrl) {
+    img.src = cam.mjpegUrl;
+    img.onerror = () => { if (cam.snapshotUrl && img.src !== cam.snapshotUrl) img.src = cam.snapshotUrl; };
+  } else if (cam.snapshotUrl) { img.src = cam.snapshotUrl; }
+
+  const bottom = document.createElement('div'); bottom.className = 'cam-bottom';
+  const name   = document.createElement('div'); name.className = 'cam-name'; name.textContent = cam.name;
+  const dot    = document.createElement('div'); dot.className = 'cam-dot ' + (cam.online ? 'on' : 'off');
+  bottom.append(name, dot);
+
+  // Click on image → fullscreen (not on PTZ)
+  img.onclick    = () => openFs(cam);
+  bottom.onclick = () => openFs(cam);
+  tile.onclick   = e => { if (e.target === tile) openFs(cam); };
+
+  if (hasPtz && key.startsWith('cam_')) {
+    const ptzToggle = document.createElement('div');
+    ptzToggle.className = 'ptz-btn'; ptzToggle.title = 'PTZ';
+    ptzToggle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+    </svg>`;
+    ptzToggle.addEventListener('click', e => { e.stopPropagation(); togglePtz(tile, key); });
+    tile.appendChild(ptzToggle);
+
+    const ptzOv = makePtzOverlay(key);
+    tile.appendChild(ptzOv);
+  }
+
+  tile.append(img, bottom);
+  return tile;
+}
+
+/* ─────────────────────────── PTZ ────────────────────────────── */
+function makePtzOverlay(camKey) {
+  const ov = document.createElement('div'); ov.className = 'ptz-overlay';
+
+  // d-pad: 3×3 grid, empty corners except diagonals
+  const pad = document.createElement('div'); pad.className = 'ptz-pad';
+  const LAYOUT = [
+    ['upLeft','up','upRight'],
+    ['left','center','right'],
+    ['downLeft','down','downRight'],
+  ];
+  const ICONS = {
+    upLeft:'↖',up:'↑',upRight:'↗',
+    left:'←',center:'⊙',right:'→',
+    downLeft:'↙',down:'↓',downRight:'↘',
+  };
+  const HOLD_DIRS = new Set(['left','upLeft','up','upRight','right','downRight','down','downLeft','zoomIn','zoomOut']);
+
+  LAYOUT.forEach(row => {
+    row.forEach(dir => {
+      const btn = document.createElement('div');
+      btn.className = 'ptz-key'; btn.textContent = ICONS[dir]; btn.dataset.dir = dir;
+      btn.addEventListener('pointerdown', e => {
+        e.stopPropagation(); e.preventDefault();
+        btn.setPointerCapture(e.pointerId);
+        btn.classList.add('held');
+        const isHold = HOLD_DIRS.has(dir);
+        if (isHold) { ptzHeld = { camKey, dir }; ptzSend(camKey, dir, true); }
+        else { ptzSend(camKey, dir, true); }
+      });
+      btn.addEventListener('pointerup', e => {
+        e.stopPropagation();
+        btn.classList.remove('held');
+        if (ptzHeld && ptzHeld.camKey === camKey && ptzHeld.dir === dir) {
+          ptzSend(camKey, dir, false); ptzHeld = null;
+        }
+      });
+      btn.addEventListener('pointercancel', () => {
+        btn.classList.remove('held');
+        if (ptzHeld && ptzHeld.camKey === camKey) { ptzSend(camKey, ptzHeld.dir, false); ptzHeld = null; }
+      });
+      pad.appendChild(btn);
+    });
+  });
+
+  // Zoom row
+  const zoom = document.createElement('div'); zoom.className = 'ptz-zoom';
+  [['zoomIn','🔍+'],['zoomOut','🔍−']].forEach(([dir, icon]) => {
+    const btn = document.createElement('div');
+    btn.className = 'ptz-key'; btn.textContent = icon; btn.dataset.dir = dir;
+    btn.addEventListener('pointerdown', e => {
+      e.stopPropagation(); e.preventDefault(); btn.setPointerCapture(e.pointerId);
+      btn.classList.add('held'); ptzHeld = { camKey, dir }; ptzSend(camKey, dir, true);
+    });
+    btn.addEventListener('pointerup', e => {
+      e.stopPropagation(); btn.classList.remove('held');
+      if (ptzHeld && ptzHeld.dir === dir) { ptzSend(camKey, dir, false); ptzHeld = null; }
+    });
+    btn.addEventListener('pointercancel', () => {
+      btn.classList.remove('held');
+      if (ptzHeld) { ptzSend(camKey, ptzHeld.dir, false); ptzHeld = null; }
+    });
+    zoom.appendChild(btn);
+  });
+
+  const closeBtn = document.createElement('div'); closeBtn.className = 'ptz-close';
+  closeBtn.textContent = '✕';
+  closeBtn.addEventListener('click', e => { e.stopPropagation(); ov.classList.remove('open'); });
+
+  ov.append(closeBtn, pad, zoom);
+  return ov;
+}
+
+function togglePtz(tile, camKey) {
+  const ov = tile.querySelector('.ptz-overlay');
+  if (!ov) return;
+  const btn = tile.querySelector('.ptz-btn');
+  const open = !ov.classList.contains('open');
+  ov.classList.toggle('open', open);
+  btn.classList.toggle('active', open);
+}
+
+async function ptzSend(camKey, dir, val) {
+  try {
+    await fetch(`/agent-dvr/api/ptz?camKey=${encodeURIComponent(camKey)}&dir=${dir}&val=${val?1:0}`);
+  } catch (_) {}
+}
+
+// Safety: release any held PTZ if pointer leaves document
+document.addEventListener('pointerup', () => {
+  if (ptzHeld) { ptzSend(ptzHeld.camKey, ptzHeld.dir, false); ptzHeld = null; }
+});
+
+/* ─────────────────────────── Grid layout ───────────────────── */
+let layoutObserver = null;
 function calcLayout(n, W, H, gap) {
-    // Find (cols, rows) that maximises camera area on screen.
-    // Each camera is 16:9 letterboxed inside its tile.
-    let bestCols = 1, bestScore = -1;
-    for (let cols = 1; cols <= n; cols++) {
-        const rows  = Math.ceil(n / cols);
-        const tileW = (W - gap * (cols - 1)) / cols;
-        const tileH = (H - gap * (rows - 1)) / rows;
-        const camW  = Math.min(tileW, tileH * 16 / 9);
-        const score = camW * camW * (9 / 16);
-        if (score > bestScore) { bestScore = score; bestCols = cols; }
+  let bestCols = 1, best = -1;
+  for (let c = 1; c <= n; c++) {
+    const r  = Math.ceil(n / c);
+    const tw = (W - gap * (c - 1)) / c;
+    const th = (H - gap * (r - 1)) / r;
+    const cw = Math.min(tw, th * 16 / 9);
+    const score = cw * cw * (9 / 16);
+    if (score > best) { best = score; bestCols = c; }
+  }
+  return { cols: bestCols, rows: Math.ceil(n / bestCols) };
+}
+function updateLayout() {
+  const grid  = document.getElementById('cam-grid');
+  const tiles = grid.querySelectorAll('.cam-tile').length;
+  if (!tiles) return;
+  const W = grid.clientWidth, H = grid.clientHeight;
+  if (W < 10 || H < 10) return;
+  const { cols, rows } = calcLayout(tiles, W, H, 6);
+  grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  grid.style.gridTemplateRows    = `repeat(${rows},1fr)`;
+}
+function ensureLayoutObserver() {
+  if (layoutObserver) return;
+  layoutObserver = new ResizeObserver(updateLayout);
+  layoutObserver.observe(document.getElementById('cam-grid'));
+}
+
+/* ─────────────────────────── Fullscreen ────────────────────── */
+function openFs(cam) {
+  document.getElementById('fs-name').textContent = cam.name;
+  document.getElementById('fs-img').src = cam.mjpegUrl || cam.snapshotUrl || '';
+  document.getElementById('fs-panel').classList.add('open');
+}
+function closeFs() {
+  document.getElementById('fs-img').src = '';
+  document.getElementById('fs-panel').classList.remove('open');
+}
+document.getElementById('fs-panel').addEventListener('click', e => {
+  if (e.target === document.getElementById('fs-panel')) closeFs();
+});
+
+/* ─────────────────────────── Recordings ────────────────────── */
+function buildRecCamSel() {
+  const sel = document.getElementById('rec-cam-sel');
+  sel.innerHTML = '<option value="">Kamera wählen…</option>';
+  Object.entries(cameras).forEach(([k, cam]) => {
+    const o = document.createElement('option'); o.value = k; o.textContent = cam.name;
+    sel.appendChild(o);
+  });
+}
+
+async function loadAndFilterRec() {
+  const key = document.getElementById('rec-cam-sel').value;
+  if (!key) return;
+  const grid = document.getElementById('rec-grid');
+  grid.innerHTML = '<div class="rec-empty">Lade…</div>';
+  document.getElementById('rec-tags').innerHTML = '';
+  recAllItems = [];
+
+  try {
+    const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
+                          { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    recAllItems = Array.isArray(data) ? data : [];
+
+    if (!recAllItems.length) {
+      grid.innerHTML = '<div class="rec-empty">Keine Aufnahmen.<br><small>enableEventDps in Adapter-Config prüfen.</small></div>';
+      return;
     }
-    return { cols: bestCols, rows: Math.ceil(n / bestCols) };
-}
 
-function updateGridLayout() {
-    const grid  = document.getElementById('cam-grid');
-    const tiles = grid.querySelectorAll('.cam-tile');
-    const n     = tiles.length;
-    if (!n) return;
-
-    const W = grid.clientWidth;
-    const H = grid.clientHeight;
-    if (W < 10 || H < 10) return;
-
-    const { cols, rows } = calcLayout(n, W, H, 6);
-    grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-    grid.style.gridTemplateRows    = `repeat(${rows}, 1fr)`;
-}
-
-function renderGrid() {
-    const grid    = document.getElementById('cam-grid');
-    const visible = Object.entries(cameras).filter(([k]) => !hidden.has(k));
-    grid.innerHTML = '';
-    grid.style.gridTemplateColumns = '';
-    grid.style.gridTemplateRows    = '';
-
-    if (!visible.length) {
-        grid.innerHTML = '<div class="empty-grid">Keine Kameras sichtbar – Chip oben anklicken.</div>';
-        return;
+    // Build tag chips
+    const tags = [...new Set(recAllItems.map(r => r.tag).filter(Boolean))];
+    const tagBar = document.getElementById('rec-tags');
+    recFilters.tag = '';
+    if (tags.length) {
+      const all = document.createElement('span'); all.className = 'tag-chip on'; all.textContent = 'Alle';
+      all.onclick = () => { recFilters.tag = ''; setActiveTag(null); renderRec(); };
+      tagBar.appendChild(all);
+      tags.forEach(t => {
+        const tc = document.createElement('span'); tc.className = 'tag-chip'; tc.textContent = t; tc.dataset.tag = t;
+        tc.onclick = () => { recFilters.tag = t; setActiveTag(t); renderRec(); };
+        tagBar.appendChild(tc);
+      });
     }
+    renderRec();
+  } catch (e) {
+    grid.innerHTML = '<div class="rec-empty">Fehler: ' + esc(e.message) + '</div>';
+  }
+}
 
-    visible.forEach(([key, cam]) => {
-        const tile  = document.createElement('div');
-        tile.className  = 'cam-tile';
-        tile.dataset.cam = key;
+function setActiveTag(tag) {
+  document.querySelectorAll('#rec-tags .tag-chip').forEach(c => {
+    c.classList.toggle('on', tag === null ? c.textContent === 'Alle' : c.dataset.tag === tag);
+  });
+}
 
-        const img   = document.createElement('img');
-        img.alt = cam.name;
-        if (cam.mjpegUrl) {
-            img.src = cam.mjpegUrl;
-            img.onerror = () => { if (cam.snapshotUrl && img.src !== cam.snapshotUrl) img.src = cam.snapshotUrl; };
-        } else if (cam.snapshotUrl) {
-            img.src = cam.snapshotUrl;
-        }
+function filterRec() { renderRec(); }
 
-        const label = document.createElement('div');
-        label.className   = 'cam-label';
-        label.textContent = cam.name;
+function renderRec() {
+  const q    = (document.getElementById('rec-search').value || '').toLowerCase();
+  const tag  = recFilters.tag;
+  const grid = document.getElementById('rec-grid');
+  const camKey = document.getElementById('rec-cam-sel').value;
+  const cam  = cameras[camKey];
 
-        const dotEl = document.createElement('div');
-        dotEl.className = 'dot ' + (cam.online ? 'on' : 'off');
-
-        tile.onclick = () => openFullscreen(cam);
-        tile.append(img, label, dotEl);
-        grid.appendChild(tile);
-    });
-
-    // Observe grid size changes (e.g. toolbar reflow, orientation change)
-    if (!gridObserver) {
-        gridObserver = new ResizeObserver(() => updateGridLayout());
-        gridObserver.observe(grid);
+  const items = recAllItems.filter(r => {
+    if (tag && r.tag !== tag) return false;
+    if (q) {
+      const hay = (r.date + ' ' + r.time + ' ' + (r.tag || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
     }
-    updateGridLayout();
+    return true;
+  });
+
+  document.getElementById('rec-count').textContent = items.length + ' Aufnahme' + (items.length !== 1 ? 'n' : '');
+  grid.innerHTML = '';
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="rec-empty">Keine Treffer.</div>';
+    return;
+  }
+
+  items.forEach(rec => {
+    const tile = document.createElement('div'); tile.className = 'rec-tile';
+    const wrap = document.createElement('div'); wrap.className = 'rec-thumb-wrap';
+    const img  = document.createElement('img'); img.className = 'rec-thumb'; img.alt = '';
+    img.loading = 'lazy';
+    img.src = rec.thumb || (cam && cam.snapshotUrl) || '';
+    const play = document.createElement('div'); play.className = 'rec-play-icon';
+    play.innerHTML = `<svg width="40" height="40" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="20" fill="rgba(0,0,0,.6)"/>
+      <polygon points="16,12 30,20 16,28" fill="#fff"/>
+    </svg>`;
+    const badges = document.createElement('div'); badges.className = 'rec-badges';
+    if (rec.dur) { const b = document.createElement('span'); b.className = 'badge'; b.textContent = rec.dur + 's'; badges.appendChild(b); }
+    if (rec.tag) { const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b); }
+    wrap.append(img, play, badges);
+
+    const info = document.createElement('div'); info.className = 'rec-info';
+    const date = document.createElement('div'); date.className = 'rec-date'; date.textContent = rec.date + ' ' + rec.time;
+    const meta = document.createElement('div'); meta.className = 'rec-meta';
+    meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : ''].filter(Boolean).join(' · ');
+    info.append(date, meta);
+    tile.append(wrap, info);
+    tile.onclick = () => playRec(rec, cam);
+    grid.appendChild(tile);
+  });
 }
 
-function openFullscreen(cam) {
-    document.getElementById('fullscreen-img').src = cam.mjpegUrl || cam.snapshotUrl || '';
-    document.getElementById('modal-cam').classList.add('open');
-}
-
-// ── Recordings ────────────────────────────────────────────────────────────────
-function renderRecSelect() {
-    const sel = document.getElementById('rec-select');
-    sel.innerHTML = '<option value="">Kamera wählen…</option>';
-    Object.entries(cameras).forEach(([key, cam]) => {
-        const o = document.createElement('option');
-        o.value = key; o.textContent = cam.name;
-        sel.appendChild(o);
-    });
-}
-
-async function loadRecordings() {
-    const key  = document.getElementById('rec-select').value;
-    if (!key) return;
-    const cam  = cameras[key];
-    const grid = document.getElementById('rec-grid');
-    grid.innerHTML = '<p style="color:var(--muted);padding:12px">Lade…</p>';
-    try {
-        const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
-                              { signal: AbortSignal.timeout(8000) });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        const items = await r.json();
-        if (!Array.isArray(items) || !items.length) {
-            grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen.<br>' +
-                '<small>enableEventDps muss in der Adapter-Config aktiv sein.</small></p>';
-            return;
-        }
-        grid.innerHTML = '';
-        items.forEach(rec => {
-            const tile  = document.createElement('div'); tile.className = 'rec-tile';
-            const thumb = document.createElement('img'); thumb.className = 'rec-thumb'; thumb.alt = '';
-            const info  = document.createElement('div'); info.className = 'rec-info';
-            thumb.src = rec.thumb || (cam && cam.snapshotUrl) || '';
-            info.innerHTML = '<b>' + esc(rec.date + ' ' + rec.time) + '</b>' +
-                esc((rec.dur ? rec.dur + 's' : '') + (rec.size ? ' · ' + rec.size + ' MB' : '')) +
-                (rec.tag ? ' <span style="color:var(--accent);font-size:10px">' + esc(rec.tag) + '</span>' : '');
-            tile.onclick = () => playRec(rec);
-            tile.append(thumb, info);
-            grid.appendChild(tile);
-        });
-    } catch (e) {
-        grid.innerHTML = '<p style="color:var(--muted);padding:12px">Fehler: ' + esc(e.message) + '</p>';
-    }
-}
-
-function playRec(rec) {
-    const url = rec.video || rec.url || rec.mp4Url || '';
-    if (!url) return;
-    document.getElementById('video-title').textContent = (rec.date || '') + ' ' + (rec.time || '');
-    document.getElementById('video-el').src = url.startsWith('http') ? url : BASE + url;
-    document.getElementById('modal-video').classList.add('open');
+function playRec(rec, cam) {
+  const url = rec.video || rec.url || '';
+  if (!url) return;
+  const src = url.startsWith('http') ? url : BASE + url;
+  const el  = document.getElementById('vid-el');
+  // only change src if different → don't interrupt same video
+  if (el.src !== src) { el.src = src; el.load(); }
+  document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
+  document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
+  document.getElementById('vid-meta').textContent  =
+    [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : '', rec.tag || ''].filter(Boolean).join(' · ');
+  document.getElementById('vid-panel').classList.add('open');
+  el.play().catch(() => {});
 }
 function closeVideo() {
-    const v = document.getElementById('video-el');
-    v.pause(); v.removeAttribute('src'); v.load();
-    closeOverlay('modal-video');
+  const el = document.getElementById('vid-el');
+  el.pause(); el.removeAttribute('src'); el.load();
+  document.getElementById('vid-panel').classList.remove('open');
+}
+document.getElementById('vid-panel').addEventListener('click', e => {
+  if (e.target === document.getElementById('vid-panel')) closeVideo();
+});
+
+/* ─────────────────────────── Banner / Status ─────────────────── */
+function showBanner(html, retry) {
+  const b = document.getElementById('info-banner');
+  b.innerHTML = html + (retry ? '<button onclick="location.reload()">Neu laden</button>' : '');
+  b.classList.add('visible');
+}
+function hideBanner() { document.getElementById('info-banner').classList.remove('visible'); }
+function sbar(msg, err) {
+  const s = document.getElementById('sbar-msg');
+  s.textContent = msg; s.className = err ? 'err' : '';
+}
+function connDot(on) { document.getElementById('conn-dot').className = on ? 'on' : ''; }
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── Util ──────────────────────────────────────────────────────────────────────
-function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function status(msg, err) { const s = document.getElementById('statusbar'); s.textContent = msg; s.className = err ? 'err' : ''; }
-function dot(on) { document.getElementById('conn-dot').className = on ? 'on' : ''; }
-function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
+/* ─────────────────────────── Keyboard shortcuts ─────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeFs(); closeVideo(); }
+  if (e.key === 'f' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    const fp = document.getElementById('fs-panel');
+    if (fp.classList.contains('open')) closeFs();
+  }
+});
 
-document.querySelectorAll('.overlay').forEach(el =>
-    el.addEventListener('click', e => { if (e.target === el) { if (el.id === 'modal-video') closeVideo(); else closeOverlay(el.id); } })
-);
-
-loadData();
+/* ─────────────────────────── Boot ──────────────────────────── */
+loadData().then(() => ensureLayoutObserver());
 </script>
 <script src="/socket.io/socket.io.js"></script>
 </body>
