@@ -19,10 +19,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ── Header ── */
 #hdr{height:50px;background:rgba(8,11,15,.97);border-bottom:1px solid var(--border);
   display:flex;align-items:center;gap:0;padding:0 14px;flex-shrink:0;backdrop-filter:blur(12px)}
-.brand{display:flex;align-items:center;gap:8px;margin-right:18px}
-.brand-icon{width:28px;height:28px;background:var(--accent);border-radius:6px;
-  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.brand-name{font-size:15px;font-weight:700;letter-spacing:.3px;color:var(--text)}
 #nav{display:flex;gap:2px}
 .nav-btn{background:none;border:none;color:var(--muted);padding:6px 14px;border-radius:6px;
   cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all .15s}
@@ -32,8 +28,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #conn-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 #conn-dot{width:7px;height:7px;border-radius:50%;background:var(--red);transition:background .4s;flex-shrink:0}
 #conn-dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
-#cam-count-badge{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
-  padding:2px 9px;font-size:11px;color:var(--muted)}
 
 /* ── Layout ── */
 #app{display:flex;flex-direction:column;height:100dvh}
@@ -193,15 +187,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 <div id="app">
 
 <div id="hdr">
-  <div class="brand">
-    <div class="brand-icon">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <circle cx="7" cy="7" r="6" stroke="#fff" stroke-width="1.5"/>
-        <circle cx="7" cy="7" r="2.5" fill="#fff"/>
-      </svg>
-    </div>
-    <span class="brand-name">AgentDVR</span>
-  </div>
   <div id="nav">
     <button class="nav-btn active" onclick="showView('live')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
@@ -213,7 +198,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </button>
   </div>
   <div class="hdr-r">
-    <span id="cam-count-badge">–</span>
     <span id="conn-wrap"><div id="conn-dot"></div></span>
   </div>
 </div>
@@ -346,7 +330,6 @@ async function loadData() {
       return;
     }
     hideBanner();
-    document.getElementById('cam-count-badge').textContent = n + ' Kamera' + (n !== 1 ? 's' : '');
     sbar(n + ' Kamera(s) · ' + INST + (BASE ? ' · ' + BASE : ''));
     syncChips();
     syncGrid();
