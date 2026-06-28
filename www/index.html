@@ -720,16 +720,19 @@ document.getElementById('fs-panel').addEventListener('click', e => {
 /* ─────────────────────────── Recordings ────────────────────── */
 function buildRecCamSel() {
   const sel = document.getElementById('rec-cam-sel');
+  const last = localStorage.getItem('advr_rec_cam') || '';
   sel.innerHTML = '<option value="">Kamera wählen…</option>';
   Object.entries(cameras).forEach(([k, cam]) => {
     const o = document.createElement('option'); o.value = k; o.textContent = cam.name;
     sel.appendChild(o);
   });
+  if (last && cameras[last]) { sel.value = last; loadAndFilterRec(); }
 }
 
 async function loadAndFilterRec() {
   const key = document.getElementById('rec-cam-sel').value;
   if (!key) return;
+  localStorage.setItem('advr_rec_cam', key);
   const grid = document.getElementById('rec-grid');
   grid.innerHTML = '<div class="rec-empty">Lade…</div>';
   document.getElementById('rec-tags').innerHTML = '';
