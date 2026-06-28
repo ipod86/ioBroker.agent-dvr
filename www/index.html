@@ -283,6 +283,22 @@ let CFG = {
   dashPtzVisible:      false,
   dashRefreshSec:      60,
   dashStreamReconnect: true,
+  dashColorBg:         '',
+  dashColorSurface:    '',
+  dashColorAccent:     '',
+  dashColorText:       '',
+  dashColorBorder:     '',
+  dashColorOnline:     '',
+  dashColorOffline:    '',
+};
+const DASH_CSS_VARS = {
+  dashColorBg:      '--bg',
+  dashColorSurface: '--s1',
+  dashColorAccent:  '--accent',
+  dashColorText:    '--text',
+  dashColorBorder:  '--border',
+  dashColorOnline:  '--green',
+  dashColorOffline: '--red',
 };
 async function loadConfig() {
   try {
@@ -290,6 +306,9 @@ async function loadConfig() {
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
   document.documentElement.style.setProperty('--ptz-base-opacity', CFG.dashPtzVisible ? '1' : '0');
+  for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
+    if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
+  }
 }
 
 /* ─────────────────────────── Init ──────────────────────────── */

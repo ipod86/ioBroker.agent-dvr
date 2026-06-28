@@ -274,6 +274,51 @@
                     "help": "cfgWidgetPlayerUrl_tt",
                     "newLine": true,
                     "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8
+                },
+                "hdrWidgetTheme": {
+                    "type": "header",
+                    "text": "hdrWidgetTheme",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "widgetColorCardBg": {
+                    "type": "color",
+                    "label": "cfgWidgetColorCardBg",
+                    "help": "cfgWidgetColorCardBg_tt",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "widgetColorTagBg": {
+                    "type": "color",
+                    "label": "cfgWidgetColorTagBg",
+                    "help": "cfgWidgetColorTagBg_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "widgetColorTagText": {
+                    "type": "color",
+                    "label": "cfgWidgetColorTagText",
+                    "help": "cfgWidgetColorTagText_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "widgetColorAccent": {
+                    "type": "color",
+                    "label": "cfgWidgetColorAccent",
+                    "help": "cfgWidgetColorAccent_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "widgetColorModalBg": {
+                    "type": "color",
+                    "label": "cfgWidgetColorModalBg",
+                    "help": "cfgWidgetColorModalBg_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "widgetBorderRadius": {
+                    "type": "number",
+                    "label": "cfgWidgetBorderRadius",
+                    "help": "cfgWidgetBorderRadius_tt",
+                    "min": 0,
+                    "max": 32,
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
                 }
             }
         },
@@ -345,6 +390,55 @@
                     "label": "cfgDashStreamReconnect",
                     "help": "cfgDashStreamReconnect_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrDashTheme": {
+                    "type": "header",
+                    "text": "hdrDashTheme",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "dashColorBg": {
+                    "type": "color",
+                    "label": "cfgDashColorBg",
+                    "help": "cfgDashColorBg_tt",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorSurface": {
+                    "type": "color",
+                    "label": "cfgDashColorSurface",
+                    "help": "cfgDashColorSurface_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorAccent": {
+                    "type": "color",
+                    "label": "cfgDashColorAccent",
+                    "help": "cfgDashColorAccent_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorText": {
+                    "type": "color",
+                    "label": "cfgDashColorText",
+                    "help": "cfgDashColorText_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorBorder": {
+                    "type": "color",
+                    "label": "cfgDashColorBorder",
+                    "help": "cfgDashColorBorder_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorOnline": {
+                    "type": "color",
+                    "label": "cfgDashColorOnline",
+                    "help": "cfgDashColorOnline_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashColorOffline": {
+                    "type": "color",
+                    "label": "cfgDashColorOffline",
+                    "help": "cfgDashColorOffline_tt",
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
                 }
             }
         },

@@ -170,7 +170,20 @@
 		"dashGridCols": 0,
 		"dashPtzVisible": false,
 		"dashRefreshSec": 60,
-		"dashStreamReconnect": true
+		"dashStreamReconnect": true,
+		"widgetColorCardBg": "",
+		"widgetColorTagBg": "",
+		"widgetColorTagText": "",
+		"widgetColorAccent": "",
+		"widgetColorModalBg": "",
+		"widgetBorderRadius": 8,
+		"dashColorBg": "",
+		"dashColorSurface": "",
+		"dashColorAccent": "",
+		"dashColorText": "",
+		"dashColorBorder": "",
+		"dashColorOnline": "",
+		"dashColorOffline": ""
 	},
 	"objects": [],
 	"instanceObjects": [

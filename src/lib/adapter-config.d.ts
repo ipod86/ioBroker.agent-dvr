@@ -33,6 +33,12 @@ declare global {
             widgetDefaultTag: string;
             widgetThumbSize: 'small' | 'medium' | 'large';
             widgetCompact: boolean;
+            widgetColorCardBg: string;
+            widgetColorTagBg: string;
+            widgetColorTagText: string;
+            widgetColorAccent: string;
+            widgetColorModalBg: string;
+            widgetBorderRadius: number;
             // Dashboard
             dashDefaultView: 'live' | 'recordings';
             dashShowOffline: boolean;
@@ -40,6 +46,13 @@ declare global {
             dashPtzVisible: boolean;
             dashRefreshSec: number;
             dashStreamReconnect: boolean;
+            dashColorBg: string;
+            dashColorSurface: string;
+            dashColorAccent: string;
+            dashColorText: string;
+            dashColorBorder: string;
+            dashColorOnline: string;
+            dashColorOffline: string;
             // Advanced
             maxDepth: number;
             maxArray: number;
