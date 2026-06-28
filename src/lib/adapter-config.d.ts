@@ -43,7 +43,7 @@ declare global {
             dashDefaultView: 'live' | 'recordings';
             dashShowOffline: boolean;
             dashGridCols: number;
-            dashPtzVisible: boolean;
+            dashBtnsVisible: boolean;
             dashTagPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
             dashRefreshSec: number;
             dashStreamReconnect: boolean;

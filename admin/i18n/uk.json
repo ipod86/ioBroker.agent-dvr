@@ -88,8 +88,6 @@
     "hdrDashGrid": "Camera grid",
     "cfgDashGridCols": "Column count (0 = automatic)",
     "cfgDashGridCols_tt": "Force a fixed number of camera columns. 0 = optimal count is calculated automatically.",
-    "cfgDashPtzVisible": "PTZ controls always visible",
-    "cfgDashPtzVisible_tt": "Always show PTZ icon on camera tile (otherwise only visible on hover)",
     "hdrDashStream": "Stream & Refresh",
     "cfgDashRefreshSec": "Reload camera list every (seconds)",
     "cfgDashRefreshSec_tt": "How often the camera list is reloaded from the server (0 = no automatic reload)",
@@ -124,5 +122,7 @@
     "cfgDashColorOffline": "Offline color",
     "cfgDashColorOffline_tt": "Color of the offline status indicator",
     "cfgDashTagPosition": "Tag badge position",
-    "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears"
+    "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
+    "cfgDashBtnsVisible": "Кнопки завжди видимі",
+    "cfgDashBtnsVisible_tt": "Завжди показувати кнопки запису та PTZ (інакше лише при наведенні)"
 }

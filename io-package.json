@@ -168,7 +168,7 @@
 		"dashDefaultView": "live",
 		"dashShowOffline": true,
 		"dashGridCols": 0,
-		"dashPtzVisible": false,
+		"dashBtnsVisible": false,
 		"dashTagPosition": "top-right",
 		"dashRefreshSec": 60,
 		"dashStreamReconnect": true,

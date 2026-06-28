@@ -88,8 +88,6 @@
     "hdrDashGrid": "Kamera-Grid",
     "cfgDashGridCols": "Spaltenanzahl (0 = automatisch)",
     "cfgDashGridCols_tt": "Anzahl Kamera-Spalten fest vorgeben. 0 = optimale Anzahl wird automatisch berechnet.",
-    "cfgDashPtzVisible": "PTZ-Steuerung immer sichtbar",
-    "cfgDashPtzVisible_tt": "PTZ-Symbol dauerhaft auf der Kachel einblenden (sonst nur beim Hover sichtbar)",
     "hdrDashStream": "Stream & Aktualisierung",
     "cfgDashRefreshSec": "Kameraliste neu laden alle (Sekunden)",
     "cfgDashRefreshSec_tt": "Wie oft die Kameraliste vom Server neu geladen wird (0 = kein automatischer Reload)",
@@ -124,5 +122,7 @@
     "cfgDashColorOffline": "Offline-Farbe",
     "cfgDashColorOffline_tt": "Farbe des Offline-Status-Indikators",
     "cfgDashTagPosition": "Tag-Badge-Position",
-    "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint"
+    "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint",
+    "cfgDashBtnsVisible": "Buttons immer sichtbar",
+    "cfgDashBtnsVisible_tt": "Aufnahme- und PTZ-Button immer anzeigen (sonst nur bei Hover)"
 }

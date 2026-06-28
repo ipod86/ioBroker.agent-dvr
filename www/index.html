@@ -60,15 +60,13 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cam-dot.on{background:var(--green);color:var(--green)}
 .cam-dot.off{background:var(--red);color:var(--red)}
 
-/* PTZ toggle button — opacity controlled by --ptz-base-opacity (set from config) */
+/* Tile buttons — opacity controlled by --btn-base-opacity (0=hover-only, 1=always visible) */
 .tile-btns{position:absolute;top:7px;right:7px;display:flex;gap:4px;align-items:center;pointer-events:all}
 .tile-btn{width:28px;height:28px;border-radius:6px;background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.45);
   color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;opacity:0;transition:opacity .15s,background .15s;
+  cursor:pointer;opacity:var(--btn-base-opacity,0);transition:opacity .15s,background .15s;
   box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7)}
 .cam-tile:hover .tile-btn{opacity:1}
-.ptz-btn{opacity:var(--ptz-base-opacity,0)}
-.cam-tile:hover .ptz-btn{opacity:1}
 .tile-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
 .rec-btn.active{background:rgba(239,68,68,.85)!important;border-color:var(--red)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(239,68,68,.4)!important}
 .rec-btn:hover{background:rgba(239,68,68,.7)!important;border-color:var(--red)!important}
@@ -278,7 +276,7 @@ let CFG = {
   dashDefaultView:     'live',
   dashShowOffline:     true,
   dashGridCols:        0,
-  dashPtzVisible:      false,
+  dashBtnsVisible:     false,
   dashRefreshSec:      60,
   dashStreamReconnect: true,
   dashColorBg:         '',
@@ -304,7 +302,7 @@ async function loadConfig() {
     const r = await fetch('/agent-dvr/api/config', { signal: AbortSignal.timeout(5000) });
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
-  document.documentElement.style.setProperty('--ptz-base-opacity', CFG.dashPtzVisible ? '1' : '0');
+  document.documentElement.style.setProperty('--btn-base-opacity', CFG.dashBtnsVisible ? '1' : '0');
   for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
     if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
   }
@@ -632,8 +630,8 @@ function setTileRecording(tile, btn, recording) {
 }
 function toggleRec(key, btn, tile) {
   const isRec = btn.classList.contains('active');
-  fetch('/agent-dvr/api/record?camKey=' + key + '&action=' + (isRec ? 'stop' : 'start'))
-    .then(() => setTileRecording(tile, btn, !isRec))
+  fetch('/agent-dvr/api/record?camKey=' + encodeURIComponent(key) + '&action=' + (isRec ? 'stop' : 'start'))
+    .then(r => { if (r.ok) setTileRecording(tile, btn, !isRec); })
     .catch(() => {});
 }
 
