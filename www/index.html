@@ -115,10 +115,11 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
 .tag-chip:hover{border-color:var(--border);color:var(--text)}
 .tag-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
+#rec-toolbar{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
 #rec-count{font-size:12px;color:var(--muted);white-space:nowrap}
 .rec-view-btn{background:var(--s2);border:1px solid var(--border2);color:var(--muted);
   width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;
-  justify-content:center;transition:all .15s;flex-shrink:0;margin-left:auto}
+  justify-content:center;transition:all .15s;flex-shrink:0}
 .rec-view-btn:hover{color:var(--text);border-color:var(--border)}
 .rec-view-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
 
@@ -252,19 +253,21 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <option value="">Kamera wählen…</option>
       </select>
       <div id="rec-tags"></div>
-      <span id="rec-count"></span>
-      <button id="rec-view-grid" class="rec-view-btn active" title="Rasteransicht" onclick="setRecView('grid')">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-          <rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/>
-          <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
-        </svg>
-      </button>
-      <button id="rec-view-tl" class="rec-view-btn" title="Timeline" onclick="setRecView('timeline')">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-          <line x1="0" y1="4" x2="14" y2="4"/><rect x="2" y="2" width="4" height="4" rx="1" fill="currentColor"/>
-          <line x1="0" y1="10" x2="14" y2="10"/><rect x="7" y="8" width="5" height="4" rx="1" fill="currentColor"/>
-        </svg>
-      </button>
+      <div id="rec-toolbar">
+        <span id="rec-count"></span>
+        <button id="rec-view-grid" class="rec-view-btn active" title="Rasteransicht" onclick="setRecView('grid')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+            <rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/>
+            <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
+          </svg>
+        </button>
+        <button id="rec-view-tl" class="rec-view-btn" title="Timeline" onclick="setRecView('timeline')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="0" y1="4" x2="14" y2="4"/><rect x="2" y="2" width="4" height="4" rx="1" fill="currentColor"/>
+            <line x1="0" y1="10" x2="14" y2="10"/><rect x="7" y="8" width="5" height="4" rx="1" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
     </div>
     <div id="rec-scroll">
       <div id="rec-grid" class="rec-grid"></div>
@@ -385,7 +388,7 @@ async function loadData() {
     syncGrid();
     buildRecCamSel();
     trySocket();
-    showView(CFG.dashDefaultView || 'live');
+    if (!refreshTimer) showView(CFG.dashDefaultView || 'live'); // only on first load
     // Periodic refresh
     if (refreshTimer) clearInterval(refreshTimer);
     if (CFG.dashRefreshSec >= 10) {
