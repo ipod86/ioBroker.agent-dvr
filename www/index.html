@@ -82,6 +82,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .ptz-key{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
   border-radius:6px;color:#fff;font-size:16px;display:flex;align-items:center;
   justify-content:center;cursor:pointer;user-select:none;touch-action:none;
+  -webkit-touch-callout:none;-webkit-user-select:none;
   transition:background .1s,transform .1s}
 .ptz-key:active,.ptz-key.held{background:rgba(37,99,235,.6);border-color:var(--accent);transform:scale(.93)}
 .ptz-key.empty{background:none;border-color:transparent;cursor:default;pointer-events:none}
@@ -436,6 +437,7 @@ function makePtzOverlay(camKey) {
     row.forEach(dir => {
       const btn = document.createElement('div');
       btn.className = 'ptz-key'; btn.textContent = ICONS[dir]; btn.dataset.dir = dir;
+      btn.addEventListener('contextmenu', e => e.preventDefault());
       btn.addEventListener('pointerdown', e => {
         e.stopPropagation(); e.preventDefault();
         btn.setPointerCapture(e.pointerId);
@@ -464,6 +466,7 @@ function makePtzOverlay(camKey) {
   [['zoomIn','🔍+'],['zoomOut','🔍−']].forEach(([dir, icon]) => {
     const btn = document.createElement('div');
     btn.className = 'ptz-key'; btn.textContent = icon; btn.dataset.dir = dir;
+    btn.addEventListener('contextmenu', e => e.preventDefault());
     btn.addEventListener('pointerdown', e => {
       e.stopPropagation(); e.preventDefault(); btn.setPointerCapture(e.pointerId);
       btn.classList.add('held'); ptzHeld = { camKey, dir }; ptzSend(camKey, dir, true);
