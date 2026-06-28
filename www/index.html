@@ -289,7 +289,7 @@ async function loadConfig() {
     const r = await fetch('/agent-dvr/api/config', { signal: AbortSignal.timeout(5000) });
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
-  document.documentElement.style.setProperty('--ptz-base-opacity', CFG.dashPtzVisible ? '1' : '0.55');
+  document.documentElement.style.setProperty('--ptz-base-opacity', CFG.dashPtzVisible ? '1' : '0');
 }
 
 /* ─────────────────────────── Init ──────────────────────────── */
