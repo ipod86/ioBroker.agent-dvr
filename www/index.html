@@ -447,8 +447,10 @@ function makeTile(key, cam) {
 
   const img = document.createElement('img'); img.alt = cam.name;
   if (cam.mjpegUrl) {
+    img.dataset.mjpeg = cam.mjpegUrl;
     img.src = cam.mjpegUrl;
     img.onerror = () => {
+      if (img.dataset.hiding) return; // intentional stop — ignore
       if (cam.snapshotUrl && img.src !== cam.snapshotUrl) {
         img.src = cam.snapshotUrl;
       } else if (CFG.dashStreamReconnect && cam.mjpegUrl && img.dataset.retry !== '1') {
@@ -880,13 +882,23 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* Tab hidden → stop streams (disconnect); tab visible → restart (new connection) */
+/* Tab hidden → stop streams; tab visible → restart to original MJPEG URL */
 document.addEventListener('visibilitychange', () => {
-  const imgs = [...document.querySelectorAll('.cam-tile img, #fs-img')];
   if (document.hidden) {
-    imgs.forEach(img => { if (img.src) { img.dataset.s = img.src; img.src = ''; } });
+    document.querySelectorAll('.cam-tile img[data-mjpeg]').forEach(img => {
+      img.dataset.hiding = '1';
+      img.src = '';
+      setTimeout(() => { delete img.dataset.hiding; }, 400);
+    });
+    const fi = document.getElementById('fs-img');
+    if (fi.src) { fi.dataset.s = fi.src; fi.src = ''; }
   } else {
-    imgs.forEach(img => { if (!img.src && img.dataset.s) { img.src = img.dataset.s; } });
+    document.querySelectorAll('.cam-tile img[data-mjpeg]').forEach(img => {
+      img.dataset.retry = '0';
+      img.src = img.dataset.mjpeg;
+    });
+    const fi = document.getElementById('fs-img');
+    if (!fi.src && fi.dataset.s) { fi.src = fi.dataset.s; }
   }
 });
 
