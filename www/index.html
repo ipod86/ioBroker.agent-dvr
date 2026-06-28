@@ -877,7 +877,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ─────────────────────────── Tab-Sichtbarkeit ───────────────── */
+/* Tab hidden → stop streams (disconnect); tab visible → restart (new connection) */
 document.addEventListener('visibilitychange', () => {
   const imgs = [...document.querySelectorAll('.cam-tile img, #fs-img')];
   if (document.hidden) {
