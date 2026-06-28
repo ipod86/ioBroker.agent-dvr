@@ -67,11 +67,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 /* PTZ toggle button — opacity controlled by --ptz-base-opacity (set from config) */
 .ptz-btn{position:absolute;top:7px;right:7px;width:28px;height:28px;border-radius:6px;
-  background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
+  background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.45);color:#fff;
   font-size:14px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;opacity:var(--ptz-base-opacity,.55);transition:opacity .15s,background .15s;pointer-events:all}
+  cursor:pointer;opacity:var(--ptz-base-opacity,.55);transition:opacity .15s,background .15s;pointer-events:all;
+  box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7)}
 .cam-tile:hover .ptz-btn{opacity:1}
-.ptz-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.7);border-color:var(--accent);opacity:1}
+.ptz-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
 
 /* PTZ overlay */
 .ptz-overlay{position:absolute;inset:0;display:none;flex-direction:column;
@@ -134,8 +135,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .badge{background:rgba(0,0,0,.65);border-radius:4px;padding:2px 6px;font-size:10px;
   font-weight:500;letter-spacing:.3px;border:1px solid rgba(255,255,255,.1)}
 .badge.tag{color:var(--accent-l);border-color:rgba(37,99,235,.35)}
-.badge.dl{color:#fff;text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:3px;line-height:1}
-.badge.dl:hover{background:rgba(37,99,235,.7);border-color:var(--accent)}
 .rec-info{padding:8px 10px 9px}
 .rec-date{font-size:12px;font-weight:600;color:var(--text)}
 .rec-meta{font-size:11px;color:var(--muted);margin-top:2px}
@@ -145,16 +144,19 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-panel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
   background:rgba(0,0,0,.88)}
 #vid-panel.open{display:flex}
-#vid-box{background:var(--s2);border:1px solid var(--border2);border-radius:12px;
+#vid-box{position:relative;background:var(--s2);border:1px solid var(--border2);border-radius:12px;
   padding:14px;width:min(1000px,97vw);box-shadow:0 24px 64px rgba(0,0,0,.7)}
-#vid-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-#vid-title{font-size:13px;font-weight:600;flex:1}
-#vid-cam{font-size:11px;color:var(--muted)}
-#vid-close{width:30px;height:30px;border-radius:50%;background:var(--s3);border:1px solid var(--border2);
-  color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+#vid-hdr{margin-bottom:10px;padding-right:36px}
+#vid-title{font-size:13px;font-weight:600}
+#vid-cam{font-size:11px;color:var(--muted);margin-top:1px}
+#vid-close{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;
+  background:var(--s3);border:1px solid var(--border2);
+  color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
 #vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
-#vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;gap:12px}
+#vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
+#vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
+#vid-dl:hover{background:rgba(37,99,235,.15)}
 
 /* ── Fullscreen cam ── */
 #fs-panel{position:fixed;inset:0;z-index:250;display:none;background:#000;flex-direction:column}
@@ -246,15 +248,19 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 <!-- Video panel (persistent overlay, survives tab switch) -->
 <div id="vid-panel">
   <div id="vid-box">
+    <button id="vid-close" onclick="closeVideo()">&#10005;</button>
     <div id="vid-hdr">
-      <div>
-        <div id="vid-title"></div>
-        <div id="vid-cam"></div>
-      </div>
-      <button id="vid-close" onclick="closeVideo()">&#10005;</button>
+      <div id="vid-title"></div>
+      <div id="vid-cam"></div>
     </div>
     <video id="vid-el" controls playsinline preload="auto"></video>
-    <div id="vid-meta"></div>
+    <div id="vid-meta">
+      <span id="vid-meta-txt"></span>
+      <a id="vid-dl" download>
+        <svg width="12" height="12" viewBox="0 0 10 11" fill="currentColor"><path d="M4.5 0h1v6.3l2.1-2.1.7.7L5 8.2 1.7 4.9l.7-.7 2.1 2.1V0zM0 10h10v1H0v-1z"/></svg>
+        Download
+      </a>
+    </div>
   </div>
 </div>
 
@@ -717,15 +723,6 @@ function renderRec() {
     const badges = document.createElement('div'); badges.className = 'rec-badges';
     if (rec.tag) {
       const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b);
-      const dlUrl = rec.video || rec.url || '';
-      if (dlUrl) {
-        const dl = document.createElement('a'); dl.className = 'badge dl';
-        dl.href = dlUrl.startsWith('http') ? dlUrl : BASE + dlUrl;
-        dl.download = ''; dl.title = 'Download';
-        dl.innerHTML = '<svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor"><path d="M4.5 0h1v6.3l2.1-2.1.7.7L5 8.2 1.7 4.9l.7-.7 2.1 2.1V0zM0 10h10v1H0v-1z"/></svg> DL';
-        dl.onclick = e => e.stopPropagation();
-        badges.appendChild(dl);
-      }
     }
     wrap.append(img, play, badges);
 
@@ -749,8 +746,9 @@ function playRec(rec, cam) {
   if (el.src !== src) { el.src = src; el.load(); }
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
   document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
-  document.getElementById('vid-meta').textContent  =
+  document.getElementById('vid-meta-txt').textContent =
     [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : '', rec.tag || ''].filter(Boolean).join(' · ');
+  document.getElementById('vid-dl').href = src;
   document.getElementById('vid-panel').classList.add('open');
   el.play().catch(() => {});
 }
