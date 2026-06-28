@@ -17,9 +17,8 @@
     --orange:  #ff9800;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
-/* Header */
 header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; align-items: center; gap: 12px; height: 48px; flex-shrink: 0; }
 header h1 { font-size: 15px; font-weight: 600; color: var(--accent); white-space: nowrap; }
 #conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; transition: background .3s; }
@@ -29,25 +28,20 @@ nav button { background: none; border: none; color: var(--muted); padding: 0 14p
 nav button.active { color: var(--text); border-bottom-color: var(--accent); }
 nav button:hover { color: var(--text); }
 
-/* Main */
 main { flex: 1; overflow: hidden; }
 .view { display: none; height: 100%; overflow-y: auto; padding: 12px; }
 .view.active { display: block; }
 
-/* Debug/info banner */
-#debug-banner { display: none; background: #1a1200; border: 1px solid var(--orange); color: var(--orange); padding: 10px 14px; margin: 12px; border-radius: 4px; font-size: 12px; line-height: 1.6; }
-#debug-banner.visible { display: block; }
-#debug-banner code { background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
-#debug-banner .retry { margin-top: 8px; }
-#debug-banner .retry button { background: var(--orange); color: #000; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+#info-banner { display: none; background: #1a1200; border: 1px solid var(--orange); color: var(--orange); padding: 10px 14px; margin-bottom: 10px; border-radius: 4px; font-size: 13px; line-height: 1.6; }
+#info-banner.visible { display: block; }
+#info-banner code { background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+#info-banner button { margin-top: 8px; background: var(--orange); color: #000; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; display: block; }
 
-/* Chips */
 #cam-toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
 .chip { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 3px 11px; font-size: 12px; cursor: pointer; user-select: none; }
 .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* Camera grid */
-.cam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 8px; }
+.cam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; }
 .cam-tile { background: #000; border-radius: 4px; overflow: hidden; position: relative; aspect-ratio: 16/9; cursor: zoom-in; }
 .cam-tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .cam-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,.75)); padding: 20px 8px 5px; font-size: 12px; pointer-events: none; }
@@ -55,42 +49,35 @@ main { flex: 1; overflow: hidden; }
 .dot.on  { background: var(--green); }
 .dot.off { background: var(--red); }
 
-/* Empty state */
-.empty-state { padding: 40px 20px; text-align: center; color: var(--muted); }
-.empty-state h2 { font-size: 16px; margin-bottom: 8px; color: var(--text); }
-.empty-state p  { font-size: 13px; line-height: 1.6; }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; }
 
-/* Recordings */
-#rec-toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+#rec-toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
 #rec-select { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-size: 13px; }
-.rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
 .rec-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; }
 .rec-tile:hover { border-color: var(--accent); }
 .rec-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; display: block; }
 .rec-info { padding: 7px 9px; font-size: 11px; color: var(--muted); }
 .rec-info b { display: block; color: var(--text); font-size: 12px; margin-bottom: 2px; }
 
-/* Modals */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200; align-items: center; justify-content: center; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 200; align-items: center; justify-content: center; }
 .overlay.open { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
-#modal-cam .modal { width: min(1200px, 98vw); background: #000; }
-#fullscreen-img { width: 100%; display: block; border-radius: 2px; max-height: 92vh; object-fit: contain; }
-#modal-video .modal { padding: 16px; width: min(900px, 95vw); }
+#modal-cam .modal { width: min(1200px, 98vw); background: #000; border-radius: 8px; padding: 8px; }
+#fullscreen-img { width: 100%; display: block; border-radius: 2px; max-height: 92dvh; object-fit: contain; }
+#modal-video .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; width: min(900px, 95vw); }
 #modal-video h2 { font-size: 14px; margin-bottom: 8px; }
-#video-el { width: 100%; background: #000; border-radius: 4px; max-height: 70vh; }
+#video-el { width: 100%; background: #000; border-radius: 4px; max-height: 70dvh; }
 .btn-row { display: flex; justify-content: flex-end; margin-top: 10px; }
 .btn { padding: 6px 14px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; background: var(--border); color: var(--text); }
 
-/* Statusbar */
-#statusbar { background: var(--surface); border-top: 1px solid var(--border); padding: 3px 16px; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+#statusbar { background: var(--surface); border-top: 1px solid var(--border); padding: 4px 16px; font-size: 11px; color: var(--muted); flex-shrink: 0; }
 #statusbar.err { color: var(--red); }
 </style>
 </head>
 <body>
 
 <header>
-    <div id="conn-dot" title="ioBroker-Verbindung"></div>
+    <div id="conn-dot" title="Live-Updates"></div>
     <h1>&#9654; AgentDVR</h1>
     <nav>
         <button id="tab-live" class="active" onclick="showView('live')">Live</button>
@@ -100,7 +87,7 @@ main { flex: 1; overflow: hidden; }
 
 <main>
     <div id="view-live" class="view active">
-        <div id="debug-banner"></div>
+        <div id="info-banner"></div>
         <div id="cam-toolbar"></div>
         <div id="cam-grid" class="cam-grid"></div>
     </div>
@@ -113,16 +100,13 @@ main { flex: 1; overflow: hidden; }
     </div>
 </main>
 
-<div id="statusbar">Lade socket.io…</div>
+<div id="statusbar">Lade…</div>
 
-<!-- Fullscreen camera -->
 <div class="overlay" id="modal-cam">
     <div class="modal" onclick="closeOverlay('modal-cam')">
         <img id="fullscreen-img" src="" alt="">
     </div>
 </div>
-
-<!-- Video playback -->
 <div class="overlay" id="modal-video">
     <div class="modal">
         <h2 id="video-title"></h2>
@@ -132,18 +116,6 @@ main { flex: 1; overflow: hidden; }
 </div>
 
 <script>
-// Show a visible error immediately if socket.io.js itself fails to load
-window.addEventListener('error', function(e) {
-    if (e.filename && e.filename.includes('socket.io')) {
-        showDebug('socket.io nicht geladen',
-            'Die Datei <code>/socket.io/socket.io.js</code> konnte nicht gefunden werden.<br>' +
-            'Der ioBroker web-Adapter muss aktiv sein und socket.io bereitstellen.',
-            true);
-    }
-}, true);
-</script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
 'use strict';
 
 let INST    = 'agent-dvr.0';
@@ -151,176 +123,75 @@ let BASE    = '';
 let cameras = {};
 let hidden  = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 
-// ── Debug banner ─────────────────────────────────────────────────────────────
-function showDebug(title, html, withRetry) {
-    const b = document.getElementById('debug-banner');
-    b.innerHTML = '<strong>' + title + '</strong><br>' + html +
-        (withRetry ? '<div class="retry"><button onclick="location.reload()">Neu laden</button></div>' : '');
+// ── Banner ──────────────────────────────────────────────────────────────────
+function showBanner(html, withRetry) {
+    const b = document.getElementById('info-banner');
+    b.innerHTML = html + (withRetry ? '<button onclick="location.reload()">Neu laden</button>' : '');
     b.classList.add('visible');
 }
-function hideDebug() { document.getElementById('debug-banner').classList.remove('visible'); }
+function hideBanner() { document.getElementById('info-banner').classList.remove('visible'); }
 
-// ── Sanity check: is socket.io loaded? ───────────────────────────────────────
-if (typeof io === 'undefined') {
-    status('Fehler: socket.io nicht verfügbar', true);
-    showDebug('socket.io nicht verfügbar',
-        'Die ioBroker web-Adapter-Bibliothek wurde nicht geladen.<br>' +
-        'Prüfe ob der <strong>web</strong>-Adapter läuft und die Seite über den web-Adapter aufgerufen wird.',
-        true);
-    throw new Error('socket.io not loaded');
-}
-
-// ── ioBroker socket ──────────────────────────────────────────────────────────
-let socket;
-try {
-    socket = io({ transports: ['websocket', 'polling'] });
-} catch (e) {
-    status('Fehler: io() fehlgeschlagen: ' + e.message, true);
-    showDebug('Verbindungsfehler', 'io() konnte nicht aufgerufen werden: <code>' + esc(e.message) + '</code>', true);
-    throw e;
-}
-
-socket.on('connect',    () => { dot(true);  hideDebug(); loadData(); });
-socket.on('disconnect', (reason) => {
-    dot(false);
-    status('Verbindung getrennt: ' + reason, true);
-});
-socket.on('connect_error', (err) => {
-    dot(false);
-    status('Verbindungsfehler: ' + err.message, true);
-    showDebug('ioBroker nicht erreichbar',
-        'socket.io konnte nicht verbinden: <code>' + esc(err.message) + '</code><br>' +
-        'Stellt sicher, dass der web-Adapter läuft.',
-        true);
-});
-
-// Timeout: if no connect after 5s, show error
-const connectTimeout = setTimeout(() => {
-    if (!socket.connected) {
-        status('Timeout: ioBroker antwortet nicht', true);
-        showDebug('Verbindungs-Timeout',
-            'ioBroker hat nicht innerhalb von 5 Sekunden geantwortet.<br>' +
-            'Verbindet: <code>' + location.host + '</code>',
-            true);
-    }
-}, 5000);
-socket.on('connect', () => clearTimeout(connectTimeout));
-
-function emit(cmd, ...args) {
-    return new Promise((res, rej) =>
-        socket.emit(cmd, ...args, (err, data) => err ? rej(new Error(String(err))) : res(data)));
-}
-
-// ── Load all data from ioBroker ──────────────────────────────────────────────
+// ── Primary data load via REST API ──────────────────────────────────────────
 async function loadData() {
-    status('Lade Adapter-Konfiguration…');
+    status('Lade Kameras…');
     try {
-        // 1. Find running instance + AgentDVR base URL
-        status('Suche adapter-Instanz…');
-        const insts = await emit('getForeignObjects', 'system.adapter.agent-dvr.*', 'instance');
-        const instKeys = Object.keys(insts || {});
-        if (!instKeys.length) {
-            showDebug('Keine Adapter-Instanz gefunden',
-                'Es wurde kein <code>system.adapter.agent-dvr.*</code> Objekt gefunden.<br>' +
-                'Ist der agent-dvr Adapter installiert und gestartet?',
-                true);
-            status('Keine Adapter-Instanz', true);
-            return;
-        }
+        const r = await fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' bei /agent-dvr/api/cameras');
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
 
-        const instObj = insts[instKeys[0]];
-        INST = instObj._id.replace('system.adapter.', '');
-        const n = instObj.native || {};
-        if (n.ip && n.port) BASE = 'http://' + n.ip + ':' + n.port;
-
-        // 2. Camera names
-        status('Lade Kameranamen (' + INST + ')…');
-        const nameStates = await emit('getForeignStates', INST + '.cam_*.name');
-        const nameKeys = Object.keys(nameStates || {});
-
-        if (!nameKeys.length) {
-            showDebug('Keine Kameras gefunden',
-                'Pattern <code>' + INST + '.cam_*.name</code> lieferte keine States.<br>' +
-                'Mögliche Ursachen:<br>' +
-                '&bull; Adapter läuft, aber AgentDVR ist nicht erreichbar (IP/Port prüfen)<br>' +
-                '&bull; AgentDVR hat keine Kameras konfiguriert<br>' +
-                '&bull; Adapter noch nicht fertig initialisiert (kurz warten und neu laden)',
-                true);
-            status('Keine Kameras (' + INST + (BASE ? ' → ' + BASE : '') + ')', true);
-            return;
-        }
-
-        cameras = {};
-        nameKeys.forEach(id => {
-            const rel = id.slice(INST.length + 1);
-            const camKey = rel.split('.')[0];
-            const m = camKey.match(/^cam_(\d+)_/);
-            cameras[camKey] = {
-                name:        nameStates[id]?.val || camKey,
-                oid:         m ? m[1] : null,
-                mjpegUrl:    null,
-                snapshotUrl: null,
-                online:      false,
-            };
-        });
-
-        // 3. MJPEG URLs
-        const mjpeg = await emit('getForeignStates', INST + '.cam_*.urls.mjpeg');
-        Object.entries(mjpeg || {}).forEach(([id, state]) => {
-            const camKey = id.slice(INST.length + 1).split('.')[0];
-            if (cameras[camKey] && state?.val) cameras[camKey].mjpegUrl = state.val;
-        });
-
-        // 4. Snapshot URLs
-        const snap = await emit('getForeignStates', INST + '.cam_*.urls.snapshot');
-        Object.entries(snap || {}).forEach(([id, state]) => {
-            const camKey = id.slice(INST.length + 1).split('.')[0];
-            if (cameras[camKey] && state?.val) cameras[camKey].snapshotUrl = state.val;
-        });
-
-        // 5. Online status
-        const online = await emit('getForeignStates', INST + '.cam_*.data.online');
-        Object.entries(online || {}).forEach(([id, state]) => {
-            const camKey = id.slice(INST.length + 1).split('.')[0];
-            if (cameras[camKey]) cameras[camKey].online = !!state?.val;
-        });
-
-        // 6. Fallback URLs from BASE + oid
-        if (BASE) {
-            Object.values(cameras).forEach(cam => {
-                if (!cam.mjpegUrl    && cam.oid) cam.mjpegUrl    = BASE + '/video.mjpg?oid=' + cam.oid;
-                if (!cam.snapshotUrl && cam.oid) cam.snapshotUrl = BASE + '/grab.jpg?oid='   + cam.oid;
-            });
-        }
-
-        // 7. Subscribe to online state changes
-        await emit('subscribe', INST + '.cam_*.data.online');
+        INST    = data.instance || 'agent-dvr.0';
+        BASE    = data.base    || '';
+        cameras = data.cameras || {};
 
         const count = Object.keys(cameras).length;
-        hideDebug();
+        if (!count) {
+            showBanner(
+                '<strong>Keine Kameras gefunden</strong><br>' +
+                'Der Adapter läuft, aber hat noch keine Kameras registriert.<br>' +
+                'Mögliche Ursachen: AgentDVR nicht erreichbar (IP/Port prüfen) · Adapter noch nicht fertig',
+                true
+            );
+            status('Keine Kameras · ' + INST + (BASE ? ' → ' + BASE : ''), true);
+            return;
+        }
+
+        hideBanner();
         status(count + ' Kamera(s) · ' + INST + (BASE ? ' · ' + BASE : ''));
         renderChips();
         renderGrid();
         renderRecSelect();
-
+        trySocketLive();   // optional live updates
     } catch (e) {
-        status('Fehler beim Laden: ' + e.message, true);
-        showDebug('Ladefehler', esc(e.message), true);
+        showBanner(
+            '<strong>Ladefehler</strong><br>' + esc(e.message) + '<br>' +
+            'Stellt sicher, dass der agent-dvr Adapter läuft.',
+            true
+        );
+        status('Fehler: ' + e.message, true);
     }
 }
 
-socket.on('stateChange', (id, state) => {
-    if (!state) return;
-    if (!id.startsWith(INST + '.')) return;
-    const rel    = id.slice(INST.length + 1);
-    const camKey = rel.split('.')[0];
-    if (!cameras[camKey]) return;
-    if (rel.endsWith('.data.online')) {
-        cameras[camKey].online = !!state.val;
-        const d = document.querySelector(`[data-cam="${camKey}"] .dot`);
-        if (d) d.className = 'dot ' + (state.val ? 'on' : 'off');
-    }
-});
+// ── Optional: socket.io for live online-state updates ─────────────────────
+function trySocketLive() {
+    if (typeof io === 'undefined') return;
+    try {
+        const s = io({ transports: ['websocket', 'polling'], reconnection: true });
+        s.on('connect', () => {
+            dot(true);
+            s.emit('subscribe', INST + '.cam_*.data.online', () => {});
+        });
+        s.on('disconnect', () => dot(false));
+        s.on('stateChange', (id, state) => {
+            if (!state || !id.startsWith(INST + '.')) return;
+            const camKey = id.slice(INST.length + 1).split('.')[0];
+            if (!cameras[camKey]) return;
+            cameras[camKey].online = !!state.val;
+            const d = document.querySelector(`[data-cam="${camKey}"] .dot`);
+            if (d) d.className = 'dot ' + (state.val ? 'on' : 'off');
+        });
+    } catch (_) { /* socket.io optional */ }
+}
 
 // ── Views ────────────────────────────────────────────────────────────────────
 function showView(name) {
@@ -330,7 +201,7 @@ function showView(name) {
     document.getElementById('tab-'  + name).classList.add('active');
 }
 
-// ── Camera chips ─────────────────────────────────────────────────────────────
+// ── Chips ─────────────────────────────────────────────────────────────────────
 function renderChips() {
     const tb = document.getElementById('cam-toolbar');
     tb.innerHTML = '';
@@ -344,27 +215,30 @@ function renderChips() {
     });
 }
 function addChip(parent, label, active, onclick) {
-    const c = Object.assign(document.createElement('span'), { className: 'chip' + (active ? ' on' : ''), textContent: label });
+    const c = document.createElement('span');
+    c.className   = 'chip' + (active ? ' on' : '');
+    c.textContent = label;
     c.onclick = onclick;
     parent.appendChild(c);
 }
 function saveHidden() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
 
-// ── Camera grid ───────────────────────────────────────────────────────────────
+// ── Grid ──────────────────────────────────────────────────────────────────────
 function renderGrid() {
-    const grid = document.getElementById('cam-grid');
-    grid.innerHTML = '';
+    const grid    = document.getElementById('cam-grid');
     const visible = Object.entries(cameras).filter(([k]) => !hidden.has(k));
+    grid.innerHTML = '';
     if (!visible.length) {
-        grid.innerHTML = '<div class="empty-state"><h2>Keine Kameras sichtbar</h2><p>Chip oben anklicken um Kameras einzublenden.</p></div>';
+        grid.innerHTML = '<div class="empty">Keine Kameras sichtbar – Chip oben anklicken.</div>';
         return;
     }
     visible.forEach(([key, cam]) => {
-        const tile  = mk('div', { className: 'cam-tile', dataset: { cam: key } });
-        const img   = mk('img', { alt: cam.name });
-        const label = mk('div', { className: 'cam-label', textContent: cam.name });
-        const dot   = mk('div', { className: 'dot ' + (cam.online ? 'on' : 'off') });
+        const tile  = document.createElement('div');
+        tile.className = 'cam-tile';
+        tile.dataset.cam = key;
 
+        const img   = document.createElement('img');
+        img.alt = cam.name;
         if (cam.mjpegUrl) {
             img.src = cam.mjpegUrl;
             img.onerror = () => { if (cam.snapshotUrl && img.src !== cam.snapshotUrl) img.src = cam.snapshotUrl; };
@@ -372,8 +246,15 @@ function renderGrid() {
             img.src = cam.snapshotUrl;
         }
 
+        const label = document.createElement('div');
+        label.className   = 'cam-label';
+        label.textContent = cam.name;
+
+        const dotEl = document.createElement('div');
+        dotEl.className = 'dot ' + (cam.online ? 'on' : 'off');
+
         tile.onclick = () => openFullscreen(cam);
-        tile.append(img, label, dot);
+        tile.append(img, label, dotEl);
         grid.appendChild(tile);
     });
 }
@@ -388,7 +269,9 @@ function renderRecSelect() {
     const sel = document.getElementById('rec-select');
     sel.innerHTML = '<option value="">Kamera wählen…</option>';
     Object.entries(cameras).forEach(([key, cam]) => {
-        sel.appendChild(mk('option', { value: key, textContent: cam.name }));
+        const o = document.createElement('option');
+        o.value = key; o.textContent = cam.name;
+        sel.appendChild(o);
     });
 }
 
@@ -398,24 +281,22 @@ async function loadRecordings() {
     const cam  = cameras[key];
     const grid = document.getElementById('rec-grid');
     grid.innerHTML = '<p style="color:var(--muted);padding:12px">Lade…</p>';
-
     if (!BASE || !cam?.oid) {
-        grid.innerHTML = '<p style="color:var(--muted);padding:12px">AgentDVR URL nicht bekannt – ip/port in Adapter-Config prüfen.</p>';
+        grid.innerHTML = '<p style="color:var(--muted);padding:12px">AgentDVR URL nicht bekannt – IP/Port in Adapter-Config prüfen.</p>';
         return;
     }
-
     try {
         const r = await fetch(BASE + '/command/getRecordings?oid=' + cam.oid + '&page=0&pageSize=40',
                               { signal: AbortSignal.timeout(8000) });
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const data = await r.json();
+        const data  = await r.json();
         const items = data.items || data.recordings || [];
-        if (!items.length) { grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen vorhanden.</p>'; return; }
+        if (!items.length) { grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen.</p>'; return; }
         grid.innerHTML = '';
         items.forEach(rec => {
-            const tile  = mk('div', { className: 'rec-tile' });
-            const thumb = mk('img', { className: 'rec-thumb', alt: '' });
-            const info  = mk('div', { className: 'rec-info' });
+            const tile  = document.createElement('div'); tile.className = 'rec-tile';
+            const thumb = document.createElement('img'); thumb.className = 'rec-thumb'; thumb.alt = '';
+            const info  = document.createElement('div'); info.className = 'rec-info';
             thumb.src = rec.thumbUrl || rec.thumbnail || cam.snapshotUrl || '';
             info.innerHTML = '<b>' + esc(rec.name || rec.filename || 'Aufnahme') + '</b>'
                            + esc(rec.createdDateFormatted || rec.date || '');
@@ -424,8 +305,8 @@ async function loadRecordings() {
             grid.appendChild(tile);
         });
     } catch (e) {
-        grid.innerHTML = `<p style="color:var(--muted);padding:12px">Fehler: ${esc(e.message)}<br>
-            <a href="${esc(BASE)}" target="_blank" style="color:var(--accent)">AgentDVR direkt öffnen</a></p>`;
+        grid.innerHTML = '<p style="color:var(--muted);padding:12px">Fehler: ' + esc(e.message) + '<br>' +
+            '<a href="' + esc(BASE) + '" target="_blank" style="color:var(--accent)">AgentDVR direkt öffnen</a></p>';
     }
 }
 
@@ -436,35 +317,20 @@ function playRec(rec) {
     document.getElementById('video-el').src = url.startsWith('http') ? url : BASE + url;
     document.getElementById('modal-video').classList.add('open');
 }
-function closeVideo() {
-    const v = document.getElementById('video-el');
-    v.pause(); v.src = '';
-    closeOverlay('modal-video');
-}
+function closeVideo() { const v = document.getElementById('video-el'); v.pause(); v.src = ''; closeOverlay('modal-video'); }
 
 // ── Util ──────────────────────────────────────────────────────────────────────
-function mk(tag, props) {
-    const el = document.createElement(tag);
-    const ds = props?.dataset;
-    if (ds) delete props.dataset;
-    Object.assign(el, props || {});
-    if (ds) Object.assign(el.dataset, ds);
-    return el;
-}
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function status(msg, err) {
-    const sb = document.getElementById('statusbar');
-    sb.textContent = msg;
-    sb.className = err ? 'err' : '';
-}
+function status(msg, err) { const s = document.getElementById('statusbar'); s.textContent = msg; s.className = err ? 'err' : ''; }
 function dot(on) { document.getElementById('conn-dot').className = on ? 'on' : ''; }
 function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
 
 document.querySelectorAll('.overlay').forEach(el =>
-    el.addEventListener('click', e => {
-        if (e.target === el) { if (el.id === 'modal-video') closeVideo(); else closeOverlay(el.id); }
-    })
+    el.addEventListener('click', e => { if (e.target === el) { if (el.id === 'modal-video') closeVideo(); else closeOverlay(el.id); } })
 );
+
+loadData();
 </script>
+<script src="/socket.io/socket.io.js"></script>
 </body>
 </html>
