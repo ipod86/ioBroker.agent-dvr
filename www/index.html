@@ -65,13 +65,13 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cam-dot.on{background:var(--green);color:var(--green)}
 .cam-dot.off{background:var(--red);color:var(--red)}
 
-/* PTZ toggle button */
+/* PTZ toggle button — always visible at reduced opacity */
 .ptz-btn{position:absolute;top:7px;right:7px;width:28px;height:28px;border-radius:6px;
-  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);color:#fff;
+  background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
   font-size:14px;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;opacity:0;transition:opacity .2s,background .15s;pointer-events:all}
+  cursor:pointer;opacity:.55;transition:opacity .15s,background .15s;pointer-events:all}
 .cam-tile:hover .ptz-btn{opacity:1}
-.ptz-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.6);border-color:var(--accent)}
+.ptz-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.7);border-color:var(--accent);opacity:1}
 
 /* PTZ overlay */
 .ptz-overlay{position:absolute;inset:0;display:none;flex-direction:column;
@@ -284,7 +284,7 @@ async function loadData() {
     INST = d.instance || 'agent-dvr.0';
     BASE = d.base    || '';
     cameras = d.cameras || {};
-    hasPtz  = !!d.hasPtz;
+    hasPtz  = Object.values(cameras).some(c => c.hasPtz);
 
     const n = Object.keys(cameras).length;
     if (!n) {
@@ -397,7 +397,7 @@ function makeTile(key, cam) {
   bottom.onclick = () => openFs(cam);
   tile.onclick   = e => { if (e.target === tile) openFs(cam); };
 
-  if (hasPtz && key.startsWith('cam_')) {
+  if (cam.hasPtz) {
     const ptzToggle = document.createElement('div');
     ptzToggle.className = 'ptz-btn'; ptzToggle.title = 'PTZ';
     ptzToggle.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
