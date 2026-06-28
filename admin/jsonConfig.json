@@ -51,46 +51,79 @@
             "type": "panel",
             "label": "tabFeatures",
             "items": {
+                "hdrControls": {
+                    "type": "header",
+                    "text": "hdrControls",
+                    "newLine": true,
+                    "xs": 12
+                },
                 "enableSystemControls": {
                     "type": "checkbox",
                     "label": "cfgEnableSystemControls",
+                    "tooltip": "cfgEnableSystemControls_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "enablePtz": {
                     "type": "checkbox",
                     "label": "cfgEnablePtz",
+                    "tooltip": "cfgEnablePtz_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "enableUrls": {
                     "type": "checkbox",
                     "label": "cfgEnableUrls",
+                    "tooltip": "cfgEnableUrls_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "enableSnapshotB64": {
                     "type": "checkbox",
                     "label": "cfgEnableSnapshotB64",
+                    "tooltip": "cfgEnableSnapshotB64_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrEvents": {
+                    "type": "header",
+                    "text": "hdrEvents",
+                    "newLine": true,
+                    "xs": 12
                 },
                 "enableEventDps": {
                     "type": "checkbox",
                     "label": "cfgEnableEventDps",
+                    "tooltip": "cfgEnableEventDps_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "enablePush": {
                     "type": "checkbox",
                     "label": "cfgEnablePush",
+                    "tooltip": "cfgEnablePush_tt",
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrDisplay": {
+                    "type": "header",
+                    "text": "hdrDisplay",
+                    "newLine": true,
+                    "xs": 12
                 },
                 "enableOverview": {
                     "type": "checkbox",
                     "label": "cfgEnableOverview",
+                    "tooltip": "cfgEnableOverview_tt",
+                    "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrDebug": {
+                    "type": "header",
+                    "text": "hdrDebug",
+                    "newLine": true,
+                    "xs": 12
                 },
                 "storeRawJson": {
                     "type": "checkbox",
                     "label": "cfgStoreRawJson",
+                    "tooltip": "cfgStoreRawJson_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 }
@@ -100,24 +133,39 @@
             "type": "panel",
             "label": "tabWidget",
             "items": {
+                "hdrWidgetGeneral": {
+                    "type": "header",
+                    "text": "hdrWidgetGeneral",
+                    "newLine": true,
+                    "xs": 12
+                },
                 "enableWidget": {
                     "type": "checkbox",
                     "label": "cfgEnableWidget",
+                    "tooltip": "cfgEnableWidget_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "widgetMode": {
                     "type": "select",
                     "label": "cfgWidgetMode",
+                    "tooltip": "cfgWidgetMode_tt",
                     "options": [
                         { "value": "nojs", "label": "cfgWidgetModeNojs" },
                         { "value": "js",   "label": "cfgWidgetModeJs" }
                     ],
                     "xs": 12, "sm": 6, "md": 6, "lg": 5, "xl": 5
                 },
+                "hdrWidgetLayout": {
+                    "type": "header",
+                    "text": "hdrWidgetLayout",
+                    "newLine": true,
+                    "xs": 12
+                },
                 "widgetAnzahl": {
                     "type": "number",
                     "label": "cfgWidgetAnzahl",
+                    "tooltip": "cfgWidgetAnzahl_tt",
                     "min": 1,
                     "max": 500,
                     "newLine": true,
@@ -126,6 +174,7 @@
                 "widgetMinCol": {
                     "type": "number",
                     "label": "cfgWidgetMinCol",
+                    "tooltip": "cfgWidgetMinCol_tt",
                     "min": 80,
                     "max": 600,
                     "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
@@ -133,19 +182,28 @@
                 "widgetMaxModalWidth": {
                     "type": "number",
                     "label": "cfgWidgetMaxModalWidth",
+                    "tooltip": "cfgWidgetMaxModalWidth_tt",
                     "min": 300,
                     "max": 2000,
                     "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
                 },
+                "hdrWidgetTags": {
+                    "type": "header",
+                    "text": "hdrWidgetTags",
+                    "newLine": true,
+                    "xs": 12
+                },
                 "widgetShowTags": {
                     "type": "checkbox",
                     "label": "cfgWidgetShowTags",
+                    "tooltip": "cfgWidgetShowTags_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
                 "widgetTagPosition": {
                     "type": "select",
                     "label": "cfgWidgetTagPosition",
+                    "tooltip": "cfgWidgetTagPosition_tt",
                     "options": [
                         { "value": "top-left",     "label": "cfgTagPosTopLeft" },
                         { "value": "top-right",    "label": "cfgTagPosTopRight" },
@@ -154,15 +212,23 @@
                     ],
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
+                "hdrWidgetPlayer": {
+                    "type": "header",
+                    "text": "hdrWidgetPlayer",
+                    "newLine": true,
+                    "xs": 12
+                },
                 "widgetLiveAspect": {
                     "type": "text",
                     "label": "cfgWidgetLiveAspect",
+                    "tooltip": "cfgWidgetLiveAspect_tt",
                     "newLine": true,
                     "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
                 },
                 "widgetPlayerUrl": {
                     "type": "text",
                     "label": "cfgWidgetPlayerUrl",
+                    "tooltip": "cfgWidgetPlayerUrl_tt",
                     "newLine": true,
                     "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8
                 }
