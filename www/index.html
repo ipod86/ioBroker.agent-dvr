@@ -162,10 +162,14 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #fs-hdr{height:44px;background:rgba(0,0,0,.7);display:flex;align-items:center;
   padding:0 12px;gap:12px;flex-shrink:0}
 #fs-name{font-size:14px;font-weight:600}
-#fs-close{margin-left:auto;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);
+#fs-btns{display:flex;gap:6px;align-items:center;margin-left:auto}
+#fs-btns .tile-btn{opacity:1;width:32px;height:32px;font-size:16px}
+#fs-close{margin-left:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);
   border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #fs-close:hover{background:rgba(255,255,255,.2)}
+#fs-body{flex:1;position:relative;min-height:0;display:flex}
 #fs-img{flex:1;width:100%;object-fit:contain;display:block;min-height:0}
+#fs-body .ptz-overlay{position:absolute;inset:0}
 
 /* ── Status bar ── */
 #sbar{height:24px;background:rgba(8,11,15,.97);border-top:1px solid var(--border);
@@ -256,9 +260,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 <div id="fs-panel">
   <div id="fs-hdr">
     <span id="fs-name"></span>
+    <div id="fs-btns"></div>
     <button id="fs-close" onclick="closeFs()">&#10005;</button>
   </div>
-  <img id="fs-img" src="" alt="">
+  <div id="fs-body">
+    <img id="fs-img" src="" alt="">
+  </div>
 </div>
 
 <script>
@@ -622,11 +629,26 @@ function setTileRecording(tile, btn, recording) {
   tile.classList.toggle('recording', recording);
   btn.classList.toggle('active', recording);
   btn.title = recording ? 'Aufnahme stoppen' : 'Aufnahme starten';
-  btn.innerHTML = recording
-    ? `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`
-    : `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
+  const svgRec  = `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`;
+  const svgStop = `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
+  btn.innerHTML = recording ? svgRec : svgStop;
+  const camKey = tile.dataset.cam;
+  // Sync fs-panel red border + its rec button
   const fs = document.getElementById('fs-panel');
-  if (fs.dataset.cam === tile.dataset.cam) fs.classList.toggle('recording', recording);
+  if (fs.dataset.cam === camKey) {
+    fs.classList.toggle('recording', recording);
+    const fsBtn = fs.querySelector('#fs-btns .rec-btn');
+    if (fsBtn && fsBtn !== btn) { fsBtn.classList.toggle('active', recording); fsBtn.title = btn.title; fsBtn.innerHTML = btn.innerHTML; }
+  }
+  // Sync grid tile if we were called from fs-panel
+  if (tile === fs) {
+    const gridTile = document.querySelector('.cam-tile[data-cam="' + camKey + '"]');
+    if (gridTile) {
+      gridTile.classList.toggle('recording', recording);
+      const tBtn = gridTile.querySelector('.rec-btn');
+      if (tBtn) { tBtn.classList.toggle('active', recording); tBtn.title = btn.title; tBtn.innerHTML = btn.innerHTML; }
+    }
+  }
 }
 function toggleRec(key, btn, tile) {
   const isRec = btn.classList.contains('active');
@@ -641,7 +663,45 @@ function openFs(cam, key) {
   document.getElementById('fs-img').src = cam.mjpegUrl || cam.snapshotUrl || '';
   const fs = document.getElementById('fs-panel');
   fs.dataset.cam = key || '';
-  fs.classList.toggle('recording', !!cam.recording);
+
+  // Determine current recording state from live tile (more up-to-date than cam object)
+  const gridTile = document.querySelector('.cam-tile[data-cam="' + key + '"]');
+  const isRec = gridTile ? gridTile.classList.contains('recording') : !!cam.recording;
+  fs.classList.toggle('recording', isRec);
+
+  // Build header buttons
+  const btnBox = document.getElementById('fs-btns');
+  btnBox.innerHTML = '';
+
+  const recBtn = document.createElement('div');
+  recBtn.className = 'tile-btn rec-btn';
+  recBtn.classList.toggle('active', isRec);
+  recBtn.title = isRec ? 'Aufnahme stoppen' : 'Aufnahme starten';
+  recBtn.innerHTML = isRec
+    ? `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`
+    : `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
+  recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, fs); });
+  btnBox.appendChild(recBtn);
+
+  if (cam.hasPtz) {
+    const ptzBtn = document.createElement('div');
+    ptzBtn.className = 'tile-btn ptz-btn';
+    ptzBtn.title = 'PTZ';
+    ptzBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+    </svg>`;
+    btnBox.appendChild(ptzBtn);
+
+    const body = document.getElementById('fs-body');
+    const ov = makePtzOverlay(key);
+    body.appendChild(ov);
+    ptzBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = ov.classList.toggle('open');
+      ptzBtn.classList.toggle('active', open);
+    });
+  }
+
   fs.classList.add('open');
 }
 function closeFs() {
@@ -649,6 +709,9 @@ function closeFs() {
   const fs = document.getElementById('fs-panel');
   fs.classList.remove('open', 'recording');
   fs.dataset.cam = '';
+  document.getElementById('fs-btns').innerHTML = '';
+  const ov = document.getElementById('fs-body').querySelector('.ptz-overlay');
+  if (ov) ov.remove();
 }
 document.getElementById('fs-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('fs-panel')) closeFs();
@@ -812,6 +875,15 @@ document.addEventListener('keydown', e => {
     const fp = document.getElementById('fs-panel');
     if (fp.classList.contains('open')) closeFs();
   }
+});
+
+/* ─────────────────────────── Tab-Sichtbarkeit ───────────────── */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  document.querySelectorAll('.cam-tile img, #fs-img').forEach(img => {
+    if (!img.src) return;
+    const s = img.src; img.src = ''; img.src = s;
+  });
 });
 
 /* ─────────────────────────── Boot ──────────────────────────── */
