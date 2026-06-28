@@ -159,7 +159,18 @@
 		"eventTagsDynamic": true,
 		"eventTagsIgnore": "detected",
 		"eventTags": "",
-		"webInstance": "*"
+		"webInstance": "*",
+		"widgetShowSearch": true,
+		"widgetSortNewest": true,
+		"widgetDefaultTag": "",
+		"widgetThumbSize": "medium",
+		"widgetCompact": false,
+		"dashDefaultView": "live",
+		"dashShowOffline": true,
+		"dashGridCols": 0,
+		"dashPtzVisible": false,
+		"dashRefreshSec": 60,
+		"dashStreamReconnect": true
 	},
 	"objects": [],
 	"instanceObjects": [

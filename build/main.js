@@ -181,11 +181,13 @@ function findDevices(json) {
   }
   return out;
 }
-function galleryCss(minCol, maxW) {
-  return `.advgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:12px;max-width:100%}.advgrid .advlb{display:none}.advcell{display:flex;flex-direction:column;cursor:pointer;text-decoration:none;color:inherit;font-family:inherit}.advimg{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}.advimg img{width:100%;height:auto;display:block}.advimgfix img{height:100%;object-fit:cover}.advtag{position:absolute;background:rgba(0,0,0,.55);color:#fff;font-size:.6rem;padding:2px 4px;border-radius:3px;line-height:1;max-width:85%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.advplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}.advplay::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.advcell:hover .advplay{opacity:1}.advcap{font-size:.72rem;margin-top:4px;line-height:1.25;opacity:.85}.advmodal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center}.advgrid .advlb:checked + .advthumb + .advmodal{display:flex}.advbackdrop{position:absolute;inset:0;background:transparent;cursor:pointer}.advbox{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;max-width:min(92vw,${maxW}px);background:#1c1c1e;padding:12px;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}.advvideo{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block}.advclose{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:2;border:2px solid rgba(255,255,255,.35)}.advinfo{color:#fff;font-size:.8rem;text-align:center}.advinfo a{color:#8ab4f8}.advempty{padding:24px;text-align:center;opacity:.7;font-family:inherit}`;
+function galleryCss(minCol, maxW, compact = false) {
+  const gap = compact ? 6 : 12;
+  return `.advgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:${gap}px;max-width:100%}.advgrid .advlb{display:none}.advcell{display:flex;flex-direction:column;cursor:pointer;text-decoration:none;color:inherit;font-family:inherit}.advimg{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}.advimg img{width:100%;height:auto;display:block}.advimgfix img{height:100%;object-fit:cover}.advtag{position:absolute;background:rgba(0,0,0,.55);color:#fff;font-size:.6rem;padding:2px 4px;border-radius:3px;line-height:1;max-width:85%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.advplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}.advplay::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.advcell:hover .advplay{opacity:1}.advcap{font-size:${compact ? ".65rem" : ".72rem"};margin-top:${compact ? 2 : 4}px;line-height:1.25;opacity:.85}.advmodal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center}.advgrid .advlb:checked + .advthumb + .advmodal{display:flex}.advbackdrop{position:absolute;inset:0;background:transparent;cursor:pointer}.advbox{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;max-width:min(92vw,${maxW}px);background:#1c1c1e;padding:12px;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}.advvideo{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block}.advclose{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:2;border:2px solid rgba(255,255,255,.35)}.advinfo{color:#fff;font-size:.8rem;text-align:center}.advinfo a{color:#8ab4f8}.advempty{padding:24px;text-align:center;opacity:.7;font-family:inherit}`;
 }
-function galleryCssJs(minCol) {
-  return `.advroot{font-family:inherit;color:inherit}.advbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}.advsearchjs{flex:1 1 160px;min-width:120px;padding:6px 10px;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:rgba(127,127,127,.08);color:inherit;font:inherit}.advtagsjs{display:flex;flex-wrap:wrap;gap:6px}.advtagbtn{padding:4px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:.8rem}.advtagbtn.on{background:#2d6cdf;color:#fff;border-color:#2d6cdf}.advgridjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:12px}.advcelljs{display:flex;flex-direction:column;cursor:pointer}.advimgjs{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}.advimgjs img{width:100%;height:auto;display:block}.advimgjs.advimgfix img{height:100%;object-fit:cover}.advtagjs{position:absolute;background:rgba(0,0,0,.55);color:#fff;font-size:.6rem;padding:2px 4px;border-radius:3px;line-height:1;max-width:85%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.advplayjs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}.advplayjs::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.advcelljs:hover .advplayjs{opacity:1}.advcapjs{font-size:.72rem;margin-top:4px;line-height:1.25;opacity:.85}.advemptyjs{padding:24px;text-align:center;opacity:.7}`;
+function galleryCssJs(minCol, compact = false) {
+  const gap = compact ? 6 : 12;
+  return `.advroot{font-family:inherit;color:inherit}.advbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}.advsearchjs{flex:1 1 160px;min-width:120px;padding:6px 10px;border-radius:8px;border:1px solid rgba(127,127,127,.4);background:rgba(127,127,127,.08);color:inherit;font:inherit}.advtagsjs{display:flex;flex-wrap:wrap;gap:6px}.advtagbtn{padding:4px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:.8rem}.advtagbtn.on{background:#2d6cdf;color:#fff;border-color:#2d6cdf}.advgridjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:${gap}px}.advcelljs{display:flex;flex-direction:column;cursor:pointer}.advimgjs{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}.advimgjs img{width:100%;height:auto;display:block}.advimgjs.advimgfix img{height:100%;object-fit:cover}.advtagjs{position:absolute;background:rgba(0,0,0,.55);color:#fff;font-size:.6rem;padding:2px 4px;border-radius:3px;line-height:1;max-width:85%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.advplayjs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}.advplayjs::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}.advcelljs:hover .advplayjs{opacity:1}.advcapjs{font-size:${compact ? ".65rem" : ".72rem"};margin-top:${compact ? 2 : 4}px;line-height:1.25;opacity:.85}.advemptyjs{padding:24px;text-align:center;opacity:.7}`;
 }
 const ADV_CLIENT_CODE = `
 (function(){
@@ -226,7 +228,7 @@ function initRoot(root){
   var D;try{D=JSON.parse(dataEl.textContent);}catch(e){return;}
   var cfg=D.cfg||{},items=D.items||[],live=D.live||null;
   var grid=root.querySelector('.advgridjs'),search=root.querySelector('.advsearchjs'),tagsBox=root.querySelector('.advtagsjs');
-  var state={q:'',tag:''};
+  var state={q:'',tag:cfg.default_tag||''};
   var tagset={};
   items.forEach(function(it){String(it.tag||'').split(/[,\\s]+/).forEach(function(t){if(t)tagset[t]=1;});});
   var tags=Object.keys(tagset);
@@ -711,19 +713,28 @@ class AgentDvr extends utils.Adapter {
     return { fn, sizeMB, dur, tag, date, time, thumb, video };
   }
   // ---- gallery HTML builders ----
+  effectiveMinCol() {
+    const sizeMap = { small: 120, medium: 180, large: 240 };
+    const ts = this.config.widgetThumbSize;
+    return ts && sizeMap[ts] ? sizeMap[ts] : this.config.widgetMinCol || 150;
+  }
+  sortedEvents(events) {
+    return this.config.widgetSortNewest === false ? [...events].reverse() : events;
+  }
   buildGalleryHtml(d, events) {
     return (this.config.widgetMode || "nojs") === "js" ? this.buildGalleryHtmlJs(d, events) : this.buildGalleryHtmlNojs(d, events);
   }
   buildGalleryHtmlNojs(d, events) {
     const oid = d.oid;
-    const minCol = this.config.widgetMinCol || 150;
+    const minCol = this.effectiveMinCol();
     const maxW = this.config.widgetMaxModalWidth || 900;
     const showTags = this.config.widgetShowTags;
     const pos = (this.config.widgetTagPosition || "bottom-left").split("-");
     const tagStyle = `${pos[0]}:5px;${pos[1]}:5px`;
     const playerUrl = (this.config.widgetPlayerUrl || "").trim();
+    const compact = !!this.config.widgetCompact;
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
-    const items = events.map((ev, i) => {
+    const items = this.sortedEvents(events).map((ev, i) => {
       const p = this.fmtEvent(ev, oid);
       const id = `adv${sanitize(oid)}_${i}`;
       const badge = showTags && p.tag ? `<span class="advtag" style="${tagStyle}">${escHtml(p.tag)}</span>` : "";
@@ -734,14 +745,18 @@ class AgentDvr extends utils.Adapter {
       }
       return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${p.video}"></video><div class="advinfo">${escHtml(p.date)} ${escHtml(p.time)} &middot; ${escHtml(p.dur)}s &middot; ${escHtml(p.sizeMB)} MB${p.tag ? ` &middot; ${escHtml(p.tag)}` : ""} &middot; <a href="${p.video}" download target="_blank">${this.wt.download}</a></div></div></div>`;
     }).join("");
-    const grid = items ? `<div class="advgrid">${items}</div>` : `<div class="advempty">${this.wt.noRecordings}</div>`;
-    return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
+    const gridClass = compact ? "advgrid advcompact" : "advgrid";
+    const grid = items ? `<div class="${gridClass}">${items}</div>` : `<div class="advempty">${this.wt.noRecordings}</div>`;
+    return `<style>${galleryCss(minCol, maxW, compact)}</style>${grid}`;
   }
   buildGalleryHtmlJs(d, events) {
     const oid = d.oid;
-    const minCol = this.config.widgetMinCol || 150;
+    const minCol = this.effectiveMinCol();
     const maxW = this.config.widgetMaxModalWidth || 900;
-    const items = events.map((ev) => {
+    const showSearch = this.config.widgetShowSearch !== false;
+    const compact = !!this.config.widgetCompact;
+    const defaultTag = (this.config.widgetDefaultTag || "").trim();
+    const items = this.sortedEvents(events).map((ev) => {
       const p = this.fmtEvent(ev, oid);
       return {
         fn: p.fn,
@@ -761,11 +776,14 @@ class AgentDvr extends utils.Adapter {
       live_aspect: this.camAspect[oid] || this.config.widgetLiveAspect || "",
       player_url: (this.config.widgetPlayerUrl || "").trim(),
       tag_position: this.config.widgetTagPosition || "bottom-left",
+      compact,
+      default_tag: defaultTag,
       labels: { noRecordings: this.wt.noRecordings, all: this.wt.all, live: this.wt.live }
     };
     const data = JSON.stringify({ items, live: null, cfg }).replace(/</g, "\\u003c");
     const boot = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    return `<style>${galleryCssJs(minCol)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar"><input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}"><div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
+    const searchHtml = showSearch ? `<input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}">` : "";
+    return `<style>${galleryCssJs(minCol, compact)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar">${searchHtml}<div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
   }
   buildOverviewHtml(cams) {
     const ts = Date.now();

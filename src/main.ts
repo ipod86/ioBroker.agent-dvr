@@ -225,9 +225,10 @@ function findDevices(json: Record<string, unknown>): Device[] {
 
 // ---- HTML/CSS gallery helpers ----
 
-function galleryCss(minCol: number, maxW: number): string {
+function galleryCss(minCol: number, maxW: number, compact = false): string {
+	const gap = compact ? 6 : 12;
 	return (
-		`.advgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:12px;max-width:100%}` +
+		`.advgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:${gap}px;max-width:100%}` +
 		`.advgrid .advlb{display:none}` +
 		`.advcell{display:flex;flex-direction:column;cursor:pointer;text-decoration:none;color:inherit;font-family:inherit}` +
 		`.advimg{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}` +
@@ -237,7 +238,7 @@ function galleryCss(minCol: number, maxW: number): string {
 		`.advplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}` +
 		`.advplay::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}` +
 		`.advcell:hover .advplay{opacity:1}` +
-		`.advcap{font-size:.72rem;margin-top:4px;line-height:1.25;opacity:.85}` +
+		`.advcap{font-size:${compact ? '.65rem' : '.72rem'};margin-top:${compact ? 2 : 4}px;line-height:1.25;opacity:.85}` +
 		`.advmodal{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center}` +
 		`.advgrid .advlb:checked + .advthumb + .advmodal{display:flex}` +
 		`.advbackdrop{position:absolute;inset:0;background:transparent;cursor:pointer}` +
@@ -250,7 +251,8 @@ function galleryCss(minCol: number, maxW: number): string {
 	);
 }
 
-function galleryCssJs(minCol: number): string {
+function galleryCssJs(minCol: number, compact = false): string {
+	const gap = compact ? 6 : 12;
 	return (
 		`.advroot{font-family:inherit;color:inherit}` +
 		`.advbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}` +
@@ -258,7 +260,7 @@ function galleryCssJs(minCol: number): string {
 		`.advtagsjs{display:flex;flex-wrap:wrap;gap:6px}` +
 		`.advtagbtn{padding:4px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:.8rem}` +
 		`.advtagbtn.on{background:#2d6cdf;color:#fff;border-color:#2d6cdf}` +
-		`.advgridjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:12px}` +
+		`.advgridjs{display:grid;grid-template-columns:repeat(auto-fill,minmax(${minCol}px,1fr));gap:${gap}px}` +
 		`.advcelljs{display:flex;flex-direction:column;cursor:pointer}` +
 		`.advimgjs{position:relative;display:block;border-radius:8px;overflow:hidden;background:rgba(127,127,127,.15)}` +
 		`.advimgjs img{width:100%;height:auto;display:block}` +
@@ -267,7 +269,7 @@ function galleryCssJs(minCol: number): string {
 		`.advplayjs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;background:rgba(0,0,0,.2)}` +
 		`.advplayjs::before{content:"";border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}` +
 		`.advcelljs:hover .advplayjs{opacity:1}` +
-		`.advcapjs{font-size:.72rem;margin-top:4px;line-height:1.25;opacity:.85}` +
+		`.advcapjs{font-size:${compact ? '.65rem' : '.72rem'};margin-top:${compact ? 2 : 4}px;line-height:1.25;opacity:.85}` +
 		`.advemptyjs{padding:24px;text-align:center;opacity:.7}`
 	);
 }
@@ -313,7 +315,7 @@ function initRoot(root){
   var D;try{D=JSON.parse(dataEl.textContent);}catch(e){return;}
   var cfg=D.cfg||{},items=D.items||[],live=D.live||null;
   var grid=root.querySelector('.advgridjs'),search=root.querySelector('.advsearchjs'),tagsBox=root.querySelector('.advtagsjs');
-  var state={q:'',tag:''};
+  var state={q:'',tag:cfg.default_tag||''};
   var tagset={};
   items.forEach(function(it){String(it.tag||'').split(/[,\\s]+/).forEach(function(t){if(t)tagset[t]=1;});});
   var tags=Object.keys(tagset);
@@ -867,6 +869,17 @@ class AgentDvr extends utils.Adapter {
 
 	// ---- gallery HTML builders ----
 
+	private effectiveMinCol(): number {
+		const sizeMap: Record<string, number> = { small: 120, medium: 180, large: 240 };
+		const ts = this.config.widgetThumbSize;
+		return ts && sizeMap[ts] ? sizeMap[ts] : this.config.widgetMinCol || 150;
+	}
+
+	private sortedEvents(events: Record<string, unknown>[]): Record<string, unknown>[] {
+		// newest-first by default; widgetSortNewest=false reverses to oldest-first
+		return this.config.widgetSortNewest === false ? [...events].reverse() : events;
+	}
+
 	private buildGalleryHtml(d: Device, events: Record<string, unknown>[]): string {
 		return (this.config.widgetMode || 'nojs') === 'js'
 			? this.buildGalleryHtmlJs(d, events)
@@ -875,15 +888,16 @@ class AgentDvr extends utils.Adapter {
 
 	private buildGalleryHtmlNojs(d: Device, events: Record<string, unknown>[]): string {
 		const oid = d.oid;
-		const minCol = this.config.widgetMinCol || 150;
+		const minCol = this.effectiveMinCol();
 		const maxW = this.config.widgetMaxModalWidth || 900;
 		const showTags = this.config.widgetShowTags;
 		const pos = (this.config.widgetTagPosition || 'bottom-left').split('-');
 		const tagStyle = `${pos[0]}:5px;${pos[1]}:5px`;
 		const playerUrl = (this.config.widgetPlayerUrl || '').trim();
+		const compact = !!this.config.widgetCompact;
 		const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
 
-		const items = events
+		const items = this.sortedEvents(events)
 			.map((ev, i) => {
 				const p = this.fmtEvent(ev, oid);
 				const id = `adv${sanitize(oid)}_${i}`;
@@ -917,17 +931,21 @@ class AgentDvr extends utils.Adapter {
 			})
 			.join('');
 
+		const gridClass = compact ? 'advgrid advcompact' : 'advgrid';
 		const grid = items
-			? `<div class="advgrid">${items}</div>`
+			? `<div class="${gridClass}">${items}</div>`
 			: `<div class="advempty">${this.wt.noRecordings}</div>`;
-		return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
+		return `<style>${galleryCss(minCol, maxW, compact)}</style>${grid}`;
 	}
 
 	private buildGalleryHtmlJs(d: Device, events: Record<string, unknown>[]): string {
 		const oid = d.oid;
-		const minCol = this.config.widgetMinCol || 150;
+		const minCol = this.effectiveMinCol();
 		const maxW = this.config.widgetMaxModalWidth || 900;
-		const items = events.map(ev => {
+		const showSearch = this.config.widgetShowSearch !== false;
+		const compact = !!this.config.widgetCompact;
+		const defaultTag = (this.config.widgetDefaultTag || '').trim();
+		const items = this.sortedEvents(events).map(ev => {
 			const p = this.fmtEvent(ev, oid);
 			return {
 				fn: p.fn,
@@ -947,14 +965,19 @@ class AgentDvr extends utils.Adapter {
 			live_aspect: this.camAspect[oid] || this.config.widgetLiveAspect || '',
 			player_url: (this.config.widgetPlayerUrl || '').trim(),
 			tag_position: this.config.widgetTagPosition || 'bottom-left',
+			compact,
+			default_tag: defaultTag,
 			labels: { noRecordings: this.wt.noRecordings, all: this.wt.all, live: this.wt.live },
 		};
 		const data = JSON.stringify({ items, live: null, cfg }).replace(/</g, '\\u003c');
 		const boot = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+		const searchHtml = showSearch
+			? `<input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}">`
+			: '';
 		return (
-			`<style>${galleryCssJs(minCol)}</style>` +
+			`<style>${galleryCssJs(minCol, compact)}</style>` +
 			`<div class="advroot"><script type="application/json" class="advdata">${data}</script>` +
-			`<div class="advbar"><input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}"><div class="advtagsjs"></div></div>` +
+			`<div class="advbar">${searchHtml}<div class="advtagsjs"></div></div>` +
 			`<div class="advgridjs"></div></div>` +
 			`<script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script>` +
 			`<img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`

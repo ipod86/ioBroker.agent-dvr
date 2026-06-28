@@ -212,6 +212,49 @@
                     ],
                     "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 },
+                "hdrWidgetFilter": {
+                    "type": "header",
+                    "text": "hdrWidgetFilter",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "widgetSortNewest": {
+                    "type": "checkbox",
+                    "label": "cfgWidgetSortNewest",
+                    "help": "cfgWidgetSortNewest_tt",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetShowSearch": {
+                    "type": "checkbox",
+                    "label": "cfgWidgetShowSearch",
+                    "help": "cfgWidgetShowSearch_tt",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetCompact": {
+                    "type": "checkbox",
+                    "label": "cfgWidgetCompact",
+                    "help": "cfgWidgetCompact_tt",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "widgetDefaultTag": {
+                    "type": "text",
+                    "label": "cfgWidgetDefaultTag",
+                    "help": "cfgWidgetDefaultTag_tt",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "widgetThumbSize": {
+                    "type": "select",
+                    "label": "cfgWidgetThumbSize",
+                    "help": "cfgWidgetThumbSize_tt",
+                    "options": [
+                        { "value": "small",  "label": "cfgWidgetThumbSmall" },
+                        { "value": "medium", "label": "cfgWidgetThumbMedium" },
+                        { "value": "large",  "label": "cfgWidgetThumbLarge" }
+                    ],
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
                 "hdrWidgetPlayer": {
                     "type": "header",
                     "text": "hdrWidgetPlayer",
@@ -231,6 +274,77 @@
                     "help": "cfgWidgetPlayerUrl_tt",
                     "newLine": true,
                     "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8
+                }
+            }
+        },
+        "tabDashboard": {
+            "type": "panel",
+            "label": "tabDashboard",
+            "items": {
+                "hdrDashView": {
+                    "type": "header",
+                    "text": "hdrDashView",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "dashDefaultView": {
+                    "type": "select",
+                    "label": "cfgDashDefaultView",
+                    "help": "cfgDashDefaultView_tt",
+                    "options": [
+                        { "value": "live",       "label": "cfgDashViewLive" },
+                        { "value": "recordings", "label": "cfgDashViewRec" }
+                    ],
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "dashShowOffline": {
+                    "type": "checkbox",
+                    "label": "cfgDashShowOffline",
+                    "help": "cfgDashShowOffline_tt",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrDashGrid": {
+                    "type": "header",
+                    "text": "hdrDashGrid",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "dashGridCols": {
+                    "type": "number",
+                    "label": "cfgDashGridCols",
+                    "help": "cfgDashGridCols_tt",
+                    "min": 0,
+                    "max": 8,
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "dashPtzVisible": {
+                    "type": "checkbox",
+                    "label": "cfgDashPtzVisible",
+                    "help": "cfgDashPtzVisible_tt",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "hdrDashStream": {
+                    "type": "header",
+                    "text": "hdrDashStream",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "dashRefreshSec": {
+                    "type": "number",
+                    "label": "cfgDashRefreshSec",
+                    "help": "cfgDashRefreshSec_tt",
+                    "min": 10,
+                    "max": 600,
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                },
+                "dashStreamReconnect": {
+                    "type": "checkbox",
+                    "label": "cfgDashStreamReconnect",
+                    "help": "cfgDashStreamReconnect_tt",
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
                 }
             }
         },
