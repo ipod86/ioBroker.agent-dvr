@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentDVR</title>
+<style>
+:root {
+    --bg:      #0d0d0d;
+    --surface: #1a1a1a;
+    --border:  #2e2e2e;
+    --accent:  #2196f3;
+    --text:    #e0e0e0;
+    --muted:   #777;
+    --green:   #4caf50;
+    --red:     #f44336;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Header */
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; align-items: center; gap: 12px; height: 48px; flex-shrink: 0; }
+header h1 { font-size: 15px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+#conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+#conn-dot.on { background: var(--green); }
+nav { display: flex; }
+nav button { background: none; border: none; color: var(--muted); padding: 0 14px; height: 48px; cursor: pointer; font-size: 13px; border-bottom: 2px solid transparent; }
+nav button.active { color: var(--text); border-bottom-color: var(--accent); }
+nav button:hover { color: var(--text); }
+
+/* Main */
+main { flex: 1; overflow: hidden; }
+.view { display: none; height: 100%; overflow-y: auto; padding: 12px; }
+.view.active { display: block; }
+
+/* Chips */
+#cam-toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 3px 11px; font-size: 12px; cursor: pointer; user-select: none; }
+.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Camera grid */
+.cam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 8px; }
+.cam-tile { background: #000; border-radius: 4px; overflow: hidden; position: relative; aspect-ratio: 16/9; cursor: zoom-in; }
+.cam-tile img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cam-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,.75)); padding: 20px 8px 5px; font-size: 12px; pointer-events: none; }
+.dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; }
+.dot.on  { background: var(--green); }
+.dot.off { background: var(--red); }
+
+/* Recordings */
+#rec-toolbar { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
+#rec-select { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 4px; font-size: 13px; }
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.rec-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; }
+.rec-tile:hover { border-color: var(--accent); }
+.rec-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #000; display: block; }
+.rec-info { padding: 7px 9px; font-size: 11px; color: var(--muted); }
+.rec-info b { display: block; color: var(--text); font-size: 12px; margin-bottom: 2px; }
+
+/* Modals */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 200; align-items: center; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+#modal-cam .modal { width: min(1200px, 98vw); background: #000; }
+#fullscreen-img { width: 100%; display: block; border-radius: 2px; max-height: 92vh; object-fit: contain; }
+#modal-video .modal { padding: 16px; width: min(900px, 95vw); }
+#modal-video h2 { font-size: 14px; margin-bottom: 8px; }
+#video-el { width: 100%; background: #000; border-radius: 4px; max-height: 70vh; }
+.btn-row { display: flex; justify-content: flex-end; margin-top: 10px; }
+.btn { padding: 6px 14px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; background: var(--border); color: var(--text); }
+
+/* Statusbar */
+#statusbar { background: var(--surface); border-top: 1px solid var(--border); padding: 3px 16px; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+    <div id="conn-dot" title="ioBroker-Verbindung"></div>
+    <h1>&#9654; AgentDVR</h1>
+    <nav>
+        <button id="tab-live" class="active" onclick="showView('live')">Live</button>
+        <button id="tab-rec"  onclick="showView('rec')">Aufnahmen</button>
+    </nav>
+</header>
+
+<main>
+    <div id="view-live" class="view active">
+        <div id="cam-toolbar"></div>
+        <div id="cam-grid" class="cam-grid"></div>
+    </div>
+    <div id="view-rec" class="view">
+        <div id="rec-toolbar">
+            <select id="rec-select"><option value="">Kamera wählen…</option></select>
+            <button class="btn" style="background:var(--accent);color:#fff" onclick="loadRecordings()">Laden</button>
+        </div>
+        <div id="rec-grid" class="rec-grid"></div>
+    </div>
+</main>
+
+<div id="statusbar">Verbinde mit ioBroker…</div>
+
+<!-- Fullscreen camera -->
+<div class="overlay" id="modal-cam">
+    <div class="modal" onclick="closeOverlay('modal-cam')">
+        <img id="fullscreen-img" src="" alt="">
+    </div>
+</div>
+
+<!-- Video playback -->
+<div class="overlay" id="modal-video">
+    <div class="modal">
+        <h2 id="video-title"></h2>
+        <video id="video-el" controls></video>
+        <div class="btn-row"><button class="btn" onclick="closeVideo()">Schlie&#223;en</button></div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+'use strict';
+
+let INST    = 'agent-dvr.0';
+let BASE    = '';
+let cameras = {};   // camKey → { name, oid, mjpegUrl, snapshotUrl, online }
+let hidden  = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
+
+// ── ioBroker socket ──────────────────────────────────────────────────────────
+const socket = io();
+
+socket.on('connect',    () => { dot(true);  loadData(); });
+socket.on('disconnect', () => { dot(false); status('Verbindung getrennt'); });
+
+socket.on('stateChange', (id, state) => {
+    if (!state) return;
+    const rel = id.startsWith(INST + '.') ? id.slice(INST.length + 1) : null;
+    if (!rel) return;
+    const camKey = rel.split('.')[0];
+    if (!cameras[camKey]) return;
+    if (rel.endsWith('.data.online')) {
+        cameras[camKey].online = !!state.val;
+        const d = document.querySelector(`[data-cam="${camKey}"] .dot`);
+        if (d) d.className = 'dot ' + (state.val ? 'on' : 'off');
+    }
+});
+
+function emit(cmd, ...args) {
+    return new Promise((res, rej) =>
+        socket.emit(cmd, ...args, (err, data) => err ? rej(new Error(err)) : res(data)));
+}
+
+// ── Load all data from ioBroker ──────────────────────────────────────────────
+async function loadData() {
+    status('Lade Adapter-Konfiguration…');
+    try {
+        // 1. Find running instance + AgentDVR base URL
+        const insts = await emit('getForeignObjects', 'system.adapter.agent-dvr.*', 'instance');
+        const instObj = Object.values(insts || {})[0];
+        if (instObj) {
+            INST = instObj._id.replace('system.adapter.', '');
+            const n = instObj.native || {};
+            if (n.ip && n.port) BASE = 'http://' + n.ip + ':' + n.port;
+        }
+
+        // 2. Camera names (always present, one per camera)
+        const nameStates = await emit('getForeignStates', INST + '.cam_*.name');
+        cameras = {};
+        Object.entries(nameStates || {}).forEach(([id, state]) => {
+            const camKey = id.slice(INST.length + 1).split('.')[0];
+            const m = camKey.match(/^cam_(\d+)_/);
+            cameras[camKey] = {
+                name:        state?.val || camKey,
+                oid:         m ? m[1] : null,
+                mjpegUrl:    null,
+                snapshotUrl: null,
+                online:      false,
+            };
+        });
+
+        // 3. MJPEG URLs (if enableUrls is on)
+        const mjpeg = await emit('getForeignStates', INST + '.cam_*.urls.mjpeg');
+        Object.entries(mjpeg || {}).forEach(([id, state]) => {
+            const camKey = id.slice(INST.length + 1).split('.')[0];
+            if (cameras[camKey] && state?.val) cameras[camKey].mjpegUrl = state.val;
+        });
+
+        // 4. Snapshot URLs
+        const snap = await emit('getForeignStates', INST + '.cam_*.urls.snapshot');
+        Object.entries(snap || {}).forEach(([id, state]) => {
+            const camKey = id.slice(INST.length + 1).split('.')[0];
+            if (cameras[camKey] && state?.val) cameras[camKey].snapshotUrl = state.val;
+        });
+
+        // 5. Online status
+        const online = await emit('getForeignStates', INST + '.cam_*.data.online');
+        Object.entries(online || {}).forEach(([id, state]) => {
+            const camKey = id.slice(INST.length + 1).split('.')[0];
+            if (cameras[camKey]) cameras[camKey].online = !!state?.val;
+        });
+
+        // 6. Fallback URLs from BASE + oid (if urls.mjpeg states don't exist)
+        if (BASE) {
+            Object.values(cameras).forEach(cam => {
+                if (!cam.mjpegUrl    && cam.oid) cam.mjpegUrl    = BASE + '/video.mjpg?oid=' + cam.oid;
+                if (!cam.snapshotUrl && cam.oid) cam.snapshotUrl = BASE + '/grab.jpg?oid='   + cam.oid;
+            });
+        }
+
+        // 7. Subscribe to online state changes
+        await emit('subscribe', INST + '.cam_*.data.online');
+
+        const count = Object.keys(cameras).length;
+        status(count + ' Kameras · ' + INST + (BASE ? ' · ' + BASE : ''));
+        renderChips();
+        renderGrid();
+        renderRecSelect();
+    } catch (e) {
+        status('Fehler: ' + e.message);
+    }
+}
+
+// ── Views ────────────────────────────────────────────────────────────────────
+function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('tab-'  + name).classList.add('active');
+}
+
+// ── Camera chips ─────────────────────────────────────────────────────────────
+function renderChips() {
+    const tb = document.getElementById('cam-toolbar');
+    tb.innerHTML = '';
+    addChip(tb, 'Alle', hidden.size === 0, () => { hidden.clear(); saveHidden(); renderChips(); renderGrid(); });
+    Object.entries(cameras).forEach(([key, cam]) => {
+        addChip(tb, cam.name, !hidden.has(key), () => {
+            hidden.has(key) ? hidden.delete(key) : hidden.add(key);
+            saveHidden(); renderChips(); renderGrid();
+        });
+    });
+}
+function addChip(parent, label, active, onclick) {
+    const c = Object.assign(document.createElement('span'), { className: 'chip' + (active ? ' on' : ''), textContent: label });
+    c.onclick = onclick;
+    parent.appendChild(c);
+}
+function saveHidden() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
+
+// ── Camera grid ───────────────────────────────────────────────────────────────
+function renderGrid() {
+    const grid = document.getElementById('cam-grid');
+    grid.innerHTML = '';
+    Object.entries(cameras).filter(([k]) => !hidden.has(k)).forEach(([key, cam]) => {
+        const tile  = mk('div', { className: 'cam-tile', dataset: { cam: key } });
+        const img   = mk('img', { alt: cam.name });
+        const label = mk('div', { className: 'cam-label', textContent: cam.name });
+        const dot   = mk('div', { className: 'dot ' + (cam.online ? 'on' : 'off') });
+
+        if (cam.mjpegUrl) {
+            img.src = cam.mjpegUrl;
+            img.onerror = () => { if (cam.snapshotUrl) img.src = cam.snapshotUrl; };
+        } else if (cam.snapshotUrl) {
+            img.src = cam.snapshotUrl;
+        }
+
+        tile.onclick = () => openFullscreen(cam);
+        tile.append(img, label, dot);
+        grid.appendChild(tile);
+    });
+}
+
+function openFullscreen(cam) {
+    document.getElementById('fullscreen-img').src = cam.mjpegUrl || cam.snapshotUrl || '';
+    document.getElementById('modal-cam').classList.add('open');
+}
+
+// ── Recordings ────────────────────────────────────────────────────────────────
+function renderRecSelect() {
+    const sel = document.getElementById('rec-select');
+    sel.innerHTML = '<option value="">Kamera wählen…</option>';
+    Object.entries(cameras).forEach(([key, cam]) => {
+        sel.appendChild(mk('option', { value: key, textContent: cam.name }));
+    });
+}
+
+async function loadRecordings() {
+    const key = document.getElementById('rec-select').value;
+    if (!key) return;
+    const cam  = cameras[key];
+    const grid = document.getElementById('rec-grid');
+    grid.innerHTML = '<p style="color:var(--muted);padding:12px">Lade…</p>';
+
+    if (!BASE || !cam?.oid) {
+        grid.innerHTML = '<p style="color:var(--muted);padding:12px">AgentDVR URL nicht bekannt (ip/port in Adapter-Config prüfen)</p>';
+        return;
+    }
+
+    try {
+        const r = await fetch(BASE + '/command/getRecordings?oid=' + cam.oid + '&page=0&pageSize=40',
+                              { signal: AbortSignal.timeout(8000) });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        const items = data.items || data.recordings || [];
+        if (!items.length) { grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen</p>'; return; }
+        grid.innerHTML = '';
+        items.forEach(rec => {
+            const tile  = mk('div', { className: 'rec-tile' });
+            const thumb = mk('img', { className: 'rec-thumb', alt: '' });
+            const info  = mk('div', { className: 'rec-info' });
+            thumb.src = rec.thumbUrl || rec.thumbnail || cam.snapshotUrl || '';
+            info.innerHTML = '<b>' + esc(rec.name || rec.filename || 'Aufnahme') + '</b>'
+                           + esc(rec.createdDateFormatted || rec.date || '');
+            tile.onclick = () => playRec(rec);
+            tile.append(thumb, info);
+            grid.appendChild(tile);
+        });
+    } catch (e) {
+        grid.innerHTML = `<p style="color:var(--muted);padding:12px">Fehler: ${esc(e.message)}<br>
+            <a href="${esc(BASE)}" target="_blank" style="color:var(--accent)">AgentDVR direkt öffnen</a></p>`;
+    }
+}
+
+function playRec(rec) {
+    const url = rec.url || rec.mp4Url || rec.fileUrl || '';
+    if (!url) return;
+    document.getElementById('video-title').textContent = rec.name || 'Aufnahme';
+    document.getElementById('video-el').src = url.startsWith('http') ? url : BASE + url;
+    document.getElementById('modal-video').classList.add('open');
+}
+function closeVideo() {
+    const v = document.getElementById('video-el');
+    v.pause(); v.src = '';
+    closeOverlay('modal-video');
+}
+
+// ── Util ──────────────────────────────────────────────────────────────────────
+function mk(tag, props) {
+    const el = document.createElement(tag);
+    const ds = props?.dataset;
+    delete props?.dataset;
+    Object.assign(el, props || {});
+    if (ds) Object.assign(el.dataset, ds);
+    return el;
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function status(msg) { document.getElementById('statusbar').textContent = msg; }
+function dot(on) { document.getElementById('conn-dot').className = on ? 'on' : ''; }
+
+function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(el =>
+    el.addEventListener('click', e => { if (e.target === el) { if (el.id === 'modal-video') closeVideo(); else closeOverlay(el.id); } })
+);
+</script>
+</body>
+</html>

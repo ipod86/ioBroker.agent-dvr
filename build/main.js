@@ -290,9 +290,19 @@ class AgentDvr extends utils.Adapter {
     this.on("unload", this.onUnload.bind(this));
   }
   // ---- lifecycle ----
+  async ensureWebInstance() {
+    var _a;
+    const instanceId = `system.adapter.${this.namespace}`;
+    const obj = await this.getForeignObjectAsync(instanceId);
+    if (obj && !((_a = obj.native) == null ? void 0 : _a.webInstance)) {
+      await this.extendForeignObjectAsync(instanceId, { native: { webInstance: "*" } });
+      this.log.info("webInstance set \u2014 web adapter will reload the extension");
+    }
+  }
   async onReady() {
     var _a;
     void this.setState("info.connection", false, true);
+    await this.ensureWebInstance();
     const sysConfig = await this.getForeignObjectAsync("system.config");
     const rawLang = (_a = sysConfig == null ? void 0 : sysConfig.common) == null ? void 0 : _a.language;
     this.wt = (0, import_widget_i18n.getWidgetLabels)(rawLang != null ? rawLang : "en");

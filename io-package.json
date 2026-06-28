@@ -82,8 +82,14 @@
 			"uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
 			"zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
 		},
-		"authors": ["ipod86 <david@graef.email>"],
-		"keywords": ["Agentdvr", "ispy", "ptz"],
+		"authors": [
+			"ipod86 <david@graef.email>"
+		],
+		"keywords": [
+			"Agentdvr",
+			"ispy",
+			"ptz"
+		],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"
@@ -111,11 +117,19 @@
 		"globalDependencies": [
 			{
 				"admin": ">=7.6.20"
+			},
+			{
+				"web": ">=3.0.0"
 			}
-		]
+		],
+		"webExtension": "lib/web.js"
 	},
-	"protectedNative": ["pass"],
-	"encryptedNative": ["pass"],
+	"protectedNative": [
+		"pass"
+	],
+	"encryptedNative": [
+		"pass"
+	],
 	"native": {
 		"ip": "192.168.1.100",
 		"port": 8090,
@@ -144,7 +158,8 @@
 		"maxArray": 30,
 		"eventTagsDynamic": true,
 		"eventTagsIgnore": "detected",
-		"eventTags": ""
+		"eventTags": "",
+		"webInstance": "*"
 	},
 	"objects": [],
 	"instanceObjects": [
