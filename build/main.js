@@ -811,6 +811,25 @@ class AgentDvr extends utils.Adapter {
       await this.writeLeaf(`${fid}.events.last.thumb`, p.thumb);
       await this.writeLeaf(`${fid}.events.last.video`, p.video);
     }
+    const jsonId = `${fid}.events.json`;
+    if (!this.ensuredFolders.has(jsonId)) {
+      await this.ensurePath(jsonId);
+      await this.setObjectNotExistsAsync(jsonId, {
+        type: "state",
+        common: { name: "Recordings list (web UI)", type: "string", role: "json", read: true, write: false },
+        native: {}
+      });
+      this.ensuredFolders.add(jsonId);
+    }
+    await this.setStateAsync(jsonId, {
+      val: JSON.stringify(
+        events.slice(0, Math.max(1, this.config.widgetAnzahl || 50)).map((ev) => {
+          const p = this.fmtEvent(ev, oid);
+          return { date: p.date, time: p.time, dur: p.dur, size: p.sizeMB, tag: p.tag, thumb: p.thumb, video: p.video };
+        })
+      ),
+      ack: true
+    });
     await this.ensureFlag(`${fid}.events.new`, "New event");
     if (this.config.enablePush) {
       const pid = `${fid}.events.pushTrigger`;

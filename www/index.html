@@ -281,32 +281,31 @@ async function loadRecordings() {
     const cam  = cameras[key];
     const grid = document.getElementById('rec-grid');
     grid.innerHTML = '<p style="color:var(--muted);padding:12px">Lade…</p>';
-    if (!BASE || !cam?.oid) {
-        grid.innerHTML = '<p style="color:var(--muted);padding:12px">AgentDVR URL nicht bekannt – IP/Port in Adapter-Config prüfen.</p>';
-        return;
-    }
     try {
-        const r = await fetch(BASE + '/command/getRecordings?oid=' + cam.oid + '&page=0&pageSize=40',
+        const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
                               { signal: AbortSignal.timeout(8000) });
         if (!r.ok) throw new Error('HTTP ' + r.status);
-        const data  = await r.json();
-        const items = data.items || data.recordings || [];
-        if (!items.length) { grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen.</p>'; return; }
+        const items = await r.json();
+        if (!Array.isArray(items) || !items.length) {
+            grid.innerHTML = '<p style="color:var(--muted);padding:12px">Keine Aufnahmen.<br>' +
+                '<small>Aufnahmen werden beim nächsten Poll geladen (enableEventDps muss aktiv sein).</small></p>';
+            return;
+        }
         grid.innerHTML = '';
         items.forEach(rec => {
             const tile  = document.createElement('div'); tile.className = 'rec-tile';
             const thumb = document.createElement('img'); thumb.className = 'rec-thumb'; thumb.alt = '';
             const info  = document.createElement('div'); info.className = 'rec-info';
-            thumb.src = rec.thumbUrl || rec.thumbnail || cam.snapshotUrl || '';
-            info.innerHTML = '<b>' + esc(rec.name || rec.filename || 'Aufnahme') + '</b>'
-                           + esc(rec.createdDateFormatted || rec.date || '');
+            thumb.src = rec.thumb || cam.snapshotUrl || '';
+            info.innerHTML = '<b>' + esc(rec.date + ' ' + rec.time) + '</b>'
+                           + esc((rec.dur ? rec.dur + 's' : '') + (rec.size ? ' · ' + rec.size + ' MB' : ''))
+                           + (rec.tag ? ' <span style="color:var(--accent)">' + esc(rec.tag) + '</span>' : '');
             tile.onclick = () => playRec(rec);
             tile.append(thumb, info);
             grid.appendChild(tile);
         });
     } catch (e) {
-        grid.innerHTML = '<p style="color:var(--muted);padding:12px">Fehler: ' + esc(e.message) + '<br>' +
-            '<a href="' + esc(BASE) + '" target="_blank" style="color:var(--accent)">AgentDVR direkt öffnen</a></p>';
+        grid.innerHTML = '<p style="color:var(--muted);padding:12px">Fehler: ' + esc(e.message) + '</p>';
     }
 }
 
