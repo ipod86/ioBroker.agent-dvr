@@ -1037,7 +1037,15 @@ class AgentDvr extends utils.Adapter {
 			val: JSON.stringify(
 				events.slice(0, Math.max(1, this.config.widgetAnzahl || 50)).map(ev => {
 					const p = this.fmtEvent(ev, oid);
-					return { date: p.date, time: p.time, dur: p.dur, size: p.sizeMB, tag: p.tag, thumb: p.thumb, video: p.video };
+					return {
+						date: p.date,
+						time: p.time,
+						dur: p.dur,
+						size: p.sizeMB,
+						tag: p.tag,
+						thumb: p.thumb,
+						video: p.video,
+					};
 				}),
 			),
 			ack: true,
