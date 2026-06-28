@@ -173,6 +173,20 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) feat: dedicated `status.*` data points per camera — `recording`, `online`, `connected`, `detected`, `alerted` with correct ioBroker roles
+* (ipod86) feat: `/api/record` endpoint — start/stop recording via ioBroker state from the dashboard
+* (ipod86) feat: dashboard — full color theming (7 color pickers), configurable tag-badge corner position
+* (ipod86) feat: dashboard — record/stop button on camera tiles and in fullscreen panel
+* (ipod86) feat: dashboard — real-time motion (yellow border) and alert (orange border) indicators via Socket.io subscription
+* (ipod86) feat: dashboard — recording timeline view in recordings tab: proportional blocks per day, click to play
+* (ipod86) feat: dashboard — PTZ and record buttons visible in fullscreen panel with PTZ overlay
+* (ipod86) feat: dashboard — `dashBtnsVisible` setting: always show or hover-only for both PTZ and record buttons
+* (ipod86) feat: dashboard — MJPEG streams stop on tab hide, restart on return (saves bandwidth)
+* (ipod86) feat: dashboard — last selected camera in recordings tab persisted to localStorage
+* (ipod86) fix: dashboard — PTZ button contrast improved, DL button in video modal, X button top-right
+* (ipod86) fix: dashboard — stream reconnect after tab return no longer triggers snapshot fallback
+
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)
 * (ipod86) fix: profile selector role corrected to `level` (E1011)

@@ -171,6 +171,20 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) feat: Dedizierte `status.*`-Datenpunkte pro Kamera — `recording`, `online`, `connected`, `detected`, `alerted` mit korrekten ioBroker-Rollen
+* (ipod86) feat: `/api/record`-Endpoint — Aufnahme über ioBroker-State aus dem Dashboard starten/stoppen
+* (ipod86) feat: Dashboard — vollständiges Farbthema (7 Color-Picker), konfigurierbarer Tag-Badge-Bereich
+* (ipod86) feat: Dashboard — Aufnahme-/Stop-Button auf Kacheln und im Vollbild-Panel
+* (ipod86) feat: Dashboard — Echtzeit-Bewegungs- (gelber Rahmen) und Alert-Indikator (oranger Rahmen) via Socket.io
+* (ipod86) feat: Dashboard — Aufnahme-Timeline in der Aufnahmen-Ansicht: proportionale Blöcke pro Tag, Klick zum Abspielen
+* (ipod86) feat: Dashboard — PTZ- und Aufnahme-Buttons im Vollbild-Panel mit PTZ-Overlay
+* (ipod86) feat: Dashboard — Einstellung `dashBtnsVisible`: PTZ- und Aufnahme-Button immer oder nur bei Hover anzeigen
+* (ipod86) feat: Dashboard — MJPEG-Streams stoppen bei Tab-Wechsel, Neustart beim Zurückkehren (Bandbreite sparen)
+* (ipod86) feat: Dashboard — Zuletzt gewählte Kamera in der Aufnahmen-Ansicht im localStorage gespeichert
+* (ipod86) fix: Dashboard — PTZ-Button-Kontrast verbessert, Download-Button im Video-Modal, Schließen-Button oben rechts
+* (ipod86) fix: Dashboard — Stream-Neuverbindung nach Tab-Rückkehr löst keine Snapshot-Rückfall mehr aus
+
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: DP-Rollen korrigiert: snapshot_b64 → state (E1008), Profil-Selektor → level (E1011)
 
