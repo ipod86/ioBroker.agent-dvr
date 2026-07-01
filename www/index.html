@@ -961,7 +961,12 @@ function renderRec() {
     return;
   }
 
-  recPlayList = items;
+  // Sort oldest→newest so "Nächste" (+1) = chronologically later recording
+  recPlayList = [...items].sort((a, b) => {
+    const da = (a.date || '') + 'T' + (a.time || '');
+    const db = (b.date || '') + 'T' + (b.time || '');
+    return da.localeCompare(db);
+  });
 
   if (recViewMode === 'timeline') { renderTimeline(items, cam); return; }
 
@@ -989,7 +994,7 @@ function renderRec() {
     meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : ''].filter(Boolean).join(' · ');
     info.append(date, meta);
     tile.append(wrap, info);
-    tile.onclick = () => playRec(rec, cam, items.indexOf(rec));
+    tile.onclick = () => playRec(rec, cam, recPlayList.indexOf(rec));
     grid.appendChild(tile);
   });
 }
@@ -1065,7 +1070,7 @@ function renderTimeline(items, cam) {
       const dur      = rec.dur || 60;
       const left     = (startSec / 86400 * 100).toFixed(3);
       const width    = Math.max(0.2 / tlZoomLevel, dur / 86400 * 100).toFixed(3);
-      const globalIdx = items.indexOf(rec);
+      const globalIdx = recPlayList.indexOf(rec);
 
       const block = document.createElement('div'); block.className = 'tl-block';
       block.style.left  = left + '%';
