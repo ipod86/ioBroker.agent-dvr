@@ -47,6 +47,8 @@ declare global {
             dashTagPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
             dashRefreshSec: number;
             dashStreamReconnect: boolean;
+            go2rtcEnabled: boolean;
+            go2rtcUrl: string;
             dashColorBg: string;
             dashColorSurface: string;
             dashColorAccent: string;

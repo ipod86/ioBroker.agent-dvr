@@ -124,5 +124,10 @@
     "cfgDashTagPosition": "Tag badge position",
     "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
     "cfgDashBtnsVisible": "Knoppen altijd zichtbaar",
-    "cfgDashBtnsVisible_tt": "Opname- en PTZ-knoppen altijd tonen (anders alleen bij hover)"
+    "cfgDashBtnsVisible_tt": "Opname- en PTZ-knoppen altijd tonen (anders alleen bij hover)",
+    "hdrGo2rtc": "go2rtc WebRTC-streams",
+    "cfgGo2rtcEnabled": "go2rtc inschakelen",
+    "cfgGo2rtcEnabled_tt": "WebRTC-streams van go2rtc gebruiken in plaats van MJPEG (per camera configureren in het dashboard)",
+    "cfgGo2rtcUrl": "go2rtc URL",
+    "cfgGo2rtcUrl_tt": "Basis-URL van de go2rtc-server, bijv. http://192.168.1.1:1984"
 }

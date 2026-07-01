@@ -124,5 +124,10 @@
     "cfgDashTagPosition": "Tag badge position",
     "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
     "cfgDashBtnsVisible": "Botões sempre visíveis",
-    "cfgDashBtnsVisible_tt": "Mostrar sempre os botões de gravação e PTZ (caso contrário, só ao passar o rato)"
+    "cfgDashBtnsVisible_tt": "Mostrar sempre os botões de gravação e PTZ (caso contrário, só ao passar o rato)",
+    "hdrGo2rtc": "Streams WebRTC go2rtc",
+    "cfgGo2rtcEnabled": "Ativar go2rtc",
+    "cfgGo2rtcEnabled_tt": "Usar streams WebRTC do go2rtc em vez de MJPEG (configurar mapeamento por câmera no painel)",
+    "cfgGo2rtcUrl": "URL go2rtc",
+    "cfgGo2rtcUrl_tt": "URL base do servidor go2rtc, ex. http://192.168.1.1:1984"
 }

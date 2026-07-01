@@ -451,6 +451,27 @@
                     "label": "cfgDashColorOffline",
                     "help": "cfgDashColorOffline_tt",
                     "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                },
+                "hdrGo2rtc": {
+                    "type": "header",
+                    "text": "hdrGo2rtc",
+                    "newLine": true,
+                    "xs": 12
+                },
+                "go2rtcEnabled": {
+                    "type": "checkbox",
+                    "label": "cfgGo2rtcEnabled",
+                    "help": "cfgGo2rtcEnabled_tt",
+                    "newLine": true,
+                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                },
+                "go2rtcUrl": {
+                    "type": "text",
+                    "label": "cfgGo2rtcUrl",
+                    "help": "cfgGo2rtcUrl_tt",
+                    "hidden": "!data.go2rtcEnabled",
+                    "newLine": true,
+                    "xs": 12, "sm": 8, "md": 6, "lg": 5, "xl": 4
                 }
             }
         },

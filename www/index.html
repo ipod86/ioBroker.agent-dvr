@@ -237,6 +237,43 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── WebRTC video in tiles ── */
+.cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+
+/* ── go2rtc header button ── */
+#hdr-g2rtc-btn{display:none;background:none;border:1px solid var(--border2);color:var(--muted);
+  padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;white-space:nowrap;
+  transition:all .15s;margin-right:4px}
+#hdr-g2rtc-btn.visible{display:block}
+#hdr-g2rtc-btn:hover{color:var(--text);border-color:var(--border)}
+
+/* ── go2rtc mapping modal ── */
+#g2rtc-modal{position:fixed;inset:0;z-index:350;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
+#g2rtc-modal.open{display:flex}
+#g2rtc-box{background:var(--s2);border:1px solid var(--border2);border-radius:12px;padding:18px;
+  width:min(560px,96vw);max-height:82dvh;display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 24px 64px rgba(0,0,0,.7)}
+#g2rtc-box h3{font-size:14px;font-weight:600;flex-shrink:0}
+#g2rtc-rows{overflow-y:auto;flex:1;min-height:0}
+.g2rtc-row{display:grid;grid-template-columns:1fr 140px auto;align-items:center;gap:8px;
+  padding:7px 0;border-bottom:1px solid var(--border)}
+.g2rtc-cam-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g2rtc-sel{background:var(--s3);border:1px solid var(--border2);color:var(--text);
+  padding:5px 8px;border-radius:6px;font-size:12px;width:100%;outline:none;cursor:pointer;
+  transition:border-color .15s}
+.g2rtc-sel:focus{border-color:var(--accent)}
+.g2rtc-toggle{width:16px;height:16px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.g2rtc-footer{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-shrink:0}
+.g2rtc-footer button{padding:6px 16px;border-radius:6px;border:1px solid var(--border2);
+  cursor:pointer;font-size:13px;background:var(--s3);color:var(--text);transition:all .15s}
+.g2rtc-footer button:hover{border-color:var(--border)}
+.g2rtc-footer .btn-save{background:var(--accent);color:#fff;border-color:var(--accent)}
+.g2rtc-footer .btn-save:hover{filter:brightness(1.1)}
+.g2rtc-load{background:none;border:1px solid var(--border2);color:var(--muted);
+  padding:3px 10px;border-radius:5px;cursor:pointer;font-size:11px;transition:all .15s}
+.g2rtc-load:hover{color:var(--text);border-color:var(--border)}
 </style>
 </head>
 <body>
@@ -254,6 +291,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </button>
   </div>
   <div class="hdr-r">
+    <button id="hdr-g2rtc-btn" onclick="openG2rtcModal()">WebRTC</button>
     <span id="conn-wrap"><div id="conn-dot"></div></span>
   </div>
 </div>
@@ -332,6 +370,25 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   </div>
   <div id="fs-body">
     <img id="fs-img" src="" alt="">
+    <video id="fs-vid" autoplay muted playsinline style="display:none;flex:1;width:100%;object-fit:contain;min-height:0;background:#000"></video>
+  </div>
+</div>
+
+<!-- go2rtc mapping modal -->
+<div id="g2rtc-modal">
+  <div id="g2rtc-box">
+    <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <h3>go2rtc Stream-Mapping</h3>
+      <button class="g2rtc-load" onclick="loadG2rtcStreams()">Streams laden</button>
+    </div>
+    <div style="font-size:11px;color:var(--muted);flex-shrink:0">
+      Wähle für jede Kamera den passenden go2rtc-Stream und aktiviere die Checkbox.
+    </div>
+    <div id="g2rtc-rows"></div>
+    <div class="g2rtc-footer">
+      <button onclick="closeG2rtcModal()">Abbrechen</button>
+      <button class="btn-save" onclick="saveG2rtcMap()">Speichern &amp; anwenden</button>
+    </div>
   </div>
 </div>
 
@@ -347,8 +404,10 @@ let recPlayList = [], recPlayIdx = -1;
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
 let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
-let ptzHeld     = null;
+let ptzHeld      = null;
 let refreshTimer = null;
+let go2rtcMap    = JSON.parse(localStorage.getItem('advr_g2rtc_map') || '{}');
+let g2rtcStreamList = [];
 
 /* ─────────────────────────── Dashboard config ──────────────── */
 let CFG = {
@@ -366,6 +425,8 @@ let CFG = {
   dashColorOnline:     '',
   dashColorOffline:    '',
   dashTagPosition:     'top-right',
+  go2rtcEnabled:       false,
+  go2rtcUrl:           '',
 };
 const DASH_CSS_VARS = {
   dashColorBg:      '--bg',
@@ -382,6 +443,7 @@ async function loadConfig() {
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
   document.documentElement.style.setProperty('--btn-base-opacity', CFG.dashBtnsVisible ? '1' : '0');
+  document.getElementById('hdr-g2rtc-btn').classList.toggle('visible', !!CFG.go2rtcEnabled);
   for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
     if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
   }
@@ -534,30 +596,44 @@ function makeTile(key, cam) {
   const tile = document.createElement('div');
   tile.className = 'cam-tile'; tile.dataset.cam = key;
 
-  const img = document.createElement('img'); img.alt = cam.name;
-  if (cam.mjpegUrl) {
-    img.dataset.mjpeg = cam.mjpegUrl;
-    img.src = cam.mjpegUrl;
-    img.onerror = () => {
-      if (img.dataset.hiding) return; // intentional stop — ignore
-      if (cam.snapshotUrl && img.src !== cam.snapshotUrl) {
-        img.src = cam.snapshotUrl;
-      } else if (CFG.dashStreamReconnect && cam.mjpegUrl && img.dataset.retry !== '1') {
-        img.dataset.retry = '1';
-        setTimeout(() => { img.dataset.retry = '0'; img.src = cam.mjpegUrl; }, 8000);
-      }
-    };
-  } else if (cam.snapshotUrl) { img.src = cam.snapshotUrl; }
+  // Decide stream type: WebRTC (go2rtc) or MJPEG/snapshot
+  const g2m     = go2rtcMap[key];
+  const useWrtc = CFG.go2rtcEnabled && CFG.go2rtcUrl && g2m && g2m.enabled && g2m.stream;
+
+  let mediaEl;
+  if (useWrtc) {
+    const vid = document.createElement('video');
+    vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+    vid.dataset.stream = g2m.stream;
+    connectWebRTC(vid, CFG.go2rtcUrl, g2m.stream);
+    mediaEl = vid;
+  } else {
+    const img = document.createElement('img'); img.alt = cam.name;
+    if (cam.mjpegUrl) {
+      img.dataset.mjpeg = cam.mjpegUrl;
+      img.src = cam.mjpegUrl;
+      img.onerror = () => {
+        if (img.dataset.hiding) return;
+        if (cam.snapshotUrl && img.src !== cam.snapshotUrl) {
+          img.src = cam.snapshotUrl;
+        } else if (CFG.dashStreamReconnect && cam.mjpegUrl && img.dataset.retry !== '1') {
+          img.dataset.retry = '1';
+          setTimeout(() => { img.dataset.retry = '0'; img.src = cam.mjpegUrl; }, 8000);
+        }
+      };
+    } else if (cam.snapshotUrl) { img.src = cam.snapshotUrl; }
+    mediaEl = img;
+  }
 
   const bottom = document.createElement('div'); bottom.className = 'cam-bottom';
   const name   = document.createElement('div'); name.className = 'cam-name'; name.textContent = cam.name;
   const dot    = document.createElement('div'); dot.className = 'cam-dot ' + (cam.online ? 'on' : 'off');
   bottom.append(name, dot);
 
-  // Click on image → fullscreen (not on buttons)
-  img.onclick    = () => openFs(cam, key);
-  bottom.onclick = () => openFs(cam, key);
-  tile.onclick   = e => { if (e.target === tile) openFs(cam, key); };
+  // Click on media → fullscreen (not on buttons)
+  mediaEl.onclick = () => openFs(cam, key);
+  bottom.onclick  = () => openFs(cam, key);
+  tile.onclick    = e => { if (e.target === tile) openFs(cam, key); };
 
   // Button container (rec + optional PTZ)
   const btnBox = document.createElement('div'); btnBox.className = 'tile-btns';
@@ -584,7 +660,7 @@ function makeTile(key, cam) {
   if (cam.alerted)  tile.classList.add('alerted');
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
-  tile.append(img, bottom);
+  tile.append(mediaEl, bottom);
   return tile;
 }
 
@@ -761,8 +837,26 @@ function toggleRec(key, btn, tile) {
 /* ─────────────────────────── Fullscreen ────────────────────── */
 function openFs(cam, key) {
   document.getElementById('fs-name').textContent = cam.name;
-  document.getElementById('fs-img').src = cam.mjpegUrl || cam.snapshotUrl || '';
-  const fs = document.getElementById('fs-panel');
+  const fi  = document.getElementById('fs-img');
+  const fv  = document.getElementById('fs-vid');
+  const fs  = document.getElementById('fs-panel');
+
+  // Stop any running fullscreen stream first
+  fi.src = '';
+  disconnectWebRTC(fv);
+
+  // Check if we should use WebRTC for this camera
+  const g2m     = go2rtcMap[key];
+  const useWrtc = CFG.go2rtcEnabled && CFG.go2rtcUrl && g2m && g2m.enabled && g2m.stream;
+  if (useWrtc) {
+    fi.style.display = 'none';
+    fv.style.display = 'block';
+    connectWebRTC(fv, CFG.go2rtcUrl, g2m.stream);
+  } else {
+    fi.style.display = 'block';
+    fv.style.display = 'none';
+    fi.src = cam.mjpegUrl || cam.snapshotUrl || '';
+  }
   fs.dataset.cam = key || '';
 
   // Determine current recording state from live tile (more up-to-date than cam object)
@@ -806,7 +900,10 @@ function openFs(cam, key) {
   fs.classList.add('open');
 }
 function closeFs() {
-  document.getElementById('fs-img').src = '';
+  const fi = document.getElementById('fs-img');
+  const fv = document.getElementById('fs-vid');
+  fi.src = ''; fi.style.display = 'block';
+  disconnectWebRTC(fv); fv.style.display = 'none';
   const fs = document.getElementById('fs-panel');
   fs.classList.remove('open', 'recording');
   fs.dataset.cam = '';
@@ -1102,24 +1199,161 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* Tab hidden → stop streams; tab visible → restart to original MJPEG URL */
+/* Tab hidden → stop streams; tab visible → restart */
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) {
+    // Stop MJPEG
     document.querySelectorAll('.cam-tile img[data-mjpeg]').forEach(img => {
       img.dataset.hiding = '1';
       img.src = '';
       setTimeout(() => { delete img.dataset.hiding; }, 400);
     });
+    // Stop WebRTC on tiles
+    document.querySelectorAll('.cam-tile video[data-stream]').forEach(vid => disconnectWebRTC(vid));
+    // Stop fullscreen streams
     const fi = document.getElementById('fs-img');
     if (fi.src) { fi.dataset.s = fi.src; fi.src = ''; }
+    const fv = document.getElementById('fs-vid');
+    if (fv && fv.dataset.stream) disconnectWebRTC(fv);
   } else {
+    // Restart MJPEG
     document.querySelectorAll('.cam-tile img[data-mjpeg]').forEach(img => {
       img.dataset.retry = '0';
       img.src = img.dataset.mjpeg;
     });
+    // Restart WebRTC on tiles
+    if (CFG.go2rtcUrl) {
+      document.querySelectorAll('.cam-tile video[data-stream]').forEach(vid =>
+        connectWebRTC(vid, CFG.go2rtcUrl, vid.dataset.stream));
+    }
+    // Restart fullscreen streams
     const fi = document.getElementById('fs-img');
     if (!fi.src && fi.dataset.s) { fi.src = fi.dataset.s; }
+    const fv = document.getElementById('fs-vid');
+    if (fv && fv.dataset.stream && CFG.go2rtcUrl) connectWebRTC(fv, CFG.go2rtcUrl, fv.dataset.stream);
   }
+});
+
+/* ─────────────────────────── WebRTC (go2rtc) ───────────────── */
+async function connectWebRTC(vid, baseUrl, streamName) {
+  disconnectWebRTC(vid);
+  if (!baseUrl || !streamName) return;
+  try {
+    const pc = new RTCPeerConnection({
+      iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}]
+    });
+    vid._rtcPc = pc;
+    const tracks = ['video','audio'].map(kind =>
+      pc.addTransceiver(kind, {direction:'recvonly'}).receiver.track);
+    vid.srcObject = new MediaStream(tracks);
+    vid.dataset.stream = streamName;
+    const wsUrl = baseUrl.replace(/^http/,'ws') + '/api/ws?src=' + encodeURIComponent(streamName);
+    const ws = new WebSocket(wsUrl);
+    vid._rtcWs = ws;
+    ws.addEventListener('open', () => {
+      pc.addEventListener('icecandidate', ev => {
+        if (!ev.candidate || ws.readyState !== WebSocket.OPEN) return;
+        ws.send(JSON.stringify({type:'webrtc/candidate', value:ev.candidate.candidate}));
+      });
+      pc.createOffer()
+        .then(o => pc.setLocalDescription(o))
+        .then(() => {
+          if (ws.readyState === WebSocket.OPEN)
+            ws.send(JSON.stringify({type:'webrtc/offer', value:pc.localDescription.sdp}));
+        });
+    });
+    ws.addEventListener('message', ev => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === 'webrtc/candidate') pc.addIceCandidate({candidate:msg.value, sdpMid:'0'});
+        else if (msg.type === 'webrtc/answer') pc.setRemoteDescription({type:'answer', sdp:msg.value});
+      } catch (_) {}
+    });
+  } catch (_) {}
+}
+function disconnectWebRTC(vid) {
+  if (!vid) return;
+  try { if (vid._rtcWs) { vid._rtcWs.close(); vid._rtcWs = null; } } catch (_) {}
+  try { if (vid._rtcPc) { vid._rtcPc.close(); vid._rtcPc = null; } } catch (_) {}
+  vid.srcObject = null;
+}
+
+/* ─────────────────────────── go2rtc mapping modal ──────────── */
+async function loadG2rtcStreams() {
+  const btn = document.querySelector('.g2rtc-load');
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  try {
+    const r = await fetch('/agent-dvr/api/go2rtc/streams', {signal:AbortSignal.timeout(5000)});
+    if (r.ok) g2rtcStreamList = (await r.json()).streams || [];
+  } catch (_) {}
+  renderG2rtcRows();
+  if (btn) { btn.disabled = false; btn.textContent = 'Streams laden'; }
+}
+function renderG2rtcRows() {
+  const cont = document.getElementById('g2rtc-rows');
+  cont.innerHTML = '';
+  const keys = Object.keys(cameras);
+  if (!keys.length) {
+    cont.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px">Keine Kameras geladen.</div>';
+    return;
+  }
+  keys.forEach(k => {
+    const cam     = cameras[k];
+    const mapping = go2rtcMap[k] || {stream:'', enabled:false};
+    const row = document.createElement('div'); row.className = 'g2rtc-row';
+
+    const nm = document.createElement('div'); nm.className = 'g2rtc-cam-name'; nm.textContent = cam.name;
+
+    const sel = document.createElement('select'); sel.className = 'g2rtc-sel'; sel.dataset.cam = k;
+    const noOpt = document.createElement('option'); noOpt.value = ''; noOpt.textContent = '— (MJPEG / Snapshot) —';
+    sel.appendChild(noOpt);
+    g2rtcStreamList.forEach(s => {
+      const o = document.createElement('option'); o.value = s; o.textContent = s;
+      if (s === mapping.stream) o.selected = true;
+      sel.appendChild(o);
+    });
+    // Keep unknown mapped stream visible
+    if (mapping.stream && !g2rtcStreamList.includes(mapping.stream)) {
+      const o = document.createElement('option'); o.value = mapping.stream;
+      o.textContent = mapping.stream + ' (nicht in Liste)'; o.selected = true;
+      sel.appendChild(o);
+    }
+
+    const tog = document.createElement('input'); tog.type = 'checkbox';
+    tog.className = 'g2rtc-toggle'; tog.dataset.cam = k;
+    tog.checked = !!mapping.enabled; tog.title = 'WebRTC aktivieren';
+
+    row.append(nm, sel, tog);
+    cont.appendChild(row);
+  });
+}
+function openG2rtcModal() {
+  renderG2rtcRows();
+  document.getElementById('g2rtc-modal').classList.add('open');
+  if (!g2rtcStreamList.length) loadG2rtcStreams();
+}
+function closeG2rtcModal() {
+  document.getElementById('g2rtc-modal').classList.remove('open');
+}
+function saveG2rtcMap() {
+  const newMap = {};
+  document.querySelectorAll('#g2rtc-rows .g2rtc-row').forEach(row => {
+    const sel = row.querySelector('.g2rtc-sel');
+    const tog = row.querySelector('.g2rtc-toggle');
+    if (!sel) return;
+    newMap[sel.dataset.cam] = {stream: sel.value, enabled: tog ? tog.checked : false};
+  });
+  go2rtcMap = newMap;
+  localStorage.setItem('advr_g2rtc_map', JSON.stringify(go2rtcMap));
+  closeG2rtcModal();
+  // Full grid rebuild to apply new stream config
+  const grid = document.getElementById('cam-grid');
+  grid.querySelectorAll('video').forEach(vid => disconnectWebRTC(vid));
+  grid.innerHTML = '';
+  syncGrid();
+}
+document.getElementById('g2rtc-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('g2rtc-modal')) closeG2rtcModal();
 });
 
 /* ─────────────────────────── Boot ──────────────────────────── */

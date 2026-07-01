@@ -124,5 +124,10 @@
     "cfgDashTagPosition": "Tag badge position",
     "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
     "cfgDashBtnsVisible": "Кнопки завжди видимі",
-    "cfgDashBtnsVisible_tt": "Завжди показувати кнопки запису та PTZ (інакше лише при наведенні)"
+    "cfgDashBtnsVisible_tt": "Завжди показувати кнопки запису та PTZ (інакше лише при наведенні)",
+    "hdrGo2rtc": "WebRTC-потоки go2rtc",
+    "cfgGo2rtcEnabled": "Увімкнути go2rtc",
+    "cfgGo2rtcEnabled_tt": "Використовувати WebRTC-потоки від go2rtc замість MJPEG (налаштування відображення камер у панелі)",
+    "cfgGo2rtcUrl": "URL go2rtc",
+    "cfgGo2rtcUrl_tt": "Базова URL-адреса сервера go2rtc, напр. http://192.168.1.1:1984"
 }

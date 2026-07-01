@@ -124,5 +124,10 @@
     "cfgDashTagPosition": "Tag-Badge-Position",
     "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint",
     "cfgDashBtnsVisible": "Buttons immer sichtbar",
-    "cfgDashBtnsVisible_tt": "Aufnahme- und PTZ-Button immer anzeigen (sonst nur bei Hover)"
+    "cfgDashBtnsVisible_tt": "Aufnahme- und PTZ-Button immer anzeigen (sonst nur bei Hover)",
+    "hdrGo2rtc": "go2rtc WebRTC-Streams",
+    "cfgGo2rtcEnabled": "go2rtc aktivieren",
+    "cfgGo2rtcEnabled_tt": "WebRTC-Streams von go2rtc statt MJPEG verwenden (Kamera-Mapping im Dashboard konfigurieren)",
+    "cfgGo2rtcUrl": "go2rtc URL",
+    "cfgGo2rtcUrl_tt": "Basis-URL des go2rtc-Servers, z. B. http://192.168.1.1:1984"
 }

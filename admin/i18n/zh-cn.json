@@ -124,5 +124,10 @@
     "cfgDashTagPosition": "Tag badge position",
     "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
     "cfgDashBtnsVisible": "按钮始终可见",
-    "cfgDashBtnsVisible_tt": "始终显示录制和PTZ按钮（否则仅在悬停时显示）"
+    "cfgDashBtnsVisible_tt": "始终显示录制和PTZ按钮（否则仅在悬停时显示）",
+    "hdrGo2rtc": "go2rtc WebRTC 流",
+    "cfgGo2rtcEnabled": "启用 go2rtc",
+    "cfgGo2rtcEnabled_tt": "使用 go2rtc 的 WebRTC 流代替 MJPEG（在仪表板中配置每个摄像头的映射）",
+    "cfgGo2rtcUrl": "go2rtc URL",
+    "cfgGo2rtcUrl_tt": "go2rtc 服务器的基础 URL，例如 http://192.168.1.1:1984"
 }

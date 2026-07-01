@@ -178,6 +178,8 @@
 		"widgetColorAccent": "#8ab4f8",
 		"widgetColorModalBg": "#1c1c1e",
 		"widgetBorderRadius": 8,
+		"go2rtcEnabled": false,
+		"go2rtcUrl": "",
 		"dashColorBg": "#080b0f",
 		"dashColorSurface": "#0d1117",
 		"dashColorAccent": "#2563eb",
