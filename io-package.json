@@ -1,243 +1,256 @@
 {
-	"common": {
-		"name": "agent-dvr",
-		"version": "0.0.6",
-		"news": {
-			"0.0.6": {
-				"en": "add Live Dashboard and go2rtc WebRTC documentation to README",
-				"de": "Live-Dashboard- und go2rtc-WebRTC-Dokumentation zur README hinzugefügt",
-				"ru": "добавлена документация Live Dashboard и go2rtc WebRTC в README",
-				"pt": "documentação do Live Dashboard e go2rtc WebRTC adicionada ao README",
-				"nl": "Live Dashboard en go2rtc WebRTC documentatie toegevoegd aan README",
-				"fr": "documentation Live Dashboard et go2rtc WebRTC ajoutée au README",
-				"it": "documentazione Live Dashboard e go2rtc WebRTC aggiunta al README",
-				"es": "documentación de Live Dashboard y go2rtc WebRTC añadida al README",
-				"pl": "dodano dokumentację Live Dashboard i go2rtc WebRTC do README",
-				"uk": "додано документацію Live Dashboard і go2rtc WebRTC до README",
-				"zh-cn": "README 中新增 Live Dashboard 和 go2rtc WebRTC 文档"
-			},
-			"0.0.5": {
-				"en": "go2rtc WebRTC integration (admin table mapping, ioBroker WS proxy); auto-delete stale cameras; fix recording prev/next order",
-				"de": "go2rtc WebRTC-Integration (Admin-Tabellen-Mapping, ioBroker WS-Proxy); gelöschte Kameras werden automatisch entfernt; Vor/Zurück-Reihenfolge bei Aufnahmen korrigiert",
-				"ru": "интеграция go2rtc WebRTC (таблица в admin, WS-прокси через ioBroker); автоудаление устаревших камер; исправлен порядок кнопок Пред/След для записей",
-				"pt": "integração go2rtc WebRTC (tabela no admin, proxy WS via ioBroker); remoção automática de câmeras obsoletas; ordem anterior/próximo nas gravações corrigida",
-				"nl": "go2rtc WebRTC-integratie (admintabel, ioBroker WS-proxy); automatisch verwijderen van verouderde camera's; volgorde vorige/volgende opnames gecorrigeerd",
-				"fr": "intégration go2rtc WebRTC (table admin, proxy WS ioBroker); suppression automatique des caméras obsolètes; ordre précédent/suivant des enregistrements corrigé",
-				"it": "integrazione go2rtc WebRTC (tabella admin, proxy WS ioBroker); eliminazione automatica telecamere obsolete; ordine precedente/successivo registrazioni corretto",
-				"es": "integración go2rtc WebRTC (tabla en admin, proxy WS ioBroker); eliminación automática de cámaras obsoletas; orden anterior/siguiente en grabaciones corregido",
-				"pl": "integracja go2rtc WebRTC (tabela w admin, proxy WS ioBroker); automatyczne usuwanie nieaktywnych kamer; poprawiona kolejność poprzedni/następny nagrań",
-				"uk": "інтеграція go2rtc WebRTC (таблиця в admin, WS-проксі через ioBroker); автовидалення застарілих камер; виправлено порядок кнопок Попередній/Наступний для записів",
-				"zh-cn": "go2rtc WebRTC 集成（管理表格映射，ioBroker WS 代理）；自动删除过时摄像头；修正录像上一个/下一个顺序"
-			},
-			"0.0.4": {
-				"en": "fix DP roles: snapshot_b64 role state, profile selector role level",
-				"de": "DP-Rollen korrigiert: snapshot_b64 role state, Profil-Selektor role level",
-				"ru": "исправлены роли DP: snapshot_b64 role state, селектор профиля role level",
-				"pt": "corrigir roles DP: snapshot_b64 role state, seletor de perfil role level",
-				"nl": "DP-rollen gecorrigeerd: snapshot_b64 role state, profielkiezer role level",
-				"fr": "correction des rôles DP: snapshot_b64 role state, sélecteur de profil role level",
-				"it": "corretto ruoli DP: snapshot_b64 role state, selettore profilo role level",
-				"es": "corregir roles DP: snapshot_b64 role state, selector de perfil role level",
-				"pl": "poprawiono role DP: snapshot_b64 role state, selektor profilu role level",
-				"uk": "виправлено ролі DP: snapshot_b64 role state, вибір профілю role level",
-				"zh-cn": "修正 DP 角色：snapshot_b64 角色 state，配置文件选择器角色 level"
-			},
-			"0.0.3": {
-				"en": "profile selector: fetch available profiles via getProfiles, writable dropdown",
-				"de": "Profil-Selektor: verfügbare Profile via getProfiles laden, beschreibbares Dropdown",
-				"ru": "селектор профилей: получение доступных профилей через getProfiles, редактируемый список",
-				"pt": "seletor de perfil: buscar perfis disponíveis via getProfiles, menu suspenso gravável",
-				"nl": "profielkiezer: beschikbare profielen ophalen via getProfiles, beschrijfbare keuzelijst",
-				"fr": "sélecteur de profil: récupérer les profils disponibles via getProfiles, liste déroulante modifiable",
-				"it": "selettore profilo: recupera profili disponibili tramite getProfiles, menu a discesa scrivibile",
-				"es": "selector de perfil: obtener perfiles disponibles via getProfiles, lista desplegable escribible",
-				"pl": "selektor profilu: pobieranie dostępnych profili przez getProfiles, zapisywalny dropdown",
-				"uk": "вибір профілю: отримання доступних профілів через getProfiles, записуваний список",
-				"zh-cn": "配置文件选择器：通过 getProfiles 获取可用配置文件，可写下拉菜单"
-			},
-			"0.0.2": {
-				"en": "setup npm trusted publishing and fix repochecker findings",
-				"de": "npm Trusted Publishing eingerichtet und Repochecker-Findings behoben",
-				"ru": "настройка npm Trusted Publishing и исправление находок репочекера",
-				"pt": "configuração de publicação confiável npm e correção de resultados do repochecker",
-				"nl": "npm trusted publishing instellen en repochecker-bevindingen corrigeren",
-				"fr": "configuration de la publication de confiance npm et correction des résultats du repochecker",
-				"it": "configurazione della pubblicazione attendibile npm e correzione dei risultati del repochecker",
-				"es": "configuración de publicación de confianza npm y corrección de hallazgos del repochecker",
-				"pl": "konfiguracja zaufanego publikowania npm i poprawki wyników repocheckera",
-				"uk": "налаштування довіреної публікації npm та виправлення знахідок репочекера",
-				"zh-cn": "设置 npm 可信发布并修复 repochecker 问题"
-			},
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"uk": "Початкова версія",
-				"zh-cn": "首次出版"
-			}
-		},
-		"titleLang": {
-			"en": "Agent DVR",
-			"de": "Agent DVR",
-			"ru": "Агент DVR",
-			"pt": "Agente DVR",
-			"nl": "Agent DVR",
-			"fr": "Agent DVR",
-			"it": "DVR dell'agente",
-			"es": "DVR del agente",
-			"pl": "Agent DVR",
-			"uk": "Агентський відеореєстратор",
-			"zh-cn": "代理 DVR"
-		},
-		"desc": {
-			"en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
-			"de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
-			"ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
-			"pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
-			"nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
-			"fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
-			"it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
-			"es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
-			"pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
-			"uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
-			"zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
-		},
-		"authors": [
-			"ipod86 <david@graef.email>"
-		],
-		"keywords": [
-			"Agentdvr",
-			"ispy",
-			"ptz"
-		],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "agent-dvr.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.agent-dvr/main/admin/agent-dvr.png",
-		"readme": "https://github.com/ipod86/ioBroker.agent-dvr/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "alarm",
-		"messagebox": true,
-		"compact": true,
-		"connectionType": "local",
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=7.6.20"
-			},
-			{
-				"web": ">=3.0.0"
-			}
-		],
-		"webExtension": "lib/web.js"
-	},
-	"protectedNative": [
-		"pass"
-	],
-	"encryptedNative": [
-		"pass"
-	],
-	"native": {
-		"ip": "192.168.1.100",
-		"port": 8090,
-		"user": "",
-		"pass": "",
-		"pollSeconds": 30,
-		"httpTimeoutMs": 8000,
-		"enableSystemControls": true,
-		"enablePtz": true,
-		"enableUrls": true,
-		"enableSnapshotB64": false,
-		"enableEventDps": true,
-		"enablePush": true,
-		"enableOverview": true,
-		"storeRawJson": false,
-		"enableWidget": true,
-		"widgetMode": "nojs",
-		"widgetAnzahl": 50,
-		"widgetMinCol": 150,
-		"widgetShowTags": true,
-		"widgetLiveAspect": "",
-		"widgetTagPosition": "bottom-left",
-		"widgetMaxModalWidth": 900,
-		"widgetPlayerUrl": "",
-		"maxDepth": 6,
-		"maxArray": 30,
-		"eventTagsDynamic": true,
-		"eventTagsIgnore": "detected",
-		"eventTags": "",
-		"webInstance": "*",
-		"widgetShowSearch": true,
-		"widgetSortNewest": true,
-		"widgetDefaultTag": "",
-		"widgetThumbSize": "medium",
-		"widgetCompact": false,
-		"dashDefaultView": "live",
-		"dashShowOffline": true,
-		"dashGridCols": 0,
-		"dashBtnsVisible": false,
-		"dashTagPosition": "top-right",
-		"dashRefreshSec": 60,
-		"dashStreamReconnect": true,
-		"widgetColorCardBg": "rgba(127,127,127,0.15)",
-		"widgetColorTagBg": "rgba(0,0,0,0.55)",
-		"widgetColorTagText": "#ffffff",
-		"widgetColorAccent": "#8ab4f8",
-		"widgetColorModalBg": "#1c1c1e",
-		"widgetBorderRadius": 8,
-		"go2rtcEnabled": false,
-		"go2rtcUrl": "",
-		"go2rtcMapping": [],
-		"dashColorBg": "#080b0f",
-		"dashColorSurface": "#0d1117",
-		"dashColorAccent": "#2563eb",
-		"dashColorText": "#dde4ef",
-		"dashColorBorder": "#1e2a38",
-		"dashColorOnline": "#22c55e",
-		"dashColorOffline": "#ef4444"
-	},
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		}
-	]
+  "common": {
+    "name": "agent-dvr",
+    "version": "0.1.0",
+    "news": {
+      "0.1.0": {
+        "en": "feat: add full i18n to live dashboard — all UI strings translated into 11 languages\nfix: add missing sm/md/lg/xl size attributes to go2rtcMapping table in jsonConfig.json (E5507)\nfix: translate missing admin i18n keys into 9 languages (E5606)",
+        "de": "Feature: Vollständige Internationalisierung (i18n) im Live-Dashboard – alle UI-Texte in 11 Sprachen übersetzt\nBehebung: Fehlende Größenattribute sm/md/lg/xl zur go2rtcMapping-Tabelle in jsonConfig.json hinzufügen (E5507)\nBehebung: Fehlende i18n-Schlüssel für Administratoren in 9 Sprachen übersetzen (E5606)",
+        "ru": "Функция: добавление полной интернационализации на панель мониторинга в реальном времени — все строки пользовательского интерфейса переведены на 11 языков.\nИсправление: добавление отсутствующих атрибутов размера sm/md/lg/xl в таблицу go2rtcMapping в файле jsonConfig.json (E5507)\nИсправление: перевести отсутствующие ключи интернационализации администратора на 9 языков (E5606)",
+        "pt": "Recurso: adicionamos internacionalização completa ao painel de controle em tempo real — todas as strings da interface do usuário foram traduzidas para 11 idiomas.\nCorreção: adicionar os atributos de tamanho sm/md/lg/xl ausentes à tabela go2rtcMapping em jsonConfig.json (E5507)\nCorreção: traduzir as chaves i18n de administrador ausentes para 9 idiomas (E5606)",
+        "nl": "Feature: volledige i18n-ondersteuning toegevoegd aan het live dashboard — alle UI-teksten vertaald in 11 talen.\nOplossing: voeg de ontbrekende maatkenmerken sm/md/lg/xl toe aan de go2rtcMapping-tabel in jsonConfig.json (E5507)\nOplossing: vertaal ontbrekende admin i18n-sleutels naar 9 talen (E5606)",
+        "fr": "Fonctionnalité : ajout de l’internationalisation complète au tableau de bord en direct — toutes les chaînes de l’interface utilisateur sont traduites en 11 langues.\nCorrection : ajout des attributs de taille sm/md/lg/xl manquants à la table go2rtcMapping dans jsonConfig.json (E5507)\nCorrection : traduction des clés i18n d'administration manquantes en 9 langues (E5606)",
+        "it": "Obiettivo: aggiunta della completa internazionalizzazione (i18n) alla dashboard in tempo reale: tutte le stringhe dell'interfaccia utente tradotte in 11 lingue.\nCorrezione: aggiunta degli attributi di taglia sm/md/lg/xl mancanti alla tabella go2rtcMapping in jsonConfig.json (E5507)\nCorrezione: tradurre le chiavi i18n di amministrazione mancanti in 9 lingue (E5606)",
+        "es": "Feat: agrega internacionalización completa al panel de control en vivo: todas las cadenas de la interfaz de usuario se traducen a 11 idiomas.\nCorrección: agregar los atributos de tamaño sm/md/lg/xl faltantes a la tabla go2rtcMapping en jsonConfig.json (E5507)\nCorrección: traducir las claves i18n de administrador faltantes a 9 idiomas (E5606)",
+        "pl": "wyczyn: dodanie pełnego i18n do pulpitu nawigacyjnego na żywo — wszystkie ciągi interfejsu użytkownika przetłumaczone na 11 języków\nnaprawiono: dodano brakujące atrybuty rozmiaru sm/md/lg/xl do tabeli go2rtcMapping w jsonConfig.json (E5507)\nnaprawiono: przetłumaczono brakujące klucze administratora i18n na 9 języków (E5606)",
+        "uk": "подвиг: додано повний i18n до панелі керування Live — усі рядки інтерфейсу перекладено 11 мовами\nвиправлення: додано відсутні атрибути розміру sm/md/lg/xl до таблиці go2rtcMapping у jsonConfig.json (E5507)\nвиправлення: переклад відсутніх ключів адміністратора i18n на 9 мов (E5606)",
+        "zh-cn": "新增功能：为实时仪表盘添加完整的国际化 (i18n) 功能——所有用户界面字符串均翻译成 11 种语言\n修复：在 jsonConfig.json 中向 go2rtcMapping 表添加缺失的 sm/md/lg/xl 尺寸属性 (E5507)\n修复：将缺失的管理员 i18n 密钥翻译成 9 种语言 (E5606)"
+      },
+      "0.0.6": {
+        "en": "add Live Dashboard and go2rtc WebRTC documentation to README",
+        "de": "Live-Dashboard- und go2rtc-WebRTC-Dokumentation zur README hinzugefügt",
+        "ru": "добавлена документация Live Dashboard и go2rtc WebRTC в README",
+        "pt": "documentação do Live Dashboard e go2rtc WebRTC adicionada ao README",
+        "nl": "Live Dashboard en go2rtc WebRTC documentatie toegevoegd aan README",
+        "fr": "documentation Live Dashboard et go2rtc WebRTC ajoutée au README",
+        "it": "documentazione Live Dashboard e go2rtc WebRTC aggiunta al README",
+        "es": "documentación de Live Dashboard y go2rtc WebRTC añadida al README",
+        "pl": "dodano dokumentację Live Dashboard i go2rtc WebRTC do README",
+        "uk": "додано документацію Live Dashboard і go2rtc WebRTC до README",
+        "zh-cn": "README 中新增 Live Dashboard 和 go2rtc WebRTC 文档"
+      },
+      "0.0.5": {
+        "en": "go2rtc WebRTC integration (admin table mapping, ioBroker WS proxy); auto-delete stale cameras; fix recording prev/next order",
+        "de": "go2rtc WebRTC-Integration (Admin-Tabellen-Mapping, ioBroker WS-Proxy); gelöschte Kameras werden automatisch entfernt; Vor/Zurück-Reihenfolge bei Aufnahmen korrigiert",
+        "ru": "интеграция go2rtc WebRTC (таблица в admin, WS-прокси через ioBroker); автоудаление устаревших камер; исправлен порядок кнопок Пред/След для записей",
+        "pt": "integração go2rtc WebRTC (tabela no admin, proxy WS via ioBroker); remoção automática de câmeras obsoletas; ordem anterior/próximo nas gravações corrigida",
+        "nl": "go2rtc WebRTC-integratie (admintabel, ioBroker WS-proxy); automatisch verwijderen van verouderde camera's; volgorde vorige/volgende opnames gecorrigeerd",
+        "fr": "intégration go2rtc WebRTC (table admin, proxy WS ioBroker); suppression automatique des caméras obsolètes; ordre précédent/suivant des enregistrements corrigé",
+        "it": "integrazione go2rtc WebRTC (tabella admin, proxy WS ioBroker); eliminazione automatica telecamere obsolete; ordine precedente/successivo registrazioni corretto",
+        "es": "integración go2rtc WebRTC (tabla en admin, proxy WS ioBroker); eliminación automática de cámaras obsoletas; orden anterior/siguiente en grabaciones corregido",
+        "pl": "integracja go2rtc WebRTC (tabela w admin, proxy WS ioBroker); automatyczne usuwanie nieaktywnych kamer; poprawiona kolejność poprzedni/następny nagrań",
+        "uk": "інтеграція go2rtc WebRTC (таблиця в admin, WS-проксі через ioBroker); автовидалення застарілих камер; виправлено порядок кнопок Попередній/Наступний для записів",
+        "zh-cn": "go2rtc WebRTC 集成（管理表格映射，ioBroker WS 代理）；自动删除过时摄像头；修正录像上一个/下一个顺序"
+      },
+      "0.0.4": {
+        "en": "fix DP roles: snapshot_b64 role state, profile selector role level",
+        "de": "DP-Rollen korrigiert: snapshot_b64 role state, Profil-Selektor role level",
+        "ru": "исправлены роли DP: snapshot_b64 role state, селектор профиля role level",
+        "pt": "corrigir roles DP: snapshot_b64 role state, seletor de perfil role level",
+        "nl": "DP-rollen gecorrigeerd: snapshot_b64 role state, profielkiezer role level",
+        "fr": "correction des rôles DP: snapshot_b64 role state, sélecteur de profil role level",
+        "it": "corretto ruoli DP: snapshot_b64 role state, selettore profilo role level",
+        "es": "corregir roles DP: snapshot_b64 role state, selector de perfil role level",
+        "pl": "poprawiono role DP: snapshot_b64 role state, selektor profilu role level",
+        "uk": "виправлено ролі DP: snapshot_b64 role state, вибір профілю role level",
+        "zh-cn": "修正 DP 角色：snapshot_b64 角色 state，配置文件选择器角色 level"
+      },
+      "0.0.3": {
+        "en": "profile selector: fetch available profiles via getProfiles, writable dropdown",
+        "de": "Profil-Selektor: verfügbare Profile via getProfiles laden, beschreibbares Dropdown",
+        "ru": "селектор профилей: получение доступных профилей через getProfiles, редактируемый список",
+        "pt": "seletor de perfil: buscar perfis disponíveis via getProfiles, menu suspenso gravável",
+        "nl": "profielkiezer: beschikbare profielen ophalen via getProfiles, beschrijfbare keuzelijst",
+        "fr": "sélecteur de profil: récupérer les profils disponibles via getProfiles, liste déroulante modifiable",
+        "it": "selettore profilo: recupera profili disponibili tramite getProfiles, menu a discesa scrivibile",
+        "es": "selector de perfil: obtener perfiles disponibles via getProfiles, lista desplegable escribible",
+        "pl": "selektor profilu: pobieranie dostępnych profili przez getProfiles, zapisywalny dropdown",
+        "uk": "вибір профілю: отримання доступних профілів через getProfiles, записуваний список",
+        "zh-cn": "配置文件选择器：通过 getProfiles 获取可用配置文件，可写下拉菜单"
+      },
+      "0.0.2": {
+        "en": "setup npm trusted publishing and fix repochecker findings",
+        "de": "npm Trusted Publishing eingerichtet und Repochecker-Findings behoben",
+        "ru": "настройка npm Trusted Publishing и исправление находок репочекера",
+        "pt": "configuração de publicação confiável npm e correção de resultados do repochecker",
+        "nl": "npm trusted publishing instellen en repochecker-bevindingen corrigeren",
+        "fr": "configuration de la publication de confiance npm et correction des résultats du repochecker",
+        "it": "configurazione della pubblicazione attendibile npm e correzione dei risultati del repochecker",
+        "es": "configuración de publicación de confianza npm y corrección de hallazgos del repochecker",
+        "pl": "konfiguracja zaufanego publikowania npm i poprawki wyników repocheckera",
+        "uk": "налаштування довіреної публікації npm та виправлення знахідок репочекера",
+        "zh-cn": "设置 npm 可信发布并修复 repochecker 问题"
+      },
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "Початкова версія",
+        "zh-cn": "首次出版"
+      }
+    },
+    "titleLang": {
+      "en": "Agent DVR",
+      "de": "Agent DVR",
+      "ru": "Агент DVR",
+      "pt": "Agente DVR",
+      "nl": "Agent DVR",
+      "fr": "Agent DVR",
+      "it": "DVR dell'agente",
+      "es": "DVR del agente",
+      "pl": "Agent DVR",
+      "uk": "Агентський відеореєстратор",
+      "zh-cn": "代理 DVR"
+    },
+    "desc": {
+      "en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
+      "de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
+      "ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
+      "pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
+      "nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
+      "fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
+      "it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
+      "es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
+      "pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
+      "uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
+      "zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
+    },
+    "authors": [
+      "ipod86 <david@graef.email>"
+    ],
+    "keywords": [
+      "Agentdvr",
+      "ispy",
+      "ptz"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "agent-dvr.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.agent-dvr/main/admin/agent-dvr.png",
+    "readme": "https://github.com/ipod86/ioBroker.agent-dvr/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "alarm",
+    "messagebox": true,
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.20"
+      },
+      {
+        "web": ">=3.0.0"
+      }
+    ],
+    "webExtension": "lib/web.js"
+  },
+  "protectedNative": [
+    "pass"
+  ],
+  "encryptedNative": [
+    "pass"
+  ],
+  "native": {
+    "ip": "192.168.1.100",
+    "port": 8090,
+    "user": "",
+    "pass": "",
+    "pollSeconds": 30,
+    "httpTimeoutMs": 8000,
+    "enableSystemControls": true,
+    "enablePtz": true,
+    "enableUrls": true,
+    "enableSnapshotB64": false,
+    "enableEventDps": true,
+    "enablePush": true,
+    "enableOverview": true,
+    "storeRawJson": false,
+    "enableWidget": true,
+    "widgetMode": "nojs",
+    "widgetAnzahl": 50,
+    "widgetMinCol": 150,
+    "widgetShowTags": true,
+    "widgetLiveAspect": "",
+    "widgetTagPosition": "bottom-left",
+    "widgetMaxModalWidth": 900,
+    "widgetPlayerUrl": "",
+    "maxDepth": 6,
+    "maxArray": 30,
+    "eventTagsDynamic": true,
+    "eventTagsIgnore": "detected",
+    "eventTags": "",
+    "webInstance": "*",
+    "widgetShowSearch": true,
+    "widgetSortNewest": true,
+    "widgetDefaultTag": "",
+    "widgetThumbSize": "medium",
+    "widgetCompact": false,
+    "dashDefaultView": "live",
+    "dashShowOffline": true,
+    "dashGridCols": 0,
+    "dashBtnsVisible": false,
+    "dashTagPosition": "top-right",
+    "dashRefreshSec": 60,
+    "dashStreamReconnect": true,
+    "widgetColorCardBg": "rgba(127,127,127,0.15)",
+    "widgetColorTagBg": "rgba(0,0,0,0.55)",
+    "widgetColorTagText": "#ffffff",
+    "widgetColorAccent": "#8ab4f8",
+    "widgetColorModalBg": "#1c1c1e",
+    "widgetBorderRadius": 8,
+    "go2rtcEnabled": false,
+    "go2rtcUrl": "",
+    "go2rtcMapping": [],
+    "dashColorBg": "#080b0f",
+    "dashColorSurface": "#0d1117",
+    "dashColorAccent": "#2563eb",
+    "dashColorText": "#dde4ef",
+    "dashColorBorder": "#1e2a38",
+    "dashColorOnline": "#22c55e",
+    "dashColorOffline": "#ef4444"
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }

@@ -202,6 +202,11 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.0 (2026-07-01)
+* (ipod86) feat: add full i18n to live dashboard — all UI strings translated into 11 languages
+* (ipod86) fix: add missing sm/md/lg/xl size attributes to go2rtcMapping table in jsonConfig.json (E5507)
+* (ipod86) fix: translate missing admin i18n keys into 9 languages (E5606)
+
 ### 0.0.6 (2026-07-01)
 * (ipod86) docs: add Live Dashboard and go2rtc WebRTC sections to README
 
@@ -231,12 +236,6 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 ### 0.0.3 (2026-06-27)
 * (ipod86) feat: profile selector — reads profiles from getObjects, writable dropdown with active profile reflected on every poll
 * (ipod86) feat: snapshot_b64 state (media.picture) always present per camera + manual refresh button; auto-poll optional
-
-### 0.0.2 (2026-06-27)
-* (ipod86) setup npm trusted publishing and fix repochecker findings
-
-### 0.0.1 (2026-06-27)
-* (ipod86) initial release
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
