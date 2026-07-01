@@ -250,11 +250,11 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <div id="nav">
     <button class="nav-btn active" onclick="showView('live')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-      Live
+      <span data-i18n="navLive">Live</span>
     </button>
     <button class="nav-btn" onclick="showView('rec')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
-      Aufnahmen
+      <span data-i18n="navRec">Aufnahmen</span>
     </button>
   </div>
   <div class="hdr-r">
@@ -273,14 +273,14 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Recordings -->
   <div id="view-rec" class="view">
     <div id="rec-filter-bar">
-      <input id="rec-search" type="search" placeholder="&#128269; Suchen…" oninput="filterRec()">
+      <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Suchen…" oninput="filterRec()">
       <select id="rec-cam-sel" onchange="loadAndFilterRec()">
-        <option value="">Kamera wählen…</option>
+        <option value="" data-i18n="camSelect">Kamera wählen…</option>
       </select>
       <div id="rec-tags"></div>
       <div id="rec-toolbar">
         <span id="rec-count"></span>
-        <button id="rec-view-grid" class="rec-view-btn active" title="Rasteransicht" onclick="setRecView('grid')">
+        <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Rasteransicht" onclick="setRecView('grid')">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
             <rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/>
             <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
@@ -300,7 +300,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   </div>
 </main>
 
-<div id="sbar"><span id="sbar-msg">Lade…</span></div>
+<div id="sbar"><span id="sbar-msg" data-i18n="sbarLoading">Lade…</span></div>
 </div><!-- #app -->
 
 <!-- Video panel (persistent overlay, survives tab switch) -->
@@ -313,9 +313,9 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </div>
     <video id="vid-el" controls playsinline preload="auto"></video>
     <div id="vid-nav">
-      <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)">&#8249; Vorherige</button>
+      <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Vorherige</button>
       <span id="vid-pos"></span>
-      <button id="vid-next" onclick="playRecIdx(recPlayIdx + 1)">Nächste &#8250;</button>
+      <button id="vid-next" onclick="playRecIdx(recPlayIdx + 1)" data-i18n="vidNext">Nächste &#8250;</button>
     </div>
     <div id="vid-meta">
       <span id="vid-meta-txt"></span>
@@ -342,6 +342,339 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 <script>
 'use strict';
+
+/* ─────────────────────────── i18n ──────────────────────────── */
+const TRANSLATIONS = {
+  de: {
+    navLive:         'Live',
+    navRec:          'Aufnahmen',
+    searchPlaceholder: '🔍 Suchen…',
+    camSelect:       'Kamera wählen…',
+    gridView:        'Rasteransicht',
+    sbarLoading:     'Lade…',
+    vidPrev:         '‹ Vorherige',
+    vidNext:         'Nächste ›',
+    loadingCameras:  'Lade Kameras…',
+    bannerNoCameras: '<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.',
+    sbarNoCameras:   'Keine Kameras · ',
+    sbarLoaded:      ' Kamera(s) · ',
+    bannerLoadError: '<strong>Ladefehler</strong><br>',
+    sbarError:       'Fehler: ',
+    tagAll:          'Alle',
+    recStart:        'Aufnahme starten',
+    recStop:         'Aufnahme stoppen',
+    recLoading:      'Lade…',
+    recNone:         'Keine Aufnahmen.<br><small>enableEventDps in Adapter-Config prüfen.</small>',
+    recError:        'Fehler: ',
+    recNoMatch:      'Keine Treffer.',
+    recCount:        '{n} Aufnahme(n)',
+    zoomOut:         'Rauszoomen',
+    zoomIn:          'Reinzoomen',
+    reload:          'Neu laden',
+  },
+  en: {
+    navLive:         'Live',
+    navRec:          'Recordings',
+    searchPlaceholder: '🔍 Search…',
+    camSelect:       'Select camera…',
+    gridView:        'Grid view',
+    sbarLoading:     'Loading…',
+    vidPrev:         '‹ Previous',
+    vidNext:         'Next ›',
+    loadingCameras:  'Loading cameras…',
+    bannerNoCameras: '<strong>No cameras</strong><br>Is AgentDVR reachable? Check IP/port in adapter config.',
+    sbarNoCameras:   'No cameras · ',
+    sbarLoaded:      ' camera(s) · ',
+    bannerLoadError: '<strong>Load error</strong><br>',
+    sbarError:       'Error: ',
+    tagAll:          'All',
+    recStart:        'Start recording',
+    recStop:         'Stop recording',
+    recLoading:      'Loading…',
+    recNone:         'No recordings.<br><small>Check enableEventDps in adapter config.</small>',
+    recError:        'Error: ',
+    recNoMatch:      'No results.',
+    recCount:        '{n} recording(s)',
+    zoomOut:         'Zoom out',
+    zoomIn:          'Zoom in',
+    reload:          'Reload',
+  },
+  es: {
+    navLive:         'En vivo',
+    navRec:          'Grabaciones',
+    searchPlaceholder: '🔍 Buscar…',
+    camSelect:       'Seleccionar cámara…',
+    gridView:        'Vista de cuadrícula',
+    sbarLoading:     'Cargando…',
+    vidPrev:         '‹ Anterior',
+    vidNext:         'Siguiente ›',
+    loadingCameras:  'Cargando cámaras…',
+    bannerNoCameras: '<strong>Sin cámaras</strong><br>¿AgentDVR accesible? Comprueba IP/puerto en la config del adaptador.',
+    sbarNoCameras:   'Sin cámaras · ',
+    sbarLoaded:      ' cámara(s) · ',
+    bannerLoadError: '<strong>Error de carga</strong><br>',
+    sbarError:       'Error: ',
+    tagAll:          'Todas',
+    recStart:        'Iniciar grabación',
+    recStop:         'Detener grabación',
+    recLoading:      'Cargando…',
+    recNone:         'Sin grabaciones.<br><small>Comprueba enableEventDps en la config del adaptador.</small>',
+    recError:        'Error: ',
+    recNoMatch:      'Sin resultados.',
+    recCount:        '{n} grabación(es)',
+    zoomOut:         'Alejar',
+    zoomIn:          'Acercar',
+    reload:          'Recargar',
+  },
+  fr: {
+    navLive:         'En direct',
+    navRec:          'Enregistrements',
+    searchPlaceholder: '🔍 Rechercher…',
+    camSelect:       'Choisir une caméra…',
+    gridView:        'Vue en grille',
+    sbarLoading:     'Chargement…',
+    vidPrev:         '‹ Précédent',
+    vidNext:         'Suivant ›',
+    loadingCameras:  'Chargement des caméras…',
+    bannerNoCameras: '<strong>Aucune caméra</strong><br>AgentDVR accessible ? Vérifiez IP/port dans la config de l\'adaptateur.',
+    sbarNoCameras:   'Aucune caméra · ',
+    sbarLoaded:      ' caméra(s) · ',
+    bannerLoadError: '<strong>Erreur de chargement</strong><br>',
+    sbarError:       'Erreur : ',
+    tagAll:          'Tout',
+    recStart:        'Démarrer l\'enregistrement',
+    recStop:         'Arrêter l\'enregistrement',
+    recLoading:      'Chargement…',
+    recNone:         'Aucun enregistrement.<br><small>Vérifiez enableEventDps dans la config de l\'adaptateur.</small>',
+    recError:        'Erreur : ',
+    recNoMatch:      'Aucun résultat.',
+    recCount:        '{n} enregistrement(s)',
+    zoomOut:         'Dézoomer',
+    zoomIn:          'Zoomer',
+    reload:          'Recharger',
+  },
+  it: {
+    navLive:         'Live',
+    navRec:          'Registrazioni',
+    searchPlaceholder: '🔍 Cerca…',
+    camSelect:       'Seleziona telecamera…',
+    gridView:        'Vista griglia',
+    sbarLoading:     'Caricamento…',
+    vidPrev:         '‹ Precedente',
+    vidNext:         'Successivo ›',
+    loadingCameras:  'Caricamento telecamere…',
+    bannerNoCameras: '<strong>Nessuna telecamera</strong><br>AgentDVR raggiungibile? Controlla IP/porta nella config dell\'adattatore.',
+    sbarNoCameras:   'Nessuna telecamera · ',
+    sbarLoaded:      ' telecamera(e) · ',
+    bannerLoadError: '<strong>Errore di caricamento</strong><br>',
+    sbarError:       'Errore: ',
+    tagAll:          'Tutte',
+    recStart:        'Avvia registrazione',
+    recStop:         'Ferma registrazione',
+    recLoading:      'Caricamento…',
+    recNone:         'Nessuna registrazione.<br><small>Controlla enableEventDps nella config dell\'adattatore.</small>',
+    recError:        'Errore: ',
+    recNoMatch:      'Nessun risultato.',
+    recCount:        '{n} registrazione(i)',
+    zoomOut:         'Rimpicciolisci',
+    zoomIn:          'Ingrandisci',
+    reload:          'Ricarica',
+  },
+  nl: {
+    navLive:         'Live',
+    navRec:          'Opnames',
+    searchPlaceholder: '🔍 Zoeken…',
+    camSelect:       'Camera kiezen…',
+    gridView:        'Rasterweergave',
+    sbarLoading:     'Laden…',
+    vidPrev:         '‹ Vorige',
+    vidNext:         'Volgende ›',
+    loadingCameras:  'Camera\'s laden…',
+    bannerNoCameras: '<strong>Geen camera\'s</strong><br>AgentDVR bereikbaar? Controleer IP/poort in de adapterconfig.',
+    sbarNoCameras:   'Geen camera\'s · ',
+    sbarLoaded:      ' camera(\'s) · ',
+    bannerLoadError: '<strong>Laadsfout</strong><br>',
+    sbarError:       'Fout: ',
+    tagAll:          'Alle',
+    recStart:        'Opname starten',
+    recStop:         'Opname stoppen',
+    recLoading:      'Laden…',
+    recNone:         'Geen opnames.<br><small>Controleer enableEventDps in de adapterconfig.</small>',
+    recError:        'Fout: ',
+    recNoMatch:      'Geen resultaten.',
+    recCount:        '{n} opname(s)',
+    zoomOut:         'Uitzoomen',
+    zoomIn:          'Inzoomen',
+    reload:          'Herladen',
+  },
+  pl: {
+    navLive:         'Na żywo',
+    navRec:          'Nagrania',
+    searchPlaceholder: '🔍 Szukaj…',
+    camSelect:       'Wybierz kamerę…',
+    gridView:        'Widok siatki',
+    sbarLoading:     'Ładowanie…',
+    vidPrev:         '‹ Poprzednie',
+    vidNext:         'Następne ›',
+    loadingCameras:  'Ładowanie kamer…',
+    bannerNoCameras: '<strong>Brak kamer</strong><br>AgentDVR dostępny? Sprawdź IP/port w konfiguracji adaptera.',
+    sbarNoCameras:   'Brak kamer · ',
+    sbarLoaded:      ' kamera(y) · ',
+    bannerLoadError: '<strong>Błąd ładowania</strong><br>',
+    sbarError:       'Błąd: ',
+    tagAll:          'Wszystkie',
+    recStart:        'Rozpocznij nagrywanie',
+    recStop:         'Zatrzymaj nagrywanie',
+    recLoading:      'Ładowanie…',
+    recNone:         'Brak nagrań.<br><small>Sprawdź enableEventDps w konfiguracji adaptera.</small>',
+    recError:        'Błąd: ',
+    recNoMatch:      'Brak wyników.',
+    recCount:        '{n} nagranie(a)',
+    zoomOut:         'Oddal',
+    zoomIn:          'Przybliż',
+    reload:          'Odśwież',
+  },
+  pt: {
+    navLive:         'Ao vivo',
+    navRec:          'Gravações',
+    searchPlaceholder: '🔍 Pesquisar…',
+    camSelect:       'Selecionar câmera…',
+    gridView:        'Visualização em grade',
+    sbarLoading:     'Carregando…',
+    vidPrev:         '‹ Anterior',
+    vidNext:         'Próximo ›',
+    loadingCameras:  'Carregando câmeras…',
+    bannerNoCameras: '<strong>Nenhuma câmera</strong><br>AgentDVR acessível? Verifique IP/porta na config do adaptador.',
+    sbarNoCameras:   'Nenhuma câmera · ',
+    sbarLoaded:      ' câmera(s) · ',
+    bannerLoadError: '<strong>Erro de carregamento</strong><br>',
+    sbarError:       'Erro: ',
+    tagAll:          'Todas',
+    recStart:        'Iniciar gravação',
+    recStop:         'Parar gravação',
+    recLoading:      'Carregando…',
+    recNone:         'Sem gravações.<br><small>Verifique enableEventDps na config do adaptador.</small>',
+    recError:        'Erro: ',
+    recNoMatch:      'Sem resultados.',
+    recCount:        '{n} gravação(ões)',
+    zoomOut:         'Afastar',
+    zoomIn:          'Aproximar',
+    reload:          'Recarregar',
+  },
+  ru: {
+    navLive:         'В эфире',
+    navRec:          'Записи',
+    searchPlaceholder: '🔍 Поиск…',
+    camSelect:       'Выбрать камеру…',
+    gridView:        'Сетка',
+    sbarLoading:     'Загрузка…',
+    vidPrev:         '‹ Предыдущее',
+    vidNext:         'Следующее ›',
+    loadingCameras:  'Загрузка камер…',
+    bannerNoCameras: '<strong>Камеры не найдены</strong><br>AgentDVR доступен? Проверьте IP/порт в настройках адаптера.',
+    sbarNoCameras:   'Нет камер · ',
+    sbarLoaded:      ' камер(а) · ',
+    bannerLoadError: '<strong>Ошибка загрузки</strong><br>',
+    sbarError:       'Ошибка: ',
+    tagAll:          'Все',
+    recStart:        'Начать запись',
+    recStop:         'Остановить запись',
+    recLoading:      'Загрузка…',
+    recNone:         'Нет записей.<br><small>Проверьте enableEventDps в настройках адаптера.</small>',
+    recError:        'Ошибка: ',
+    recNoMatch:      'Ничего не найдено.',
+    recCount:        '{n} запись(ей)',
+    zoomOut:         'Уменьшить',
+    zoomIn:          'Увеличить',
+    reload:          'Обновить',
+  },
+  uk: {
+    navLive:         'Наживо',
+    navRec:          'Записи',
+    searchPlaceholder: '🔍 Пошук…',
+    camSelect:       'Обрати камеру…',
+    gridView:        'Сітка',
+    sbarLoading:     'Завантаження…',
+    vidPrev:         '‹ Попереднє',
+    vidNext:         'Наступне ›',
+    loadingCameras:  'Завантаження камер…',
+    bannerNoCameras: '<strong>Камери не знайдено</strong><br>AgentDVR доступний? Перевірте IP/порт у налаштуваннях адаптера.',
+    sbarNoCameras:   'Немає камер · ',
+    sbarLoaded:      ' камер(а) · ',
+    bannerLoadError: '<strong>Помилка завантаження</strong><br>',
+    sbarError:       'Помилка: ',
+    tagAll:          'Всі',
+    recStart:        'Почати запис',
+    recStop:         'Зупинити запис',
+    recLoading:      'Завантаження…',
+    recNone:         'Немає записів.<br><small>Перевірте enableEventDps у налаштуваннях адаптера.</small>',
+    recError:        'Помилка: ',
+    recNoMatch:      'Нічого не знайдено.',
+    recCount:        '{n} запис(ів)',
+    zoomOut:         'Зменшити',
+    zoomIn:          'Збільшити',
+    reload:          'Оновити',
+  },
+  'zh-cn': {
+    navLive:         '实时',
+    navRec:          '录像',
+    searchPlaceholder: '🔍 搜索…',
+    camSelect:       '选择摄像头…',
+    gridView:        '网格视图',
+    sbarLoading:     '加载中…',
+    vidPrev:         '‹ 上一个',
+    vidNext:         '下一个 ›',
+    loadingCameras:  '正在加载摄像头…',
+    bannerNoCameras: '<strong>未找到摄像头</strong><br>AgentDVR 可达？请检查适配器配置中的 IP/端口。',
+    sbarNoCameras:   '无摄像头 · ',
+    sbarLoaded:      ' 个摄像头 · ',
+    bannerLoadError: '<strong>加载错误</strong><br>',
+    sbarError:       '错误：',
+    tagAll:          '全部',
+    recStart:        '开始录制',
+    recStop:         '停止录制',
+    recLoading:      '加载中…',
+    recNone:         '无录像。<br><small>请检查适配器配置中的 enableEventDps。</small>',
+    recError:        '错误：',
+    recNoMatch:      '无结果。',
+    recCount:        '{n} 个录像',
+    zoomOut:         '缩小',
+    zoomIn:          '放大',
+    reload:          '重新加载',
+  },
+};
+
+(function() {
+  const up = new URLSearchParams(window.location.search);
+  const lp = up.get('lang') || up.get('language') || up.get('lng');
+  function norm(l) {
+    if (!l) return 'en';
+    const ll = l.toLowerCase().replace('_', '-');
+    if (ll === 'zh-cn' || ll === 'zh') return 'zh-cn';
+    return ll.slice(0, 2);
+  }
+  let lang = lp ? norm(lp) : norm(navigator.language || 'en');
+  if (!TRANSLATIONS[lang]) lang = 'en';
+  window.DASH_LANG = lang;
+})();
+
+function t(key) {
+  const tr = TRANSLATIONS[window.DASH_LANG] || TRANSLATIONS.en;
+  return (tr[key] !== undefined ? tr[key] : (TRANSLATIONS.en[key] !== undefined ? TRANSLATIONS.en[key] : key));
+}
+
+function applyDashTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    el.title = t(el.getAttribute('data-i18n-title'));
+  });
+}
+
 /* ─────────────────────────── State ─────────────────────────── */
 let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
 let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
@@ -408,7 +741,7 @@ async function loadConfig() {
 
 /* ─────────────────────────── Init ──────────────────────────── */
 async function loadData() {
-  sbar('Lade Kameras…');
+  sbar(t('loadingCameras'));
   try {
     const r = await fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) });
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -421,12 +754,12 @@ async function loadData() {
 
     const n = Object.keys(cameras).length;
     if (!n) {
-      showBanner('<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.', true);
-      sbar('Keine Kameras · ' + INST, true);
+      showBanner(t('bannerNoCameras'), true);
+      sbar(t('sbarNoCameras') + INST, true);
       return;
     }
     hideBanner();
-    sbar(n + ' Kamera(s) · ' + INST + (BASE ? ' · ' + BASE : ''));
+    sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
     syncChips();
     syncGrid();
     buildRecCamSel();
@@ -438,8 +771,8 @@ async function loadData() {
       refreshTimer = setInterval(() => loadData(), CFG.dashRefreshSec * 1000);
     }
   } catch (e) {
-    showBanner('<strong>Ladefehler</strong><br>' + esc(e.message), true);
-    sbar('Fehler: ' + e.message, true);
+    showBanner(t('bannerLoadError') + esc(e.message), true);
+    sbar(t('sbarError') + e.message, true);
   }
 }
 
@@ -492,7 +825,7 @@ function syncChips() {
   const bar = document.getElementById('chip-bar');
   bar.innerHTML = '';
   if (!Object.keys(cameras).length) return;
-  addChip(bar, 'Alle', hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
+  addChip(bar, t('tagAll'), hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
   Object.entries(cameras).forEach(([k, cam]) => {
     addChip(bar, cam.name, !hidden.has(k), () => {
       hidden.has(k) ? hidden.delete(k) : hidden.add(k);
@@ -590,7 +923,7 @@ function makeTile(key, cam) {
   const btnBox = document.createElement('div'); btnBox.className = 'tile-btns';
 
   const recBtn = document.createElement('div');
-  recBtn.className = 'tile-btn rec-btn'; recBtn.title = 'Aufnahme starten';
+  recBtn.className = 'tile-btn rec-btn'; recBtn.title = t('recStart');
   recBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
   recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, tile); });
   btnBox.appendChild(recBtn);
@@ -756,7 +1089,7 @@ function setTileStatus(ck, cls, on) {
 function setTileRecording(tile, btn, recording) {
   tile.classList.toggle('recording', recording);
   btn.classList.toggle('active', recording);
-  btn.title = recording ? 'Aufnahme stoppen' : 'Aufnahme starten';
+  btn.title = recording ? t('recStop') : t('recStart');
   const svgRec  = `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`;
   const svgStop = `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
   btn.innerHTML = recording ? svgRec : svgStop;
@@ -822,7 +1155,7 @@ function openFs(cam, key) {
   const recBtn = document.createElement('div');
   recBtn.className = 'tile-btn rec-btn';
   recBtn.classList.toggle('active', isRec);
-  recBtn.title = isRec ? 'Aufnahme stoppen' : 'Aufnahme starten';
+  recBtn.title = isRec ? t('recStop') : t('recStart');
   recBtn.innerHTML = isRec
     ? `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`
     : `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
@@ -870,7 +1203,7 @@ document.getElementById('fs-panel').addEventListener('click', e => {
 function buildRecCamSel() {
   const sel = document.getElementById('rec-cam-sel');
   const last = localStorage.getItem('advr_rec_cam') || '';
-  sel.innerHTML = '<option value="">Kamera wählen…</option>';
+  sel.innerHTML = '<option value="">' + t('camSelect') + '</option>';
   Object.entries(cameras).forEach(([k, cam]) => {
     const o = document.createElement('option'); o.value = k; o.textContent = cam.name;
     sel.appendChild(o);
@@ -885,7 +1218,7 @@ async function loadAndFilterRec() {
   if (!key) return;
   localStorage.setItem('advr_rec_cam', key);
   const grid = document.getElementById('rec-grid');
-  grid.innerHTML = '<div class="rec-empty">Lade…</div>';
+  grid.innerHTML = '<div class="rec-empty">' + t('recLoading') + '</div>';
   document.getElementById('rec-tags').innerHTML = '';
   recAllItems = [];
 
@@ -897,7 +1230,7 @@ async function loadAndFilterRec() {
     recAllItems = Array.isArray(data) ? data : [];
 
     if (!recAllItems.length) {
-      grid.innerHTML = '<div class="rec-empty">Keine Aufnahmen.<br><small>enableEventDps in Adapter-Config prüfen.</small></div>';
+      grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';
       return;
     }
 
@@ -906,7 +1239,7 @@ async function loadAndFilterRec() {
     const tagBar = document.getElementById('rec-tags');
     recFilters.tag = '';
     if (tags.length) {
-      const all = document.createElement('span'); all.className = 'tag-chip on'; all.textContent = 'Alle';
+      const all = document.createElement('span'); all.className = 'tag-chip on'; all.textContent = t('tagAll'); all.dataset.tagAll = '1';
       all.onclick = () => { recFilters.tag = ''; setActiveTag(null); renderRec(); };
       tagBar.appendChild(all);
       tags.forEach(t => {
@@ -917,13 +1250,13 @@ async function loadAndFilterRec() {
     }
     renderRec();
   } catch (e) {
-    grid.innerHTML = '<div class="rec-empty">Fehler: ' + esc(e.message) + '</div>';
+    grid.innerHTML = '<div class="rec-empty">' + t('recError') + esc(e.message) + '</div>';
   }
 }
 
 function setActiveTag(tag) {
   document.querySelectorAll('#rec-tags .tag-chip').forEach(c => {
-    c.classList.toggle('on', tag === null ? c.textContent === 'Alle' : c.dataset.tag === tag);
+    c.classList.toggle('on', tag === null ? !!c.dataset.tagAll : c.dataset.tag === tag);
   });
 }
 
@@ -953,11 +1286,11 @@ function renderRec() {
     return true;
   });
 
-  document.getElementById('rec-count').textContent = items.length + ' Aufnahme' + (items.length !== 1 ? 'n' : '');
+  document.getElementById('rec-count').textContent = t('recCount').replace('{n}', items.length);
   grid.innerHTML = '';
 
   if (!items.length) {
-    grid.innerHTML = '<div class="rec-empty">Keine Treffer.</div>';
+    grid.innerHTML = '<div class="rec-empty">' + t('recNoMatch') + '</div>';
     return;
   }
 
@@ -1024,14 +1357,14 @@ function renderTimeline(items, cam) {
   // ── Zoom control ──
   const zoomRow = document.createElement('div'); zoomRow.className = 'tl-zoom';
   const zOut = document.createElement('button'); zOut.className = 'tl-zoom-btn';
-  zOut.textContent = '−'; zOut.title = 'Rauszoomen';
+  zOut.textContent = '−'; zOut.title = t('zoomOut');
   zOut.disabled = TL_ZOOMS.indexOf(tlZoomLevel) === 0;
   zOut.addEventListener('click', () => tlZoom(-1));
   const zLbl = document.createElement('span'); zLbl.className = 'tl-zoom-lbl';
   const hoursVis = 24 / tlZoomLevel;
   zLbl.textContent = hoursVis < 1 ? (hoursVis * 60) + 'min' : hoursVis + 'h';
   const zIn = document.createElement('button'); zIn.className = 'tl-zoom-btn';
-  zIn.textContent = '+'; zIn.title = 'Reinzoomen';
+  zIn.textContent = '+'; zIn.title = t('zoomIn');
   zIn.disabled = TL_ZOOMS.indexOf(tlZoomLevel) === TL_ZOOMS.length - 1;
   zIn.addEventListener('click', () => tlZoom(+1));
   zoomRow.append(zOut, zLbl, zIn);
@@ -1128,7 +1461,7 @@ document.getElementById('vid-panel').addEventListener('click', e => {
 /* ─────────────────────────── Banner / Status ─────────────────── */
 function showBanner(html, retry) {
   const b = document.getElementById('info-banner');
-  b.innerHTML = html + (retry ? '<button onclick="location.reload()">Neu laden</button>' : '');
+  b.innerHTML = html + (retry ? '<button onclick="location.reload()">' + t('reload') + '</button>' : '');
   b.classList.add('visible');
 }
 function hideBanner() { document.getElementById('info-banner').classList.remove('visible'); }
@@ -1255,6 +1588,7 @@ function disconnectWebRTC(vid) {
 }
 
 /* ─────────────────────────── Boot ──────────────────────────── */
+applyDashTranslations();
 loadConfig().then(() => loadData()).then(() => ensureLayoutObserver());
 </script>
 <script src="/socket.io/socket.io.js"></script>
