@@ -23,6 +23,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
 var http = __toESM(require("node:http"));
+var https = __toESM(require("node:https"));
 var import_widget_i18n = require("./lib/widget-i18n");
 const CAM_COMMANDS = [
   { id: "record", path: "/command/record", params: ["oid", "ot"], name: "Start recording" },
@@ -298,6 +299,7 @@ class AgentDvr extends utils.Adapter {
     super({ ...options, name: "agent-dvr" });
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
+    this.on("message", this.onMessage.bind(this));
     this.on("unload", this.onUnload.bind(this));
   }
   // ---- lifecycle ----
@@ -348,6 +350,49 @@ class AgentDvr extends utils.Adapter {
     } catch {
     }
     callback();
+  }
+  onMessage(obj) {
+    if (!obj || obj.command !== "getGo2rtcStreams") {
+      return;
+    }
+    void this.fetchGo2rtcStreams().then((streams) => {
+      this.sendTo(obj.from, obj.command, { streams }, obj.callback);
+    });
+  }
+  fetchGo2rtcStreams() {
+    return new Promise((resolve) => {
+      const url = this.config.go2rtcUrl;
+      if (!url) {
+        resolve([]);
+        return;
+      }
+      let target;
+      try {
+        target = new URL("/api/streams", url);
+      } catch {
+        resolve([]);
+        return;
+      }
+      const mod = target.protocol === "https:" ? https : http;
+      const req = mod.get(target.toString(), (res) => {
+        let body = "";
+        res.on("data", (c) => {
+          body += c.toString();
+        });
+        res.on("end", () => {
+          try {
+            resolve(Object.keys(JSON.parse(body) || {}));
+          } catch {
+            resolve([]);
+          }
+        });
+        res.on("error", () => resolve([]));
+      });
+      req.setTimeout(4e3, () => {
+        req.destroy();
+      });
+      req.on("error", () => resolve([]));
+    });
   }
   onStateChange(id, state) {
     if (!state || state.ack !== false) {

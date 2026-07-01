@@ -103,6 +103,7 @@
 		"tier": 3,
 		"mode": "daemon",
 		"type": "alarm",
+		"messagebox": true,
 		"compact": true,
 		"connectionType": "local",
 		"dataSource": "poll",

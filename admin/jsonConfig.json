@@ -474,12 +474,12 @@
                     "xs": 12, "sm": 8, "md": 6, "lg": 5, "xl": 4
                 },
                 "go2rtcMapping": {
-                    "type": "text",
-                    "label": "cfgGo2rtcMapping",
-                    "help": "cfgGo2rtcMapping_tt",
+                    "type": "custom",
+                    "url": "custom/go2rtcMapping.js",
+                    "name": "Go2rtcMapping",
                     "hidden": "!data.go2rtcEnabled",
                     "newLine": true,
-                    "xs": 12, "sm": 12, "md": 10, "lg": 8, "xl": 6
+                    "xs": 12
                 }
             }
         },

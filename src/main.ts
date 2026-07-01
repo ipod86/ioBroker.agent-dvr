@@ -1,5 +1,6 @@
 import * as utils from '@iobroker/adapter-core';
 import * as http from 'node:http';
+import * as https from 'node:https';
 import { getWidgetLabels, type WidgetLabels } from './lib/widget-i18n';
 
 // =====================================================================
@@ -400,6 +401,7 @@ class AgentDvr extends utils.Adapter {
 		super({ ...options, name: 'agent-dvr' });
 		this.on('ready', this.onReady.bind(this));
 		this.on('stateChange', this.onStateChange.bind(this));
+		this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 	}
 
@@ -459,6 +461,51 @@ class AgentDvr extends utils.Adapter {
 			/* ignore */
 		}
 		callback();
+	}
+
+	private onMessage(obj: ioBroker.Message): void {
+		if (!obj || obj.command !== 'getGo2rtcStreams') {
+			return;
+		}
+		void this.fetchGo2rtcStreams().then(streams => {
+			this.sendTo(obj.from, obj.command, { streams }, obj.callback);
+		});
+	}
+
+	private fetchGo2rtcStreams(): Promise<string[]> {
+		return new Promise(resolve => {
+			const url = this.config.go2rtcUrl;
+			if (!url) {
+				resolve([]);
+				return;
+			}
+			let target: URL;
+			try {
+				target = new URL('/api/streams', url);
+			} catch {
+				resolve([]);
+				return;
+			}
+			const mod = target.protocol === 'https:' ? https : http;
+			const req = mod.get(target.toString(), res => {
+				let body = '';
+				res.on('data', (c: Buffer) => {
+					body += c.toString();
+				});
+				res.on('end', () => {
+					try {
+						resolve(Object.keys(JSON.parse(body) || {}));
+					} catch {
+						resolve([]);
+					}
+				});
+				res.on('error', () => resolve([]));
+			});
+			req.setTimeout(4000, () => {
+				req.destroy();
+			});
+			req.on('error', () => resolve([]));
+		});
 	}
 
 	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
