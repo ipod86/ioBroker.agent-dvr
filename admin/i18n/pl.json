@@ -129,5 +129,7 @@
     "cfgGo2rtcEnabled": "Włącz go2rtc",
     "cfgGo2rtcEnabled_tt": "Używaj strumieni WebRTC z go2rtc zamiast MJPEG (konfiguruj mapowanie per kamera w panelu)",
     "cfgGo2rtcUrl": "URL go2rtc",
-    "cfgGo2rtcUrl_tt": "Bazowy URL serwera go2rtc, np. http://192.168.1.1:1984"
+    "cfgGo2rtcUrl_tt": "Bazowy URL serwera go2rtc, np. http://192.168.1.1:1984",
+    "cfgGo2rtcMapping": "Mapowanie strumieni (JSON)",
+    "cfgGo2rtcMapping_tt": "Przypisz klucze kamer AgentDVR do strumieni go2rtc. Format: {\"cam_8_Reolink\":\"Reolink\"}. Niezmapowane kamery używają MJPEG."
 }

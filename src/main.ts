@@ -775,7 +775,7 @@ class AgentDvr extends utils.Adapter {
 	// ---- device status data points ----
 
 	private readonly STATUS_DPS = [
-		{ key: 'recording', role: 'indicator.active', name: 'Active recording' },
+		{ key: 'recording', role: 'indicator.working', name: 'Active recording' },
 		{ key: 'online', role: 'indicator.reachable', name: 'Online' },
 		{ key: 'connected', role: 'indicator.connected', name: 'Stream connected' },
 		{ key: 'detected', role: 'indicator', name: 'Motion detected' },

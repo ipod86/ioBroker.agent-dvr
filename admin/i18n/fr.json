@@ -129,5 +129,7 @@
     "cfgGo2rtcEnabled": "Activer go2rtc",
     "cfgGo2rtcEnabled_tt": "Utiliser les flux WebRTC de go2rtc au lieu de MJPEG (configurer la correspondance par caméra dans le tableau de bord)",
     "cfgGo2rtcUrl": "URL go2rtc",
-    "cfgGo2rtcUrl_tt": "URL de base du serveur go2rtc, par ex. http://192.168.1.1:1984"
+    "cfgGo2rtcUrl_tt": "URL de base du serveur go2rtc, par ex. http://192.168.1.1:1984",
+    "cfgGo2rtcMapping": "Correspondance des flux (JSON)",
+    "cfgGo2rtcMapping_tt": "Associez chaque clé de caméra AgentDVR à un flux go2rtc. Format : {\"cam_8_Reolink\":\"Reolink\"}. Les caméras absentes utilisent MJPEG."
 }
