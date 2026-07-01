@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "agent-dvr",
-		"version": "0.0.4",
+		"version": "0.0.5",
 		"news": {
+			"0.0.5": {
+				"en": "go2rtc WebRTC integration (admin table mapping, ioBroker WS proxy); auto-delete stale cameras; fix recording prev/next order",
+				"de": "go2rtc WebRTC-Integration (Admin-Tabellen-Mapping, ioBroker WS-Proxy); gelöschte Kameras werden automatisch entfernt; Vor/Zurück-Reihenfolge bei Aufnahmen korrigiert",
+				"ru": "интеграция go2rtc WebRTC (таблица в admin, WS-прокси через ioBroker); автоудаление устаревших камер; исправлен порядок кнопок Пред/След для записей",
+				"pt": "integração go2rtc WebRTC (tabela no admin, proxy WS via ioBroker); remoção automática de câmeras obsoletas; ordem anterior/próximo nas gravações corrigida",
+				"nl": "go2rtc WebRTC-integratie (admintabel, ioBroker WS-proxy); automatisch verwijderen van verouderde camera's; volgorde vorige/volgende opnames gecorrigeerd",
+				"fr": "intégration go2rtc WebRTC (table admin, proxy WS ioBroker); suppression automatique des caméras obsolètes; ordre précédent/suivant des enregistrements corrigé",
+				"it": "integrazione go2rtc WebRTC (tabella admin, proxy WS ioBroker); eliminazione automatica telecamere obsolete; ordine precedente/successivo registrazioni corretto",
+				"es": "integración go2rtc WebRTC (tabla en admin, proxy WS ioBroker); eliminación automática de cámaras obsoletas; orden anterior/siguiente en grabaciones corregido",
+				"pl": "integracja go2rtc WebRTC (tabela w admin, proxy WS ioBroker); automatyczne usuwanie nieaktywnych kamer; poprawiona kolejność poprzedni/następny nagrań",
+				"uk": "інтеграція go2rtc WebRTC (таблиця в admin, WS-проксі через ioBroker); автовидалення застарілих камер; виправлено порядок кнопок Попередній/Наступний для записів",
+				"zh-cn": "go2rtc WebRTC 集成（管理表格映射，ioBroker WS 代理）；自动删除过时摄像头；修正录像上一个/下一个顺序"
+			},
 			"0.0.4": {
 				"en": "fix DP roles: snapshot_b64 role state, profile selector role level",
 				"de": "DP-Rollen korrigiert: snapshot_b64 role state, Profil-Selektor role level",
