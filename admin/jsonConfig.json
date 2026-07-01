@@ -474,12 +474,25 @@
                     "xs": 12, "sm": 8, "md": 6, "lg": 5, "xl": 4
                 },
                 "go2rtcMapping": {
-                    "type": "custom",
-                    "url": "custom/go2rtcMapping.js",
-                    "name": "Go2rtcMapping",
+                    "type": "table",
+                    "label": "cfgGo2rtcMapping",
+                    "help": "cfgGo2rtcMapping_tt",
                     "hidden": "!data.go2rtcEnabled",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "showSecondAddAt": 5,
+                    "items": [
+                        {
+                            "type": "text",
+                            "attr": "camKey",
+                            "title": "cfgGo2rtcCamKey"
+                        },
+                        {
+                            "type": "text",
+                            "attr": "stream",
+                            "title": "cfgGo2rtcStream"
+                        }
+                    ]
                 }
             }
         },

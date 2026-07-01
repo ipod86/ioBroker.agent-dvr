@@ -374,7 +374,7 @@ let CFG = {
   dashTagPosition:     'top-right',
   go2rtcEnabled:       false,
   go2rtcUrl:           '',
-  go2rtcMapping:       '',
+  go2rtcMapping:       [],
 };
 const DASH_CSS_VARS = {
   dashColorBg:      '--bg',
@@ -391,7 +391,10 @@ async function loadConfig() {
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
   document.documentElement.style.setProperty('--btn-base-opacity', CFG.dashBtnsVisible ? '1' : '0');
-  try { go2rtcMap = CFG.go2rtcMapping ? JSON.parse(CFG.go2rtcMapping) : {}; } catch (_) { go2rtcMap = {}; }
+  go2rtcMap = {};
+  (Array.isArray(CFG.go2rtcMapping) ? CFG.go2rtcMapping : []).forEach(row => {
+    if (row.camKey && row.stream) go2rtcMap[row.camKey] = row.stream;
+  });
   for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
     if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
   }

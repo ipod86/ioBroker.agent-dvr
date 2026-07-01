@@ -181,7 +181,7 @@
 		"widgetBorderRadius": 8,
 		"go2rtcEnabled": false,
 		"go2rtcUrl": "",
-		"go2rtcMapping": "",
+		"go2rtcMapping": [],
 		"dashColorBg": "#080b0f",
 		"dashColorSurface": "#0d1117",
 		"dashColorAccent": "#2563eb",

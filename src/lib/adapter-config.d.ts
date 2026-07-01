@@ -49,7 +49,7 @@ declare global {
             dashStreamReconnect: boolean;
             go2rtcEnabled: boolean;
             go2rtcUrl: string;
-            go2rtcMapping: string;
+            go2rtcMapping: { camKey: string; stream: string }[];
             dashColorBg: string;
             dashColorSurface: string;
             dashColorAccent: string;

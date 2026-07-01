@@ -130,6 +130,8 @@
     "cfgGo2rtcEnabled_tt": "WebRTC-Streams von go2rtc statt MJPEG verwenden (Kamera-Mapping im Dashboard konfigurieren)",
     "cfgGo2rtcUrl": "go2rtc URL",
     "cfgGo2rtcUrl_tt": "Basis-URL des go2rtc-Servers, z. B. http://192.168.1.1:1984",
-    "cfgGo2rtcMapping": "Stream-Mapping (JSON)",
-    "cfgGo2rtcMapping_tt": "Ordnet jedem AgentDVR-Kamera-Key einen go2rtc-Stream zu. Format: {\"cam_8_Reolink\":\"Reolink\",\"cam_9_Reo2\":\"Reo2\"}. Fehlende Einträge verwenden MJPEG."
+    "cfgGo2rtcMapping": "Stream-Mapping",
+    "cfgGo2rtcMapping_tt": "Ordnet jeder AgentDVR-Kamera einen go2rtc-Stream zu. Füge eine Zeile pro Kamera hinzu. Ohne Eintrag wird MJPEG verwendet.",
+    "cfgGo2rtcCamKey": "AgentDVR Kamera-Key (z.B. cam_8_Reolink)",
+    "cfgGo2rtcStream": "go2rtc Stream-Name (z.B. Reolink)"
 }

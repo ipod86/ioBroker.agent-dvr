@@ -130,6 +130,8 @@
     "cfgGo2rtcEnabled_tt": "Использовать WebRTC-потоки от go2rtc вместо MJPEG (настройка сопоставления камер — в панели)",
     "cfgGo2rtcUrl": "URL go2rtc",
     "cfgGo2rtcUrl_tt": "Базовый URL сервера go2rtc, например http://192.168.1.1:1984",
-    "cfgGo2rtcMapping": "Сопоставление потоков (JSON)",
-    "cfgGo2rtcMapping_tt": "Сопоставьте ключи камер AgentDVR с именами потоков go2rtc. Формат: {\"cam_8_Reolink\":\"Reolink\"}. Отсутствующие камеры используют MJPEG."
+    "cfgGo2rtcMapping": "Сопоставление потоков",
+    "cfgGo2rtcMapping_tt": "Сопоставляет каждую камеру AgentDVR с потоком go2rtc. Добавьте по одной строке на камеру. Камеры без записи используют MJPEG.",
+    "cfgGo2rtcCamKey": "Ключ камеры AgentDVR (напр. cam_8_Reolink)",
+    "cfgGo2rtcStream": "Имя потока go2rtc (напр. Reolink)"
 }
