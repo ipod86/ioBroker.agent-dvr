@@ -975,6 +975,32 @@ class AgentDvr extends utils.Adapter {
 		return ts && sizeMap[ts] ? sizeMap[ts] : this.config.widgetMinCol || 150;
 	}
 
+	private async pruneStaleDevices(activeFolders: Set<string>): Promise<void> {
+		const allObjs = await this.getAdapterObjectsAsync();
+		const stale: string[] = [];
+		for (const fullId of Object.keys(allObjs)) {
+			const obj = allObjs[fullId];
+			if (obj.type !== 'device') {
+				continue;
+			}
+			const rel = fullId.slice(this.namespace.length + 1);
+			if (/^(cam|mic)_/.test(rel) && !activeFolders.has(rel)) {
+				stale.push(rel);
+			}
+		}
+		for (const rel of stale) {
+			this.log.info(`[agent-dvr] removing stale device: ${rel}`);
+			await this.delObjectAsync(rel, { recursive: true });
+			// clean up internal cache
+			for (const [oid, d] of this.devById) {
+				if (this.deviceFolder(d) === rel) {
+					this.devById.delete(oid);
+					break;
+				}
+			}
+		}
+	}
+
 	private sortedEvents(events: Record<string, unknown>[]): Record<string, unknown>[] {
 		// newest-first by default; widgetSortNewest=false reverses to oldest-first
 		return this.config.widgetSortNewest === false ? [...events].reverse() : events;
@@ -1378,9 +1404,11 @@ class AgentDvr extends utils.Adapter {
 		const devices = findDevices(json);
 		await this.setStateAsync('system.cameraCount', { val: devices.filter(d => d.ot === 2).length, ack: true });
 
+		const activeFolders = new Set(devices.map(d => this.deviceFolder(d)));
 		for (const d of devices) {
 			await this.buildDevice(d);
 		}
+		await this.pruneStaleDevices(activeFolders);
 
 		const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
 		if (stats) {
