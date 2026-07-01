@@ -1189,7 +1189,6 @@ document.addEventListener('visibilitychange', () => {
 async function connectWebRTC(vid, baseUrl, streamName) {
   disconnectWebRTC(vid);
   if (!baseUrl || !streamName) return;
-  const base = baseUrl.replace(/\/+$/, ''); // strip trailing slash
   try {
     const pc = new RTCPeerConnection({
       iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}]
@@ -1204,8 +1203,10 @@ async function connectWebRTC(vid, baseUrl, streamName) {
     pc.addTransceiver('video', {direction:'recvonly'});
     pc.addTransceiver('audio', {direction:'recvonly'});
 
-    const wsUrl = base.replace(/^http/,'ws') + '/api/ws?src=' + encodeURIComponent(streamName);
-    console.log('[go2rtc] connecting', wsUrl);
+    // Route through ioBroker proxy to avoid browser cross-origin block on go2rtc
+    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
+    console.log('[go2rtc] connecting via proxy', wsUrl);
     const ws = new WebSocket(wsUrl);
     vid._rtcWs = ws;
 
