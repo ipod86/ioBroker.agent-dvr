@@ -10,25 +10,41 @@
                     "type": "text",
                     "label": "cfgIp",
                     "newLine": true,
-                    "xs": 12, "sm": 12, "md": 6, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "port": {
                     "type": "number",
                     "label": "cfgPort",
                     "min": 1,
                     "max": 65535,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "user": {
                     "type": "text",
                     "label": "cfgUser",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "pass": {
                     "type": "password",
                     "label": "cfgPass",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "pollSeconds": {
                     "type": "number",
@@ -36,14 +52,22 @@
                     "min": 5,
                     "max": 3600,
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "httpTimeoutMs": {
                     "type": "number",
                     "label": "cfgHttpTimeoutMs",
                     "min": 1000,
                     "max": 30000,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 }
             }
         },
@@ -55,77 +79,113 @@
                     "type": "header",
                     "text": "hdrControls",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "enableSystemControls": {
                     "type": "checkbox",
                     "label": "cfgEnableSystemControls",
                     "help": "cfgEnableSystemControls_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "enablePtz": {
                     "type": "checkbox",
                     "label": "cfgEnablePtz",
                     "help": "cfgEnablePtz_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "enableUrls": {
                     "type": "checkbox",
                     "label": "cfgEnableUrls",
                     "help": "cfgEnableUrls_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "enableSnapshotB64": {
                     "type": "checkbox",
                     "label": "cfgEnableSnapshotB64",
                     "help": "cfgEnableSnapshotB64_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrEvents": {
                     "type": "header",
                     "text": "hdrEvents",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "enableEventDps": {
                     "type": "checkbox",
                     "label": "cfgEnableEventDps",
                     "help": "cfgEnableEventDps_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "enablePush": {
                     "type": "checkbox",
                     "label": "cfgEnablePush",
                     "help": "cfgEnablePush_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrDisplay": {
                     "type": "header",
                     "text": "hdrDisplay",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "enableOverview": {
                     "type": "checkbox",
                     "label": "cfgEnableOverview",
                     "help": "cfgEnableOverview_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrDebug": {
                     "type": "header",
                     "text": "hdrDebug",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "storeRawJson": {
                     "type": "checkbox",
                     "label": "cfgStoreRawJson",
                     "help": "cfgStoreRawJson_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 }
             }
         },
@@ -137,30 +197,46 @@
                     "type": "header",
                     "text": "hdrWidgetGeneral",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "enableWidget": {
                     "type": "checkbox",
                     "label": "cfgEnableWidget",
                     "help": "cfgEnableWidget_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "widgetMode": {
                     "type": "select",
                     "label": "cfgWidgetMode",
                     "help": "cfgWidgetMode_tt",
                     "options": [
-                        { "value": "nojs", "label": "cfgWidgetModeNojs" },
-                        { "value": "js",   "label": "cfgWidgetModeJs" }
+                        {
+                            "value": "nojs",
+                            "label": "cfgWidgetModeNojs"
+                        },
+                        {
+                            "value": "js",
+                            "label": "cfgWidgetModeJs"
+                        }
                     ],
-                    "xs": 12, "sm": 6, "md": 6, "lg": 5, "xl": 5
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 5,
+                    "xl": 5
                 },
                 "hdrWidgetLayout": {
                     "type": "header",
                     "text": "hdrWidgetLayout",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "widgetAnzahl": {
                     "type": "number",
@@ -169,7 +245,11 @@
                     "min": 1,
                     "max": 500,
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "widgetMinCol": {
                     "type": "number",
@@ -177,7 +257,11 @@
                     "help": "cfgWidgetMinCol_tt",
                     "min": 80,
                     "max": 600,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "widgetMaxModalWidth": {
                     "type": "number",
@@ -185,132 +269,217 @@
                     "help": "cfgWidgetMaxModalWidth_tt",
                     "min": 300,
                     "max": 2000,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "hdrWidgetTags": {
                     "type": "header",
                     "text": "hdrWidgetTags",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "widgetShowTags": {
                     "type": "checkbox",
                     "label": "cfgWidgetShowTags",
                     "help": "cfgWidgetShowTags_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "widgetTagPosition": {
                     "type": "select",
                     "label": "cfgWidgetTagPosition",
                     "help": "cfgWidgetTagPosition_tt",
                     "options": [
-                        { "value": "top-left",     "label": "cfgTagPosTopLeft" },
-                        { "value": "top-right",    "label": "cfgTagPosTopRight" },
-                        { "value": "bottom-left",  "label": "cfgTagPosBotLeft" },
-                        { "value": "bottom-right", "label": "cfgTagPosBotRight" }
+                        {
+                            "value": "top-left",
+                            "label": "cfgTagPosTopLeft"
+                        },
+                        {
+                            "value": "top-right",
+                            "label": "cfgTagPosTopRight"
+                        },
+                        {
+                            "value": "bottom-left",
+                            "label": "cfgTagPosBotLeft"
+                        },
+                        {
+                            "value": "bottom-right",
+                            "label": "cfgTagPosBotRight"
+                        }
                     ],
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrWidgetFilter": {
                     "type": "header",
                     "text": "hdrWidgetFilter",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "widgetSortNewest": {
                     "type": "checkbox",
                     "label": "cfgWidgetSortNewest",
                     "help": "cfgWidgetSortNewest_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "widgetShowSearch": {
                     "type": "checkbox",
                     "label": "cfgWidgetShowSearch",
                     "help": "cfgWidgetShowSearch_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "widgetCompact": {
                     "type": "checkbox",
                     "label": "cfgWidgetCompact",
                     "help": "cfgWidgetCompact_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "widgetDefaultTag": {
                     "type": "text",
                     "label": "cfgWidgetDefaultTag",
                     "help": "cfgWidgetDefaultTag_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "widgetThumbSize": {
                     "type": "select",
                     "label": "cfgWidgetThumbSize",
                     "help": "cfgWidgetThumbSize_tt",
                     "options": [
-                        { "value": "small",  "label": "cfgWidgetThumbSmall" },
-                        { "value": "medium", "label": "cfgWidgetThumbMedium" },
-                        { "value": "large",  "label": "cfgWidgetThumbLarge" }
+                        {
+                            "value": "small",
+                            "label": "cfgWidgetThumbSmall"
+                        },
+                        {
+                            "value": "medium",
+                            "label": "cfgWidgetThumbMedium"
+                        },
+                        {
+                            "value": "large",
+                            "label": "cfgWidgetThumbLarge"
+                        }
                     ],
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "hdrWidgetPlayer": {
                     "type": "header",
                     "text": "hdrWidgetPlayer",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "widgetLiveAspect": {
                     "type": "text",
                     "label": "cfgWidgetLiveAspect",
                     "help": "cfgWidgetLiveAspect_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "widgetPlayerUrl": {
                     "type": "text",
                     "label": "cfgWidgetPlayerUrl",
                     "help": "cfgWidgetPlayerUrl_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 12, "md": 8, "lg": 8, "xl": 8
+                    "xs": 12,
+                    "sm": 12,
+                    "md": 8,
+                    "lg": 8,
+                    "xl": 8
                 },
                 "hdrWidgetTheme": {
                     "type": "header",
                     "text": "hdrWidgetTheme",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "widgetColorCardBg": {
                     "type": "color",
                     "label": "cfgWidgetColorCardBg",
                     "help": "cfgWidgetColorCardBg_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "widgetColorTagBg": {
                     "type": "color",
                     "label": "cfgWidgetColorTagBg",
                     "help": "cfgWidgetColorTagBg_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "widgetColorTagText": {
                     "type": "color",
                     "label": "cfgWidgetColorTagText",
                     "help": "cfgWidgetColorTagText_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "widgetColorAccent": {
                     "type": "color",
                     "label": "cfgWidgetColorAccent",
                     "help": "cfgWidgetColorAccent_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "widgetColorModalBg": {
                     "type": "color",
                     "label": "cfgWidgetColorModalBg",
                     "help": "cfgWidgetColorModalBg_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "widgetBorderRadius": {
                     "type": "number",
@@ -318,7 +487,11 @@
                     "help": "cfgWidgetBorderRadius_tt",
                     "min": 0,
                     "max": 32,
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 }
             }
         },
@@ -330,30 +503,46 @@
                     "type": "header",
                     "text": "hdrDashView",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "dashDefaultView": {
                     "type": "select",
                     "label": "cfgDashDefaultView",
                     "help": "cfgDashDefaultView_tt",
                     "options": [
-                        { "value": "live",       "label": "cfgDashViewLive" },
-                        { "value": "recordings", "label": "cfgDashViewRec" }
+                        {
+                            "value": "live",
+                            "label": "cfgDashViewLive"
+                        },
+                        {
+                            "value": "recordings",
+                            "label": "cfgDashViewRec"
+                        }
                     ],
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "dashShowOffline": {
                     "type": "checkbox",
                     "label": "cfgDashShowOffline",
                     "help": "cfgDashShowOffline_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrDashGrid": {
                     "type": "header",
                     "text": "hdrDashGrid",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "dashGridCols": {
                     "type": "number",
@@ -362,31 +551,56 @@
                     "min": 0,
                     "max": 8,
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashBtnsVisible": {
                     "type": "checkbox",
                     "label": "cfgDashBtnsVisible",
                     "help": "cfgDashBtnsVisible_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "dashTagPosition": {
                     "type": "select",
                     "label": "cfgDashTagPosition",
                     "help": "cfgDashTagPosition_tt",
                     "options": [
-                        {"label": "cfgTagPosTopRight",  "value": "top-right"},
-                        {"label": "cfgTagPosTopLeft",   "value": "top-left"},
-                        {"label": "cfgTagPosBotRight",  "value": "bottom-right"},
-                        {"label": "cfgTagPosBotLeft",   "value": "bottom-left"}
+                        {
+                            "label": "cfgTagPosTopRight",
+                            "value": "top-right"
+                        },
+                        {
+                            "label": "cfgTagPosTopLeft",
+                            "value": "top-left"
+                        },
+                        {
+                            "label": "cfgTagPosBotRight",
+                            "value": "bottom-right"
+                        },
+                        {
+                            "label": "cfgTagPosBotLeft",
+                            "value": "bottom-left"
+                        }
                     ],
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "hdrDashStream": {
                     "type": "header",
                     "text": "hdrDashStream",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "dashRefreshSec": {
                     "type": "number",
@@ -395,75 +609,117 @@
                     "min": 10,
                     "max": 600,
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "dashStreamReconnect": {
                     "type": "checkbox",
                     "label": "cfgDashStreamReconnect",
                     "help": "cfgDashStreamReconnect_tt",
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "hdrDashTheme": {
                     "type": "header",
                     "text": "hdrDashTheme",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "dashColorBg": {
                     "type": "color",
                     "label": "cfgDashColorBg",
                     "help": "cfgDashColorBg_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorSurface": {
                     "type": "color",
                     "label": "cfgDashColorSurface",
                     "help": "cfgDashColorSurface_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorAccent": {
                     "type": "color",
                     "label": "cfgDashColorAccent",
                     "help": "cfgDashColorAccent_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorText": {
                     "type": "color",
                     "label": "cfgDashColorText",
                     "help": "cfgDashColorText_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorBorder": {
                     "type": "color",
                     "label": "cfgDashColorBorder",
                     "help": "cfgDashColorBorder_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorOnline": {
                     "type": "color",
                     "label": "cfgDashColorOnline",
                     "help": "cfgDashColorOnline_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "dashColorOffline": {
                     "type": "color",
                     "label": "cfgDashColorOffline",
                     "help": "cfgDashColorOffline_tt",
-                    "xs": 12, "sm": 6, "md": 3, "lg": 2, "xl": 2
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2
                 },
                 "hdrGo2rtc": {
                     "type": "header",
                     "text": "hdrGo2rtc",
                     "newLine": true,
-                    "xs": 12
+                    "xs": 12,
+                    "size": 3
                 },
                 "go2rtcEnabled": {
                     "type": "checkbox",
                     "label": "cfgGo2rtcEnabled",
                     "help": "cfgGo2rtcEnabled_tt",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "go2rtcUrl": {
                     "type": "text",
@@ -471,7 +727,11 @@
                     "help": "cfgGo2rtcUrl_tt",
                     "hidden": "!data.go2rtcEnabled",
                     "newLine": true,
-                    "xs": 12, "sm": 8, "md": 6, "lg": 5, "xl": 4
+                    "xs": 12,
+                    "sm": 8,
+                    "md": 6,
+                    "lg": 5,
+                    "xl": 4
                 },
                 "go2rtcMapping": {
                     "type": "table",
@@ -506,31 +766,51 @@
                     "min": 1,
                     "max": 10,
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "maxArray": {
                     "type": "number",
                     "label": "cfgMaxArray",
                     "min": 1,
                     "max": 500,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 3, "xl": 3
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 3,
+                    "xl": 3
                 },
                 "eventTagsDynamic": {
                     "type": "checkbox",
                     "label": "cfgEventTagsDynamic",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 4, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "eventTagsIgnore": {
                     "type": "text",
                     "label": "cfgEventTagsIgnore",
                     "newLine": true,
-                    "xs": 12, "sm": 6, "md": 6, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 },
                 "eventTags": {
                     "type": "text",
                     "label": "cfgEventTags",
-                    "xs": 12, "sm": 6, "md": 6, "lg": 4, "xl": 4
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 6,
+                    "lg": 4,
+                    "xl": 4
                 }
             }
         }
