@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "agent-dvr",
-		"version": "0.0.5",
+		"version": "0.0.6",
 		"news": {
+			"0.0.6": {
+				"en": "add Live Dashboard and go2rtc WebRTC documentation to README",
+				"de": "Live-Dashboard- und go2rtc-WebRTC-Dokumentation zur README hinzugefügt",
+				"ru": "добавлена документация Live Dashboard и go2rtc WebRTC в README",
+				"pt": "documentação do Live Dashboard e go2rtc WebRTC adicionada ao README",
+				"nl": "Live Dashboard en go2rtc WebRTC documentatie toegevoegd aan README",
+				"fr": "documentation Live Dashboard et go2rtc WebRTC ajoutée au README",
+				"it": "documentazione Live Dashboard e go2rtc WebRTC aggiunta al README",
+				"es": "documentación de Live Dashboard y go2rtc WebRTC añadida al README",
+				"pl": "dodano dokumentację Live Dashboard i go2rtc WebRTC do README",
+				"uk": "додано документацію Live Dashboard і go2rtc WebRTC до README",
+				"zh-cn": "README 中新增 Live Dashboard 和 go2rtc WebRTC 文档"
+			},
 			"0.0.5": {
 				"en": "go2rtc WebRTC integration (admin table mapping, ioBroker WS proxy); auto-delete stale cameras; fix recording prev/next order",
 				"de": "go2rtc WebRTC-Integration (Admin-Tabellen-Mapping, ioBroker WS-Proxy); gelöschte Kameras werden automatisch entfernt; Vor/Zurück-Reihenfolge bei Aufnahmen korrigiert",

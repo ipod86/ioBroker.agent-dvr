@@ -45,6 +45,9 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): Kameras und Mikr
 | Übersichts-Widget | Einzelner HTML-State mit allen Kamera-Live-Kacheln | `true` |
 | Galerie-Widget pro Kamera | HTML-Aufnahmegalerie pro Kamera | `true` |
 | Roh-API-JSON speichern | Die vollständige getObjects-Antwort in `system.raw_getObjects` schreiben | `false` |
+| go2rtc aktivieren | WebRTC-Streams von go2rtc statt MJPEG im Dashboard verwenden | `false` |
+| go2rtc URL | Basis-URL des go2rtc-Servers, z.B. `http://192.168.1.10:1984` | — |
+| Stream-Mapping | Tabelle pro Kamera: AgentDVR-Kamera-Key → go2rtc-Stream-Name | — |
 
 ## Datenpunkte
 
@@ -157,6 +160,32 @@ Die rohen Gerätedaten aus AgentDVR werden rekursiv gespiegelt (Tiefe konfigurie
 |-----------|-----|-----|-------------|
 | `overview` | string | R | HTML-Kachelraster aller Kameras mit Livestream-Links |
 
+## Live-Dashboard
+
+Der Adapter liefert ein eingebautes Live-Dashboard unter `http://<iobroker>:<webport>/agent-dvr/`.
+
+**Funktionen:**
+- MJPEG- oder WebRTC-Livestream pro Kachel (konfigurierbar)
+- Vollbild-Ansicht mit PTZ-Overlay und Aufnahme-Button
+- Echtzeit-Bewegungs- (gelber Rahmen) und Alert-Indikator (oranger Rahmen)
+- Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche und Tag-Filter, Video-Player mit Vor/Zurück-Navigation
+- Farbthema über Adapter-Konfiguration (7 Color-Picker)
+
+## go2rtc WebRTC-Streams
+
+Das Dashboard kann [go2rtc](https://github.com/AlexxIT/go2rtc) nutzen, um flüssige WebRTC-Streams statt des MJPEG-Fallbacks anzuzeigen.
+
+**Voraussetzung:** go2rtc muss installiert und gestartet sein, mit bereits konfigurierten Streams für die Kameras.
+
+**Einrichtung:**
+1. In der Adapter-Konfiguration → Tab *Live-Dashboard*: **go2rtc aktivieren** und die **go2rtc URL** eintragen (z.B. `http://192.168.1.10:1984`).
+2. Die **Stream-Mapping**-Tabelle befüllen — eine Zeile pro Kamera:
+   - **AgentDVR Kamera-Key**: der ioBroker-Datenpunkt-Präfix, z.B. `cam_8_Reolink` (im ioBroker-Objektbaum sichtbar)
+   - **go2rtc Stream-Name**: der Stream-Name wie in der go2rtc-Oberfläche oder unter `/api/streams`, z.B. `Reolink`
+3. Speichern und Adapter neu starten. Gemappte Kameras zeigen den WebRTC-Stream; nicht gemappte Kameras verwenden weiterhin MJPEG.
+
+**Funktionsweise:** Das Dashboard verbindet sich per WebSocket mit dem ioBroker-Webadapter, der die WebRTC-Signalisierung intern an go2rtc weiterleitet. Damit werden Browser-Cross-Origin-Beschränkungen umgangen, ohne go2rtc konfigurieren zu müssen.
+
 ## Snapshot als Base64
 
 Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;base64,…`-String und kann direkt in vis/vis-2-Bild-Widgets verwendet werden, ohne dass der Browser einen eigenen HTTP-Request durchführen muss.
@@ -171,6 +200,9 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.0.6 (2026-07-01)
+* (ipod86) docs: Live-Dashboard- und go2rtc-WebRTC-Abschnitte zur README hinzugefügt
+
 ### 0.0.5 (2026-07-01)
 * (ipod86) feat: go2rtc WebRTC-Stream-Integration — Mapping-Tabelle pro Kamera im Admin, ioBroker WebSocket-Proxy umgeht Browser-Cross-Origin-Sperre
 * (ipod86) feat: Automatisches Löschen von Kamera-/Mikrofon-Datenpunkten wenn das Gerät in AgentDVR entfernt wird
