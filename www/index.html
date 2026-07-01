@@ -1189,19 +1189,28 @@ document.addEventListener('visibilitychange', () => {
 async function connectWebRTC(vid, baseUrl, streamName) {
   disconnectWebRTC(vid);
   if (!baseUrl || !streamName) return;
+  const base = baseUrl.replace(/\/+$/, ''); // strip trailing slash
   try {
     const pc = new RTCPeerConnection({
       iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}]
     });
     vid._rtcPc = pc;
-    const tracks = ['video','audio'].map(kind =>
-      pc.addTransceiver(kind, {direction:'recvonly'}).receiver.track);
-    vid.srcObject = new MediaStream(tracks);
     vid.dataset.stream = streamName;
-    const wsUrl = baseUrl.replace(/^http/,'ws') + '/api/ws?src=' + encodeURIComponent(streamName);
+
+    const stream = new MediaStream();
+    vid.srcObject = stream;
+    pc.addEventListener('track', ev => stream.addTrack(ev.track));
+
+    pc.addTransceiver('video', {direction:'recvonly'});
+    pc.addTransceiver('audio', {direction:'recvonly'});
+
+    const wsUrl = base.replace(/^http/,'ws') + '/api/ws?src=' + encodeURIComponent(streamName);
+    console.log('[go2rtc] connecting', wsUrl);
     const ws = new WebSocket(wsUrl);
     vid._rtcWs = ws;
+
     ws.addEventListener('open', () => {
+      console.log('[go2rtc] WS open, creating offer for', streamName);
       pc.addEventListener('icecandidate', ev => {
         if (!ev.candidate || ws.readyState !== WebSocket.OPEN) return;
         ws.send(JSON.stringify({type:'webrtc/candidate', value:ev.candidate.candidate}));
@@ -1216,11 +1225,21 @@ async function connectWebRTC(vid, baseUrl, streamName) {
     ws.addEventListener('message', ev => {
       try {
         const msg = JSON.parse(ev.data);
-        if (msg.type === 'webrtc/candidate') pc.addIceCandidate({candidate:msg.value, sdpMid:'0'});
-        else if (msg.type === 'webrtc/answer') pc.setRemoteDescription({type:'answer', sdp:msg.value});
+        if (msg.type === 'webrtc/candidate') {
+          pc.addIceCandidate({candidate:msg.value, sdpMid:'0'}).catch(() => {});
+        } else if (msg.type === 'webrtc/answer') {
+          console.log('[go2rtc] got answer for', streamName);
+          pc.setRemoteDescription({type:'answer', sdp:msg.value});
+        }
       } catch (_) {}
     });
-  } catch (_) {}
+    ws.addEventListener('error', () => console.warn('[go2rtc] WS error for stream', streamName));
+    ws.addEventListener('close', ev => console.warn('[go2rtc] WS closed', ev.code, streamName));
+    pc.addEventListener('connectionstatechange', () =>
+      console.log('[go2rtc] PC state:', pc.connectionState, streamName));
+  } catch (err) {
+    console.error('[go2rtc] connectWebRTC failed:', err);
+  }
 }
 function disconnectWebRTC(vid) {
   if (!vid) return;
