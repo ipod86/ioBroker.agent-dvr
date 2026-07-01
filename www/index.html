@@ -124,8 +124,21 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .rec-view-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
 
 /* ── Timeline ── */
-.tl-wrap{display:flex;flex-direction:column;gap:14px;padding-bottom:12px}
-.tl-day-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;
+.tl-wrap{display:flex;flex-direction:column;gap:0;padding-bottom:4px}
+.tl-zoom{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tl-zoom-btn{width:26px;height:26px;border-radius:6px;background:var(--s2);border:1px solid var(--border2);
+  color:var(--text);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all .15s}
+.tl-zoom-btn:hover:not(:disabled){background:var(--s3);border-color:var(--border)}
+.tl-zoom-btn:disabled{opacity:.3;cursor:default}
+.tl-zoom-lbl{font-size:12px;color:var(--muted);min-width:34px;text-align:center}
+.tl-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:28px;margin-bottom:12px}
+.tl-scroll::-webkit-scrollbar{height:4px}
+.tl-scroll::-webkit-scrollbar-track{background:transparent}
+.tl-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.tl-inner{min-width:100%;display:flex;flex-direction:column;gap:14px}
+.tl-day-label{position:sticky;left:0;z-index:2;background:var(--s1);padding-right:10px;
+  font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;
   letter-spacing:.05em;margin-bottom:6px}
 .tl-bar{position:relative;height:28px;background:var(--s2);border:1px solid var(--border);
   border-radius:4px;overflow:visible}
@@ -139,6 +152,14 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .tl-block:hover{opacity:1;filter:brightness(1.2)}
 .tl-block[data-tag="Motion"]{background:var(--yellow)}
 .tl-block[data-tag="Alert"]{background:var(--orange)}
+/* ── Video nav ── */
+#vid-nav{display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px}
+#vid-nav button{background:var(--s3);border:1px solid var(--border2);color:var(--text);
+  padding:5px 14px;border-radius:var(--radius);cursor:pointer;font-size:13px;transition:all .15s;
+  white-space:nowrap}
+#vid-nav button:hover:not(:disabled){background:rgba(37,99,235,.2);border-color:var(--accent);color:var(--accent-l)}
+#vid-nav button:disabled{opacity:.3;cursor:default}
+#vid-pos{font-size:12px;color:var(--muted);white-space:nowrap}
 
 #rec-scroll{flex:1;overflow-y:auto;padding:10px 12px}
 #rec-scroll::-webkit-scrollbar{width:5px}
@@ -287,6 +308,11 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       <div id="vid-cam"></div>
     </div>
     <video id="vid-el" controls playsinline preload="auto"></video>
+    <div id="vid-nav">
+      <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)">&#8249; Vorherige</button>
+      <span id="vid-pos"></span>
+      <button id="vid-next" onclick="playRecIdx(recPlayIdx + 1)">Nächste &#8250;</button>
+    </div>
     <div id="vid-meta">
       <span id="vid-meta-txt"></span>
       <a id="vid-dl" download>
@@ -317,6 +343,10 @@ let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
 let recFilters  = { tag: '' };
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
+let recPlayList = [], recPlayIdx = -1;
+const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
+let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
+if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
 let ptzHeld     = null;
 let refreshTimer = null;
 
@@ -883,6 +913,8 @@ function renderRec() {
     return;
   }
 
+  recPlayList = items;
+
   if (recViewMode === 'timeline') { renderTimeline(items, cam); return; }
 
   grid.className = 'rec-grid';
@@ -909,68 +941,125 @@ function renderRec() {
     meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : ''].filter(Boolean).join(' · ');
     info.append(date, meta);
     tile.append(wrap, info);
-    tile.onclick = () => playRec(rec, cam);
+    tile.onclick = () => playRec(rec, cam, items.indexOf(rec));
     grid.appendChild(tile);
   });
+}
+
+function tlZoom(dir) {
+  const idx    = TL_ZOOMS.indexOf(tlZoomLevel);
+  const newIdx = Math.max(0, Math.min(TL_ZOOMS.length - 1, idx + dir));
+  if (newIdx === idx) return;
+  tlZoomLevel = TL_ZOOMS[newIdx];
+  localStorage.setItem('advr_tl_zoom', tlZoomLevel);
+  renderRec();
+}
+
+function tlTickInterval(zoom) {
+  const hoursVisible = 24 / zoom;
+  if (hoursVisible <= 1)  return 0.25;
+  if (hoursVisible <= 3)  return 0.5;
+  if (hoursVisible <= 6)  return 1;
+  if (hoursVisible <= 12) return 2;
+  return 6;
 }
 
 function renderTimeline(items, cam) {
   const grid = document.getElementById('rec-grid');
   grid.className = 'tl-wrap';
 
-  // Group by date, newest first
+  // ── Zoom control ──
+  const zoomRow = document.createElement('div'); zoomRow.className = 'tl-zoom';
+  const zOut = document.createElement('button'); zOut.className = 'tl-zoom-btn';
+  zOut.textContent = '−'; zOut.title = 'Rauszoomen';
+  zOut.disabled = TL_ZOOMS.indexOf(tlZoomLevel) === 0;
+  zOut.addEventListener('click', () => tlZoom(-1));
+  const zLbl = document.createElement('span'); zLbl.className = 'tl-zoom-lbl';
+  const hoursVis = 24 / tlZoomLevel;
+  zLbl.textContent = hoursVis < 1 ? (hoursVis * 60) + 'min' : hoursVis + 'h';
+  const zIn = document.createElement('button'); zIn.className = 'tl-zoom-btn';
+  zIn.textContent = '+'; zIn.title = 'Reinzoomen';
+  zIn.disabled = TL_ZOOMS.indexOf(tlZoomLevel) === TL_ZOOMS.length - 1;
+  zIn.addEventListener('click', () => tlZoom(+1));
+  zoomRow.append(zOut, zLbl, zIn);
+  grid.appendChild(zoomRow);
+
+  // ── Scrollable container ──
+  const scroll = document.createElement('div'); scroll.className = 'tl-scroll';
+  const inner  = document.createElement('div'); inner.className = 'tl-inner';
+  inner.style.width = (tlZoomLevel * 100) + '%';
+  scroll.appendChild(inner);
+  grid.appendChild(scroll);
+
+  // ── Days ──
   const byDate = {};
   items.forEach(r => { (byDate[r.date] = byDate[r.date] || []).push(r); });
-  const dates = Object.keys(byDate).sort().reverse();
+  const tickInterval = tlTickInterval(tlZoomLevel);
 
-  dates.forEach(date => {
+  Object.keys(byDate).sort().reverse().forEach(date => {
     const recs = byDate[date].sort((a, b) => a.time.localeCompare(b.time));
-
     const row   = document.createElement('div'); row.className = 'tl-day';
     const label = document.createElement('div'); label.className = 'tl-day-label'; label.textContent = date;
     const bar   = document.createElement('div'); bar.className = 'tl-bar';
 
-    // Hour ticks at 0, 6, 12, 18h
-    [0, 6, 12, 18].forEach(h => {
+    // Adaptive ticks
+    for (let h = 0; h < 24; h += tickInterval) {
       const tick = document.createElement('span'); tick.className = 'tl-tick';
       tick.style.left = (h / 24 * 100) + '%';
-      tick.textContent = String(h).padStart(2,'0') + ':00';
+      const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+      tick.textContent = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
       bar.appendChild(tick);
-    });
+    }
 
     recs.forEach(rec => {
       const [hh, mm, ss] = rec.time.split(':').map(Number);
-      const startSec = (hh || 0) * 3600 + (mm || 0) * 60 + (ss || 0);
+      const startSec = (hh||0)*3600 + (mm||0)*60 + (ss||0);
       const dur      = rec.dur || 60;
       const left     = (startSec / 86400 * 100).toFixed(3);
-      const width    = Math.max(0.3, dur / 86400 * 100).toFixed(3);
+      const width    = Math.max(0.2 / tlZoomLevel, dur / 86400 * 100).toFixed(3);
+      const globalIdx = items.indexOf(rec);
 
       const block = document.createElement('div'); block.className = 'tl-block';
       block.style.left  = left + '%';
       block.style.width = width + '%';
       if (rec.tag) block.dataset.tag = rec.tag;
-      block.title = rec.time + (rec.dur ? '  ·  ' + rec.dur + 's' : '') + (rec.size ? '  ·  ' + rec.size + ' MB' : '') + (rec.tag ? '  ·  ' + rec.tag : '');
-      block.addEventListener('click', () => playRec(rec, cam));
+      block.title = rec.time
+        + (rec.dur  ? '  ·  ' + rec.dur  + 's'  : '')
+        + (rec.size ? '  ·  ' + rec.size + ' MB' : '')
+        + (rec.tag  ? '  ·  ' + rec.tag          : '');
+      block.addEventListener('click', () => playRec(rec, cam, globalIdx));
       bar.appendChild(block);
     });
 
     row.append(label, bar);
-    grid.appendChild(row);
+    inner.appendChild(row);
   });
 }
 
-function playRec(rec, cam) {
+function updateNavBtns() {
+  document.getElementById('vid-prev').disabled = recPlayIdx <= 0;
+  document.getElementById('vid-next').disabled = recPlayIdx >= recPlayList.length - 1;
+  document.getElementById('vid-pos').textContent =
+    recPlayList.length ? (recPlayIdx + 1) + ' / ' + recPlayList.length : '';
+}
+function playRecIdx(idx) {
+  if (idx < 0 || idx >= recPlayList.length) return;
+  const camKey = document.getElementById('rec-cam-sel').value;
+  playRec(recPlayList[idx], cameras[camKey], idx);
+}
+function playRec(rec, cam, idx) {
   const url = rec.video || rec.url || '';
   if (!url) return;
   const src = url.startsWith('http') ? url : BASE + url;
   const el  = document.getElementById('vid-el');
-  // only change src if different → don't interrupt same video
   if (el.src !== src) { el.src = src; el.load(); }
+  recPlayIdx = idx !== undefined ? idx : recPlayList.indexOf(rec);
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
   document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
   document.getElementById('vid-meta-txt').textContent =
     [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : '', rec.tag || ''].filter(Boolean).join(' · ');
   document.getElementById('vid-dl').href = src;
+  updateNavBtns();
   document.getElementById('vid-panel').classList.add('open');
   el.play().catch(() => {});
 }
@@ -1003,6 +1092,10 @@ function esc(s) {
 /* ─────────────────────────── Keyboard shortcuts ─────────────── */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeFs(); closeVideo(); }
+  if (document.getElementById('vid-panel').classList.contains('open')) {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); playRecIdx(recPlayIdx - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); playRecIdx(recPlayIdx + 1); }
+  }
   if (e.key === 'f' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
     const fp = document.getElementById('fs-panel');
     if (fp.classList.contains('open')) closeFs();
