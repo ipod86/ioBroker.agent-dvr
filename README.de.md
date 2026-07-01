@@ -200,6 +200,11 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.0 (2026-07-01)
+* (ipod86) feat: vollständige i18n im Live-Dashboard — alle UI-Texte in 11 Sprachen übersetzt
+* (ipod86) fix: fehlende sm/md/lg/xl-Größenattribute in der go2rtcMapping-Tabelle ergänzt (E5507)
+* (ipod86) fix: fehlende Admin-i18n-Schlüssel in 9 Sprachen übersetzt (E5606)
+
 ### 0.0.6 (2026-07-01)
 * (ipod86) docs: Live-Dashboard- und go2rtc-WebRTC-Abschnitte zur README hinzugefügt
 
