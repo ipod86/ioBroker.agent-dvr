@@ -173,7 +173,9 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.0.5 (2026-07-01)
+* (ipod86) feat: go2rtc WebRTC stream integration — per-camera mapping table in admin, ioBroker WebSocket proxy to bypass browser cross-origin restrictions
+* (ipod86) feat: auto-delete camera/microphone data points when device is removed from AgentDVR
 * (ipod86) feat: dedicated `status.*` data points per camera — `recording`, `online`, `connected`, `detected`, `alerted` with correct ioBroker roles
 * (ipod86) feat: `/api/record` endpoint — start/stop recording via ioBroker state from the dashboard
 * (ipod86) feat: dashboard — full color theming (7 color pickers), configurable tag-badge corner position
@@ -184,8 +186,11 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 * (ipod86) feat: dashboard — `dashBtnsVisible` setting: always show or hover-only for both PTZ and record buttons
 * (ipod86) feat: dashboard — MJPEG streams stop on tab hide, restart on return (saves bandwidth)
 * (ipod86) feat: dashboard — last selected camera in recordings tab persisted to localStorage
+* (ipod86) fix: dashboard — recording prev/next navigation now follows chronological order
 * (ipod86) fix: dashboard — PTZ button contrast improved, DL button in video modal, X button top-right
 * (ipod86) fix: dashboard — stream reconnect after tab return no longer triggers snapshot fallback
+* (ipod86) fix: jsonConfig header items missing required `size` property (E5512)
+* (ipod86) fix: admin config label improvements (snapshot Base64, widget tooltips, go2rtc tooltip)
 
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)

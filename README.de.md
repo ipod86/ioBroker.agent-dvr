@@ -171,7 +171,9 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.0.5 (2026-07-01)
+* (ipod86) feat: go2rtc WebRTC-Stream-Integration — Mapping-Tabelle pro Kamera im Admin, ioBroker WebSocket-Proxy umgeht Browser-Cross-Origin-Sperre
+* (ipod86) feat: Automatisches Löschen von Kamera-/Mikrofon-Datenpunkten wenn das Gerät in AgentDVR entfernt wird
 * (ipod86) feat: Dedizierte `status.*`-Datenpunkte pro Kamera — `recording`, `online`, `connected`, `detected`, `alerted` mit korrekten ioBroker-Rollen
 * (ipod86) feat: `/api/record`-Endpoint — Aufnahme über ioBroker-State aus dem Dashboard starten/stoppen
 * (ipod86) feat: Dashboard — vollständiges Farbthema (7 Color-Picker), konfigurierbarer Tag-Badge-Bereich
@@ -182,8 +184,11 @@ Der State `snapshot_b64` enthält das aktuelle Kamerabild als `data:image/jpeg;b
 * (ipod86) feat: Dashboard — Einstellung `dashBtnsVisible`: PTZ- und Aufnahme-Button immer oder nur bei Hover anzeigen
 * (ipod86) feat: Dashboard — MJPEG-Streams stoppen bei Tab-Wechsel, Neustart beim Zurückkehren (Bandbreite sparen)
 * (ipod86) feat: Dashboard — Zuletzt gewählte Kamera in der Aufnahmen-Ansicht im localStorage gespeichert
+* (ipod86) fix: Dashboard — Vor/Zurück-Navigation bei Aufnahmen folgt nun chronologischer Reihenfolge
 * (ipod86) fix: Dashboard — PTZ-Button-Kontrast verbessert, Download-Button im Video-Modal, Schließen-Button oben rechts
 * (ipod86) fix: Dashboard — Stream-Neuverbindung nach Tab-Rückkehr löst keine Snapshot-Rückfall mehr aus
+* (ipod86) fix: jsonConfig-Header-Einträge fehlendes Pflichtfeld `size` ergänzt (E5512)
+* (ipod86) fix: Admin-Config-Beschriftungen bereinigt (Snapshot Base64, Widget-Tooltips, go2rtc-Tooltip)
 
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: DP-Rollen korrigiert: snapshot_b64 → state (E1008), Profil-Selektor → level (E1011)
