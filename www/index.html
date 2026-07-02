@@ -964,6 +964,7 @@ function makeTile(key, cam) {
   if (stype === 'go2rtc') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+    vid.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
     vid.dataset.stream = g2mStream;
     connectWebRTC(vid, CFG.go2rtcUrl, g2mStream);
     mediaEl = vid;
@@ -971,6 +972,7 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
+    vid.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
     mediaEl = vid;
@@ -1215,18 +1217,30 @@ const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 function applyMuteState(video, btn, muted) {
   video.muted = muted;
   video.volume = muted ? 0 : 1;
+  // Enable/disable audio tracks directly
   if (video.srcObject && video.srcObject.getAudioTracks) {
     video.srcObject.getAudioTracks().forEach(tr => { tr.enabled = !muted; });
   }
   if (video._rtcPc) {
     video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = !muted; });
   }
-  if (!muted && video.srcObject) {
-    // Re-assign srcObject to force browser to re-evaluate audio rendering
-    const s = video.srcObject;
-    video.srcObject = null;
-    video.srcObject = s;
-    video.play().catch(() => {});
+  // Web Audio API bypass: for WebRTC srcObject, use AudioContext to guarantee audio output
+  // regardless of browser autoplay policy on video.muted
+  if (video.srcObject) {
+    if (!muted) {
+      if (!video._audioCtx) {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const src = ctx.createMediaStreamSource(video.srcObject);
+          src.connect(ctx.destination);
+          video._audioCtx = ctx; video._audioSrc = src;
+        } catch(_) {}
+      } else if (video._audioCtx.state === 'suspended') {
+        video._audioCtx.resume().catch(() => {});
+      }
+    } else {
+      if (video._audioCtx) { video._audioCtx.close().catch(() => {}); video._audioCtx = null; video._audioSrc = null; }
+    }
   } else if (!muted) {
     video.play && video.play().catch(() => {});
   }
