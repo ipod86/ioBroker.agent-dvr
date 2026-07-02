@@ -726,26 +726,6 @@ let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
 
-function applyFlvAspect(vid) {
-  const ar = vid.dataset.camAspect || '';
-  const parts = ar.split('/').map(Number);
-  if (parts.length === 2 && parts[0] >= 100 && parts[1] >= 100) {
-    vid.style.width       = 'auto';
-    vid.style.height      = 'auto';
-    vid.style.maxWidth    = '100%';
-    vid.style.maxHeight   = '100%';
-    vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
-    vid.style.objectFit   = 'fill';
-  } else {
-    vid.style.width       = '';
-    vid.style.height      = '';
-    vid.style.maxWidth    = '';
-    vid.style.maxHeight   = '';
-    vid.style.aspectRatio = '';
-    vid.style.objectFit   = '';
-  }
-}
-
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
   let el = p.querySelector('.flv-status');
@@ -774,7 +754,6 @@ function createFlvPlayer(vid, url, key) {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
-  applyFlvAspect(vid);
 
   vid.addEventListener('loadedmetadata', function onMeta() {
     vid.removeEventListener('loadedmetadata', onMeta);
@@ -1003,11 +982,19 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
-    vid.dataset.camKey    = key;
-    vid.dataset.flvOid    = cam.oid || '';
-    vid.dataset.camAspect = cam.aspect || '';
-    applyFlvAspect(vid);
-    mediaEl = vid;
+    vid.dataset.camKey = key;
+    vid.dataset.flvOid = cam.oid || '';
+    // Wrap in an aspect-ratio div so the tile flex-centres it correctly.
+    // mediaEl stays the video element so mute/createFlvPlayer work unchanged.
+    const arParts = (cam.aspect || '').split('/').map(Number);
+    if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100) {
+      vid.style.cssText = 'width:100%;height:100%;object-fit:fill;display:block;background:#000';
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'width:100%;height:auto;max-height:100%;aspect-ratio:' + arParts[0] + '/' + arParts[1] + ';overflow:hidden;flex-shrink:0;position:relative';
+      wrap.appendChild(vid);
+      vid._arWrap = wrap; // used by tile.append below
+    }
+    mediaEl = vid; // always video — mute/createFlvPlayer need real video element
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
     if (cam.mjpegUrl) {
@@ -1070,9 +1057,7 @@ function makeTile(key, cam) {
   if (cam.alerted)  tile.classList.add('alerted');
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
-  tile.append(mediaEl, bottom);
-  // Defer FLV player start via setTimeout(0): grid.appendChild(tile) runs synchronously
-  // AFTER makeTile returns, so mediaEl.isConnected becomes true before this callback fires.
+  tile.append(mediaEl._arWrap || mediaEl, bottom);
   if (stype === 'mp4' && cam.oid) {
     const _el = mediaEl, _oid = cam.oid, _key = key;
     setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid, _key), 0);
@@ -1296,9 +1281,8 @@ function openFs(cam, key) {
   } else if (stype === 'mp4') {
     fi.style.display = 'none';
     fv.style.display = 'block';
-    fv.dataset.camKey    = key;
-    fv.dataset.camAspect = cam.aspect || '';
-    applyFlvAspect(fv);
+    fv.dataset.camKey = key;
+    fv.style.objectFit = 'contain';
     createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cam.oid, 'fs_' + key);
   } else {
     fi.style.display = 'block';
