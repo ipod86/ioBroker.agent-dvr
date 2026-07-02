@@ -1769,8 +1769,11 @@ async function connectWebRTC(vid, baseUrl, streamName) {
 
     pc.addEventListener('connectionstatechange', () => {
       if (pc.connectionState === 'connected') {
-        // Wait briefly for all initial track events to settle, then check audio
+        // Skip audio check if SDP answer already told us audio is inactive at source
+        if (vid._audioInactive) return;
+        // Wait for initial track events to settle, then warn if still no audio
         setTimeout(() => {
+          if (vid._audioInactive) return;
           const tile = vid.closest ? vid.closest('.cam-tile') : null;
           if (!tile) return;
           let el = tile.querySelector('.rtc-status');
@@ -1780,7 +1783,7 @@ async function connectWebRTC(vid, baseUrl, streamName) {
           } else if (el) {
             el.textContent = '';
           }
-        }, 1500);
+        }, 3000);
       } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
         pc.close();
         vid._rtcPc = null;
@@ -1810,7 +1813,25 @@ async function connectWebRTC(vid, baseUrl, streamName) {
         if (msg.type === 'webrtc/candidate') {
           pc.addIceCandidate({candidate: msg.value, sdpMid: '0'}).catch(() => {});
         } else if (msg.type === 'webrtc/answer') {
-          pc.setRemoteDescription({type:'answer', sdp:msg.value}).catch(() => {});
+          // Check if audio m-section is inactive (source stream has no audio)
+          const sdp = msg.value || '';
+          const audioIdx = sdp.indexOf('m=audio');
+          if (audioIdx !== -1) {
+            const audioSection = sdp.slice(audioIdx);
+            const nextM = audioSection.indexOf('m=', 2);
+            const audioBlock = nextM !== -1 ? audioSection.slice(0, nextM) : audioSection;
+            if (audioBlock.split('\n').some(l => l.trim() === 'a=inactive')) {
+              vid._audioInactive = true;
+              const tile = vid.closest ? vid.closest('.cam-tile') : null;
+              if (tile) {
+                let el = tile.querySelector('.rtc-status');
+                if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#888;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
+                el.textContent = 'Kein Audio (go2rtc-Quelle stumm)';
+                setTimeout(() => { if (el.parentNode) el.textContent = ''; }, 6000);
+              }
+            }
+          }
+          pc.setRemoteDescription({type:'answer', sdp}).catch(() => {});
         }
       } catch (_) {}
     });
@@ -1825,6 +1846,7 @@ function disconnectWebRTC(vid) {
   try { if (vid._rtcWs) { vid._rtcWs.close(); vid._rtcWs = null; } } catch (_) {}
   try { if (vid._rtcPc) { vid._rtcPc.close(); vid._rtcPc = null; } } catch (_) {}
   vid.srcObject = null;
+  vid._audioInactive = false;
 }
 
 /* ─────────────────────────── Boot ──────────────────────────── */
