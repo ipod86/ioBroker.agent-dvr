@@ -752,11 +752,37 @@ function createFlvPlayer(vid, url, key) {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
+  // Reset any AR correction from a previous stream on this element
+  vid.style.aspectRatio = ''; vid.style.objectFit = ''; vid.style.width = '';
+  vid.style.height = ''; vid.style.maxWidth = ''; vid.style.maxHeight = '';
+  vid.style.position = ''; vid.style.top = ''; vid.style.left = ''; vid.style.transform = '';
+
   vid.addEventListener('loadedmetadata', function onMeta() {
     vid.removeEventListener('loadedmetadata', onMeta);
     if (vid.videoWidth && vid.videoHeight) {
       flvShowStatus(vid, vid.videoWidth + '×' + vid.videoHeight);
       setTimeout(() => flvShowStatus(vid, ''), 5000);
+
+      const ar = vid.dataset.camAspect;
+      if (ar) {
+        const parts = ar.split('/').map(Number);
+        if (parts.length === 2 && parts[0] >= 100 && parts[1] >= 100) {
+          const camRatio = parts[0] / parts[1];
+          const vidRatio = vid.videoWidth / vid.videoHeight;
+          if (Math.abs(camRatio - vidRatio) / Math.max(camRatio, vidRatio) > 0.05) {
+            vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
+            vid.style.objectFit   = 'fill';
+            vid.style.width       = 'auto';
+            vid.style.height      = 'auto';
+            vid.style.maxWidth    = '100%';
+            vid.style.maxHeight   = '100%';
+            vid.style.position    = 'absolute';
+            vid.style.top         = '50%';
+            vid.style.left        = '50%';
+            vid.style.transform   = 'translate(-50%,-50%)';
+          }
+        }
+      }
     }
   });
   p.attachMediaElement(vid);
@@ -979,8 +1005,9 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
-    vid.dataset.camKey = key;
-    vid.dataset.flvOid = cam.oid || '';
+    vid.dataset.camKey    = key;
+    vid.dataset.flvOid    = cam.oid || '';
+    vid.dataset.camAspect = cam.aspect || '';
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -1270,7 +1297,8 @@ function openFs(cam, key) {
   } else if (stype === 'mp4') {
     fi.style.display = 'none';
     fv.style.display = 'block';
-    fv.dataset.camKey = key;
+    fv.dataset.camKey    = key;
+    fv.dataset.camAspect = cam.aspect || '';
     createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cam.oid, 'fs_' + key);
   } else {
     fi.style.display = 'block';
