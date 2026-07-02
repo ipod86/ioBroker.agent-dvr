@@ -716,10 +716,11 @@ let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
 function createFlvPlayer(vid, url, key) {
   if (flvPlayers[key]) { try { flvPlayers[key].destroy(); } catch(_) {} delete flvPlayers[key]; }
-  if (!window.flvjs || !flvjs.isSupported()) { vid.src = url; return null; }
+  if (!window.flvjs || !flvjs.isSupported()) { vid.src = url; vid.play && vid.play().catch(() => {}); return null; }
   const p = flvjs.createPlayer({ type: 'flv', isLive: true, url, enableWorker: false });
   p.attachMediaElement(vid);
   p.load();
+  p.play();
   flvPlayers[key] = p;
   return p;
 }
@@ -936,7 +937,7 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.dataset.camKey = key;
-    createFlvPlayer(vid, BASE + '/video.mp4?oid=' + cam.oid, key);
+    createFlvPlayer(vid, '/agent-dvr/api/stream?oid=' + cam.oid, key);
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -1172,6 +1173,7 @@ const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 
 function applyMuteState(video, btn, muted) {
   video.muted = muted;
+  if (!muted) video.play && video.play().catch(() => {});
   btn.classList.toggle('active', !muted);
   btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
   btn.title = muted ? t('audioOn') : t('audioOff');
@@ -1219,7 +1221,7 @@ function openFs(cam, key) {
     fi.style.display = 'none';
     fv.style.display = 'block';
     fv.dataset.camKey = key;
-    createFlvPlayer(fv, BASE + '/video.mp4?oid=' + cam.oid, 'fs_' + key);
+    createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cam.oid, 'fs_' + key);
   } else {
     fi.style.display = 'block';
     fv.style.display = 'none';
@@ -1624,7 +1626,7 @@ document.addEventListener('visibilitychange', () => {
     document.querySelectorAll('.cam-tile video[data-cam-key]').forEach(vid => {
       const k = vid.dataset.camKey;
       const cam = cameras[k];
-      if (cam) createFlvPlayer(vid, BASE + '/video.mp4?oid=' + cam.oid, k);
+      if (cam) createFlvPlayer(vid, '/agent-dvr/api/stream?oid=' + cam.oid, k);
     });
     // Restart fullscreen streams
     const fi = document.getElementById('fs-img');
@@ -1635,7 +1637,7 @@ document.addEventListener('visibilitychange', () => {
     }
     const fsCam = document.getElementById('fs-panel').dataset.cam;
     if (fsCam && CFG.dashStreamType === 'mp4' && cameras[fsCam]) {
-      createFlvPlayer(fv, BASE + '/video.mp4?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
+      createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
     }
   }
 });
