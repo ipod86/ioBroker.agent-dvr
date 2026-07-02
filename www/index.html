@@ -936,8 +936,9 @@ function makeTile(key, cam) {
   } else if (stype === 'mp4') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+    vid.setAttribute('muted', '');
     vid.dataset.camKey = key;
-    createFlvPlayer(vid, '/agent-dvr/api/stream?oid=' + cam.oid, key);
+    vid.dataset.flvOid = cam.oid || '';
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -1002,6 +1003,10 @@ function makeTile(key, cam) {
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
   tile.append(mediaEl, bottom);
+  // Start FLV player only after the video element is in the DOM (MSE requirement)
+  if (stype === 'mp4' && cam.oid) {
+    createFlvPlayer(mediaEl, '/agent-dvr/api/stream?oid=' + cam.oid, key);
+  }
   return tile;
 }
 
@@ -1173,6 +1178,11 @@ const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 
 function applyMuteState(video, btn, muted) {
   video.muted = muted;
+  video.volume = muted ? 0 : 1;
+  // For WebRTC srcObject: control audio tracks directly (video.muted alone is unreliable)
+  if (video.srcObject && video.srcObject.getAudioTracks) {
+    video.srcObject.getAudioTracks().forEach(t => { t.enabled = !muted; });
+  }
   if (!muted) video.play && video.play().catch(() => {});
   btn.classList.toggle('active', !muted);
   btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
