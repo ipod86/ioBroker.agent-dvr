@@ -47,7 +47,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
-  transition:border-color .2s,box-shadow .2s}
+  transition:border-color .2s,box-shadow .2s;
+  display:flex;align-items:center;justify-content:center}
 .cam-tile:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 16px var(--accent-glow)}
 .cam-tile.detected{border-color:var(--yellow);box-shadow:0 0 0 1px var(--yellow),0 0 14px rgba(234,179,8,.2)}
 .cam-tile.alerted{border-color:var(--orange);box-shadow:0 0 0 1px var(--orange),0 0 14px rgba(249,115,22,.2)}
@@ -729,27 +730,19 @@ function applyFlvAspect(vid) {
   const ar = vid.dataset.camAspect || '';
   const parts = ar.split('/').map(Number);
   if (parts.length === 2 && parts[0] >= 100 && parts[1] >= 100) {
-    vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
-    vid.style.objectFit   = 'fill';
     vid.style.width       = 'auto';
     vid.style.height      = 'auto';
     vid.style.maxWidth    = '100%';
     vid.style.maxHeight   = '100%';
-    vid.style.position    = 'absolute';
-    vid.style.top         = '50%';
-    vid.style.left        = '50%';
-    vid.style.transform   = 'translate(-50%,-50%)';
+    vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
+    vid.style.objectFit   = 'fill';
   } else {
-    vid.style.aspectRatio = '';
-    vid.style.objectFit   = '';
     vid.style.width       = '';
     vid.style.height      = '';
     vid.style.maxWidth    = '';
     vid.style.maxHeight   = '';
-    vid.style.position    = '';
-    vid.style.top         = '';
-    vid.style.left        = '';
-    vid.style.transform   = '';
+    vid.style.aspectRatio = '';
+    vid.style.objectFit   = '';
   }
 }
 
