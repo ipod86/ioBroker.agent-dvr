@@ -984,20 +984,16 @@ function makeTile(key, cam) {
     vid.setAttribute('muted', '');
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
-    // Wrap in a padding-bottom box so the video is forced to the correct AR.
-    // Using padding-bottom % (relative to parent width) is universally reliable —
-    // unlike CSS aspect-ratio on a replaced element whose intrinsic size fights back.
-    // mediaEl stays the video element so mute/createFlvPlayer work unchanged.
+    // Force the TILE (a plain div = no intrinsic dimensions) to the correct AR,
+    // then stretch the video to fill it. This is the most reliable approach:
+    // aspect-ratio on a non-replaced element always wins; object-fit:fill on the
+    // video overrides the .cam-tile video{object-fit:contain} stylesheet rule.
     const arParts = (cam.aspect || '').split('/').map(Number);
     if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100) {
-      const pct = (arParts[1] / arParts[0] * 100).toFixed(4);
-      vid.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:fill;display:block;background:#000';
-      const wrap = document.createElement('div');
-      wrap.style.cssText = 'position:relative;width:100%;padding-bottom:' + pct + '%;overflow:hidden;flex-shrink:0';
-      wrap.appendChild(vid);
-      vid._arWrap = wrap; // used by tile.append below
+      tile.style.aspectRatio = arParts[0] + '/' + arParts[1];
+      vid.style.objectFit = 'fill';
     }
-    mediaEl = vid; // always video — mute/createFlvPlayer need real video element
+    mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
     if (cam.mjpegUrl) {
@@ -1060,7 +1056,7 @@ function makeTile(key, cam) {
   if (cam.alerted)  tile.classList.add('alerted');
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
-  tile.append(mediaEl._arWrap || mediaEl, bottom);
+  tile.append(mediaEl, bottom);
   if (stype === 'mp4' && cam.oid) {
     const _el = mediaEl, _oid = cam.oid, _key = key;
     setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid, _key), 0);
