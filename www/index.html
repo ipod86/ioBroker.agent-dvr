@@ -72,6 +72,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .tile-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
 .rec-btn.active{background:rgba(239,68,68,.85)!important;border-color:var(--red)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(239,68,68,.4)!important}
 .rec-btn:hover{background:rgba(239,68,68,.7)!important;border-color:var(--red)!important}
+.mute-btn.active{background:rgba(34,197,94,.25)!important;border-color:var(--green)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(34,197,94,.35)!important}
+.mute-btn:hover{background:rgba(34,197,94,.4)!important;border-color:var(--green)!important}
 #fs-panel.detected::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--yellow);z-index:1}
 #fs-panel.alerted::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--orange);z-index:1}
 #fs-panel.recording::after{content:'';position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px var(--red);z-index:1}
@@ -363,6 +365,8 @@ const TRANSLATIONS = {
     tagAll:          'Alle',
     recStart:        'Aufnahme starten',
     recStop:         'Aufnahme stoppen',
+    audioOn:         'Ton einschalten',
+    audioOff:        'Ton ausschalten',
     recLoading:      'Lade…',
     recNone:         'Keine Aufnahmen.<br><small>enableEventDps in Adapter-Config prüfen.</small>',
     recError:        'Fehler: ',
@@ -390,6 +394,8 @@ const TRANSLATIONS = {
     tagAll:          'All',
     recStart:        'Start recording',
     recStop:         'Stop recording',
+    audioOn:         'Enable audio',
+    audioOff:        'Mute audio',
     recLoading:      'Loading…',
     recNone:         'No recordings.<br><small>Check enableEventDps in adapter config.</small>',
     recError:        'Error: ',
@@ -417,6 +423,8 @@ const TRANSLATIONS = {
     tagAll:          'Todas',
     recStart:        'Iniciar grabación',
     recStop:         'Detener grabación',
+    audioOn:         'Activar audio',
+    audioOff:        'Silenciar audio',
     recLoading:      'Cargando…',
     recNone:         'Sin grabaciones.<br><small>Comprueba enableEventDps en la config del adaptador.</small>',
     recError:        'Error: ',
@@ -444,6 +452,8 @@ const TRANSLATIONS = {
     tagAll:          'Tout',
     recStart:        'Démarrer l\'enregistrement',
     recStop:         'Arrêter l\'enregistrement',
+    audioOn:         'Activer le son',
+    audioOff:        'Couper le son',
     recLoading:      'Chargement…',
     recNone:         'Aucun enregistrement.<br><small>Vérifiez enableEventDps dans la config de l\'adaptateur.</small>',
     recError:        'Erreur : ',
@@ -471,6 +481,8 @@ const TRANSLATIONS = {
     tagAll:          'Tutte',
     recStart:        'Avvia registrazione',
     recStop:         'Ferma registrazione',
+    audioOn:         'Attiva audio',
+    audioOff:        'Disattiva audio',
     recLoading:      'Caricamento…',
     recNone:         'Nessuna registrazione.<br><small>Controlla enableEventDps nella config dell\'adattatore.</small>',
     recError:        'Errore: ',
@@ -498,6 +510,8 @@ const TRANSLATIONS = {
     tagAll:          'Alle',
     recStart:        'Opname starten',
     recStop:         'Opname stoppen',
+    audioOn:         'Audio inschakelen',
+    audioOff:        'Audio uitschakelen',
     recLoading:      'Laden…',
     recNone:         'Geen opnames.<br><small>Controleer enableEventDps in de adapterconfig.</small>',
     recError:        'Fout: ',
@@ -525,6 +539,8 @@ const TRANSLATIONS = {
     tagAll:          'Wszystkie',
     recStart:        'Rozpocznij nagrywanie',
     recStop:         'Zatrzymaj nagrywanie',
+    audioOn:         'Włącz dźwięk',
+    audioOff:        'Wycisz dźwięk',
     recLoading:      'Ładowanie…',
     recNone:         'Brak nagrań.<br><small>Sprawdź enableEventDps w konfiguracji adaptera.</small>',
     recError:        'Błąd: ',
@@ -552,6 +568,8 @@ const TRANSLATIONS = {
     tagAll:          'Todas',
     recStart:        'Iniciar gravação',
     recStop:         'Parar gravação',
+    audioOn:         'Ativar áudio',
+    audioOff:        'Silenciar áudio',
     recLoading:      'Carregando…',
     recNone:         'Sem gravações.<br><small>Verifique enableEventDps na config do adaptador.</small>',
     recError:        'Erro: ',
@@ -579,6 +597,8 @@ const TRANSLATIONS = {
     tagAll:          'Все',
     recStart:        'Начать запись',
     recStop:         'Остановить запись',
+    audioOn:         'Включить звук',
+    audioOff:        'Выключить звук',
     recLoading:      'Загрузка…',
     recNone:         'Нет записей.<br><small>Проверьте enableEventDps в настройках адаптера.</small>',
     recError:        'Ошибка: ',
@@ -606,6 +626,8 @@ const TRANSLATIONS = {
     tagAll:          'Всі',
     recStart:        'Почати запис',
     recStop:         'Зупинити запис',
+    audioOn:         'Увімкнути звук',
+    audioOff:        'Вимкнути звук',
     recLoading:      'Завантаження…',
     recNone:         'Немає записів.<br><small>Перевірте enableEventDps у налаштуваннях адаптера.</small>',
     recError:        'Помилка: ',
@@ -633,6 +655,8 @@ const TRANSLATIONS = {
     tagAll:          '全部',
     recStart:        '开始录制',
     recStop:         '停止录制',
+    audioOn:         '开启声音',
+    audioOff:        '关闭声音',
     recLoading:      '加载中…',
     recNone:         '无录像。<br><small>请检查适配器配置中的 enableEventDps。</small>',
     recError:        '错误：',
@@ -939,6 +963,15 @@ function makeTile(key, cam) {
     tile.appendChild(makePtzOverlay(key));
   }
 
+  if (useWrtc) {
+    const muteBtn = document.createElement('div');
+    muteBtn.className = 'tile-btn mute-btn';
+    muteBtn.title = t('audioOn');
+    muteBtn.innerHTML = SVG_AUDIO_OFF;
+    muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(mediaEl, muteBtn, key); });
+    btnBox.appendChild(muteBtn);
+  }
+
   tile.appendChild(btnBox);
   if (cam.detected) tile.classList.add('detected');
   if (cam.alerted)  tile.classList.add('alerted');
@@ -1111,6 +1144,26 @@ function setTileRecording(tile, btn, recording) {
     }
   }
 }
+const SVG_AUDIO_OFF = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>`;
+const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>`;
+
+function applyMuteState(video, btn, muted) {
+  video.muted = muted;
+  btn.classList.toggle('active', !muted);
+  btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
+  btn.title = muted ? t('audioOn') : t('audioOff');
+}
+function toggleMute(video, btn, key) {
+  const muted = !video.muted;
+  applyMuteState(video, btn, muted);
+  // sync sibling (tile ↔ fullscreen)
+  const tileVid = document.querySelector('.cam-tile[data-cam="' + key + '"] video');
+  const tileBtn = document.querySelector('.cam-tile[data-cam="' + key + '"] .mute-btn');
+  const fsVid   = document.getElementById('fs-vid');
+  const fsBtn   = document.querySelector('#fs-btns .mute-btn');
+  if (video !== tileVid && tileVid && tileBtn) applyMuteState(tileVid, tileBtn, muted);
+  if (video !== fsVid   && fsVid   && fsBtn && document.getElementById('fs-panel').dataset.cam === key) applyMuteState(fsVid, fsBtn, muted);
+}
 function toggleRec(key, btn, tile) {
   const isRec = btn.classList.contains('active');
   fetch('/agent-dvr/api/record?camKey=' + encodeURIComponent(key) + '&action=' + (isRec ? 'stop' : 'start'))
@@ -1179,6 +1232,19 @@ function openFs(cam, key) {
       const open = ov.classList.toggle('open');
       ptzBtn.classList.toggle('active', open);
     });
+  }
+
+  const fsUseWrtc = CFG.go2rtcEnabled && CFG.go2rtcUrl && !!go2rtcMap[key];
+  if (fsUseWrtc) {
+    const fv = document.getElementById('fs-vid');
+    const tileVid = gridTile ? gridTile.querySelector('video') : null;
+    const isMuted = tileVid ? tileVid.muted : true;
+    fv.muted = isMuted;
+    const muteBtn = document.createElement('div');
+    muteBtn.className = 'tile-btn mute-btn';
+    applyMuteState(fv, muteBtn, isMuted);
+    muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(fv, muteBtn, key); });
+    btnBox.appendChild(muteBtn);
   }
 
   fs.classList.add('open');
