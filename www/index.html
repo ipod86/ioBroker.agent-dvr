@@ -1712,6 +1712,7 @@ function connectWebRTC(vid, baseUrl, streamName) {
   const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
   const ws = new WebSocket(wsUrl);
+  ws.binaryType = 'arraybuffer';
   vid._rtcWs = ws;
   vid.dataset.stream = streamName;
 
@@ -1729,8 +1730,9 @@ function connectWebRTC(vid, baseUrl, streamName) {
 
   ws.addEventListener('message', ev => {
     if (typeof ev.data !== 'string') {
-      // Binary: fMP4 fragment — buffer until SourceBuffer is ready
-      if (sbReady) { queue.push(ev.data); flush(); }
+      // Binary: fMP4 fragment — always queue, flush only when SourceBuffer is ready
+      queue.push(ev.data);
+      if (sbReady) flush();
       return;
     }
     try {
