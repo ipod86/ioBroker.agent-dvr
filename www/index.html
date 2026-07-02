@@ -1181,11 +1181,14 @@ const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 function applyMuteState(video, btn, muted) {
   video.muted = muted;
   video.volume = muted ? 0 : 1;
-  // For WebRTC srcObject: control audio tracks directly (video.muted alone is unreliable)
   if (video.srcObject && video.srcObject.getAudioTracks) {
     video.srcObject.getAudioTracks().forEach(t => { t.enabled = !muted; });
   }
-  if (!muted) video.play && video.play().catch(() => {});
+  // For go2rtc: srcObject is assigned after 'connected' — also control via RTCRtpReceiver
+  if (!muted && video._rtcPc) {
+    video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = true; });
+    video.play().catch(() => {});
+  }
   btn.classList.toggle('active', !muted);
   btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
   btn.title = muted ? t('audioOn') : t('audioOff');
@@ -1660,37 +1663,39 @@ async function connectWebRTC(vid, baseUrl, streamName) {
   if (!baseUrl || !streamName) return;
   try {
     const pc = new RTCPeerConnection({
-      iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}]
+      bundlePolicy:  'max-bundle',
+      sdpSemantics:  'unified-plan',
+      iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}],
     });
     vid._rtcPc = pc;
     vid.dataset.stream = streamName;
 
-    const stream = new MediaStream();
-    vid.srcObject = stream;
-    pc.addEventListener('track', ev => {
-      ev.track.enabled = true;
-      stream.addTrack(ev.track);
-      // Re-trigger play so audio tracks added after initial play() are rendered
-      if (ev.track.kind === 'audio' && !vid.muted) vid.play().catch(() => {});
-    });
-
     pc.addTransceiver('video', {direction:'recvonly'});
     pc.addTransceiver('audio', {direction:'recvonly'});
 
-    // Route through ioBroker proxy to avoid browser cross-origin block on go2rtc
+    // Assign srcObject only once all tracks are available (go2rtc approach)
+    pc.addEventListener('connectionstatechange', () => {
+      if (pc.connectionState === 'connected') {
+        const tracks = pc.getTransceivers()
+          .filter(tr => tr.currentDirection === 'recvonly' && tr.receiver && tr.receiver.track)
+          .map(tr => { tr.receiver.track.enabled = true; return tr.receiver.track; });
+        vid.srcObject = new MediaStream(tracks);
+        vid.play().catch(() => {});
+      } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+        pc.close();
+        vid._rtcPc = null;
+      }
+    });
+
     const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
     const ws = new WebSocket(wsUrl);
     vid._rtcWs = ws;
 
-    // Queue candidates that arrive before setRemoteDescription completes
-    let remoteReady = false;
-    const pendingCandidates = [];
-
     ws.addEventListener('open', () => {
       pc.addEventListener('icecandidate', ev => {
-        if (!ev.candidate || ws.readyState !== WebSocket.OPEN) return;
-        ws.send(JSON.stringify({type:'webrtc/candidate', value:ev.candidate.candidate}));
+        if (ws.readyState !== WebSocket.OPEN) return;
+        ws.send(JSON.stringify({type:'webrtc/candidate', value: ev.candidate ? ev.candidate.candidate : ''}));
       });
       pc.createOffer()
         .then(o => pc.setLocalDescription(o))
@@ -1699,27 +1704,18 @@ async function connectWebRTC(vid, baseUrl, streamName) {
             ws.send(JSON.stringify({type:'webrtc/offer', value:pc.localDescription.sdp}));
         });
     });
-    ws.addEventListener('message', async ev => {
+    ws.addEventListener('message', ev => {
       try {
         const msg = JSON.parse(ev.data);
         if (msg.type === 'webrtc/candidate') {
-          const init = {candidate: msg.value, sdpMid: msg.sdpMid != null ? String(msg.sdpMid) : '0'};
-          if (remoteReady) {
-            await pc.addIceCandidate(init).catch(() => {});
-          } else {
-            pendingCandidates.push(init);
-          }
+          pc.addIceCandidate({candidate: msg.value, sdpMid: '0'}).catch(() => {});
         } else if (msg.type === 'webrtc/answer') {
-          await pc.setRemoteDescription({type:'answer', sdp:msg.value});
-          remoteReady = true;
-          for (const c of pendingCandidates) await pc.addIceCandidate(c).catch(() => {});
-          pendingCandidates.length = 0;
+          pc.setRemoteDescription({type:'answer', sdp:msg.value}).catch(() => {});
         }
       } catch (_) {}
     });
     ws.addEventListener('error', () => {});
     ws.addEventListener('close', () => {});
-    pc.addEventListener('connectionstatechange', () => {});
   } catch (err) {
     console.error('[go2rtc] connectWebRTC failed:', err);
   }
