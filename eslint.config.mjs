@@ -20,7 +20,8 @@ export default [
 			'admin/custom/**',
 			'**/adapter-config.d.ts',
 			'widgets/**/*.js',
-			'lib/**'
+			'lib/**',
+			'www/**'
 		],
 	},
 	{
