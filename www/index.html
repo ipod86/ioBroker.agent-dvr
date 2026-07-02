@@ -1003,9 +1003,11 @@ function makeTile(key, cam) {
   if (cam.recording) setTileRecording(tile, recBtn, true);
 
   tile.append(mediaEl, bottom);
-  // Start FLV player only after the video element is in the DOM (MSE requirement)
+  // Defer FLV player start via setTimeout(0): grid.appendChild(tile) runs synchronously
+  // AFTER makeTile returns, so mediaEl.isConnected becomes true before this callback fires.
   if (stype === 'mp4' && cam.oid) {
-    createFlvPlayer(mediaEl, '/agent-dvr/api/stream?oid=' + cam.oid, key);
+    const _el = mediaEl, _oid = cam.oid, _key = key;
+    setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid, _key), 0);
   }
   return tile;
 }
@@ -1665,7 +1667,12 @@ async function connectWebRTC(vid, baseUrl, streamName) {
 
     const stream = new MediaStream();
     vid.srcObject = stream;
-    pc.addEventListener('track', ev => stream.addTrack(ev.track));
+    pc.addEventListener('track', ev => {
+      ev.track.enabled = true;
+      stream.addTrack(ev.track);
+      // Re-trigger play so audio tracks added after initial play() are rendered
+      if (ev.track.kind === 'audio' && !vid.muted) vid.play().catch(() => {});
+    });
 
     pc.addTransceiver('video', {direction:'recvonly'});
     pc.addTransceiver('audio', {direction:'recvonly'});
@@ -1673,12 +1680,14 @@ async function connectWebRTC(vid, baseUrl, streamName) {
     // Route through ioBroker proxy to avoid browser cross-origin block on go2rtc
     const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
-    console.log('[go2rtc] connecting via proxy', wsUrl);
     const ws = new WebSocket(wsUrl);
     vid._rtcWs = ws;
 
+    // Queue candidates that arrive before setRemoteDescription completes
+    let remoteReady = false;
+    const pendingCandidates = [];
+
     ws.addEventListener('open', () => {
-      console.log('[go2rtc] WS open, creating offer for', streamName);
       pc.addEventListener('icecandidate', ev => {
         if (!ev.candidate || ws.readyState !== WebSocket.OPEN) return;
         ws.send(JSON.stringify({type:'webrtc/candidate', value:ev.candidate.candidate}));
@@ -1690,21 +1699,27 @@ async function connectWebRTC(vid, baseUrl, streamName) {
             ws.send(JSON.stringify({type:'webrtc/offer', value:pc.localDescription.sdp}));
         });
     });
-    ws.addEventListener('message', ev => {
+    ws.addEventListener('message', async ev => {
       try {
         const msg = JSON.parse(ev.data);
         if (msg.type === 'webrtc/candidate') {
-          pc.addIceCandidate({candidate:msg.value, sdpMid:'0'}).catch(() => {});
+          const init = {candidate: msg.value, sdpMid: msg.sdpMid != null ? String(msg.sdpMid) : '0'};
+          if (remoteReady) {
+            await pc.addIceCandidate(init).catch(() => {});
+          } else {
+            pendingCandidates.push(init);
+          }
         } else if (msg.type === 'webrtc/answer') {
-          console.log('[go2rtc] got answer for', streamName);
-          pc.setRemoteDescription({type:'answer', sdp:msg.value});
+          await pc.setRemoteDescription({type:'answer', sdp:msg.value});
+          remoteReady = true;
+          for (const c of pendingCandidates) await pc.addIceCandidate(c).catch(() => {});
+          pendingCandidates.length = 0;
         }
       } catch (_) {}
     });
-    ws.addEventListener('error', () => console.warn('[go2rtc] WS error for stream', streamName));
-    ws.addEventListener('close', ev => console.warn('[go2rtc] WS closed', ev.code, streamName));
-    pc.addEventListener('connectionstatechange', () =>
-      console.log('[go2rtc] PC state:', pc.connectionState, streamName));
+    ws.addEventListener('error', () => {});
+    ws.addEventListener('close', () => {});
+    pc.addEventListener('connectionstatechange', () => {});
   } catch (err) {
     console.error('[go2rtc] connectWebRTC failed:', err);
   }
