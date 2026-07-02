@@ -724,6 +724,35 @@ let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
+
+function applyFlvAspect(vid) {
+  const ar = vid.dataset.camAspect || '';
+  const parts = ar.split('/').map(Number);
+  if (parts.length === 2 && parts[0] >= 100 && parts[1] >= 100) {
+    vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
+    vid.style.objectFit   = 'fill';
+    vid.style.width       = 'auto';
+    vid.style.height      = 'auto';
+    vid.style.maxWidth    = '100%';
+    vid.style.maxHeight   = '100%';
+    vid.style.position    = 'absolute';
+    vid.style.top         = '50%';
+    vid.style.left        = '50%';
+    vid.style.transform   = 'translate(-50%,-50%)';
+  } else {
+    vid.style.aspectRatio = '';
+    vid.style.objectFit   = '';
+    vid.style.width       = '';
+    vid.style.height      = '';
+    vid.style.maxWidth    = '';
+    vid.style.maxHeight   = '';
+    vid.style.position    = '';
+    vid.style.top         = '';
+    vid.style.left        = '';
+    vid.style.transform   = '';
+  }
+}
+
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
   let el = p.querySelector('.flv-status');
@@ -752,37 +781,13 @@ function createFlvPlayer(vid, url, key) {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
-  // Reset any AR correction from a previous stream on this element
-  vid.style.aspectRatio = ''; vid.style.objectFit = ''; vid.style.width = '';
-  vid.style.height = ''; vid.style.maxWidth = ''; vid.style.maxHeight = '';
-  vid.style.position = ''; vid.style.top = ''; vid.style.left = ''; vid.style.transform = '';
+  applyFlvAspect(vid);
 
   vid.addEventListener('loadedmetadata', function onMeta() {
     vid.removeEventListener('loadedmetadata', onMeta);
     if (vid.videoWidth && vid.videoHeight) {
       flvShowStatus(vid, vid.videoWidth + '×' + vid.videoHeight);
       setTimeout(() => flvShowStatus(vid, ''), 5000);
-
-      const ar = vid.dataset.camAspect;
-      if (ar) {
-        const parts = ar.split('/').map(Number);
-        if (parts.length === 2 && parts[0] >= 100 && parts[1] >= 100) {
-          const camRatio = parts[0] / parts[1];
-          const vidRatio = vid.videoWidth / vid.videoHeight;
-          if (Math.abs(camRatio - vidRatio) / Math.max(camRatio, vidRatio) > 0.05) {
-            vid.style.aspectRatio = parts[0] + ' / ' + parts[1];
-            vid.style.objectFit   = 'fill';
-            vid.style.width       = 'auto';
-            vid.style.height      = 'auto';
-            vid.style.maxWidth    = '100%';
-            vid.style.maxHeight   = '100%';
-            vid.style.position    = 'absolute';
-            vid.style.top         = '50%';
-            vid.style.left        = '50%';
-            vid.style.transform   = 'translate(-50%,-50%)';
-          }
-        }
-      }
     }
   });
   p.attachMediaElement(vid);
@@ -1008,6 +1013,7 @@ function makeTile(key, cam) {
     vid.dataset.camKey    = key;
     vid.dataset.flvOid    = cam.oid || '';
     vid.dataset.camAspect = cam.aspect || '';
+    applyFlvAspect(vid);
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -1299,6 +1305,7 @@ function openFs(cam, key) {
     fv.style.display = 'block';
     fv.dataset.camKey    = key;
     fv.dataset.camAspect = cam.aspect || '';
+    applyFlvAspect(fv);
     createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cam.oid, 'fs_' + key);
   } else {
     fi.style.display = 'block';
