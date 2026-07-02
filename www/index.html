@@ -968,17 +968,10 @@ function makeTile(key, cam) {
                    : 'mjpeg';
 
   let mediaEl;
-  // Native aspect ratio forces correct proportions when FLV/WebRTC encodes at different ratio.
-  // Uses absolute centering so the element keeps native AR regardless of tile shape.
-  const nativeVideoStyle = cam.aspect
-    ? ('position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);' +
-       'height:auto;aspect-ratio:' + cam.aspect + ';object-fit:fill;display:block;background:#000')
-    : 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
 
   if (stype === 'go2rtc') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
-    vid.style.cssText = nativeVideoStyle;
     vid.dataset.stream = g2mStream;
     connectWebRTC(vid, CFG.go2rtcUrl, g2mStream);
     mediaEl = vid;
@@ -986,7 +979,6 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
-    vid.style.cssText = nativeVideoStyle;
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
     mediaEl = vid;
@@ -1231,41 +1223,7 @@ const SVG_AUDIO_ON  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="non
 function applyMuteState(video, btn, muted) {
   video.muted = muted;
   video.volume = muted ? 0 : 1;
-  // Enable/disable audio tracks directly
-  if (video.srcObject && video.srcObject.getAudioTracks) {
-    video.srcObject.getAudioTracks().forEach(tr => { tr.enabled = !muted; });
-  }
-  if (video._rtcPc) {
-    video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = !muted; });
-  }
-  // Web Audio API bypass: route WebRTC audio through AudioContext to guarantee output.
-  // Re-build the source node on every unmute so late-arriving audio tracks are included.
-  if (video.srcObject) {
-    if (!muted) {
-      const hasTracks = !!(video.srcObject.getAudioTracks && video.srcObject.getAudioTracks().length);
-      if (hasTracks) {
-        if (!video._audioCtx) {
-          try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const src = ctx.createMediaStreamSource(video.srcObject);
-            src.connect(ctx.destination);
-            video._audioCtx = ctx; video._audioSrc = src;
-          } catch(_) {}
-        } else {
-          try {
-            if (video._audioSrc) { video._audioSrc.disconnect(); video._audioSrc = null; }
-            video._audioSrc = video._audioCtx.createMediaStreamSource(video.srcObject);
-            video._audioSrc.connect(video._audioCtx.destination);
-          } catch(_) {}
-          if (video._audioCtx.state === 'suspended') video._audioCtx.resume().catch(() => {});
-        }
-      }
-    } else {
-      if (video._audioCtx) { video._audioCtx.close().catch(() => {}); video._audioCtx = null; video._audioSrc = null; }
-    }
-  } else if (!muted) {
-    video.play && video.play().catch(() => {});
-  }
+  if (!muted) { video.play && video.play().catch(() => {}); }
   btn.classList.toggle('active', !muted);
   btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
   btn.title = muted ? t('audioOn') : t('audioOff');
@@ -1734,119 +1692,91 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-/* ─────────────────────────── WebRTC (go2rtc) ───────────────── */
-async function connectWebRTC(vid, baseUrl, streamName) {
+/* ─────────────────────────── go2rtc (MSE) ───────────────────── */
+function connectWebRTC(vid, baseUrl, streamName) {
   disconnectWebRTC(vid);
   if (!baseUrl || !streamName) return;
-  try {
-    const pc = new RTCPeerConnection({
-      bundlePolicy:  'max-bundle',
-      sdpSemantics:  'unified-plan',
-      iceServers: [{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}],
-    });
-    vid._rtcPc = pc;
-    vid.dataset.stream = streamName;
+  const MS = window.ManagedMediaSource || window.MediaSource;
+  if (!MS) return;
 
-    pc.addTransceiver('video', {direction:'recvonly'});
-    pc.addTransceiver('audio', {direction:'recvonly'});
+  // Include Baseline H.264 (avc1.42e01f) so go2rtc confirms video+audio
+  const ALL_CODECS = [
+    'avc1.42e01f', 'avc1.640029', 'avc1.64002A', 'avc1.640033',
+    'hvc1.1.6.L153.B0', 'mp4a.40.2', 'mp4a.40.5', 'opus',
+  ];
+  const supported = ALL_CODECS.filter(c => {
+    try { return MS.isTypeSupported('video/mp4; codecs="' + c + '"'); } catch (_) { return false; }
+  });
+  const codecReq = 'video/mp4; codecs="' + supported.join(',') + '"';
 
-    // Standard WebRTC: collect tracks via track event as they arrive
-    const ms = new MediaStream();
-    pc.addEventListener('track', (ev) => {
-      ms.addTrack(ev.track);
-      ev.track.enabled = true;
-      vid.srcObject = ms;
-      vid.play().catch(() => {});
-      // If already unmuted and audio arrives late, reconnect AudioContext to the updated stream
-      if (!vid.muted && ev.track.kind === 'audio' && vid._audioCtx) {
-        try {
-          if (vid._audioSrc) { vid._audioSrc.disconnect(); vid._audioSrc = null; }
-          vid._audioSrc = vid._audioCtx.createMediaStreamSource(ms);
-          vid._audioSrc.connect(vid._audioCtx.destination);
-        } catch (_) {}
-      }
-    });
+  const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
+  const ws = new WebSocket(wsUrl);
+  vid._rtcWs = ws;
+  vid.dataset.stream = streamName;
 
-    pc.addEventListener('connectionstatechange', () => {
-      if (pc.connectionState === 'connected') {
-        // Skip audio check if SDP answer already told us audio is inactive at source
-        if (vid._audioInactive) return;
-        // Wait for initial track events to settle, then warn if still no audio
-        setTimeout(() => {
-          if (vid._audioInactive) return;
-          const tile = vid.closest ? vid.closest('.cam-tile') : null;
-          if (!tile) return;
-          let el = tile.querySelector('.rtc-status');
-          if (ms.getAudioTracks().length === 0) {
-            if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);color:#fa0;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
-            el.textContent = 'go2rtc: kein Audio-Track (' + streamName + ')';
-          } else if (el) {
-            el.textContent = '';
-          }
-        }, 3000);
-      } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-        pc.close();
-        vid._rtcPc = null;
-      }
-    });
+  let sbReady = false;
+  let sb = null;
+  const queue = [];
 
-    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
-    const ws = new WebSocket(wsUrl);
-    vid._rtcWs = ws;
-
-    ws.addEventListener('open', () => {
-      pc.addEventListener('icecandidate', ev => {
-        if (ws.readyState !== WebSocket.OPEN) return;
-        ws.send(JSON.stringify({type:'webrtc/candidate', value: ev.candidate ? ev.candidate.candidate : ''}));
-      });
-      pc.createOffer()
-        .then(o => pc.setLocalDescription(o))
-        .then(() => {
-          if (ws.readyState === WebSocket.OPEN)
-            ws.send(JSON.stringify({type:'webrtc/offer', value:pc.localDescription.sdp}));
-        });
-    });
-    ws.addEventListener('message', ev => {
-      try {
-        const msg = JSON.parse(ev.data);
-        if (msg.type === 'webrtc/candidate') {
-          pc.addIceCandidate({candidate: msg.value, sdpMid: '0'}).catch(() => {});
-        } else if (msg.type === 'webrtc/answer') {
-          // Check if audio m-section is inactive (source stream has no audio)
-          const sdp = msg.value || '';
-          const audioIdx = sdp.indexOf('m=audio');
-          if (audioIdx !== -1) {
-            const audioSection = sdp.slice(audioIdx);
-            const nextM = audioSection.indexOf('m=', 2);
-            const audioBlock = nextM !== -1 ? audioSection.slice(0, nextM) : audioSection;
-            if (audioBlock.split('\n').some(l => l.trim() === 'a=inactive')) {
-              vid._audioInactive = true;
-              const tile = vid.closest ? vid.closest('.cam-tile') : null;
-              if (tile) {
-                let el = tile.querySelector('.rtc-status');
-                if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#888;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
-                el.textContent = 'Kein Audio (go2rtc-Quelle stumm)';
-                setTimeout(() => { if (el.parentNode) el.textContent = ''; }, 6000);
-              }
-            }
-          }
-          pc.setRemoteDescription({type:'answer', sdp}).catch(() => {});
-        }
-      } catch (_) {}
-    });
-    ws.addEventListener('error', () => {});
-    ws.addEventListener('close', () => {});
-  } catch (err) {
-    console.error('[go2rtc] connectWebRTC failed:', err);
+  function flush() {
+    if (!sb || sb.updating || queue.length === 0) return;
+    const data = queue.shift();
+    try { sb.appendBuffer(data); } catch (_) { flush(); }
   }
+
+  ws.addEventListener('open', () => ws.send(JSON.stringify({type:'mse', value: codecReq})));
+
+  ws.addEventListener('message', ev => {
+    if (typeof ev.data !== 'string') {
+      // Binary: fMP4 fragment — buffer until SourceBuffer is ready
+      if (sbReady) { queue.push(ev.data); flush(); }
+      return;
+    }
+    try {
+      const msg = JSON.parse(ev.data);
+      if (msg.type !== 'mse') return;
+      const mimeType = msg.value;
+      const mediaSrc = new MS();
+      const onOpen = () => {
+        try {
+          sb = mediaSrc.addSourceBuffer(mimeType);
+          sb.mode = 'segments';
+          sb.addEventListener('updateend', () => {
+            flush();
+            // Trim live buffer: keep only last 5 s to avoid memory growth
+            if (sb.buffered && sb.buffered.length) {
+              const end = sb.buffered.end(sb.buffered.length - 1);
+              const s0  = sb.buffered.start(0);
+              if (end - s0 > 5) { try { sb.remove(s0, end - 3); } catch (_) {} }
+            }
+          });
+          sbReady = true;
+          flush(); // drain any frames that arrived before sb was ready
+        } catch (e) { console.warn('[go2rtc] SourceBuffer error:', e); }
+      };
+      if ('ManagedMediaSource' in window) {
+        vid.disableRemotePlayback = true;
+        vid.srcObject = mediaSrc;
+      } else {
+        vid.src = URL.createObjectURL(mediaSrc);
+        vid.srcObject = null;
+      }
+      mediaSrc.addEventListener('sourceopen', onOpen, {once: true});
+      vid.muted = true;
+      vid.play().catch(() => {});
+    } catch (_) {}
+  });
+
+  ws.addEventListener('error', () => {});
+  ws.addEventListener('close', () => {});
 }
 function disconnectWebRTC(vid) {
   if (!vid) return;
   try { if (vid._rtcWs) { vid._rtcWs.close(); vid._rtcWs = null; } } catch (_) {}
   try { if (vid._rtcPc) { vid._rtcPc.close(); vid._rtcPc = null; } } catch (_) {}
+  if (vid.src && vid.src.startsWith('blob:')) { URL.revokeObjectURL(vid.src); vid.src = ''; }
   vid.srcObject = null;
-  vid._audioInactive = false;
 }
 
 /* ─────────────────────────── Boot ──────────────────────────── */
