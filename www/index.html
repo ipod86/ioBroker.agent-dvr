@@ -241,7 +241,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── WebRTC video in tiles ── */
-.cam-tile video{position:absolute;inset:0;object-fit:contain;display:block;background:#000}
+.cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
 </style>
 <script>
@@ -968,10 +968,17 @@ function makeTile(key, cam) {
                    : 'mjpeg';
 
   let mediaEl;
+  // Native aspect ratio forces correct proportions when FLV/WebRTC encodes at different ratio.
+  // Uses absolute centering so the element keeps native AR regardless of tile shape.
+  const nativeVideoStyle = cam.aspect
+    ? ('position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);' +
+       'height:auto;aspect-ratio:' + cam.aspect + ';object-fit:fill;display:block;background:#000')
+    : 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
+
   if (stype === 'go2rtc') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
-    vid.style.cssText = 'position:absolute;inset:0;object-fit:contain;display:block;background:#000';
+    vid.style.cssText = nativeVideoStyle;
     vid.dataset.stream = g2mStream;
     connectWebRTC(vid, CFG.go2rtcUrl, g2mStream);
     mediaEl = vid;
@@ -979,7 +986,7 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
-    vid.style.cssText = 'position:absolute;inset:0;object-fit:contain;display:block;background:#000';
+    vid.style.cssText = nativeVideoStyle;
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
     mediaEl = vid;
@@ -1231,19 +1238,27 @@ function applyMuteState(video, btn, muted) {
   if (video._rtcPc) {
     video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = !muted; });
   }
-  // Web Audio API bypass: for WebRTC srcObject, use AudioContext to guarantee audio output
-  // regardless of browser autoplay policy on video.muted
+  // Web Audio API bypass: route WebRTC audio through AudioContext to guarantee output.
+  // Re-build the source node on every unmute so late-arriving audio tracks are included.
   if (video.srcObject) {
     if (!muted) {
-      if (!video._audioCtx) {
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const src = ctx.createMediaStreamSource(video.srcObject);
-          src.connect(ctx.destination);
-          video._audioCtx = ctx; video._audioSrc = src;
-        } catch(_) {}
-      } else if (video._audioCtx.state === 'suspended') {
-        video._audioCtx.resume().catch(() => {});
+      const hasTracks = !!(video.srcObject.getAudioTracks && video.srcObject.getAudioTracks().length);
+      if (hasTracks) {
+        if (!video._audioCtx) {
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = ctx.createMediaStreamSource(video.srcObject);
+            src.connect(ctx.destination);
+            video._audioCtx = ctx; video._audioSrc = src;
+          } catch(_) {}
+        } else {
+          try {
+            if (video._audioSrc) { video._audioSrc.disconnect(); video._audioSrc = null; }
+            video._audioSrc = video._audioCtx.createMediaStreamSource(video.srcObject);
+            video._audioSrc.connect(video._audioCtx.destination);
+          } catch(_) {}
+          if (video._audioCtx.state === 'suspended') video._audioCtx.resume().catch(() => {});
+        }
       }
     } else {
       if (video._audioCtx) { video._audioCtx.close().catch(() => {}); video._audioCtx = null; video._audioSrc = null; }
@@ -1742,6 +1757,14 @@ async function connectWebRTC(vid, baseUrl, streamName) {
       ev.track.enabled = true;
       vid.srcObject = ms;
       vid.play().catch(() => {});
+      // If already unmuted and audio arrives late, reconnect AudioContext to the updated stream
+      if (!vid.muted && ev.track.kind === 'audio' && vid._audioCtx) {
+        try {
+          if (vid._audioSrc) { vid._audioSrc.disconnect(); vid._audioSrc = null; }
+          vid._audioSrc = vid._audioCtx.createMediaStreamSource(ms);
+          vid._audioSrc.connect(vid._audioCtx.destination);
+        } catch (_) {}
+      }
     });
 
     pc.addEventListener('connectionstatechange', () => {
@@ -1753,7 +1776,7 @@ async function connectWebRTC(vid, baseUrl, streamName) {
           let el = tile.querySelector('.rtc-status');
           if (ms.getAudioTracks().length === 0) {
             if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);color:#fa0;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
-            el.textContent = 'go2rtc: kein Audio-Track';
+            el.textContent = 'go2rtc: kein Audio-Track (' + streamName + ')';
           } else if (el) {
             el.textContent = '';
           }
