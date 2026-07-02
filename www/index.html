@@ -241,7 +241,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ── WebRTC video in tiles ── */
-.cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.cam-tile video{position:absolute;inset:0;object-fit:contain;display:block;background:#000}
 
 </style>
 <script>
@@ -752,6 +752,13 @@ function createFlvPlayer(vid, url, key) {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
+  vid.addEventListener('loadedmetadata', function onMeta() {
+    vid.removeEventListener('loadedmetadata', onMeta);
+    if (vid.videoWidth && vid.videoHeight) {
+      flvShowStatus(vid, vid.videoWidth + '×' + vid.videoHeight);
+      setTimeout(() => flvShowStatus(vid, ''), 5000);
+    }
+  });
   p.attachMediaElement(vid);
   p.load();
   p.play();
@@ -964,7 +971,7 @@ function makeTile(key, cam) {
   if (stype === 'go2rtc') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
-    vid.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
+    vid.style.cssText = 'position:absolute;inset:0;object-fit:contain;display:block;background:#000';
     vid.dataset.stream = g2mStream;
     connectWebRTC(vid, CFG.go2rtcUrl, g2mStream);
     mediaEl = vid;
@@ -972,7 +979,7 @@ function makeTile(key, cam) {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.setAttribute('muted', '');
-    vid.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block;background:#000';
+    vid.style.cssText = 'position:absolute;inset:0;object-fit:contain;display:block;background:#000';
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
     mediaEl = vid;
@@ -1728,24 +1735,29 @@ async function connectWebRTC(vid, baseUrl, streamName) {
     pc.addTransceiver('video', {direction:'recvonly'});
     pc.addTransceiver('audio', {direction:'recvonly'});
 
-    // Assign srcObject only once all tracks are available (go2rtc approach)
+    // Standard WebRTC: collect tracks via track event as they arrive
+    const ms = new MediaStream();
+    pc.addEventListener('track', (ev) => {
+      ms.addTrack(ev.track);
+      ev.track.enabled = true;
+      vid.srcObject = ms;
+      vid.play().catch(() => {});
+    });
+
     pc.addEventListener('connectionstatechange', () => {
       if (pc.connectionState === 'connected') {
-        const tracks = pc.getTransceivers()
-          .filter(tr => tr.currentDirection === 'recvonly' && tr.receiver && tr.receiver.track)
-          .map(tr => { tr.receiver.track.enabled = true; return tr.receiver.track; });
-        vid.srcObject = new MediaStream(tracks);
-        vid.play().catch(() => {});
-        const hasAudio = tracks.some(tr => tr.kind === 'audio');
-        // Show visible status if go2rtc sent no audio track
-        if (!hasAudio) {
+        // Wait briefly for all initial track events to settle, then check audio
+        setTimeout(() => {
           const tile = vid.closest ? vid.closest('.cam-tile') : null;
-          if (tile) {
-            let el = tile.querySelector('.rtc-status');
+          if (!tile) return;
+          let el = tile.querySelector('.rtc-status');
+          if (ms.getAudioTracks().length === 0) {
             if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);color:#fa0;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
             el.textContent = 'go2rtc: kein Audio-Track';
+          } else if (el) {
+            el.textContent = '';
           }
-        }
+        }, 1500);
       } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
         pc.close();
         vid._rtcPc = null;
