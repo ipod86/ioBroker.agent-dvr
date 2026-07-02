@@ -984,13 +984,16 @@ function makeTile(key, cam) {
     vid.setAttribute('muted', '');
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
-    // Wrap in an aspect-ratio div so the tile flex-centres it correctly.
+    // Wrap in a padding-bottom box so the video is forced to the correct AR.
+    // Using padding-bottom % (relative to parent width) is universally reliable —
+    // unlike CSS aspect-ratio on a replaced element whose intrinsic size fights back.
     // mediaEl stays the video element so mute/createFlvPlayer work unchanged.
     const arParts = (cam.aspect || '').split('/').map(Number);
     if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100) {
-      vid.style.cssText = 'width:100%;height:100%;object-fit:fill;display:block;background:#000';
+      const pct = (arParts[1] / arParts[0] * 100).toFixed(4);
+      vid.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:fill;display:block;background:#000';
       const wrap = document.createElement('div');
-      wrap.style.cssText = 'width:100%;height:auto;max-height:100%;aspect-ratio:' + arParts[0] + '/' + arParts[1] + ';overflow:hidden;flex-shrink:0;position:relative';
+      wrap.style.cssText = 'position:relative;width:100%;padding-bottom:' + pct + '%;overflow:hidden;flex-shrink:0';
       wrap.appendChild(vid);
       vid._arWrap = wrap; // used by tile.append below
     }
