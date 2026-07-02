@@ -244,6 +244,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
 </style>
+<script src="flv.min.js"></script>
 </head>
 <body>
 <div id="app">
@@ -712,6 +713,19 @@ if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
 let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
+const flvPlayers = {}; // camKey → flvjs.Player
+function createFlvPlayer(vid, url, key) {
+  if (flvPlayers[key]) { try { flvPlayers[key].destroy(); } catch(_) {} delete flvPlayers[key]; }
+  if (!window.flvjs || !flvjs.isSupported()) { vid.src = url; return null; }
+  const p = flvjs.createPlayer({ type: 'flv', isLive: true, url, enableWorker: false });
+  p.attachMediaElement(vid);
+  p.load();
+  flvPlayers[key] = p;
+  return p;
+}
+function destroyFlvPlayer(key) {
+  if (flvPlayers[key]) { try { flvPlayers[key].destroy(); } catch(_) {} delete flvPlayers[key]; }
+}
 
 /* ─────────────────────────── Dashboard config ──────────────── */
 let CFG = {
@@ -729,6 +743,7 @@ let CFG = {
   dashColorOnline:     '',
   dashColorOffline:    '',
   dashTagPosition:     'top-right',
+  dashStreamType:      'mjpeg',
   go2rtcEnabled:       false,
   go2rtcUrl:           '',
   go2rtcMapping:       [],
@@ -904,16 +919,24 @@ function makeTile(key, cam) {
   const tile = document.createElement('div');
   tile.className = 'cam-tile'; tile.dataset.cam = key;
 
-  // Decide stream type: WebRTC (go2rtc) or MJPEG/snapshot
-  const g2mStream = typeof go2rtcMap[key] === 'string' ? go2rtcMap[key] : '';
-  const useWrtc   = CFG.go2rtcEnabled && CFG.go2rtcUrl && !!g2mStream;
+  // Decide stream type: go2rtc WebRTC, MP4/FLV, or MJPEG/snapshot
+  const g2mStream  = typeof go2rtcMap[key] === 'string' ? go2rtcMap[key] : '';
+  const stype      = CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl && g2mStream ? 'go2rtc'
+                   : CFG.dashStreamType === 'mp4' ? 'mp4'
+                   : 'mjpeg';
 
   let mediaEl;
-  if (useWrtc) {
+  if (stype === 'go2rtc') {
     const vid = document.createElement('video');
     vid.autoplay = true; vid.muted = true; vid.playsInline = true;
     vid.dataset.stream = g2mStream;
     connectWebRTC(vid, CFG.go2rtcUrl, g2mStream);
+    mediaEl = vid;
+  } else if (stype === 'mp4') {
+    const vid = document.createElement('video');
+    vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+    vid.dataset.camKey = key;
+    createFlvPlayer(vid, BASE + '/video.mp4?oid=' + cam.oid, key);
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -963,7 +986,7 @@ function makeTile(key, cam) {
     tile.appendChild(makePtzOverlay(key));
   }
 
-  if (useWrtc) {
+  if (stype !== 'mjpeg') {
     const muteBtn = document.createElement('div');
     muteBtn.className = 'tile-btn mute-btn';
     muteBtn.title = t('audioOn');
@@ -1181,14 +1204,22 @@ function openFs(cam, key) {
   // Stop any running fullscreen stream first
   fi.src = '';
   disconnectWebRTC(fv);
+  destroyFlvPlayer('fs_' + key);
 
-  // Check if we should use WebRTC for this camera
+  // Decide stream type for fullscreen
   const g2mStream = typeof go2rtcMap[key] === 'string' ? go2rtcMap[key] : '';
-  const useWrtc   = CFG.go2rtcEnabled && CFG.go2rtcUrl && !!g2mStream;
-  if (useWrtc) {
+  const stype     = CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl && g2mStream ? 'go2rtc'
+                  : CFG.dashStreamType === 'mp4' ? 'mp4'
+                  : 'mjpeg';
+  if (stype === 'go2rtc') {
     fi.style.display = 'none';
     fv.style.display = 'block';
     connectWebRTC(fv, CFG.go2rtcUrl, g2mStream);
+  } else if (stype === 'mp4') {
+    fi.style.display = 'none';
+    fv.style.display = 'block';
+    fv.dataset.camKey = key;
+    createFlvPlayer(fv, BASE + '/video.mp4?oid=' + cam.oid, 'fs_' + key);
   } else {
     fi.style.display = 'block';
     fv.style.display = 'none';
@@ -1234,16 +1265,15 @@ function openFs(cam, key) {
     });
   }
 
-  const fsUseWrtc = CFG.go2rtcEnabled && CFG.go2rtcUrl && !!go2rtcMap[key];
-  if (fsUseWrtc) {
-    const fv = document.getElementById('fs-vid');
+  if (stype !== 'mjpeg') {
+    const fvEl = document.getElementById('fs-vid');
     const tileVid = gridTile ? gridTile.querySelector('video') : null;
     const isMuted = tileVid ? tileVid.muted : true;
-    fv.muted = isMuted;
+    fvEl.muted = isMuted;
     const muteBtn = document.createElement('div');
     muteBtn.className = 'tile-btn mute-btn';
-    applyMuteState(fv, muteBtn, isMuted);
-    muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(fv, muteBtn, key); });
+    applyMuteState(fvEl, muteBtn, isMuted);
+    muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(fvEl, muteBtn, key); });
     btnBox.appendChild(muteBtn);
   }
 
@@ -1252,8 +1282,11 @@ function openFs(cam, key) {
 function closeFs() {
   const fi = document.getElementById('fs-img');
   const fv = document.getElementById('fs-vid');
+  const fsCam = document.getElementById('fs-panel').dataset.cam;
   fi.src = ''; fi.style.display = 'block';
-  disconnectWebRTC(fv); fv.style.display = 'none';
+  disconnectWebRTC(fv);
+  if (fsCam) destroyFlvPlayer('fs_' + fsCam);
+  fv.style.display = 'none';
   const fs = document.getElementById('fs-panel');
   fs.classList.remove('open', 'recording');
   fs.dataset.cam = '';
@@ -1565,11 +1598,17 @@ document.addEventListener('visibilitychange', () => {
     });
     // Stop WebRTC on tiles
     document.querySelectorAll('.cam-tile video[data-stream]').forEach(vid => disconnectWebRTC(vid));
+    // Stop FLV on tiles
+    document.querySelectorAll('.cam-tile video[data-cam-key]').forEach(vid => {
+      destroyFlvPlayer(vid.dataset.camKey);
+    });
     // Stop fullscreen streams
     const fi = document.getElementById('fs-img');
     if (fi.src) { fi.dataset.s = fi.src; fi.src = ''; }
     const fv = document.getElementById('fs-vid');
     if (fv && fv.dataset.stream) disconnectWebRTC(fv);
+    const fsCam = document.getElementById('fs-panel').dataset.cam;
+    if (fsCam) destroyFlvPlayer('fs_' + fsCam);
   } else {
     // Restart MJPEG
     document.querySelectorAll('.cam-tile img[data-mjpeg]').forEach(img => {
@@ -1577,15 +1616,27 @@ document.addEventListener('visibilitychange', () => {
       img.src = img.dataset.mjpeg;
     });
     // Restart WebRTC on tiles
-    if (CFG.go2rtcUrl) {
+    if (CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl) {
       document.querySelectorAll('.cam-tile video[data-stream]').forEach(vid =>
         connectWebRTC(vid, CFG.go2rtcUrl, vid.dataset.stream));
     }
+    // Restart FLV on tiles
+    document.querySelectorAll('.cam-tile video[data-cam-key]').forEach(vid => {
+      const k = vid.dataset.camKey;
+      const cam = cameras[k];
+      if (cam) createFlvPlayer(vid, BASE + '/video.mp4?oid=' + cam.oid, k);
+    });
     // Restart fullscreen streams
     const fi = document.getElementById('fs-img');
     if (!fi.src && fi.dataset.s) { fi.src = fi.dataset.s; }
     const fv = document.getElementById('fs-vid');
-    if (fv && fv.dataset.stream && CFG.go2rtcUrl) connectWebRTC(fv, CFG.go2rtcUrl, fv.dataset.stream);
+    if (fv && fv.dataset.stream && CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl) {
+      connectWebRTC(fv, CFG.go2rtcUrl, fv.dataset.stream);
+    }
+    const fsCam = document.getElementById('fs-panel').dataset.cam;
+    if (fsCam && CFG.dashStreamType === 'mp4' && cameras[fsCam]) {
+      createFlvPlayer(fv, BASE + '/video.mp4?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
+    }
   }
 });
 

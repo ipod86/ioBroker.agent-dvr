@@ -710,22 +710,27 @@
                     "xs": 12,
                     "size": 3
                 },
-                "go2rtcEnabled": {
-                    "type": "checkbox",
-                    "label": "cfgGo2rtcEnabled",
-                    "help": "cfgGo2rtcEnabled_tt",
+                "dashStreamType": {
+                    "type": "select",
+                    "label": "cfgDashStreamType",
+                    "help": "cfgDashStreamType_tt",
                     "newLine": true,
                     "xs": 12,
                     "sm": 6,
                     "md": 4,
                     "lg": 4,
-                    "xl": 4
+                    "xl": 4,
+                    "options": [
+                        { "value": "mjpeg",  "label": "cfgDashStreamMjpeg"  },
+                        { "value": "mp4",    "label": "cfgDashStreamMp4"    },
+                        { "value": "go2rtc", "label": "cfgDashStreamGo2rtc" }
+                    ]
                 },
                 "go2rtcUrl": {
                     "type": "text",
                     "label": "cfgGo2rtcUrl",
                     "help": "cfgGo2rtcUrl_tt",
-                    "hidden": "!data.go2rtcEnabled",
+                    "hidden": "data.dashStreamType !== 'go2rtc'",
                     "newLine": true,
                     "xs": 12,
                     "sm": 8,
@@ -737,7 +742,7 @@
                     "type": "table",
                     "label": "cfgGo2rtcMapping",
                     "help": "cfgGo2rtcMapping_tt",
-                    "hidden": "!data.go2rtcEnabled",
+                    "hidden": "data.dashStreamType !== 'go2rtc'",
                     "newLine": true,
                     "xs": 12,
                     "sm": 12,
