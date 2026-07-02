@@ -244,7 +244,17 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
 </style>
-<script src="flv.min.js"></script>
+<script>
+// Load flv.js: try local copy first, fall back to CDN
+(function(){
+  function load(src){
+    return new Promise(function(res,rej){var s=document.createElement('script');s.onload=res;s.onerror=rej;s.src=src;document.head.appendChild(s);});
+  }
+  window._flvReady = load('flv.min.js')
+    .catch(function(){ return load('https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js'); })
+    .catch(function(){ window._flvFailed = true; });
+})();
+</script>
 </head>
 <body>
 <div id="app">
@@ -728,9 +738,15 @@ function flvShowStatus(vid, msg) {
 }
 function createFlvPlayer(vid, url, key) {
   if (flvPlayers[key]) { try { flvPlayers[key].destroy(); } catch(_) {} delete flvPlayers[key]; }
-  if (!window.flvjs) { flvShowStatus(vid, 'ERR: flv.min.js not loaded'); return null; }
-  if (!flvjs.isSupported()) { flvShowStatus(vid, 'ERR: MSE not supported in this browser'); return null; }
-  flvShowStatus(vid, 'connecting…');
+  if (!window.flvjs) {
+    if (window._flvFailed) { flvShowStatus(vid, 'ERR: flv.js konnte nicht geladen werden'); return null; }
+    // Still loading — retry after promise resolves
+    flvShowStatus(vid, 'lade flv.js…');
+    (window._flvReady || Promise.resolve()).then(() => createFlvPlayer(vid, url, key));
+    return null;
+  }
+  if (!flvjs.isSupported()) { flvShowStatus(vid, 'ERR: MSE nicht unterstützt (Browser zu alt?)'); return null; }
+  flvShowStatus(vid, 'verbinde…');
   const p = flvjs.createPlayer({ type: 'flv', isLive: true, url, enableWorker: false });
   p.on(flvjs.Events.ERROR, (errType, errDetail) => {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
@@ -1200,12 +1216,19 @@ function applyMuteState(video, btn, muted) {
   video.muted = muted;
   video.volume = muted ? 0 : 1;
   if (video.srcObject && video.srcObject.getAudioTracks) {
-    video.srcObject.getAudioTracks().forEach(t => { t.enabled = !muted; });
+    video.srcObject.getAudioTracks().forEach(tr => { tr.enabled = !muted; });
   }
-  // For go2rtc: srcObject is assigned after 'connected' — also control via RTCRtpReceiver
-  if (!muted && video._rtcPc) {
-    video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = true; });
+  if (video._rtcPc) {
+    video._rtcPc.getReceivers().forEach(r => { if (r.track && r.track.kind === 'audio') r.track.enabled = !muted; });
+  }
+  if (!muted && video.srcObject) {
+    // Re-assign srcObject to force browser to re-evaluate audio rendering
+    const s = video.srcObject;
+    video.srcObject = null;
+    video.srcObject = s;
     video.play().catch(() => {});
+  } else if (!muted) {
+    video.play && video.play().catch(() => {});
   }
   btn.classList.toggle('active', !muted);
   btn.innerHTML = muted ? SVG_AUDIO_OFF : SVG_AUDIO_ON;
@@ -1699,13 +1722,16 @@ async function connectWebRTC(vid, baseUrl, streamName) {
           .map(tr => { tr.receiver.track.enabled = true; return tr.receiver.track; });
         vid.srcObject = new MediaStream(tracks);
         vid.play().catch(() => {});
-        // Show "no audio" hint on mute button if go2rtc sent no audio track
-        const hasAudio = tracks.some(t => t.kind === 'audio');
-        const tile = document.querySelector('.cam-tile[data-cam="' + vid.dataset.stream + '"], .cam-tile video[data-stream="' + vid.dataset.stream + '"]');
-        const muteBtn = vid.closest && vid.closest('.cam-tile') && vid.closest('.cam-tile').querySelector('.mute-btn')
-                     || document.querySelector('.cam-tile[data-cam] video[data-stream="' + vid.dataset.stream + '"]') && document.querySelector('.cam-tile video[data-stream="' + vid.dataset.stream + '"]').closest('.cam-tile').querySelector('.mute-btn')
-                     || document.querySelector('#fs-btns .mute-btn');
-        if (muteBtn && !hasAudio) muteBtn.title = 'Kein Audio-Track von go2rtc';
+        const hasAudio = tracks.some(tr => tr.kind === 'audio');
+        // Show visible status if go2rtc sent no audio track
+        if (!hasAudio) {
+          const tile = vid.closest ? vid.closest('.cam-tile') : null;
+          if (tile) {
+            let el = tile.querySelector('.rtc-status');
+            if (!el) { el = document.createElement('div'); el.className = 'rtc-status'; el.style.cssText = 'position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);color:#fa0;font-size:10px;padding:2px 4px;z-index:10;pointer-events:none'; tile.style.position='relative'; tile.appendChild(el); }
+            el.textContent = 'go2rtc: kein Audio-Track';
+          }
+        }
       } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
         pc.close();
         vid._rtcPc = null;
