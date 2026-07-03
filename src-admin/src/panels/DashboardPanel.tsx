@@ -148,7 +148,10 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                             setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Timeout');
                         } else if (Array.isArray(rawResult?.streams)) {
                             strms = rawResult.streams;
-                            if (strms.length === 0 && rawResult.error) {
+                            if (strms.length > 0) {
+                                // Adapter hat Streams geholt → Browser-Fehler irrelevant
+                                setFetchError(null);
+                            } else if (rawResult.error) {
                                 setFetchError(prev => (prev ? prev + ' | ' : '') + rawResult.error);
                             }
                         }
@@ -290,7 +293,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                                                         onChange={e => setStreamForCam(cam.key, e.target.value as string)}
                                                         displayEmpty
                                                     >
-                                                        <MenuItem value=""><em>— MJPEG / Snapshot —</em></MenuItem>
+                                                        <MenuItem value=""><em>— Stream wählen —</em></MenuItem>
                                                         {streams.map(s => (
                                                             <MenuItem key={s} value={s}>{s}</MenuItem>
                                                         ))}
