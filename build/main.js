@@ -366,6 +366,12 @@ class AgentDvr extends utils.Adapter {
     }
   }
   async fetchAvailableSources() {
+    const deadline = new Promise(
+      (res) => setTimeout(() => res({ result: [{ source: "!", name: "Timeout \u2013 Adapter zu langsam" }] }), 7e3)
+    );
+    return Promise.race([this._doFetchAvailableSources(), deadline]);
+  }
+  async _doFetchAvailableSources() {
     const rows = [];
     try {
       const ns = `${this.namespace}.`;

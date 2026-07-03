@@ -511,6 +511,7 @@
                     "command": "getAvailableSources",
                     "label": "cfgTestSourcesBtn",
                     "showProcess": true,
+                    "timeout": 9000,
                     "newLine": true,
                     "xs": 12,
                     "sm": 4,

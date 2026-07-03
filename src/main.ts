@@ -479,6 +479,13 @@ class AgentDvr extends utils.Adapter {
 	}
 
 	private async fetchAvailableSources(): Promise<{ result: { source: string; name: string }[] }> {
+		const deadline = new Promise<{ result: { source: string; name: string }[] }>(res =>
+			setTimeout(() => res({ result: [{ source: '!', name: 'Timeout – Adapter zu langsam' }] }), 7000),
+		);
+		return Promise.race([this._doFetchAvailableSources(), deadline]);
+	}
+
+	private async _doFetchAvailableSources(): Promise<{ result: { source: string; name: string }[] }> {
 		const rows: { source: string; name: string }[] = [];
 		try {
 			const ns = `${this.namespace}.`;
