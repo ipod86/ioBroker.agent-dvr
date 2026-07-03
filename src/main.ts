@@ -392,6 +392,7 @@ class AgentDvr extends utils.Adapter {
 	private readonly ptzActive = new Map<string | number, string>();
 	private readonly widgetSig: Record<string, string> = {};
 	private profileSig = '';
+	private lastCamNames: { key: string; name: string }[] = [];
 	private readonly lastEventFn: Record<string | number, string> = {};
 	private readonly camAspect: Record<string | number, string> = {};
 	private readonly devById = new Map<string | number, Device>();
@@ -487,24 +488,15 @@ class AgentDvr extends utils.Adapter {
 
 	private async _doFetchAvailableSources(): Promise<{ result: { source: string; name: string }[] }> {
 		const rows: { source: string; name: string }[] = [];
-		try {
-			const ns = `${this.namespace}.`;
-			const nameStates = await this.getForeignStatesAsync(`${ns}cam_*.name`);
-			for (const [id, state] of Object.entries(nameStates || {})) {
-				if (state && typeof state.val === 'string' && state.val) {
-					const key = id.slice(ns.length).split('.')[0];
-					rows.push({ source: 'AgentDVR', name: `${state.val} (${key})` });
-				}
-			}
-		} catch {
-			/* ignore */
+		for (const c of this.lastCamNames) {
+			rows.push({ source: 'AgentDVR', name: `${c.name} (${c.key})` });
 		}
 		const streams = await this.fetchGo2rtcStreams();
 		for (const s of streams) {
 			rows.push({ source: 'go2rtc', name: s });
 		}
 		if (!rows.length) {
-			rows.push({ source: '—', name: 'Keine Quellen gefunden' });
+			rows.push({ source: '—', name: 'Keine Quellen gefunden (Adapter hat noch nicht gepollt)' });
 		}
 		return { result: rows };
 	}
@@ -1439,6 +1431,7 @@ class AgentDvr extends utils.Adapter {
 		}
 
 		const devices = findDevices(json);
+		this.lastCamNames = devices.filter(d => d.ot === 2).map(d => ({ key: this.deviceFolder(d), name: d.name }));
 		await this.setStateAsync('system.cameraCount', { val: devices.filter(d => d.ot === 2).length, ack: true });
 
 		const activeFolders = new Set(devices.map(d => this.deviceFolder(d)));

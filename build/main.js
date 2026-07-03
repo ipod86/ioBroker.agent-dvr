@@ -291,6 +291,7 @@ class AgentDvr extends utils.Adapter {
   ptzActive = /* @__PURE__ */ new Map();
   widgetSig = {};
   profileSig = "";
+  lastCamNames = [];
   lastEventFn = {};
   camAspect = {};
   devById = /* @__PURE__ */ new Map();
@@ -373,23 +374,15 @@ class AgentDvr extends utils.Adapter {
   }
   async _doFetchAvailableSources() {
     const rows = [];
-    try {
-      const ns = `${this.namespace}.`;
-      const nameStates = await this.getForeignStatesAsync(`${ns}cam_*.name`);
-      for (const [id, state] of Object.entries(nameStates || {})) {
-        if (state && typeof state.val === "string" && state.val) {
-          const key = id.slice(ns.length).split(".")[0];
-          rows.push({ source: "AgentDVR", name: `${state.val} (${key})` });
-        }
-      }
-    } catch {
+    for (const c of this.lastCamNames) {
+      rows.push({ source: "AgentDVR", name: `${c.name} (${c.key})` });
     }
     const streams = await this.fetchGo2rtcStreams();
     for (const s of streams) {
       rows.push({ source: "go2rtc", name: s });
     }
     if (!rows.length) {
-      rows.push({ source: "\u2014", name: "Keine Quellen gefunden" });
+      rows.push({ source: "\u2014", name: "Keine Quellen gefunden (Adapter hat noch nicht gepollt)" });
     }
     return { result: rows };
   }
@@ -1172,6 +1165,7 @@ class AgentDvr extends utils.Adapter {
       await this.writeLeaf("system.raw_getObjects", JSON.stringify(clean).slice(0, 6e4));
     }
     const devices = findDevices(json);
+    this.lastCamNames = devices.filter((d) => d.ot === 2).map((d) => ({ key: this.deviceFolder(d), name: d.name }));
     await this.setStateAsync("system.cameraCount", { val: devices.filter((d) => d.ot === 2).length, ack: true });
     const activeFolders = new Set(devices.map((d) => this.deviceFolder(d)));
     for (const d of devices) {
