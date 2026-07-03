@@ -48,7 +48,6 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     const [streams, setStreams] = useState<string[]>([]);
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
     const isGo2rtc = native.dashStreamType === 'go2rtc';
 
@@ -119,30 +118,36 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
             clearTimeout(timer);
 
             if (go2rtcUrl) {
-                let rawResult: any;
+                // 1. Browser-Fetch (kein CORS-Problem bei go2rtc, kein Netzwerkproblem vom Adapter)
+                let browserOk = false;
                 try {
-                    rawResult = await Promise.race([
-                        socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
-                        new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
-                    ]);
-                } catch (e: any) {
-                    rawResult = { _error: String(e?.message || e) };
-                }
-                setDebugInfo(`sendTo result: ${JSON.stringify(rawResult)}`);
-                if (rawResult?._timeout) {
-                    setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Adapter antwortet nicht (Timeout)');
-                } else if (rawResult?._error) {
-                    setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc sendTo Fehler: ${rawResult._error}`);
-                } else if (Array.isArray(rawResult?.streams)) {
-                    strms = rawResult.streams;
-                    if (strms.length === 0 && rawResult.error) {
-                        setFetchError(prev => (prev ? prev + ' | ' : '') + rawResult.error);
+                    const g2ctrl = new AbortController();
+                    const g2timer = setTimeout(() => g2ctrl.abort(), 4000);
+                    const r = await fetch(`${go2rtcUrl}/api/streams`, { signal: g2ctrl.signal });
+                    clearTimeout(g2timer);
+                    if (r.ok) {
+                        strms = parseStreamsFromApi(await r.json());
+                        browserOk = true;
                     }
-                } else {
-                    setDebugInfo(prev => (prev ?? '') + ' | UNERWARTETES FORMAT');
+                } catch { /* Browser-Fetch fehlgeschlagen → Adapter-Fallback */ }
+
+                // 2. Adapter-Fallback (Server-seitig, falls Browser CORS/mixed-content blockiert)
+                if (!browserOk) {
+                    try {
+                        const rawResult = await Promise.race([
+                            socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
+                            new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
+                        ]);
+                        if (rawResult?._timeout) {
+                            setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Timeout');
+                        } else if (Array.isArray(rawResult?.streams)) {
+                            strms = rawResult.streams;
+                            if (strms.length === 0 && rawResult.error) {
+                                setFetchError(prev => (prev ? prev + ' | ' : '') + rawResult.error);
+                            }
+                        }
+                    } catch { /* ignore */ }
                 }
-            } else {
-                setDebugInfo('go2rtcUrl ist leer — Block übersprungen');
             }
 
             setCameras(cams);
@@ -244,8 +249,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                         <Alert severity="info" sx={{ mb: 2 }}>go2rtc-URL eingeben (z.B. <code>192.168.99.95:1984</code>) — Streams werden danach automatisch geladen.</Alert>
                     )}
 
-                    {debugInfo && <Alert severity="info" sx={{ mb: 1, fontFamily: 'monospace', fontSize: '0.75rem' }}>{debugInfo}</Alert>}
-                    {fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
+{fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
 
                     {loading && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}><CircularProgress size={16} /><Typography variant="caption">Lade Kameras und Streams…</Typography></Box>}
 
