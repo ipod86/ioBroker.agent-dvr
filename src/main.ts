@@ -488,7 +488,7 @@ class AgentDvr extends utils.Adapter {
 
 	private async fetchAvailableSources(): Promise<{ result: { source: string; name: string }[] }> {
 		const deadline = new Promise<{ result: { source: string; name: string }[] }>(res =>
-			setTimeout(() => res({ result: [{ source: '!', name: 'Timeout' }] }), 5000),
+			this.setTimeout(() => res({ result: [{ source: '!', name: 'Timeout' }] }), 5000),
 		);
 		return Promise.race([this._doFetchAvailableSources(), deadline]);
 	}
@@ -546,7 +546,7 @@ class AgentDvr extends utils.Adapter {
 			httpReq.on('error', (e: Error) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
 		});
 		const timeout = new Promise<{ streams: string[]; error?: string }>(resolve =>
-			setTimeout(() => {
+			this.setTimeout(() => {
 				httpReq?.destroy();
 				resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` });
 			}, 3000),
