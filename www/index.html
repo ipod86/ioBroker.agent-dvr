@@ -274,7 +274,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </button>
     <button class="nav-btn" onclick="showView('rec')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
-      <span data-i18n="navRec">Aufnahmen</span>
+      <span data-i18n="navRec">Recordings</span>
     </button>
   </div>
   <div class="hdr-r">
@@ -293,14 +293,14 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Recordings -->
   <div id="view-rec" class="view">
     <div id="rec-filter-bar">
-      <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Suchen…" oninput="filterRec()">
+      <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Search…" oninput="filterRec()">
       <select id="rec-cam-sel" onchange="loadAndFilterRec()">
-        <option value="" data-i18n="camSelect">Kamera wählen…</option>
+        <option value="" data-i18n="camSelect">Select camera…</option>
       </select>
       <div id="rec-tags"></div>
       <div id="rec-toolbar">
         <span id="rec-count"></span>
-        <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Rasteransicht" onclick="setRecView('grid')">
+        <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Grid view" onclick="setRecView('grid')">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
             <rect x="0" y="0" width="6" height="6" rx="1"/><rect x="8" y="0" width="6" height="6" rx="1"/>
             <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
@@ -320,7 +320,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   </div>
 </main>
 
-<div id="sbar"><span id="sbar-msg" data-i18n="sbarLoading">Lade…</span></div>
+<div id="sbar"><span id="sbar-msg" data-i18n="sbarLoading">Loading…</span></div>
 </div><!-- #app -->
 
 <!-- Video panel (persistent overlay, survives tab switch) -->
@@ -333,9 +333,9 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </div>
     <video id="vid-el" controls playsinline preload="auto"></video>
     <div id="vid-nav">
-      <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Vorherige</button>
+      <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Previous</button>
       <span id="vid-pos"></span>
-      <button id="vid-next" onclick="playRecIdx(recPlayIdx + 1)" data-i18n="vidNext">Nächste &#8250;</button>
+      <button id="vid-next" onclick="playRecIdx(recPlayIdx + 1)" data-i18n="vidNext">Next &#8250;</button>
     </div>
     <div id="vid-meta">
       <span id="vid-meta-txt"></span>
@@ -392,6 +392,10 @@ const TRANSLATIONS = {
     recCount:        '{n} Aufnahme(n)',
     zoomOut:         'Rauszoomen',
     zoomIn:          'Reinzoomen',
+    flvNoLib:        'ERR: flv.js konnte nicht geladen werden',
+    flvLoadingLib:   'lade flv.js…',
+    flvNoMse:        'ERR: MSE nicht unterstützt (Browser zu alt?)',
+    flvConnecting:   'verbinde…',
     reload:          'Neu laden',
   },
   en: {
@@ -421,6 +425,10 @@ const TRANSLATIONS = {
     recCount:        '{n} recording(s)',
     zoomOut:         'Zoom out',
     zoomIn:          'Zoom in',
+    flvNoLib:        'ERR: flv.js could not be loaded',
+    flvLoadingLib:   'loading flv.js…',
+    flvNoMse:        'ERR: MSE not supported (browser too old?)',
+    flvConnecting:   'connecting…',
     reload:          'Reload',
   },
   es: {
@@ -450,6 +458,10 @@ const TRANSLATIONS = {
     recCount:        '{n} grabación(es)',
     zoomOut:         'Alejar',
     zoomIn:          'Acercar',
+    flvNoLib:        'ERR: no se pudo cargar flv.js',
+    flvLoadingLib:   'cargando flv.js…',
+    flvNoMse:        'ERR: MSE no compatible (¿navegador demasiado antiguo?)',
+    flvConnecting:   'conectando…',
     reload:          'Recargar',
   },
   fr: {
@@ -479,6 +491,10 @@ const TRANSLATIONS = {
     recCount:        '{n} enregistrement(s)',
     zoomOut:         'Dézoomer',
     zoomIn:          'Zoomer',
+    flvNoLib:        'ERR: impossible de charger flv.js',
+    flvLoadingLib:   'chargement flv.js…',
+    flvNoMse:        'ERR: MSE non pris en charge (navigateur trop ancien ?)',
+    flvConnecting:   'connexion…',
     reload:          'Recharger',
   },
   it: {
@@ -508,6 +524,10 @@ const TRANSLATIONS = {
     recCount:        '{n} registrazione(i)',
     zoomOut:         'Rimpicciolisci',
     zoomIn:          'Ingrandisci',
+    flvNoLib:        'ERR: impossibile caricare flv.js',
+    flvLoadingLib:   'caricamento flv.js…',
+    flvNoMse:        'ERR: MSE non supportato (browser troppo vecchio?)',
+    flvConnecting:   'connessione…',
     reload:          'Ricarica',
   },
   nl: {
@@ -537,6 +557,10 @@ const TRANSLATIONS = {
     recCount:        '{n} opname(s)',
     zoomOut:         'Uitzoomen',
     zoomIn:          'Inzoomen',
+    flvNoLib:        'ERR: flv.js kon niet worden geladen',
+    flvLoadingLib:   'flv.js laden…',
+    flvNoMse:        'ERR: MSE niet ondersteund (browser te oud?)',
+    flvConnecting:   'verbinden…',
     reload:          'Herladen',
   },
   pl: {
@@ -566,6 +590,10 @@ const TRANSLATIONS = {
     recCount:        '{n} nagranie(a)',
     zoomOut:         'Oddal',
     zoomIn:          'Przybliż',
+    flvNoLib:        'ERR: nie można załadować flv.js',
+    flvLoadingLib:   'ładowanie flv.js…',
+    flvNoMse:        'ERR: MSE nieobsługiwane (za stara przeglądarka?)',
+    flvConnecting:   'łączenie…',
     reload:          'Odśwież',
   },
   pt: {
@@ -595,6 +623,10 @@ const TRANSLATIONS = {
     recCount:        '{n} gravação(ões)',
     zoomOut:         'Afastar',
     zoomIn:          'Aproximar',
+    flvNoLib:        'ERR: não foi possível carregar flv.js',
+    flvLoadingLib:   'a carregar flv.js…',
+    flvNoMse:        'ERR: MSE não suportado (navegador muito antigo?)',
+    flvConnecting:   'a conectar…',
     reload:          'Recarregar',
   },
   ru: {
@@ -624,6 +656,10 @@ const TRANSLATIONS = {
     recCount:        '{n} запись(ей)',
     zoomOut:         'Уменьшить',
     zoomIn:          'Увеличить',
+    flvNoLib:        'ОШИБКА: не удалось загрузить flv.js',
+    flvLoadingLib:   'загрузка flv.js…',
+    flvNoMse:        'ОШИБКА: MSE не поддерживается (браузер устарел?)',
+    flvConnecting:   'подключение…',
     reload:          'Обновить',
   },
   uk: {
@@ -653,6 +689,10 @@ const TRANSLATIONS = {
     recCount:        '{n} запис(ів)',
     zoomOut:         'Зменшити',
     zoomIn:          'Збільшити',
+    flvNoLib:        'ПОМИЛКА: не вдалося завантажити flv.js',
+    flvLoadingLib:   'завантаження flv.js…',
+    flvNoMse:        'ПОМИЛКА: MSE не підтримується (браузер застарілий?)',
+    flvConnecting:   'підключення…',
     reload:          'Оновити',
   },
   'zh-cn': {
@@ -682,6 +722,10 @@ const TRANSLATIONS = {
     recCount:        '{n} 个录像',
     zoomOut:         '缩小',
     zoomIn:          '放大',
+    flvNoLib:        'ERR: 无法加载 flv.js',
+    flvLoadingLib:   '正在加载 flv.js…',
+    flvNoMse:        'ERR: 不支持 MSE（浏览器版本过旧？）',
+    flvConnecting:   '连接中…',
     reload:          '重新加载',
   },
 };
@@ -757,14 +801,14 @@ function flvShowStatus(vid, msg) {
 function createFlvPlayer(vid, url, key) {
   if (flvPlayers[key]) { try { flvPlayers[key].destroy(); } catch(_) {} delete flvPlayers[key]; }
   if (!window.flvjs) {
-    if (window._flvFailed) { flvShowStatus(vid, 'ERR: flv.js konnte nicht geladen werden'); return null; }
+    if (window._flvFailed) { flvShowStatus(vid, t('flvNoLib')); return null; }
     // Still loading — retry after promise resolves
-    flvShowStatus(vid, 'lade flv.js…');
+    flvShowStatus(vid, t('flvLoadingLib'));
     (window._flvReady || Promise.resolve()).then(() => createFlvPlayer(vid, url, key));
     return null;
   }
-  if (!flvjs.isSupported()) { flvShowStatus(vid, 'ERR: MSE nicht unterstützt (Browser zu alt?)'); return null; }
-  flvShowStatus(vid, 'verbinde…');
+  if (!flvjs.isSupported()) { flvShowStatus(vid, t('flvNoMse')); return null; }
+  flvShowStatus(vid, t('flvConnecting'));
   const p = flvjs.createPlayer({ type: 'flv', isLive: true, url, enableWorker: false });
   p.on(flvjs.Events.ERROR, (errType, errDetail) => {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));

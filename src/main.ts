@@ -382,6 +382,7 @@ window.ADVscan=scan;scan();
 
 class AgentDvr extends utils.Adapter {
 	private pollTimer: ioBroker.Interval | undefined = undefined;
+	private pollBusy = false;
 	private refreshTimer: ioBroker.Timeout | undefined = undefined;
 	private authHeader: string | null = null;
 	private baseUrl = '';
@@ -1409,6 +1410,12 @@ class AgentDvr extends utils.Adapter {
 	// ---- main poll ----
 
 	private async poll(): Promise<void> {
+		if (this.pollBusy) {
+			this.log.debug('poll() skipped — previous run still in progress');
+			return;
+		}
+		this.pollBusy = true;
+		try {
 		const res = await this.apiGet('/command/getObjects');
 		const json = asJson(res.data);
 
@@ -1508,6 +1515,9 @@ class AgentDvr extends utils.Adapter {
 
 		await this.setStateAsync('system.lastUpdate', { val: new Date().toISOString(), ack: true });
 		await this.setStateAsync('system.lastPoll', { val: Date.now(), ack: true });
+		} finally {
+			this.pollBusy = false;
+		}
 	}
 
 	private scheduleRefresh(): void {
