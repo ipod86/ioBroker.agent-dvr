@@ -807,6 +807,9 @@ function createFlvPlayer(vid, url, key) {
   const p = flvjs.createPlayer({ type: 'flv', isLive: true, url, enableWorker: false });
   p.on(flvjs.Events.ERROR, (errType, errDetail) => {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
+    if (CFG.dashStreamReconnect !== false && !document.hidden) {
+      setTimeout(() => { if (!document.hidden) createFlvPlayer(vid, url, key); }, 5000);
+    }
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
   p.attachMediaElement(vid);
