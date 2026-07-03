@@ -1804,6 +1804,12 @@ function connectWebRTC(vid, baseUrl, streamName) {
     try { sb.appendBuffer(data); } catch (_) { flush(); }
   }
 
+  // Stall detection: if no video within 10 s after connect, retry
+  const stallTimer = setTimeout(() => {
+    if (vid._rtcWs === ws && vid.readyState < 2 && !document.hidden)
+      connectWebRTC(vid, baseUrl, streamName);
+  }, 10000);
+
   ws.addEventListener('open', () => ws.send(JSON.stringify({type:'mse', value: codecReq})));
 
   ws.addEventListener('message', ev => {
@@ -1850,6 +1856,7 @@ function connectWebRTC(vid, baseUrl, streamName) {
 
   ws.addEventListener('error', () => {});
   ws.addEventListener('close', () => {
+    clearTimeout(stallTimer);
     if (!ws._intentional && CFG.dashStreamReconnect !== false && !document.hidden && vid.dataset.stream === streamName) {
       setTimeout(() => {
         if (!document.hidden && vid.dataset.stream === streamName) connectWebRTC(vid, baseUrl, streamName);
