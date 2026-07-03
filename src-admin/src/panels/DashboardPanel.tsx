@@ -103,9 +103,12 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                 } else {
                     setFetchError(`AgentDVR: ${e?.message || e} — CORS blockiert? Adapter neu starten und erneut laden.`);
                     try {
-                        const result = await new Promise<any>(resolve => {
-                            socket.sendTo(`agent-dvr.${instance}`, 'getAgentDvrCameras', null, resolve);
-                        });
+                        const result = await Promise.race([
+                            new Promise<any>(resolve => {
+                                socket.sendTo(`agent-dvr.${instance}`, 'getAgentDvrCameras', null, resolve);
+                            }),
+                            new Promise<any>(resolve => setTimeout(() => resolve(null), 5000)),
+                        ]);
                         if (result?.cameras?.length) {
                             cams = result.cameras;
                             setFetchError(null);
@@ -117,13 +120,19 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 
             if (go2rtcUrl) {
                 try {
-                    const r = await fetch(`${go2rtcUrl}/api/streams`);
+                    const g2ctrl = new AbortController();
+                    const g2timer = setTimeout(() => g2ctrl.abort(), 4000);
+                    const r = await fetch(`${go2rtcUrl}/api/streams`, { signal: g2ctrl.signal });
+                    clearTimeout(g2timer);
                     if (r.ok) strms = parseStreamsFromApi(await r.json());
                 } catch {
                     try {
-                        const result = await new Promise<any>(resolve => {
-                            socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', null, resolve);
-                        });
+                        const result = await Promise.race([
+                            new Promise<any>(resolve => {
+                                socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }, resolve);
+                            }),
+                            new Promise<any>(resolve => setTimeout(() => resolve(null), 5000)),
+                        ]);
                         if (Array.isArray(result?.streams)) strms = result.streams;
                     } catch { /* ignore */ }
                 }

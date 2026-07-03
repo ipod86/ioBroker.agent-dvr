@@ -357,7 +357,8 @@ class AgentDvr extends utils.Adapter {
       return;
     }
     if (obj.command === "getGo2rtcStreams") {
-      void this.fetchGo2rtcStreams().then((streams) => {
+      const overrideUrl = typeof obj.message === "object" && obj.message !== null ? obj.message.url : void 0;
+      void this.fetchGo2rtcStreams(overrideUrl).then((streams) => {
         this.sendTo(obj.from, obj.command, { streams }, obj.callback);
       });
     } else if (obj.command === "getAgentDvrCameras") {
@@ -388,8 +389,8 @@ class AgentDvr extends utils.Adapter {
     }
     return { result: rows };
   }
-  fetchGo2rtcStreams() {
-    const url = this.config.go2rtcUrl;
+  fetchGo2rtcStreams(overrideUrl) {
+    const url = overrideUrl || this.config.go2rtcUrl;
     if (!url) {
       return Promise.resolve([]);
     }
