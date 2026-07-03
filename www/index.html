@@ -1849,11 +1849,17 @@ function connectWebRTC(vid, baseUrl, streamName) {
   });
 
   ws.addEventListener('error', () => {});
-  ws.addEventListener('close', () => {});
+  ws.addEventListener('close', () => {
+    if (!ws._intentional && CFG.dashStreamReconnect !== false && !document.hidden && vid.dataset.stream === streamName) {
+      setTimeout(() => {
+        if (!document.hidden && vid.dataset.stream === streamName) connectWebRTC(vid, baseUrl, streamName);
+      }, 5000);
+    }
+  });
 }
 function disconnectWebRTC(vid) {
   if (!vid) return;
-  try { if (vid._rtcWs) { vid._rtcWs.close(); vid._rtcWs = null; } } catch (_) {}
+  try { if (vid._rtcWs) { vid._rtcWs._intentional = true; vid._rtcWs.close(); vid._rtcWs = null; } } catch (_) {}
   try { if (vid._rtcPc) { vid._rtcPc.close(); vid._rtcPc = null; } } catch (_) {}
   if (vid.src && vid.src.startsWith('blob:')) { URL.revokeObjectURL(vid.src); vid.src = ''; }
   vid.srcObject = null;
