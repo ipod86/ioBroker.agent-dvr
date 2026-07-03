@@ -413,7 +413,10 @@ class AgentDvr extends utils.Adapter {
           try {
             const parsed = JSON.parse(body);
             const streams = Object.keys(parsed || {});
-            resolve({ streams, error: streams.length === 0 ? "go2rtc antwortet, aber keine Streams konfiguriert" : void 0 });
+            resolve({
+              streams,
+              error: streams.length === 0 ? "go2rtc antwortet, aber keine Streams konfiguriert" : void 0
+            });
           } catch {
             resolve({ streams: [], error: `Ung\xFCltige JSON-Antwort von go2rtc (HTTP ${res.statusCode})` });
           }
@@ -422,10 +425,12 @@ class AgentDvr extends utils.Adapter {
       });
       httpReq.on("error", (e) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
     });
-    const timeout = new Promise((resolve) => setTimeout(() => {
-      httpReq == null ? void 0 : httpReq.destroy();
-      resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` });
-    }, 3e3));
+    const timeout = new Promise(
+      (resolve) => setTimeout(() => {
+        httpReq == null ? void 0 : httpReq.destroy();
+        resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` });
+      }, 3e3)
+    );
     return Promise.race([fetch, timeout]);
   }
   onStateChange(id, state) {

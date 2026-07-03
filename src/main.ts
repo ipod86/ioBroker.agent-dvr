@@ -470,7 +470,10 @@ class AgentDvr extends utils.Adapter {
 			return;
 		}
 		if (obj.command === 'getGo2rtcStreams') {
-			const overrideUrl = typeof obj.message === 'object' && obj.message !== null ? (obj.message as any).url as string | undefined : undefined;
+			const overrideUrl =
+				typeof obj.message === 'object' && obj.message !== null
+					? (obj.message.url as string | undefined)
+					: undefined;
 			void this.fetchGo2rtcStreams(overrideUrl).then(result => {
 				this.sendTo(obj.from, obj.command, result, obj.callback);
 			});
@@ -522,12 +525,18 @@ class AgentDvr extends utils.Adapter {
 			const mod = target.protocol === 'https:' ? https : http;
 			httpReq = mod.get(target.toString(), res => {
 				let body = '';
-				res.on('data', (c: Buffer) => { body += c.toString(); });
+				res.on('data', (c: Buffer) => {
+					body += c.toString();
+				});
 				res.on('end', () => {
 					try {
 						const parsed = JSON.parse(body);
 						const streams = Object.keys(parsed || {});
-						resolve({ streams, error: streams.length === 0 ? 'go2rtc antwortet, aber keine Streams konfiguriert' : undefined });
+						resolve({
+							streams,
+							error:
+								streams.length === 0 ? 'go2rtc antwortet, aber keine Streams konfiguriert' : undefined,
+						});
 					} catch {
 						resolve({ streams: [], error: `Ungültige JSON-Antwort von go2rtc (HTTP ${res.statusCode})` });
 					}
@@ -537,7 +546,11 @@ class AgentDvr extends utils.Adapter {
 			httpReq.on('error', (e: Error) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
 		});
 		const timeout = new Promise<{ streams: string[]; error?: string }>(resolve =>
-			setTimeout(() => { httpReq?.destroy(); resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` }); }, 3000));
+			setTimeout(() => {
+				httpReq?.destroy();
+				resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` });
+			}, 3000),
+		);
 		return Promise.race([fetch, timeout]);
 	}
 
@@ -1417,105 +1430,105 @@ class AgentDvr extends utils.Adapter {
 		}
 		this.pollBusy = true;
 		try {
-		const res = await this.apiGet('/command/getObjects');
-		const json = asJson(res.data);
+			const res = await this.apiGet('/command/getObjects');
+			const json = asJson(res.data);
 
-		if (!res.ok || !json) {
-			await this.setStateAsync('info.connection', false, true);
-			await this.setStateAsync('system.online', { val: false, ack: true });
-			this.log.warn(`AgentDVR unreachable: ${res.error || 'invalid response'}`);
-			return;
-		}
-
-		await this.setStateAsync('info.connection', true, true);
-		await this.setStateAsync('system.online', { val: true, ack: true });
-
-		if (json.settings) {
-			await this.flattenWrite(json.settings, 'system.settings', 0);
-		}
-
-		if (this.config.storeRawJson) {
-			const clean: Record<string, unknown> = { ...json };
-			delete clean.icons;
-			await this.writeLeaf('system.raw_getObjects', JSON.stringify(clean).slice(0, 60000));
-		}
-
-		const devices = findDevices(json);
-		this.lastCamNames = devices.filter(d => d.ot === 2).map(d => ({ key: this.deviceFolder(d), name: d.name }));
-		await this.setStateAsync('system.cameraCount', { val: devices.filter(d => d.ot === 2).length, ack: true });
-
-		const activeFolders = new Set(devices.map(d => this.deviceFolder(d)));
-		for (const d of devices) {
-			await this.buildDevice(d);
-		}
-		await this.pruneStaleDevices(activeFolders);
-
-		const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
-		if (stats) {
-			await this.flattenWrite(stats, 'system.stats', 0);
-			const gb = parseSizeGb(stats.disk_free);
-			if (gb !== null) {
-				await this.writeLeaf('system.disk_free_gb', gb);
+			if (!res.ok || !json) {
+				await this.setStateAsync('info.connection', false, true);
+				await this.setStateAsync('system.online', { val: false, ack: true });
+				this.log.warn(`AgentDVR unreachable: ${res.error || 'invalid response'}`);
+				return;
 			}
-		}
 
-		const status = asJson((await this.apiGet('/command/getStatus')).data);
-		if (status) {
-			await this.flattenWrite(status, 'system.status', 0);
-		}
+			await this.setStateAsync('info.connection', true, true);
+			await this.setStateAsync('system.online', { val: true, ack: true });
 
-		if (this.config.enableSystemControls && Array.isArray(json.profiles)) {
-			const states: Record<number, string> = {};
-			let activeInd: number | null = null;
-			for (const p of json.profiles) {
-				if (p && typeof p === 'object') {
-					const po = p as Record<string, unknown>;
-					const ind = po.id ?? po.ind ?? po.index;
-					const pname = po.name;
-					if (typeof ind === 'number' && (typeof pname === 'string' || typeof pname === 'number')) {
-						states[ind] = String(pname);
-						if (po.active === true) {
-							activeInd = ind;
+			if (json.settings) {
+				await this.flattenWrite(json.settings, 'system.settings', 0);
+			}
+
+			if (this.config.storeRawJson) {
+				const clean: Record<string, unknown> = { ...json };
+				delete clean.icons;
+				await this.writeLeaf('system.raw_getObjects', JSON.stringify(clean).slice(0, 60000));
+			}
+
+			const devices = findDevices(json);
+			this.lastCamNames = devices.filter(d => d.ot === 2).map(d => ({ key: this.deviceFolder(d), name: d.name }));
+			await this.setStateAsync('system.cameraCount', { val: devices.filter(d => d.ot === 2).length, ack: true });
+
+			const activeFolders = new Set(devices.map(d => this.deviceFolder(d)));
+			for (const d of devices) {
+				await this.buildDevice(d);
+			}
+			await this.pruneStaleDevices(activeFolders);
+
+			const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
+			if (stats) {
+				await this.flattenWrite(stats, 'system.stats', 0);
+				const gb = parseSizeGb(stats.disk_free);
+				if (gb !== null) {
+					await this.writeLeaf('system.disk_free_gb', gb);
+				}
+			}
+
+			const status = asJson((await this.apiGet('/command/getStatus')).data);
+			if (status) {
+				await this.flattenWrite(status, 'system.status', 0);
+			}
+
+			if (this.config.enableSystemControls && Array.isArray(json.profiles)) {
+				const states: Record<number, string> = {};
+				let activeInd: number | null = null;
+				for (const p of json.profiles) {
+					if (p && typeof p === 'object') {
+						const po = p as Record<string, unknown>;
+						const ind = po.id ?? po.ind ?? po.index;
+						const pname = po.name;
+						if (typeof ind === 'number' && (typeof pname === 'string' || typeof pname === 'number')) {
+							states[ind] = String(pname);
+							if (po.active === true) {
+								activeInd = ind;
+							}
 						}
 					}
 				}
-			}
-			if (Object.keys(states).length > 0) {
-				const sig = JSON.stringify(states);
-				if (sig !== this.profileSig) {
-					this.profileSig = sig;
-					await this.extendObjectAsync('system.profile.selector', { common: { states } });
-					await this.setStateAsync('system.profile.list', { val: sig, ack: true });
+				if (Object.keys(states).length > 0) {
+					const sig = JSON.stringify(states);
+					if (sig !== this.profileSig) {
+						this.profileSig = sig;
+						await this.extendObjectAsync('system.profile.selector', { common: { states } });
+						await this.setStateAsync('system.profile.list', { val: sig, ack: true });
+					}
+					if (activeInd !== null) {
+						await this.setStateAsync('system.profile.selector', { val: activeInd, ack: true });
+					}
 				}
-				if (activeInd !== null) {
-					await this.setStateAsync('system.profile.selector', { val: activeInd, ack: true });
+			}
+
+			if (this.config.enableOverview) {
+				const cams = devices.filter(d => d.ot === 2);
+				const ovId = 'overview';
+				if (!this.ensuredFolders.has(ovId)) {
+					await this.setObjectNotExistsAsync(ovId, {
+						type: 'state',
+						common: {
+							name: 'Overview (all cameras)',
+							type: 'string',
+							role: 'html',
+							read: true,
+							write: false,
+							def: '',
+						},
+						native: {},
+					});
+					this.ensuredFolders.add(ovId);
 				}
+				await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
 			}
-		}
 
-		if (this.config.enableOverview) {
-			const cams = devices.filter(d => d.ot === 2);
-			const ovId = 'overview';
-			if (!this.ensuredFolders.has(ovId)) {
-				await this.setObjectNotExistsAsync(ovId, {
-					type: 'state',
-					common: {
-						name: 'Overview (all cameras)',
-						type: 'string',
-						role: 'html',
-						read: true,
-						write: false,
-						def: '',
-					},
-					native: {},
-				});
-				this.ensuredFolders.add(ovId);
-			}
-			await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
-		}
-
-		await this.setStateAsync('system.lastUpdate', { val: new Date().toISOString(), ack: true });
-		await this.setStateAsync('system.lastPoll', { val: Date.now(), ack: true });
+			await this.setStateAsync('system.lastUpdate', { val: new Date().toISOString(), ack: true });
+			await this.setStateAsync('system.lastPoll', { val: Date.now(), ack: true });
 		} finally {
 			this.pollBusy = false;
 		}
