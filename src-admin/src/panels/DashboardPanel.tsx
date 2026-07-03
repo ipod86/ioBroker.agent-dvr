@@ -3,7 +3,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import {
     Grid, Box, Typography, CircularProgress, Alert,
     Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper,
-    Select, MenuItem, FormControl, Chip, IconButton, Tooltip,
+    Select, MenuItem, FormControl, Divider, Chip, IconButton, Tooltip,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FormField, { SectionHeader, ColorField } from '../components/FormField';
@@ -29,8 +29,7 @@ function parseCamerasFromObjects(json: any): Camera[] {
         if (id == null) continue;
         const rawName = typeof e.name === 'string' ? e.name : `obj_${id}`;
         const ot = e.typeID ?? e.ot ?? e.objectTypeID ?? e.type;
-        const isCam = ot === 1 || ot === 2;
-        if (!isCam) continue;
+        if (ot !== 2) continue; // ot=2 = Kamera; ot=1 = Mikrofon → ausschließen
         const key = `cam_${id}_${rawName.replace(/[\s.[\]*?"'`,;:/\\]+/g, '_').replace(/[^A-Za-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'x'}`;
         out.push({ key, name: rawName });
     }
@@ -49,28 +48,20 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const isGo2rtc = native.dashStreamType === 'go2rtc';
+    const cameraStreams: Record<string, string> = native.cameraStreams || {};
 
-    const mapping: { camKey: string; stream: string }[] = Array.isArray(native.go2rtcMapping) ? native.go2rtcMapping : [];
-
-    function setStreamForCam(camKey: string, stream: string): void {
-        const existing = mapping.filter(m => m.camKey !== camKey);
-        if (stream) {
-            onChange('go2rtcMapping', [...existing, { camKey, stream }]);
-        } else {
-            onChange('go2rtcMapping', existing);
-        }
+    function getCameraStream(camKey: string): string {
+        return cameraStreams[camKey] ?? 'mjpeg';
     }
 
-    function getStreamForCam(camKey: string): string {
-        return mapping.find(m => m.camKey === camKey)?.stream ?? '';
+    function setCameraStream(camKey: string, val: string): void {
+        onChange('cameraStreams', { ...cameraStreams, [camKey]: val });
     }
 
     const fetchData = useCallback(async () => {
         const ip = (native.ip || '').trim();
         const port = native.port || 8090;
         let go2rtcUrl = (native.go2rtcUrl || '').trim();
-        // go2rtc läuft immer auf plain-HTTP; https:// → http:// erzwingen
         go2rtcUrl = go2rtcUrl.replace(/^https:\/\//i, 'http://');
         if (go2rtcUrl && !go2rtcUrl.startsWith('http://')) go2rtcUrl = `http://${go2rtcUrl}`;
 
@@ -84,12 +75,12 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
         setFetchError(null);
 
         try {
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 4000);
-
             let cams: Camera[] = [];
             let strms: string[] = [];
 
+            // --- Kameras von AgentDVR ---
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 4000);
             try {
                 const res = await fetch(`http://${ip}:${port}/command/getObjects`, {
                     signal: controller.signal,
@@ -104,7 +95,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                 if (e?.name === 'AbortError') {
                     setFetchError('AgentDVR: Timeout (4 s)');
                 } else {
-                    setFetchError(`AgentDVR: ${e?.message || e} — CORS blockiert? Adapter neu starten und erneut laden.`);
+                    // Adapter-Fallback (HTTPS-Admin blockiert HTTP-Fetch)
                     try {
                         const result = await Promise.race([
                             socket.sendTo(`agent-dvr.${instance}`, 'getAgentDvrCameras', null),
@@ -112,15 +103,18 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                         ]);
                         if (result?.cameras?.length) {
                             cams = result.cameras;
-                            setFetchError(null);
+                        } else {
+                            setFetchError(`AgentDVR: ${e?.message || e}`);
                         }
-                    } catch { /* ignore */ }
+                    } catch {
+                        setFetchError(`AgentDVR: ${e?.message || e}`);
+                    }
                 }
             }
             clearTimeout(timer);
 
+            // --- go2rtc Streams ---
             if (go2rtcUrl) {
-                // 1. Browser-Fetch (kein CORS-Problem bei go2rtc, kein Netzwerkproblem vom Adapter)
                 let browserOk = false;
                 try {
                     const g2ctrl = new AbortController();
@@ -130,14 +124,9 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                     if (r.ok) {
                         strms = parseStreamsFromApi(await r.json());
                         browserOk = true;
-                    } else {
-                        setFetchError(`go2rtc Browser: HTTP ${r.status}`);
                     }
-                } catch (e: any) {
-                    setFetchError(`go2rtc Browser-Fehler: ${e?.message || String(e)}`);
-                }
+                } catch { /* Mixed-Content / CORS → Adapter-Fallback */ }
 
-                // 2. Adapter-Fallback (Server-seitig, falls Browser CORS/mixed-content blockiert)
                 if (!browserOk) {
                     try {
                         const rawResult = await Promise.race([
@@ -148,10 +137,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                             setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Timeout');
                         } else if (Array.isArray(rawResult?.streams)) {
                             strms = rawResult.streams;
-                            if (strms.length > 0) {
-                                // Adapter hat Streams geholt → Browser-Fehler irrelevant
-                                setFetchError(null);
-                            } else if (rawResult.error) {
+                            if (strms.length === 0 && rawResult.error) {
                                 setFetchError(prev => (prev ? prev + ' | ' : '') + rawResult.error);
                             }
                         }
@@ -166,12 +152,10 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
         }
     }, [native.ip, native.port, native.go2rtcUrl, native.user, native.pass, socket, instance]);
 
-    // Initial load + re-fetch when go2rtcUrl changes (debounced 600 ms)
     useEffect(() => {
-        if (!isGo2rtc) return;
         const t = setTimeout(() => void fetchData(), 600);
         return () => clearTimeout(t);
-    }, [isGo2rtc, native.go2rtcUrl]);
+    }, [native.ip, native.port, native.go2rtcUrl]);
 
     return (
         <div>
@@ -219,101 +203,84 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                 ))}
             </Grid>
 
+            {/* ── go2rtc URL ── */}
             <SectionHeader textKey="hdrGo2rtc" />
             <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={4} lg={4}>
-                    <FormField type="select" labelKey="cfgDashStreamType" helpKey="cfgDashStreamType_tt" value={native.dashStreamType ?? 'mjpeg'} onChange={v => onChange('dashStreamType', v)}
-                        options={[{ value: 'mjpeg', labelKey: 'cfgDashStreamMjpeg' }, { value: 'mp4', labelKey: 'cfgDashStreamMp4' }, { value: 'go2rtc', labelKey: 'cfgDashStreamGo2rtc' }]} />
+                <Grid item xs={12} sm={8} md={6} lg={5}>
+                    <FormField type="text" labelKey="cfgGo2rtcUrl" helpKey="cfgGo2rtcUrl_tt" value={native.go2rtcUrl ?? ''} onChange={v => onChange('go2rtcUrl', v)} />
                 </Grid>
             </Grid>
 
-            {isGo2rtc && (
-                <>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8} md={6} lg={5}>
-                            <FormField type="text" labelKey="cfgGo2rtcUrl" helpKey="cfgGo2rtcUrl_tt" value={native.go2rtcUrl ?? ''} onChange={v => onChange('go2rtcUrl', v)} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4} lg={3}>
-                            <FormField type="select" labelKey="cfgDashLiveSource" helpKey="cfgDashLiveSource_tt" value={native.dashLiveSource ?? 'agentdvr'} onChange={v => onChange('dashLiveSource', v)}
-                                options={[{ value: 'agentdvr', labelKey: 'cfgDashLiveSrcAgentDvr' }, { value: 'go2rtc', labelKey: 'cfgDashLiveSrcGo2rtc' }]} />
-                        </Grid>
-                    </Grid>
+            {/* ── Kamera-Stream-Tabelle ── */}
+            <Box sx={{ mt: 3, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, flex: 1 }}>
+                    {I18n.t('cfgGo2rtcMapping')}
+                </Typography>
+                <Tooltip title="Neu laden">
+                    <IconButton size="small" onClick={() => void fetchData()} disabled={loading}>
+                        {loading ? <CircularProgress size={18} /> : <RefreshIcon />}
+                    </IconButton>
+                </Tooltip>
+            </Box>
 
-                    {/* ── Camera → Stream Mapping ── */}
-                    <Box sx={{ mt: 3, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, flex: 1 }}>
-                            {I18n.t('cfgGo2rtcMapping')}
-                        </Typography>
-                        <Tooltip title="Neu laden">
-                            <IconButton size="small" onClick={() => void fetchData()} disabled={loading}>
-                                {loading ? <CircularProgress size={18} /> : <RefreshIcon />}
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-                        {I18n.t('cfgGo2rtcMapping_tt')}
-                    </Typography>
+            {fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
 
-                    {!native.go2rtcUrl && !loading && (
-                        <Alert severity="info" sx={{ mb: 2 }}>go2rtc-URL eingeben (z.B. <code>192.168.99.95:1984</code>) — Streams werden danach automatisch geladen.</Alert>
-                    )}
+            {loading && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                    <CircularProgress size={16} />
+                    <Typography variant="caption">Lade Kameras und Streams…</Typography>
+                </Box>
+            )}
 
-{fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
+            {cameras !== null && cameras.length === 0 && !loading && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                    Keine Kameras gefunden — Adapter konfiguriert und mindestens einmal gepollt?
+                </Alert>
+            )}
 
-                    {loading && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}><CircularProgress size={16} /><Typography variant="caption">Lade Kameras und Streams…</Typography></Box>}
-
-                    {cameras !== null && cameras.length === 0 && !loading && (
-                        <Alert severity="info" sx={{ mb: 2 }}>
-                            Keine Kameras gefunden — Adapter konfiguriert und mindestens einmal gepollt?
-                        </Alert>
-                    )}
-
-                    {cameras !== null && cameras.length > 0 && (
-                        <TableContainer component={Paper} variant="outlined" sx={{ mb: 2 }}>
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell><strong>AgentDVR Kamera</strong></TableCell>
-                                        <TableCell><strong>go2rtc Stream</strong></TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {cameras.map(cam => (
-                                        <TableRow key={cam.key} hover>
-                                            <TableCell>
-                                                <Box>
-                                                    <Typography variant="body2">{cam.name}</Typography>
-                                                    <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>{cam.key}</Typography>
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell sx={{ minWidth: 200 }}>
-                                                <FormControl size="small" fullWidth>
-                                                    <Select
-                                                        value={getStreamForCam(cam.key)}
-                                                        onChange={e => setStreamForCam(cam.key, e.target.value as string)}
-                                                        displayEmpty
-                                                    >
-                                                        <MenuItem value=""><em>— Stream wählen —</em></MenuItem>
-                                                        {streams.map(s => (
-                                                            <MenuItem key={s} value={s}>{s}</MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </FormControl>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    )}
-
-                    {cameras !== null && streams.length > 0 && (
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="caption" color="text.secondary">go2rtc Streams: </Typography>
-                            {streams.map(s => <Chip key={s} label={s} size="small" sx={{ mr: 0.5, mb: 0.5 }} />)}
-                        </Box>
-                    )}
-                </>
+            {cameras !== null && cameras.length > 0 && (
+                <TableContainer component={Paper} variant="outlined" sx={{ mb: 2 }}>
+                    <Table size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell><strong>AgentDVR Kamera</strong></TableCell>
+                                <TableCell><strong>Stream-Quelle</strong></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {cameras.map(cam => (
+                                <TableRow key={cam.key} hover>
+                                    <TableCell>
+                                        <Box>
+                                            <Typography variant="body2">{cam.name}</Typography>
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>{cam.key}</Typography>
+                                        </Box>
+                                    </TableCell>
+                                    <TableCell sx={{ minWidth: 240 }}>
+                                        <FormControl size="small" fullWidth>
+                                            <Select
+                                                value={getCameraStream(cam.key)}
+                                                onChange={e => setCameraStream(cam.key, e.target.value as string)}
+                                            >
+                                                <MenuItem value="mjpeg">MJPEG</MenuItem>
+                                                <MenuItem value="snapshot">Snapshot</MenuItem>
+                                                {streams.length > 0 && <Divider />}
+                                                {streams.map(s => (
+                                                    <MenuItem key={s} value={s}>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                            {s}
+                                                            <Chip label="go2rtc" size="small" color="primary" variant="outlined" />
+                                                        </Box>
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             )}
         </div>
     );
