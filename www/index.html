@@ -970,7 +970,7 @@ function makeTile(key, cam) {
                    : CFG.dashStreamType === 'mp4' ? 'mp4'
                    : 'mjpeg';
 
-  let mediaEl;
+  let mediaEl, sizeParam = '';
 
   if (stype === 'go2rtc') {
     const vid = document.createElement('video');
@@ -984,14 +984,11 @@ function makeTile(key, cam) {
     vid.setAttribute('muted', '');
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
-    // The grid rows are sized to 16:9 by updateLayout (colW * 9/16 px).
-    // If the camera's native AR is wider than 4:3 (e.g. Reolink 16:9 but encoded
-    // as 320x240), stretch the video to fill the 16:9 tile so the content looks correct.
-    // Cameras that are natively 4:3 (e.g. Trift 640/480) keep object-fit:contain.
+    // Request the stream at the camera's native resolution so AgentDVR encodes
+    // it at the correct AR — no CSS tricks needed.
     const arParts = (cam.aspect || '').split('/').map(Number);
-    if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100) {
-      if ((arParts[0] / arParts[1]) > 1.4) vid.style.objectFit = 'fill';
-    }
+    if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100)
+      sizeParam = '&size=' + arParts[0] + 'x' + arParts[1];
     mediaEl = vid;
   } else {
     const img = document.createElement('img'); img.alt = cam.name;
@@ -1057,8 +1054,8 @@ function makeTile(key, cam) {
 
   tile.append(mediaEl, bottom);
   if (stype === 'mp4' && cam.oid) {
-    const _el = mediaEl, _oid = cam.oid, _key = key;
-    setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid, _key), 0);
+    const _el = mediaEl, _oid = cam.oid, _key = key, _size = sizeParam;
+    setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid + _size, _key), 0);
   }
   return tile;
 }
