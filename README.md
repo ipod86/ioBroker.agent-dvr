@@ -12,48 +12,210 @@
 
 ## agent-dvr adapter for ioBroker
 
-Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all cameras and microphones, mirrors every device property as data points, provides buttons for all common commands (record, arm, PTZ, …), delivers push-triggered gallery updates on new recordings, and generates a responsive HTML gallery widget per camera.
+Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all cameras, mirrors every device property as data points, provides buttons for all common commands (record, arm, PTZ, …), delivers push-triggered gallery updates on new recordings, generates a responsive HTML gallery widget per camera, and includes a built-in live dashboard with per-camera stream selection (MJPEG, MP4/FLV with audio, or go2rtc WebRTC).
 
 ## Features
 
-- Auto-discovery of all AgentDVR cameras and microphones on startup
+- Auto-discovery of all AgentDVR cameras on startup (microphones excluded)
 - All device properties mirrored as data points (flattened from the API)
 - Per-device control buttons: record, snapshot, detect, arm/disarm alerts, switch on/off, object detection, purge, …
 - System-level buttons: arm, disarm, all on/off, reload, storage management, restart, …
-- **Profile selector** — writable dropdown that reflects the current AgentDVR profile (Home / Away / Night / custom); changes apply immediately
-- **Snapshot as Base64** — `snapshot_b64` state (role `media.picture`) per camera, writable via button or auto-updated every poll cycle
-- PTZ control with hold-to-move switches (left, right, up, down, diagonals, zoom in/out, stop, center)
+- **Profile selector** — writable dropdown reflecting the current AgentDVR profile (Home / Away / Night / custom)
+- **Snapshot as Base64** — `snapshot_b64` state per camera, writable via button or auto-updated every poll cycle
+- PTZ control with hold-to-move switches
 - Stream URLs per camera (snapshot, photo, MJPEG, MP4)
-- Push trigger state — ioBroker scripts can react instantly when AgentDVR reports a new recording
+- Push trigger state for real-time script reactions to new recordings
 - HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
 - Overview widget combining all cameras in one HTML state
-- Raw API JSON state for advanced use cases
+- **Live dashboard** at `/agent-dvr/` with per-camera stream selection, recordings tab, fullscreen view, and color theming
 
 ## Configuration
+
+### Tab: Connection
 
 | Setting | Description | Default |
 |---------|-------------|---------|
 | AgentDVR IP | IP address of the AgentDVR server | — |
-| Port | AgentDVR port | `8090` |
-| Username / Password | Optional HTTP basic auth | — |
-| Poll interval (s) | How often to fetch data from AgentDVR | `30` |
-| HTTP timeout (ms) | Timeout per API request | `8000` |
+| Port | AgentDVR HTTP port | `8090` |
+| Username | Optional HTTP basic auth username | — |
+| Password | Optional HTTP basic auth password | — |
+| Poll interval (s) | How often to fetch data from AgentDVR (5–3600) | `30` |
+| HTTP timeout (ms) | Timeout per API request (1000–30000) | `8000` |
+
+### Tab: Features
+
+**Controls**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
 | System control buttons | Create arm/disarm/restart/… buttons and the profile selector | `true` |
-| PTZ control buttons | Create per-camera PTZ hold-switches | `true` |
+| PTZ control buttons | Create per-camera PTZ hold-switches (left, right, up, down, diagonals, zoom, stop, center) | `true` |
 | Generate stream URLs | Create URL states (snapshot, MJPEG, MP4) per camera | `true` |
 | Snapshot as Base64 | Auto-fetch and store the current frame as Base64 on every poll | `false` |
-| Event data points | Mirror recording metadata (latest event, count, …) | `true` |
-| Real-time push trigger | Create push-trigger state that scripts can subscribe to | `true` |
+
+**Events**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Event data points | Mirror recording metadata (latest event, count, tags, …) per camera | `true` |
+| Real-time push trigger | Create a push-trigger state that scripts can subscribe to for new recordings | `true` |
+
+**Display**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
 | Overview widget | Single HTML state combining all camera live tiles | `true` |
-| Gallery widget per camera | HTML recording gallery per camera | `true` |
+
+**Debug**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
 | Store raw API JSON | Write the full getObjects response to `system.raw_getObjects` | `false` |
-| Enable go2rtc | Use WebRTC streams from go2rtc instead of MJPEG in the dashboard | `false` |
-| go2rtc URL | Base URL of your go2rtc server, e.g. `http://192.168.1.10:1984` | — |
-| Stream mapping | Per-camera table: AgentDVR camera key → go2rtc stream name | — |
+
+### Tab: Dashboard
+
+**Default view**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Default view | Which tab opens when the dashboard loads: Live or Recordings | `Live` |
+| Show offline cameras | Display camera tiles even when the camera is offline | `true` |
+
+**Camera grid**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Columns | Number of grid columns (0 = auto-fit based on tile width) | `0` |
+| Buttons always visible | Show record/PTZ buttons permanently instead of on hover only | `false` |
+| Tag-badge position | Corner where the camera name badge appears on each tile | `bottom-right` |
+
+**Stream**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Refresh interval (s) | How often the dashboard re-fetches camera data (10–600) | `60` |
+| Auto-reconnect streams | Automatically reconnect MJPEG, MP4/FLV and go2rtc streams after an error or tab switch | `true` |
+
+**Color theme** — 7 color pickers to match your UI:
+
+| Setting | Description |
+|---------|-------------|
+| Background | Page/grid background color |
+| Surface | Camera tile background |
+| Accent | Highlight / active element color |
+| Text | Primary text color |
+| Border | Tile border color |
+| Online indicator | Color of the online status dot |
+| Offline indicator | Color of the offline status dot |
+
+**Stream assignment**
+
+Here you assign a stream source to each camera individually. The dropdown shows all cameras discovered from AgentDVR (microphones are excluded).
+
+| Option | Description |
+|--------|-------------|
+| MJPEG *(AgentDVR)* | Classic MJPEG stream served by AgentDVR — lowest latency, no audio |
+| MP4 / FLV with audio *(AgentDVR)* | FLV stream proxied through ioBroker using flv.js — includes audio, correct aspect ratio |
+| *stream name* *(go2rtc)* | WebRTC/MSE stream from go2rtc — smooth, low latency, audio support |
+
+The go2rtc stream names are fetched automatically from the go2rtc server when the admin UI is open. If the browser cannot reach go2rtc directly (e.g. mixed-content on HTTPS), the adapter fetches them on the server side as a fallback.
+
+**go2rtc URL** *(only visible when at least one camera uses a go2rtc stream)*
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| go2rtc URL | Base URL of your go2rtc instance | `http://192.168.1.10:1984` |
+
+> **Note:** go2rtc must already have the streams configured. The adapter only reads the stream list and proxies the WebSocket — it does not configure go2rtc.
+
+### Tab: Widget (gallery widget per camera)
+
+**General**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Enable widget | Generate an HTML gallery widget per camera | `true` |
+| Widget mode | `No JS` — pure HTML/CSS, embed anywhere; `JS` — full interactivity with search and tag filter | `No JS` |
+
+**Layout**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Max. entries | Maximum number of recordings shown in the widget | `20` |
+| Min. column width (px) | Minimum width of each thumbnail column | `150` |
+| Max. modal width (px) | Maximum width of the video playback modal | `900` |
+
+**Tags**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Show tags | Display recording tags on each thumbnail | `true` |
+| Tag-badge position | Corner where tags appear on the thumbnail | `bottom-left` |
+
+**Filter**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Newest first | Sort recordings with the latest at the top | `true` |
+| Show search | Show a text search field in JS mode | `false` |
+| Compact mode | Denser layout with smaller thumbnails | `false` |
+| Default tag | Pre-select this tag filter when the widget loads | — |
+| Thumbnail size | `Small` / `Medium` / `Large` | `Medium` |
+
+**Player**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Live aspect ratio | Aspect ratio for the live stream preview, e.g. `16/9` | — |
+| Player URL | Custom URL for the video player used in the widget | — |
+
+**Color theme** — 5 color pickers + border radius:
+
+| Setting | Description |
+|---------|-------------|
+| Card background | Widget card background |
+| Tag background | Tag chip background |
+| Tag text | Tag chip text color |
+| Accent | Highlight color |
+| Modal background | Video modal background |
+| Border radius (px) | Rounded corner radius for cards | `4` |
+
+### Tab: Advanced
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Max. recursion depth | How many levels deep the API JSON is flattened into data points (1–10) | `6` |
+| Max. array entries | Maximum number of array elements mirrored per property (1–500) | `30` |
+| Dynamic tags | Automatically create a tag data point for every unique recording tag | `false` |
+| Ignore tags (comma-separated) | Recording tags to exclude from event data points | — |
+| Tag filter (comma-separated) | Only create event data points for recordings matching these tags | — |
+
+## Live Dashboard
+
+The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agent-dvr/`.
+
+**Features:**
+- Per-camera stream selection: MJPEG, MP4/FLV with audio (via flv.js), or go2rtc WebRTC/MSE
+- Camera filter badges — click to show/hide individual cameras; state persisted in localStorage
+- Fullscreen view with PTZ overlay and record button
+- Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
+- Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
+- Recordings tab with grid and timeline view, search and tag filter, video player with prev/next navigation
+- Color theming via adapter config
+
+### go2rtc WebRTC Streams
+
+[go2rtc](https://github.com/AlexxIT/go2rtc) provides smooth, low-latency WebRTC/MSE streams with audio.
+
+**Setup:**
+1. Install and run go2rtc, configure your camera streams in go2rtc's config.
+2. In the adapter config → *Dashboard* tab, assign the desired go2rtc stream name to each camera from the dropdown.
+3. Enter the **go2rtc URL** that appears below the table (e.g. `http://192.168.1.10:1984`).
+4. Save and restart. The adapter proxies WebSocket traffic through ioBroker to avoid browser cross-origin restrictions.
 
 ## Data points
 
-The adapter creates the following data point tree. `<cam>` stands for `cam_<oid>_<name>`, e.g. `cam_8_Reolink`. Microphones use the same layout but with prefix `mic_<oid>_<name>`.
+`<cam>` stands for `cam_<oid>_<name>`, e.g. `cam_8_Reolink`.
 
 ### System
 
@@ -84,17 +246,15 @@ The adapter creates the following data point tree. `<cam>` stands for `cam_<oid>
 | `system.control.unblockExternal` | button | W | Unblock external access |
 | `system.control.restart` | button | W | Restart AgentDVR |
 | `system.control.refresh` | button | W | Force immediate poll |
-| `system.profile.selector` | number | R/W | Active profile index — dropdown populated from AgentDVR (0 = Home, 1 = Away, …) |
+| `system.profile.selector` | number | R/W | Active profile index — dropdown (0 = Home, 1 = Away, …) |
 | `system.profile.list` | string | R | Available profiles as JSON array |
 
-### Per camera / microphone
-
-The raw device data from AgentDVR is mirrored recursively (depth configurable, default 6). The most important sub-tree is `<cam>.data.*`:
+### Per camera
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `<cam>.name` | string | R | Device name |
-| `<cam>.data.online` | boolean | R | Device is online |
+| `<cam>.name` | string | R | Camera name |
+| `<cam>.data.online` | boolean | R | Camera is online |
 | `<cam>.data.connected` | boolean | R | Stream is connected |
 | `<cam>.data.recording` | boolean | R | Currently recording |
 | `<cam>.data.detected` | boolean | R | Motion/object detected |
@@ -114,15 +274,15 @@ The raw device data from AgentDVR is mirrored recursively (depth configurable, d
 | `<cam>.control.detect` | button | W | Trigger motion detection |
 | `<cam>.control.alertOn` | button | W | Arm alerts |
 | `<cam>.control.alertOff` | button | W | Disarm alerts |
-| `<cam>.control.switchOn` | button | W | Switch device on |
-| `<cam>.control.switchOff` | button | W | Switch device off |
+| `<cam>.control.switchOn` | button | W | Switch camera on |
+| `<cam>.control.switchOff` | button | W | Switch camera off |
 | `<cam>.control.objectDetectOn` | button | W | Enable object detection |
 | `<cam>.control.objectDetectOff` | button | W | Disable object detection |
 | `<cam>.control.recOnAlert` | button | W | Enable "record on alert" |
 | `<cam>.control.recOnDetect` | button | W | Enable "record on detect" |
-| `<cam>.control.purge` | button | W | Delete all recordings in the device folder |
+| `<cam>.control.purge` | button | W | Delete all recordings for this camera |
 
-### PTZ *(cameras only, requires "PTZ control buttons")*
+### PTZ *(requires "PTZ control buttons")*
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
@@ -139,62 +299,28 @@ The raw device data from AgentDVR is mirrored recursively (depth configurable, d
 | `<cam>.control.ptz.stop` | button | W | Stop PTZ movement |
 | `<cam>.control.ptz.center` | button | W | Move to center/home position |
 
-### Stream URLs *(cameras only, requires "Generate stream URLs")*
+### Stream URLs *(requires "Generate stream URLs")*
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `<cam>.urls.snapshot` | string | R | URL to current JPEG snapshot (`/grab.jpg`) |
-| `<cam>.urls.photo` | string | R | URL to photo endpoint (`/photo.jpg`) |
-| `<cam>.urls.mjpeg` | string | R | URL to MJPEG live stream (`/video.mjpg`) |
-| `<cam>.urls.mp4` | string | R | URL to MP4 live stream (`/video.mp4`) |
+| `<cam>.urls.snapshot` | string | R | URL to current JPEG snapshot |
+| `<cam>.urls.photo` | string | R | URL to photo endpoint |
+| `<cam>.urls.mjpeg` | string | R | URL to MJPEG live stream |
+| `<cam>.urls.mp4` | string | R | URL to MP4 live stream |
 
 ### Events / Gallery *(cameras only)*
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `<cam>.events.*` | various | R | Latest recording metadata (filename, date, duration, tags, …) — requires "Event data points" |
-| `<cam>.push` | string | R | Push trigger — updated immediately when AgentDVR reports a new recording — requires "Real-time push trigger" |
-| `<cam>.gallery` | string | R | HTML gallery of recent recordings — requires "Gallery widget" |
+| `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
+| `<cam>.push` | string | R | Push trigger — updated when AgentDVR reports a new recording — requires "Real-time push trigger" |
+| `<cam>.gallery` | string | R | HTML recording gallery — requires "Gallery widget" |
 
 ### Overview *(requires "Overview widget")*
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `overview` | string | R | HTML tile grid of all cameras with live stream links |
-
-## Live Dashboard
-
-The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agent-dvr/`.
-
-**Features:**
-- Live MJPEG or WebRTC stream per camera tile (configurable)
-- Fullscreen view with PTZ overlay and record button
-- Real-time motion (yellow border) and alert (orange border) indicators
-- Recordings tab with grid and timeline view, search and tag filter, video player with prev/next navigation
-- Color theming via adapter config (7 color pickers)
-
-## go2rtc WebRTC Streams
-
-The dashboard can use [go2rtc](https://github.com/AlexxIT/go2rtc) to display smooth WebRTC streams instead of the MJPEG fallback.
-
-**Requirements:** go2rtc must be installed and running, with streams already configured pointing to your cameras.
-
-**Setup:**
-1. In the adapter config → *Live Dashboard* tab, enable **go2rtc** and enter the **go2rtc URL** (e.g. `http://192.168.1.10:1984`).
-2. Fill in the **Stream mapping** table — one row per camera:
-   - **AgentDVR camera key**: the ioBroker data point prefix, e.g. `cam_8_Reolink` (visible in the ioBroker object tree)
-   - **go2rtc stream name**: the stream name as shown in go2rtc's web UI or `/api/streams` endpoint, e.g. `Reolink`
-3. Save and restart the adapter. Mapped cameras show the WebRTC stream; unmapped cameras continue using MJPEG.
-
-**How it works:** The dashboard connects via WebSocket to the ioBroker web adapter, which proxies the WebRTC signaling to go2rtc internally. This avoids browser cross-origin restrictions without any go2rtc configuration changes.
-
-## Snapshot as Base64
-
-The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;base64,…` string so it can be used directly in vis/vis-2 image widgets without a separate HTTP request from the browser.
-
-**Manual refresh:** Write `true` to `<cam>.control.refreshSnapshotB64` to fetch a new frame on demand — no adapter restart required.
-
-**Auto-refresh:** Enable *"Snapshot as Base64"* in the adapter configuration to refresh automatically on every poll cycle.
+| `overview` | string | R | HTML tile grid of all cameras |
 
 ## Changelog
 
@@ -213,21 +339,12 @@ The `snapshot_b64` state stores the current camera frame as a `data:image/jpeg;b
 ### 0.0.5 (2026-07-01)
 * (ipod86) feat: go2rtc WebRTC stream integration — per-camera mapping table in admin, ioBroker WebSocket proxy to bypass browser cross-origin restrictions
 * (ipod86) feat: auto-delete camera/microphone data points when device is removed from AgentDVR
-* (ipod86) feat: dedicated `status.*` data points per camera — `recording`, `online`, `connected`, `detected`, `alerted` with correct ioBroker roles
-* (ipod86) feat: `/api/record` endpoint — start/stop recording via ioBroker state from the dashboard
-* (ipod86) feat: dashboard — full color theming (7 color pickers), configurable tag-badge corner position
+* (ipod86) feat: dedicated `status.*` data points per camera
+* (ipod86) feat: dashboard — full color theming, configurable tag-badge corner position
 * (ipod86) feat: dashboard — record/stop button on camera tiles and in fullscreen panel
-* (ipod86) feat: dashboard — real-time motion (yellow border) and alert (orange border) indicators via Socket.io subscription
-* (ipod86) feat: dashboard — recording timeline view in recordings tab: proportional blocks per day, click to play
-* (ipod86) feat: dashboard — PTZ and record buttons visible in fullscreen panel with PTZ overlay
-* (ipod86) feat: dashboard — `dashBtnsVisible` setting: always show or hover-only for both PTZ and record buttons
-* (ipod86) feat: dashboard — MJPEG streams stop on tab hide, restart on return (saves bandwidth)
-* (ipod86) feat: dashboard — last selected camera in recordings tab persisted to localStorage
-* (ipod86) fix: dashboard — recording prev/next navigation now follows chronological order
-* (ipod86) fix: dashboard — PTZ button contrast improved, DL button in video modal, X button top-right
-* (ipod86) fix: dashboard — stream reconnect after tab return no longer triggers snapshot fallback
-* (ipod86) fix: jsonConfig header items missing required `size` property (E5512)
-* (ipod86) fix: admin config label improvements (snapshot Base64, widget tooltips, go2rtc tooltip)
+* (ipod86) feat: dashboard — real-time motion and alert indicators via Socket.io
+* (ipod86) feat: dashboard — recording timeline view
+* (ipod86) feat: dashboard — PTZ and record buttons in fullscreen panel
 
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)
