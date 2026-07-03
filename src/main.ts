@@ -481,7 +481,7 @@ class AgentDvr extends utils.Adapter {
 
 	private async fetchAvailableSources(): Promise<{ result: { source: string; name: string }[] }> {
 		const deadline = new Promise<{ result: { source: string; name: string }[] }>(res =>
-			setTimeout(() => res({ result: [{ source: '!', name: 'Timeout – Adapter zu langsam' }] }), 7000),
+			setTimeout(() => res({ result: [{ source: '!', name: 'Timeout' }] }), 5000),
 		);
 		return Promise.race([this._doFetchAvailableSources(), deadline]);
 	}
@@ -502,19 +502,17 @@ class AgentDvr extends utils.Adapter {
 	}
 
 	private fetchGo2rtcStreams(): Promise<string[]> {
-		return new Promise(resolve => {
-			const url = this.config.go2rtcUrl;
-			if (!url) {
-				resolve([]);
-				return;
-			}
-			let target: URL;
-			try {
-				target = new URL('/api/streams', url);
-			} catch {
-				resolve([]);
-				return;
-			}
+		const url = this.config.go2rtcUrl;
+		if (!url) {
+			return Promise.resolve([]);
+		}
+		let target: URL;
+		try {
+			target = new URL('/api/streams', url);
+		} catch {
+			return Promise.resolve([]);
+		}
+		const fetch = new Promise<string[]>(resolve => {
 			const mod = target.protocol === 'https:' ? https : http;
 			const req = mod.get(target.toString(), res => {
 				let body = '';
@@ -530,11 +528,10 @@ class AgentDvr extends utils.Adapter {
 				});
 				res.on('error', () => resolve([]));
 			});
-			req.setTimeout(4000, () => {
-				req.destroy();
-			});
 			req.on('error', () => resolve([]));
 		});
+		const timeout = new Promise<string[]>(res => setTimeout(() => res([]), 3000));
+		return Promise.race([fetch, timeout]);
 	}
 
 	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
