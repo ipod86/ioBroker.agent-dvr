@@ -37,7 +37,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 /* ── Live view ── */
 #view-live{padding:var(--gap);gap:var(--gap);background:var(--bg)}
-#chip-bar{flex-shrink:0;display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+#chip-bar{flex-shrink:0;display:flex;gap:5px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
+#chip-bar::-webkit-scrollbar{display:none}
 .chip{background:var(--s1);border:1px solid var(--border);border-radius:99px;
   padding:4px 12px;font-size:12px;cursor:pointer;user-select:none;color:var(--muted);
   transition:all .15s;white-space:nowrap}
