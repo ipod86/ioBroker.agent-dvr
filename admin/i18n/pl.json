@@ -129,5 +129,5 @@
   "hdrGo2rtc": "Strumienie WebRTC go2rtc",
   "cfgGo2rtcUrl": "URL go2rtc",
   "cfgGo2rtcUrl_tt": "Bazowy URL serwera go2rtc, np. http://192.168.1.1:1984",
-  "cfgGo2rtcMapping_tt": "Przypisuje każdą kamerę AgentDVR do strumienia go2rtc. Dodaj jeden wiersz na kamerę. Kamery bez wpisu używają MJPEG."
+  "cfgGo2rtcMapping_tt": "Wybierz źródło strumienia dla każdej kamery: MJPEG, MP4/FLV (przez AgentDVR) lub strumień go2rtc."
 }

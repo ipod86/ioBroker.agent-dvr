@@ -129,5 +129,5 @@
   "hdrGo2rtc": "go2rtc WebRTC-streams",
   "cfgGo2rtcUrl": "go2rtc URL",
   "cfgGo2rtcUrl_tt": "Basis-URL van de go2rtc-server, bijv. http://192.168.1.1:1984",
-  "cfgGo2rtcMapping_tt": "Koppelt elke AgentDVR-camera aan een go2rtc-stream. Voeg één rij per camera toe. Camera's zonder invoer gebruiken MJPEG."
+  "cfgGo2rtcMapping_tt": "Selecteer de streambron per camera: MJPEG of MP4/FLV (via AgentDVR) of een go2rtc-stream."
 }

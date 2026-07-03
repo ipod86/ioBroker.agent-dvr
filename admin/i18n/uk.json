@@ -129,5 +129,5 @@
   "hdrGo2rtc": "WebRTC-потоки go2rtc",
   "cfgGo2rtcUrl": "URL go2rtc",
   "cfgGo2rtcUrl_tt": "Базова URL-адреса сервера go2rtc, напр. http://192.168.1.1:1984",
-  "cfgGo2rtcMapping_tt": "Зіставляє кожну камеру AgentDVR з потоком go2rtc. Додайте один рядок на камеру. Камери без запису використовують MJPEG."
+  "cfgGo2rtcMapping_tt": "Виберіть джерело потоку для кожної камери: MJPEG, MP4/FLV (через AgentDVR) або потік go2rtc."
 }
