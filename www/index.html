@@ -804,7 +804,7 @@ function createFlvPlayer(vid, url, key) {
     if (window._flvFailed) { flvShowStatus(vid, t('flvNoLib')); return null; }
     // Still loading — retry after promise resolves
     flvShowStatus(vid, t('flvLoadingLib'));
-    (window._flvReady || Promise.resolve()).then(() => createFlvPlayer(vid, url, key));
+    (window._flvReady || Promise.resolve()).then(() => { if (!flvPlayers[key]) createFlvPlayer(vid, url, key); });
     return null;
   }
   if (!flvjs.isSupported()) { flvShowStatus(vid, t('flvNoMse')); return null; }
