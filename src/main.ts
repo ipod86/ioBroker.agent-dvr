@@ -472,6 +472,8 @@ class AgentDvr extends utils.Adapter {
 			void this.fetchGo2rtcStreams().then(streams => {
 				this.sendTo(obj.from, obj.command, { streams }, obj.callback);
 			});
+		} else if (obj.command === 'getAgentDvrCameras') {
+			this.sendTo(obj.from, obj.command, { cameras: this.lastCamNames }, obj.callback);
 		} else if (obj.command === 'getAvailableSources') {
 			void this.fetchAvailableSources().then(result => {
 				this.sendTo(obj.from, obj.command, result, obj.callback);
