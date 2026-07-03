@@ -263,7 +263,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                                                 onChange={e => setCameraStream(cam.key, e.target.value as string)}
                                             >
                                                 <MenuItem value="mjpeg">MJPEG</MenuItem>
-                                                <MenuItem value="snapshot">Snapshot</MenuItem>
+                                                <MenuItem value="mp4">MP4 / FLV (mit Ton)</MenuItem>
                                                 {streams.length > 0 && <Divider />}
                                                 {streams.map(s => (
                                                     <MenuItem key={s} value={s}>

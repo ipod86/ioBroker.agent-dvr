@@ -733,6 +733,15 @@ let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
 let go2rtcStreams = []; // stream names fetched from go2rtc
 
+// Per-camera stream type from cameraStreams config.
+// Returns { stype: 'mjpeg'|'mp4'|'go2rtc', g2mStream: string }
+function camStype(key) {
+  const src = (CFG.cameraStreams || {})[key] || 'mjpeg';
+  if (src === 'mp4') return { stype: 'mp4', g2mStream: '' };
+  if (src !== 'mjpeg') return { stype: 'go2rtc', g2mStream: src };
+  return { stype: 'mjpeg', g2mStream: '' };
+}
+
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
   let el = p.querySelector('.flv-status');
@@ -799,6 +808,7 @@ let CFG = {
   go2rtcEnabled:       false,
   go2rtcUrl:           '',
   go2rtcMapping:       [],
+  cameraStreams:       {},
   dashLiveSource:      'agentdvr',
 };
 const DASH_CSS_VARS = {
@@ -1079,11 +1089,8 @@ function makeTile(key, cam) {
   const tile = document.createElement('div');
   tile.className = 'cam-tile'; tile.dataset.cam = key;
 
-  // Decide stream type: go2rtc WebRTC, MP4/FLV, or MJPEG/snapshot
-  const g2mStream  = typeof go2rtcMap[key] === 'string' ? go2rtcMap[key] : '';
-  const stype      = CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl && g2mStream ? 'go2rtc'
-                   : CFG.dashStreamType === 'mp4' ? 'mp4'
-                   : 'mjpeg';
+  // Decide stream type: per-camera cameraStreams config
+  const { stype, g2mStream } = camStype(key);
 
   let mediaEl, sizeParam = '';
 
@@ -1382,11 +1389,8 @@ function openFs(cam, key) {
   disconnectWebRTC(fv);
   destroyFlvPlayer('fs_' + key);
 
-  // Decide stream type for fullscreen
-  const g2mStream = typeof go2rtcMap[key] === 'string' ? go2rtcMap[key] : '';
-  const stype     = CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl && g2mStream ? 'go2rtc'
-                  : CFG.dashStreamType === 'mp4' ? 'mp4'
-                  : 'mjpeg';
+  // Decide stream type for fullscreen: per-camera cameraStreams config
+  const { stype, g2mStream } = camStype(key);
   if (stype === 'go2rtc') {
     fi.style.display = 'none';
     fv.style.display = 'block';
@@ -1793,7 +1797,7 @@ document.addEventListener('visibilitychange', () => {
       img.src = img.dataset.mjpeg;
     });
     // Restart WebRTC on tiles
-    if (CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl) {
+    if (CFG.go2rtcUrl) {
       document.querySelectorAll('.cam-tile video[data-stream]').forEach(vid =>
         connectWebRTC(vid, CFG.go2rtcUrl, vid.dataset.stream));
     }
@@ -1807,12 +1811,13 @@ document.addEventListener('visibilitychange', () => {
     const fi = document.getElementById('fs-img');
     if (!fi.src && fi.dataset.s) { fi.src = fi.dataset.s; }
     const fv = document.getElementById('fs-vid');
-    if (fv && fv.dataset.stream && CFG.dashStreamType === 'go2rtc' && CFG.go2rtcUrl) {
-      connectWebRTC(fv, CFG.go2rtcUrl, fv.dataset.stream);
-    }
     const fsCam = document.getElementById('fs-panel').dataset.cam;
-    if (fsCam && CFG.dashStreamType === 'mp4' && cameras[fsCam]) {
-      createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
+    if (fsCam && cameras[fsCam]) {
+      const { stype: fsStype, g2mStream: fsG2m } = camStype(fsCam);
+      if (fsStype === 'go2rtc' && CFG.go2rtcUrl && fsG2m)
+        connectWebRTC(fv, CFG.go2rtcUrl, fsG2m);
+      else if (fsStype === 'mp4')
+        createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
     }
   }
 });
