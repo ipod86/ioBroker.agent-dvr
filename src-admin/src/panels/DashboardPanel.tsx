@@ -120,22 +120,30 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
             clearTimeout(timer);
 
             if (go2rtcUrl) {
-                try {
-                    const g2ctrl = new AbortController();
-                    const g2timer = setTimeout(() => g2ctrl.abort(), 4000);
-                    const r = await fetch(`${go2rtcUrl}/api/streams`, { signal: g2ctrl.signal });
-                    clearTimeout(g2timer);
-                    if (r.ok) strms = parseStreamsFromApi(await r.json());
-                } catch {
+                // Always fetch via adapter (server-side, no CORS) — then try direct browser fetch as bonus
+                const sendToResult = await Promise.race([
+                    new Promise<any>(resolve => {
+                        socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }, resolve);
+                    }),
+                    new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
+                ]);
+                if (Array.isArray(sendToResult?.streams) && sendToResult.streams.length > 0) {
+                    strms = sendToResult.streams;
+                } else if (sendToResult?._timeout) {
+                    setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: Adapter antwortet nicht (Timeout)`);
+                } else {
+                    // sendTo returned [] — try direct browser fetch as fallback
                     try {
-                        const result = await Promise.race([
-                            new Promise<any>(resolve => {
-                                socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }, resolve);
-                            }),
-                            new Promise<any>(resolve => setTimeout(() => resolve(null), 5000)),
-                        ]);
-                        if (Array.isArray(result?.streams)) strms = result.streams;
-                    } catch { /* ignore */ }
+                        const g2ctrl = new AbortController();
+                        const g2timer = setTimeout(() => g2ctrl.abort(), 4000);
+                        const r = await fetch(`${go2rtcUrl}/api/streams`, { signal: g2ctrl.signal });
+                        clearTimeout(g2timer);
+                        if (r.ok) strms = parseStreamsFromApi(await r.json());
+                        else setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: HTTP ${r.status}`);
+                    } catch (e: any) {
+                        const reason = e?.name === 'AbortError' ? 'Timeout' : (e?.message || String(e));
+                        setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: ${reason}`);
+                    }
                 }
             }
 
