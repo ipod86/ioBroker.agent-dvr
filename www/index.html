@@ -241,12 +241,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* ── Source selector ── */
-#src-sel{display:flex;gap:0;background:var(--s2);border:1px solid var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
-.src-btn{background:none;border:none;color:var(--muted);padding:4px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
-.src-btn:hover{color:var(--text)}
-.src-btn.active{background:var(--accent);color:#fff}
-.chip-sep{width:1px;height:18px;background:var(--border2);flex-shrink:0;margin:0 4px;align-self:center}
 
 /* ── WebRTC video in tiles ── */
 .cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
@@ -287,12 +281,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Live -->
   <div id="view-live" class="view active">
     <div id="info-banner"></div>
-    <div id="chip-bar">
-      <div id="src-sel">
-        <button class="src-btn active" id="src-agentdvr" onclick="setLiveSource('agentdvr')">AgentDVR</button>
-        <button class="src-btn" id="src-go2rtc" onclick="setLiveSource('go2rtc')">go2rtc</button>
-      </div>
-    </div>
+    <div id="chip-bar"></div>
     <div id="cam-grid"></div>
   </div>
 
@@ -737,8 +726,7 @@ let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
-let liveSource   = localStorage.getItem('advr_src') || 'agentdvr'; // 'agentdvr' | 'go2rtc'
-let go2rtcStreams = [];
+let go2rtcStreams = []; // stream names fetched from go2rtc
 
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
@@ -841,8 +829,14 @@ async function loadConfig() {
 /* ─────────────────────────── Init ──────────────────────────── */
 async function loadData() {
   sbar(t('loadingCameras'));
+  // Fetch AgentDVR cameras and go2rtc streams in parallel
+  const [camRes] = await Promise.allSettled([
+    fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) }),
+    loadGo2rtcStreams(),  // populates go2rtcStreams, calls syncGrid when done
+  ]);
+
   try {
-    const r = await fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) });
+    const r = camRes.status === 'fulfilled' ? camRes.value : (() => { throw camRes.reason; })();
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     if (d.error) throw new Error(d.error);
@@ -919,35 +913,11 @@ function showView(name) {
   if (name === 'live') updateLayout();
 }
 
-/* ─────────────────────────── Source selector ───────────────── */
-function setLiveSource(src) {
-  if (liveSource === src) return;
-  liveSource = src;
-  localStorage.setItem('advr_src', src);
-  document.getElementById('src-agentdvr').classList.toggle('active', src === 'agentdvr');
-  document.getElementById('src-go2rtc').classList.toggle('active', src === 'go2rtc');
-  // disconnect all running streams in grid
-  document.querySelectorAll('#cam-grid video[data-stream]').forEach(v => disconnectWebRTC(v));
-  document.querySelectorAll('#cam-grid video').forEach(v => {
-    if (v.dataset.camKey) destroyFlvPlayer(v.dataset.camKey);
-  });
-  syncChips();
-  syncGrid();
-}
-
 /* ─────────────────────────── Chips ─────────────────────────── */
 function syncChips() {
-  // Restore source selector (innerHTML was not reset, so just update button states)
-  document.getElementById('src-agentdvr').classList.toggle('active', liveSource === 'agentdvr');
-  document.getElementById('src-go2rtc').classList.toggle('active', liveSource === 'go2rtc');
-
-  // Remove old camera chips (everything after the src-sel)
   const bar = document.getElementById('chip-bar');
-  [...bar.children].forEach(c => { if (c.id !== 'src-sel') c.remove(); });
-
-  if (liveSource !== 'agentdvr' || !Object.keys(cameras).length) return;
-
-  const sep = document.createElement('span'); sep.className = 'chip-sep'; bar.appendChild(sep);
+  bar.innerHTML = '';
+  if (!Object.keys(cameras).length) return;
   addChip(bar, t('tagAll'), hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
   Object.entries(cameras).forEach(([k, cam]) => {
     addChip(bar, cam.name, !hidden.has(k), () => {
@@ -966,8 +936,6 @@ function save() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden]
 
 /* ─────────────────────────── Camera grid (smart update) ────── */
 function syncGrid() {
-  if (liveSource === 'go2rtc') { loadGo2rtcGrid(); return; }
-
   const grid = document.getElementById('cam-grid');
   const want = Object.keys(cameras).filter(k => {
     if (hidden.has(k)) return false;
@@ -975,19 +943,34 @@ function syncGrid() {
     return true;
   });
 
-  // Remove tiles no longer needed (without touching others → streams keep running)
-  [...grid.querySelectorAll('.cam-tile')].forEach(t => {
+  // Remove AgentDVR tiles no longer needed
+  [...grid.querySelectorAll('.cam-tile[data-cam]')].forEach(t => {
     if (!want.includes(t.dataset.cam)) t.remove();
   });
 
-  // Add missing tiles, update recording state on existing ones
-  const have = new Set([...grid.querySelectorAll('.cam-tile')].map(t => t.dataset.cam));
+  // Add missing AgentDVR tiles, update recording state on existing ones
+  const have = new Set([...grid.querySelectorAll('.cam-tile[data-cam]')].map(t => t.dataset.cam));
   want.forEach(k => {
     if (!have.has(k)) {
       grid.appendChild(makeTile(k, cameras[k]));
     } else {
       const t = grid.querySelector('.cam-tile[data-cam="' + k + '"]');
       if (t) { const rb = t.querySelector('.rec-btn'); if (rb) setTileRecording(t, rb, !!cameras[k].recording); }
+    }
+  });
+
+  // Append go2rtc-only streams (those not already mapped to an AgentDVR camera)
+  const mappedStreams = new Set(Object.values(go2rtcMap));
+  const g2rHave = new Set([...grid.querySelectorAll('.cam-tile[data-g2r]')].map(t => t.dataset.g2r));
+  go2rtcStreams.forEach(name => {
+    if (mappedStreams.has(name)) return; // already covered by AgentDVR tile
+    if (!g2rHave.has(name)) grid.appendChild(makeGo2rtcTile(name));
+  });
+  // Remove go2rtc tiles for streams that disappeared
+  [...grid.querySelectorAll('.cam-tile[data-g2r]')].forEach(t => {
+    if (!go2rtcStreams.includes(t.dataset.g2r) || mappedStreams.has(t.dataset.g2r)) {
+      disconnectWebRTC(t.querySelector('video'));
+      t.remove();
     }
   });
 
@@ -1001,29 +984,15 @@ function syncGrid() {
   updateLayout();
 }
 
-/* ─────────────────────────── go2rtc grid ───────────────────── */
-async function loadGo2rtcGrid() {
-  const grid = document.getElementById('cam-grid');
-  // Disconnect AgentDVR streams still alive, then clear
-  grid.querySelectorAll('.cam-tile[data-cam]').forEach(t => {
-    t.querySelectorAll('video').forEach(v => { disconnectWebRTC(v); destroyFlvPlayer(v.dataset.camKey || ''); });
-    t.remove();
-  });
-
+/* ─────────────────────────── go2rtc streams laden ──────────── */
+async function loadGo2rtcStreams() {
   try {
     const r = await fetch('/agent-dvr/api/go2rtc/streams', { signal: AbortSignal.timeout(5000) });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     go2rtcStreams = (d.streams || []).sort();
   } catch (_) { go2rtcStreams = []; }
-
-  grid.innerHTML = '';
-  if (!go2rtcStreams.length) {
-    grid.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Keine go2rtc-Streams</div>';
-    return;
-  }
-  go2rtcStreams.forEach(name => grid.appendChild(makeGo2rtcTile(name)));
-  updateLayout();
+  syncGrid();
 }
 
 function makeGo2rtcTile(streamName) {
@@ -1912,9 +1881,6 @@ function disconnectWebRTC(vid) {
 
 /* ─────────────────────────── Boot ──────────────────────────── */
 applyDashTranslations();
-// Restore saved source selection before first load
-document.getElementById('src-agentdvr').classList.toggle('active', liveSource === 'agentdvr');
-document.getElementById('src-go2rtc').classList.toggle('active', liveSource === 'go2rtc');
 loadConfig().then(() => loadData()).then(() => ensureLayoutObserver());
 </script>
 <script src="/socket.io/socket.io.js"></script>
