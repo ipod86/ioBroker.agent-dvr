@@ -128,8 +128,12 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                     if (r.ok) {
                         strms = parseStreamsFromApi(await r.json());
                         browserOk = true;
+                    } else {
+                        setFetchError(`go2rtc Browser: HTTP ${r.status}`);
                     }
-                } catch { /* Browser-Fetch fehlgeschlagen → Adapter-Fallback */ }
+                } catch (e: any) {
+                    setFetchError(`go2rtc Browser-Fehler: ${e?.message || String(e)}`);
+                }
 
                 // 2. Adapter-Fallback (Server-seitig, falls Browser CORS/mixed-content blockiert)
                 if (!browserOk) {
