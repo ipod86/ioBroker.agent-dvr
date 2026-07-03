@@ -138,5 +138,9 @@
   "cfgGo2rtcMapping": "流映射",
   "cfgGo2rtcMapping_tt": "将每个 AgentDVR 摄像头映射到 go2rtc 流。每个摄像头添加一行。没有条目的摄像头使用 MJPEG。",
   "cfgGo2rtcCamKey": "AgentDVR 摄像头键（例如 cam_8_Reolink）",
-  "cfgGo2rtcStream": "go2rtc 流名称（例如 Reolink）"
+  "cfgGo2rtcStream": "go2rtc 流名称（例如 Reolink）",
+  "cfgDashLiveSource": "Default live dashboard source",
+  "cfgDashLiveSource_tt": "Which source is shown when the dashboard opens (can be switched in the dashboard)",
+  "cfgDashLiveSrcAgentDvr": "AgentDVR cameras",
+  "cfgDashLiveSrcGo2rtc": "go2rtc streams"
 }

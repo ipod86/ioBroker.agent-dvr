@@ -138,5 +138,9 @@
   "cfgGo2rtcMapping": "Stream-Mapping",
   "cfgGo2rtcMapping_tt": "Ordnet jeder AgentDVR-Kamera einen go2rtc-Stream zu. Füge eine Zeile pro Kamera hinzu. Ohne Eintrag wird MJPEG verwendet.",
   "cfgGo2rtcCamKey": "AgentDVR Kamera-Key (z.B. cam_8_Reolink)",
-  "cfgGo2rtcStream": "go2rtc Stream-Name (z.B. Reolink)"
+  "cfgGo2rtcStream": "go2rtc Stream-Name (z.B. Reolink)",
+  "cfgDashLiveSource": "Standard-Quelle Live-Dashboard",
+  "cfgDashLiveSource_tt": "Welche Quelle beim Öffnen des Dashboards angezeigt wird (kann im Dashboard gewechselt werden)",
+  "cfgDashLiveSrcAgentDvr": "AgentDVR-Kameras",
+  "cfgDashLiveSrcGo2rtc": "go2rtc-Streams"
 }

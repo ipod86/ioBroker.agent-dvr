@@ -762,6 +762,22 @@
                             "title": "cfgGo2rtcStream"
                         }
                     ]
+                },
+                "dashLiveSource": {
+                    "type": "select",
+                    "label": "cfgDashLiveSource",
+                    "help": "cfgDashLiveSource_tt",
+                    "hidden": "data.dashStreamType !== 'go2rtc'",
+                    "newLine": true,
+                    "xs": 12,
+                    "sm": 6,
+                    "md": 4,
+                    "lg": 4,
+                    "xl": 4,
+                    "options": [
+                        { "value": "agentdvr", "label": "cfgDashLiveSrcAgentDvr" },
+                        { "value": "go2rtc",   "label": "cfgDashLiveSrcGo2rtc"   }
+                    ]
                 }
             }
         },
