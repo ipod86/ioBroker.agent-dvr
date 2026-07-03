@@ -142,5 +142,7 @@
   "cfgDashLiveSource": "Standard-Quelle Live-Dashboard",
   "cfgDashLiveSource_tt": "Welche Quelle beim Öffnen des Dashboards angezeigt wird (kann im Dashboard gewechselt werden)",
   "cfgDashLiveSrcAgentDvr": "AgentDVR-Kameras",
-  "cfgDashLiveSrcGo2rtc": "go2rtc-Streams"
+  "cfgDashLiveSrcGo2rtc": "go2rtc-Streams",
+  "hdrTestSources": "Verfügbare Quellen testen",
+  "cfgTestSourcesBtn": "Abrufen"
 }

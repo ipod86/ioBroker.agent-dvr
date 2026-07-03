@@ -352,12 +352,40 @@ class AgentDvr extends utils.Adapter {
     callback();
   }
   onMessage(obj) {
-    if (!obj || obj.command !== "getGo2rtcStreams") {
+    if (!obj) {
       return;
     }
-    void this.fetchGo2rtcStreams().then((streams) => {
-      this.sendTo(obj.from, obj.command, { streams }, obj.callback);
-    });
+    if (obj.command === "getGo2rtcStreams") {
+      void this.fetchGo2rtcStreams().then((streams) => {
+        this.sendTo(obj.from, obj.command, { streams }, obj.callback);
+      });
+    } else if (obj.command === "getAvailableSources") {
+      void this.fetchAvailableSources().then((result) => {
+        this.sendTo(obj.from, obj.command, result, obj.callback);
+      });
+    }
+  }
+  async fetchAvailableSources() {
+    const rows = [];
+    try {
+      const ns = `${this.namespace}.`;
+      const nameStates = await this.getForeignStatesAsync(`${ns}cam_*.name`);
+      for (const [id, state] of Object.entries(nameStates || {})) {
+        if (state && typeof state.val === "string" && state.val) {
+          const key = id.slice(ns.length).split(".")[0];
+          rows.push({ source: "AgentDVR", name: `${state.val} (${key})` });
+        }
+      }
+    } catch {
+    }
+    const streams = await this.fetchGo2rtcStreams();
+    for (const s of streams) {
+      rows.push({ source: "go2rtc", name: s });
+    }
+    if (!rows.length) {
+      rows.push({ source: "\u2014", name: "Keine Quellen gefunden" });
+    }
+    return { result: rows };
   }
   fetchGo2rtcStreams() {
     return new Promise((resolve) => {

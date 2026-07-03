@@ -142,5 +142,7 @@
   "cfgDashLiveSource": "Default live dashboard source",
   "cfgDashLiveSource_tt": "Which source is shown when the dashboard opens (can be switched in the dashboard)",
   "cfgDashLiveSrcAgentDvr": "AgentDVR cameras",
-  "cfgDashLiveSrcGo2rtc": "go2rtc streams"
+  "cfgDashLiveSrcGo2rtc": "go2rtc streams",
+  "hdrTestSources": "Test available sources",
+  "cfgTestSourcesBtn": "Fetch"
 }

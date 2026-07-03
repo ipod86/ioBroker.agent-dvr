@@ -499,6 +499,33 @@
             "type": "panel",
             "label": "tabDashboard",
             "items": {
+                "hdrTestSources": {
+                    "type": "header",
+                    "text": "hdrTestSources",
+                    "newLine": true,
+                    "xs": 12,
+                    "size": 3
+                },
+                "testSourcesBtn": {
+                    "type": "sendTo",
+                    "command": "getAvailableSources",
+                    "label": "cfgTestSourcesBtn",
+                    "showProcess": true,
+                    "newLine": true,
+                    "xs": 12,
+                    "sm": 4,
+                    "md": 3,
+                    "lg": 2,
+                    "xl": 2,
+                    "result": {
+                        "type": "table",
+                        "noTranslation": true,
+                        "items": [
+                            { "attr": "source", "title": "Quelle" },
+                            { "attr": "name",   "title": "Name"   }
+                        ]
+                    }
+                },
                 "hdrDashView": {
                     "type": "header",
                     "text": "hdrDashView",
