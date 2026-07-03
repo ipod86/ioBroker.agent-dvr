@@ -505,7 +505,8 @@ class AgentDvr extends utils.Adapter {
 	}
 
 	private fetchGo2rtcStreams(overrideUrl?: string): Promise<{ streams: string[]; error?: string }> {
-		const url = overrideUrl || this.config.go2rtcUrl;
+		// go2rtc läuft immer auf plain-HTTP; https:// → http:// erzwingen
+		const url = (overrideUrl || this.config.go2rtcUrl || '').replace(/^https:\/\//i, 'http://');
 		if (!url) {
 			return Promise.resolve({ streams: [], error: 'go2rtcUrl nicht konfiguriert' });
 		}

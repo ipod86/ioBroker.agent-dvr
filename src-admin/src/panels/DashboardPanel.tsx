@@ -70,7 +70,9 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
         const ip = (native.ip || '').trim();
         const port = native.port || 8090;
         let go2rtcUrl = (native.go2rtcUrl || '').trim();
-        if (go2rtcUrl && !go2rtcUrl.match(/^https?:\/\//i)) go2rtcUrl = `http://${go2rtcUrl}`;
+        // go2rtc läuft immer auf plain-HTTP; https:// → http:// erzwingen
+        go2rtcUrl = go2rtcUrl.replace(/^https:\/\//i, 'http://');
+        if (go2rtcUrl && !go2rtcUrl.startsWith('http://')) go2rtcUrl = `http://${go2rtcUrl}`;
 
         if (!ip) {
             setCameras([]);

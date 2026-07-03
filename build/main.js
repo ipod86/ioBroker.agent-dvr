@@ -390,7 +390,7 @@ class AgentDvr extends utils.Adapter {
     return { result: rows };
   }
   fetchGo2rtcStreams(overrideUrl) {
-    const url = overrideUrl || this.config.go2rtcUrl;
+    const url = (overrideUrl || this.config.go2rtcUrl || "").replace(/^https:\/\//i, "http://");
     if (!url) {
       return Promise.resolve({ streams: [], error: "go2rtcUrl nicht konfiguriert" });
     }
