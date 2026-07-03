@@ -45,6 +45,11 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
+.grid-section{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:2px 2px 0;margin-top:2px}
+.grid-section-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.grid-section-line{flex:1;height:1px;background:var(--border)}
+.grid-section-count{font-size:11px;color:var(--muted2);white-space:nowrap}
+.grid-empty-section{grid-column:1/-1;font-size:12px;color:var(--muted2);padding:6px 2px;font-style:italic}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
   transition:border-color .2s,box-shadow .2s;
@@ -943,45 +948,67 @@ function syncGrid() {
     return true;
   });
 
-  // Remove AgentDVR tiles no longer needed
-  [...grid.querySelectorAll('.cam-tile[data-cam]')].forEach(t => {
-    if (!want.includes(t.dataset.cam)) t.remove();
+  // Save existing live tiles so we can re-insert them without restarting streams
+  const savedTiles = {};
+  grid.querySelectorAll('.cam-tile[data-cam]').forEach(t => { savedTiles[t.dataset.cam] = t; });
+  const savedG2r = {};
+  grid.querySelectorAll('.cam-tile[data-g2r]').forEach(t => { savedG2r[t.dataset.g2r] = t; });
+  // Remove tiles that are no longer needed (disconnect their streams)
+  Object.entries(savedTiles).forEach(([k, t]) => {
+    if (!want.includes(k)) { t.querySelectorAll('video').forEach(v => disconnectWebRTC(v)); }
   });
+  grid.innerHTML = '';
 
-  // Add missing AgentDVR tiles, update recording state on existing ones
-  const have = new Set([...grid.querySelectorAll('.cam-tile[data-cam]')].map(t => t.dataset.cam));
-  want.forEach(k => {
-    if (!have.has(k)) {
-      grid.appendChild(makeTile(k, cameras[k]));
-    } else {
-      const t = grid.querySelector('.cam-tile[data-cam="' + k + '"]');
-      if (t) { const rb = t.querySelector('.rec-btn'); if (rb) setTileRecording(t, rb, !!cameras[k].recording); }
-    }
-  });
-
-  // Append go2rtc-only streams (those not already mapped to an AgentDVR camera)
-  const mappedStreams = new Set(Object.values(go2rtcMap));
-  const g2rHave = new Set([...grid.querySelectorAll('.cam-tile[data-g2r]')].map(t => t.dataset.g2r));
-  go2rtcStreams.forEach(name => {
-    if (mappedStreams.has(name)) return; // already covered by AgentDVR tile
-    if (!g2rHave.has(name)) grid.appendChild(makeGo2rtcTile(name));
-  });
-  // Remove go2rtc tiles for streams that disappeared
-  [...grid.querySelectorAll('.cam-tile[data-g2r]')].forEach(t => {
-    if (!go2rtcStreams.includes(t.dataset.g2r) || mappedStreams.has(t.dataset.g2r)) {
-      disconnectWebRTC(t.querySelector('video'));
-      t.remove();
-    }
-  });
-
-  if (!grid.querySelector('.cam-tile')) {
-    grid.innerHTML = `<div class="empty-state">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
-        <line x1="2" y1="2" x2="22" y2="22" stroke-width="1.5"/>
-      </svg>Keine Kameras sichtbar</div>`;
+  // ── Section: AgentDVR ──
+  grid.appendChild(makeSectionHeader('AgentDVR', want.length));
+  if (!want.length) {
+    const empty = document.createElement('div'); empty.className = 'grid-empty-section';
+    empty.textContent = 'Keine Kameras verfügbar';
+    grid.appendChild(empty);
+  } else {
+    want.forEach(k => {
+      const existing = savedTiles[k];
+      if (existing) {
+        const rb = existing.querySelector('.rec-btn');
+        if (rb) setTileRecording(existing, rb, !!cameras[k].recording);
+        grid.appendChild(existing);
+      } else {
+        grid.appendChild(makeTile(k, cameras[k]));
+      }
+    });
   }
+
+  // ── Section: go2rtc ──
+  const mappedStreams = new Set(Object.values(go2rtcMap));
+  const g2rVisible   = go2rtcStreams.filter(n => !mappedStreams.has(n));
+  grid.appendChild(makeSectionHeader('go2rtc', g2rVisible.length));
+  if (!g2rVisible.length) {
+    const empty = document.createElement('div'); empty.className = 'grid-empty-section';
+    empty.textContent = CFG.go2rtcUrl ? 'Keine Streams gefunden' : 'go2rtc-URL nicht konfiguriert';
+    grid.appendChild(empty);
+  } else {
+    g2rVisible.forEach(name => {
+      const existing = savedG2r[name];
+      if (existing) grid.appendChild(existing);
+      else grid.appendChild(makeGo2rtcTile(name));
+    });
+    // Disconnect removed go2rtc tiles
+    Object.entries(savedG2r).forEach(([n, t]) => {
+      if (!g2rVisible.includes(n)) disconnectWebRTC(t.querySelector('video'));
+    });
+  }
+
   updateLayout();
+}
+
+function makeSectionHeader(label, count) {
+  const sec = document.createElement('div'); sec.className = 'grid-section';
+  const lbl = document.createElement('span'); lbl.className = 'grid-section-lbl'; lbl.textContent = label;
+  const line = document.createElement('span'); line.className = 'grid-section-line';
+  const cnt = document.createElement('span'); cnt.className = 'grid-section-count';
+  cnt.textContent = count + (count === 1 ? ' Stream' : ' Streams');
+  sec.append(lbl, line, cnt);
+  return sec;
 }
 
 /* ─────────────────────────── go2rtc streams laden ──────────── */
