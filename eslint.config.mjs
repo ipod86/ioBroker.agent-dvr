@@ -18,6 +18,7 @@ export default [
 			'admin/admin.d.ts',
 			'admin/blockly.js',
 			'admin/custom/**',
+			'admin/assets/**',
 			'**/adapter-config.d.ts',
 			'widgets/**/*.js',
 			'lib/**',
