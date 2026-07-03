@@ -48,6 +48,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     const [streams, setStreams] = useState<string[]>([]);
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [debugInfo, setDebugInfo] = useState<string | null>(null);
 
     const isGo2rtc = native.dashStreamType === 'go2rtc';
 
@@ -118,18 +119,30 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
             clearTimeout(timer);
 
             if (go2rtcUrl) {
-                const sendToResult = await Promise.race([
-                    socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
-                    new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
-                ]);
-                if (sendToResult?._timeout) {
-                    setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Adapter antwortet nicht (Timeout)');
-                } else if (Array.isArray(sendToResult?.streams)) {
-                    strms = sendToResult.streams;
-                    if (strms.length === 0 && sendToResult.error) {
-                        setFetchError(prev => (prev ? prev + ' | ' : '') + sendToResult.error);
-                    }
+                let rawResult: any;
+                try {
+                    rawResult = await Promise.race([
+                        socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
+                        new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
+                    ]);
+                } catch (e: any) {
+                    rawResult = { _error: String(e?.message || e) };
                 }
+                setDebugInfo(`sendTo result: ${JSON.stringify(rawResult)}`);
+                if (rawResult?._timeout) {
+                    setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Adapter antwortet nicht (Timeout)');
+                } else if (rawResult?._error) {
+                    setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc sendTo Fehler: ${rawResult._error}`);
+                } else if (Array.isArray(rawResult?.streams)) {
+                    strms = rawResult.streams;
+                    if (strms.length === 0 && rawResult.error) {
+                        setFetchError(prev => (prev ? prev + ' | ' : '') + rawResult.error);
+                    }
+                } else {
+                    setDebugInfo(prev => (prev ?? '') + ' | UNERWARTETES FORMAT');
+                }
+            } else {
+                setDebugInfo('go2rtcUrl ist leer — Block übersprungen');
             }
 
             setCameras(cams);
@@ -231,6 +244,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                         <Alert severity="info" sx={{ mb: 2 }}>go2rtc-URL eingeben (z.B. <code>192.168.99.95:1984</code>) — Streams werden danach automatisch geladen.</Alert>
                     )}
 
+                    {debugInfo && <Alert severity="info" sx={{ mb: 1, fontFamily: 'monospace', fontSize: '0.75rem' }}>{debugInfo}</Alert>}
                     {fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
 
                     {loading && <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}><CircularProgress size={16} /><Typography variant="caption">Lade Kameras und Streams…</Typography></Box>}
