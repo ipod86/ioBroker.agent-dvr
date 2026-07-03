@@ -470,8 +470,8 @@ class AgentDvr extends utils.Adapter {
 		}
 		if (obj.command === 'getGo2rtcStreams') {
 			const overrideUrl = typeof obj.message === 'object' && obj.message !== null ? (obj.message as any).url as string | undefined : undefined;
-			void this.fetchGo2rtcStreams(overrideUrl).then(streams => {
-				this.sendTo(obj.from, obj.command, { streams }, obj.callback);
+			void this.fetchGo2rtcStreams(overrideUrl).then(result => {
+				this.sendTo(obj.from, obj.command, result, obj.callback);
 			});
 		} else if (obj.command === 'getAgentDvrCameras') {
 			this.sendTo(obj.from, obj.command, { cameras: this.lastCamNames }, obj.callback);
@@ -494,7 +494,7 @@ class AgentDvr extends utils.Adapter {
 		for (const c of this.lastCamNames) {
 			rows.push({ source: 'AgentDVR', name: `${c.name} (${c.key})` });
 		}
-		const streams = await this.fetchGo2rtcStreams();
+		const { streams } = await this.fetchGo2rtcStreams();
 		for (const s of streams) {
 			rows.push({ source: 'go2rtc', name: s });
 		}
@@ -504,36 +504,37 @@ class AgentDvr extends utils.Adapter {
 		return { result: rows };
 	}
 
-	private fetchGo2rtcStreams(overrideUrl?: string): Promise<string[]> {
+	private fetchGo2rtcStreams(overrideUrl?: string): Promise<{ streams: string[]; error?: string }> {
 		const url = overrideUrl || this.config.go2rtcUrl;
 		if (!url) {
-			return Promise.resolve([]);
+			return Promise.resolve({ streams: [], error: 'go2rtcUrl nicht konfiguriert' });
 		}
 		let target: URL;
 		try {
 			target = new URL('/api/streams', url);
 		} catch {
-			return Promise.resolve([]);
+			return Promise.resolve({ streams: [], error: `Ungültige URL: ${url}` });
 		}
-		const fetch = new Promise<string[]>(resolve => {
+		const fetch = new Promise<{ streams: string[]; error?: string }>(resolve => {
 			const mod = target.protocol === 'https:' ? https : http;
 			const req = mod.get(target.toString(), res => {
 				let body = '';
-				res.on('data', (c: Buffer) => {
-					body += c.toString();
-				});
+				res.on('data', (c: Buffer) => { body += c.toString(); });
 				res.on('end', () => {
 					try {
-						resolve(Object.keys(JSON.parse(body) || {}));
+						const parsed = JSON.parse(body);
+						const streams = Object.keys(parsed || {});
+						resolve({ streams, error: streams.length === 0 ? 'go2rtc antwortet, aber keine Streams konfiguriert' : undefined });
 					} catch {
-						resolve([]);
+						resolve({ streams: [], error: `Ungültige JSON-Antwort von go2rtc (HTTP ${res.statusCode})` });
 					}
 				});
-				res.on('error', () => resolve([]));
+				res.on('error', (e: Error) => resolve({ streams: [], error: `Stream-Fehler: ${e.message}` }));
 			});
-			req.on('error', () => resolve([]));
+			req.on('error', (e: Error) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
 		});
-		const timeout = new Promise<string[]>(res => setTimeout(() => res([]), 3000));
+		const timeout = new Promise<{ streams: string[]; error?: string }>(res =>
+			setTimeout(() => res({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` }), 3000));
 		return Promise.race([fetch, timeout]);
 	}
 

@@ -118,27 +118,16 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
             clearTimeout(timer);
 
             if (go2rtcUrl) {
-                // Always fetch via adapter (server-side, no CORS) — then try direct browser fetch as bonus
                 const sendToResult = await Promise.race([
                     socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
                     new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
                 ]);
-                if (Array.isArray(sendToResult?.streams) && sendToResult.streams.length > 0) {
+                if (sendToResult?._timeout) {
+                    setFetchError(prev => (prev ? prev + ' | ' : '') + 'go2rtc: Adapter antwortet nicht (Timeout)');
+                } else if (Array.isArray(sendToResult?.streams)) {
                     strms = sendToResult.streams;
-                } else if (sendToResult?._timeout) {
-                    setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: Adapter antwortet nicht (Timeout)`);
-                } else {
-                    // sendTo returned [] — try direct browser fetch as fallback
-                    try {
-                        const g2ctrl = new AbortController();
-                        const g2timer = setTimeout(() => g2ctrl.abort(), 4000);
-                        const r = await fetch(`${go2rtcUrl}/api/streams`, { signal: g2ctrl.signal });
-                        clearTimeout(g2timer);
-                        if (r.ok) strms = parseStreamsFromApi(await r.json());
-                        else setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: HTTP ${r.status}`);
-                    } catch (e: any) {
-                        const reason = e?.name === 'AbortError' ? 'Timeout' : (e?.message || String(e));
-                        setFetchError(prev => (prev ? prev + ' | ' : '') + `go2rtc: ${reason}`);
+                    if (strms.length === 0 && sendToResult.error) {
+                        setFetchError(prev => (prev ? prev + ' | ' : '') + sendToResult.error);
                     }
                 }
             }
