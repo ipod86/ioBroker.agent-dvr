@@ -69,7 +69,8 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     const fetchData = useCallback(async () => {
         const ip = (native.ip || '').trim();
         const port = native.port || 8090;
-        const go2rtcUrl = (native.go2rtcUrl || '').trim();
+        let go2rtcUrl = (native.go2rtcUrl || '').trim();
+        if (go2rtcUrl && !go2rtcUrl.match(/^https?:\/\//i)) go2rtcUrl = `http://${go2rtcUrl}`;
 
         if (!ip) {
             setCameras([]);
@@ -145,11 +146,12 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
         }
     }, [native.ip, native.port, native.go2rtcUrl, native.user, native.pass, socket, instance]);
 
+    // Initial load + re-fetch when go2rtcUrl changes (debounced 600 ms)
     useEffect(() => {
-        if (isGo2rtc) {
-            void fetchData();
-        }
-    }, [isGo2rtc]);
+        if (!isGo2rtc) return;
+        const t = setTimeout(() => void fetchData(), 600);
+        return () => clearTimeout(t);
+    }, [isGo2rtc, native.go2rtcUrl]);
 
     return (
         <div>
@@ -231,6 +233,10 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                     <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
                         {I18n.t('cfgGo2rtcMapping_tt')}
                     </Typography>
+
+                    {!native.go2rtcUrl && !loading && (
+                        <Alert severity="info" sx={{ mb: 2 }}>go2rtc-URL eingeben (z.B. <code>192.168.99.95:1984</code>) — Streams werden danach automatisch geladen.</Alert>
+                    )}
 
                     {fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
 
