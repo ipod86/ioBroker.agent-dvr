@@ -984,14 +984,13 @@ function makeTile(key, cam) {
     vid.setAttribute('muted', '');
     vid.dataset.camKey = key;
     vid.dataset.flvOid = cam.oid || '';
-    // Force the TILE (a plain div = no intrinsic dimensions) to the correct AR,
-    // then stretch the video to fill it. This is the most reliable approach:
-    // aspect-ratio on a non-replaced element always wins; object-fit:fill on the
-    // video overrides the .cam-tile video{object-fit:contain} stylesheet rule.
+    // The grid rows are sized to 16:9 by updateLayout (colW * 9/16 px).
+    // If the camera's native AR is wider than 4:3 (e.g. Reolink 16:9 but encoded
+    // as 320x240), stretch the video to fill the 16:9 tile so the content looks correct.
+    // Cameras that are natively 4:3 (e.g. Trift 640/480) keep object-fit:contain.
     const arParts = (cam.aspect || '').split('/').map(Number);
     if (arParts.length === 2 && arParts[0] >= 100 && arParts[1] >= 100) {
-      tile.style.aspectRatio = arParts[0] + '/' + arParts[1];
-      vid.style.objectFit = 'fill';
+      if ((arParts[0] / arParts[1]) > 1.4) vid.style.objectFit = 'fill';
     }
     mediaEl = vid;
   } else {
@@ -1183,9 +1182,12 @@ function updateLayout() {
   if (!tiles) return;
   const W = grid.clientWidth, H = grid.clientHeight;
   if (W < 10 || H < 10) return;
-  const { cols, rows } = calcLayout(tiles, W, H, 6);
+  const gap = 6;
+  const { cols, rows } = calcLayout(tiles, W, H, gap);
+  const colW = (W - gap * (cols - 1)) / cols;
+  const rowH = Math.floor(colW * 9 / 16);
   grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-  grid.style.gridTemplateRows    = `repeat(${rows},1fr)`;
+  grid.style.gridTemplateRows    = `repeat(${rows},${rowH}px)`;
 }
 function ensureLayoutObserver() {
   if (layoutObserver) return;
