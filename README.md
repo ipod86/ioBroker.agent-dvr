@@ -27,7 +27,14 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - Push trigger state for real-time script reactions to new recordings
 - HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
 - Overview widget combining all cameras in one HTML state
-- **Live dashboard** at `/agent-dvr/` with per-camera stream selection, recordings tab, fullscreen view, and color theming
+- **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr/` — no additional app needed:
+  - Per-camera stream selection: MJPEG, MP4/FLV with audio, or go2rtc WebRTC/MSE
+  - Camera filter badges to show/hide individual cameras (state saved in localStorage)
+  - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
+  - Fullscreen view with PTZ overlay and record button
+  - Recordings tab with grid and timeline view, search, tag filter, and video player
+  - Auto-reconnect for all stream types after network interruption or tab switch
+  - Fully color-themeable via adapter config
 
 ## Configuration
 
