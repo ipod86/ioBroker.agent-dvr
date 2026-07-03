@@ -105,9 +105,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                     setFetchError(`AgentDVR: ${e?.message || e} — CORS blockiert? Adapter neu starten und erneut laden.`);
                     try {
                         const result = await Promise.race([
-                            new Promise<any>(resolve => {
-                                socket.sendTo(`agent-dvr.${instance}`, 'getAgentDvrCameras', null, resolve);
-                            }),
+                            socket.sendTo(`agent-dvr.${instance}`, 'getAgentDvrCameras', null),
                             new Promise<any>(resolve => setTimeout(() => resolve(null), 5000)),
                         ]);
                         if (result?.cameras?.length) {
@@ -122,9 +120,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
             if (go2rtcUrl) {
                 // Always fetch via adapter (server-side, no CORS) — then try direct browser fetch as bonus
                 const sendToResult = await Promise.race([
-                    new Promise<any>(resolve => {
-                        socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }, resolve);
-                    }),
+                    socket.sendTo(`agent-dvr.${instance}`, 'getGo2rtcStreams', { url: go2rtcUrl }),
                     new Promise<any>(resolve => setTimeout(() => resolve({ _timeout: true }), 6000)),
                 ]);
                 if (Array.isArray(sendToResult?.streams) && sendToResult.streams.length > 0) {
