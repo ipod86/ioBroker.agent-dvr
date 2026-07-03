@@ -30,7 +30,9 @@ function parseCamerasFromObjects(json: any): Camera[] {
         const rawName = typeof e.name === 'string' ? e.name : `obj_${id}`;
         const ot = e.typeID ?? e.ot ?? e.objectTypeID ?? e.type;
         if (ot !== 2) continue; // ot=2 = Kamera; ot=1 = Mikrofon → ausschließen
-        const key = `cam_${id}_${rawName.replace(/[\s.[\]*?"'`,;:/\\]+/g, '_').replace(/[^A-Za-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'x'}`;
+        // Sanitize OID same as adapter's sanitize() + deviceFolder() to ensure key matches ioBroker state path
+        const safeId = String(id).replace(/[\s.[\]*?"'`,;:/\\]+/g, '_').replace(/[^A-Za-z0-9_-]/g, '_');
+        const key = `cam_${safeId}_${rawName.replace(/[\s.[\]*?"'`,;:/\\]+/g, '_').replace(/[^A-Za-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') || 'x'}`;
         out.push({ key, name: rawName });
     }
     out.sort((a, b) => a.name.localeCompare(b.name));
@@ -156,7 +158,8 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     useEffect(() => {
         const t = setTimeout(() => void fetchData(), 600);
         return () => clearTimeout(t);
-    }, [native.ip, native.port, native.go2rtcUrl]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [native.ip, native.port, native.go2rtcUrl, native.user, native.pass, fetchData]);
 
     return (
         <div>

@@ -874,6 +874,11 @@ async function loadConfig() {
   (Array.isArray(CFG.go2rtcMapping) ? CFG.go2rtcMapping : []).forEach(row => {
     if (row.camKey && row.stream) go2rtcMap[row.camKey] = row.stream;
   });
+  // Per-camera assignments from new cameraStreams config (non-mjpeg/mp4 = go2rtc stream)
+  Object.entries(CFG.cameraStreams || {}).forEach(function(entry) {
+    var camKey = entry[0], src = entry[1];
+    if (src && src !== 'mjpeg' && src !== 'mp4') go2rtcMap[camKey] = src;
+  });
   for (const [key, prop] of Object.entries(DASH_CSS_VARS)) {
     if (CFG[key]) document.documentElement.style.setProperty(prop, CFG[key]);
   }

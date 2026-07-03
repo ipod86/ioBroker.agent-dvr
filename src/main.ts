@@ -517,9 +517,10 @@ class AgentDvr extends utils.Adapter {
 		} catch {
 			return Promise.resolve({ streams: [], error: `Ungültige URL: ${url}` });
 		}
+		let httpReq: ReturnType<typeof http.get> | undefined;
 		const fetch = new Promise<{ streams: string[]; error?: string }>(resolve => {
 			const mod = target.protocol === 'https:' ? https : http;
-			const req = mod.get(target.toString(), res => {
+			httpReq = mod.get(target.toString(), res => {
 				let body = '';
 				res.on('data', (c: Buffer) => { body += c.toString(); });
 				res.on('end', () => {
@@ -533,10 +534,10 @@ class AgentDvr extends utils.Adapter {
 				});
 				res.on('error', (e: Error) => resolve({ streams: [], error: `Stream-Fehler: ${e.message}` }));
 			});
-			req.on('error', (e: Error) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
+			httpReq.on('error', (e: Error) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
 		});
-		const timeout = new Promise<{ streams: string[]; error?: string }>(res =>
-			setTimeout(() => res({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` }), 3000));
+		const timeout = new Promise<{ streams: string[]; error?: string }>(resolve =>
+			setTimeout(() => { httpReq?.destroy(); resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` }); }, 3000));
 		return Promise.race([fetch, timeout]);
 	}
 
