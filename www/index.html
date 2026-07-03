@@ -241,6 +241,13 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
+/* ── Source selector ── */
+#src-sel{display:flex;gap:0;background:var(--s2);border:1px solid var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.src-btn{background:none;border:none;color:var(--muted);padding:4px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.src-btn:hover{color:var(--text)}
+.src-btn.active{background:var(--accent);color:#fff}
+.chip-sep{width:1px;height:18px;background:var(--border2);flex-shrink:0;margin:0 4px;align-self:center}
+
 /* ── WebRTC video in tiles ── */
 .cam-tile video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
 
@@ -280,7 +287,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Live -->
   <div id="view-live" class="view active">
     <div id="info-banner"></div>
-    <div id="chip-bar"></div>
+    <div id="chip-bar">
+      <div id="src-sel">
+        <button class="src-btn active" id="src-agentdvr" onclick="setLiveSource('agentdvr')">AgentDVR</button>
+        <button class="src-btn" id="src-go2rtc" onclick="setLiveSource('go2rtc')">go2rtc</button>
+      </div>
+    </div>
     <div id="cam-grid"></div>
   </div>
 
@@ -725,6 +737,8 @@ let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
 const flvPlayers = {}; // camKey → flvjs.Player
+let liveSource   = localStorage.getItem('advr_src') || 'agentdvr'; // 'agentdvr' | 'go2rtc'
+let go2rtcStreams = [];
 
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
@@ -840,14 +854,14 @@ async function loadData() {
     if (!n) {
       showBanner(t('bannerNoCameras'), true);
       sbar(t('sbarNoCameras') + INST, true);
-      return;
+    } else {
+      hideBanner();
+      sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
+      buildRecCamSel();
+      trySocket();
     }
-    hideBanner();
-    sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
     syncChips();
     syncGrid();
-    buildRecCamSel();
-    trySocket();
     if (!refreshTimer) showView(CFG.dashDefaultView || 'live'); // only on first load
     // Periodic refresh
     if (refreshTimer) clearInterval(refreshTimer);
@@ -904,11 +918,35 @@ function showView(name) {
   if (name === 'live') updateLayout();
 }
 
+/* ─────────────────────────── Source selector ───────────────── */
+function setLiveSource(src) {
+  if (liveSource === src) return;
+  liveSource = src;
+  localStorage.setItem('advr_src', src);
+  document.getElementById('src-agentdvr').classList.toggle('active', src === 'agentdvr');
+  document.getElementById('src-go2rtc').classList.toggle('active', src === 'go2rtc');
+  // disconnect all running streams in grid
+  document.querySelectorAll('#cam-grid video[data-stream]').forEach(v => disconnectWebRTC(v));
+  document.querySelectorAll('#cam-grid video').forEach(v => {
+    if (v.dataset.camKey) destroyFlvPlayer(v.dataset.camKey);
+  });
+  syncChips();
+  syncGrid();
+}
+
 /* ─────────────────────────── Chips ─────────────────────────── */
 function syncChips() {
+  // Restore source selector (innerHTML was not reset, so just update button states)
+  document.getElementById('src-agentdvr').classList.toggle('active', liveSource === 'agentdvr');
+  document.getElementById('src-go2rtc').classList.toggle('active', liveSource === 'go2rtc');
+
+  // Remove old camera chips (everything after the src-sel)
   const bar = document.getElementById('chip-bar');
-  bar.innerHTML = '';
-  if (!Object.keys(cameras).length) return;
+  [...bar.children].forEach(c => { if (c.id !== 'src-sel') c.remove(); });
+
+  if (liveSource !== 'agentdvr' || !Object.keys(cameras).length) return;
+
+  const sep = document.createElement('span'); sep.className = 'chip-sep'; bar.appendChild(sep);
   addChip(bar, t('tagAll'), hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
   Object.entries(cameras).forEach(([k, cam]) => {
     addChip(bar, cam.name, !hidden.has(k), () => {
@@ -927,6 +965,8 @@ function save() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden]
 
 /* ─────────────────────────── Camera grid (smart update) ────── */
 function syncGrid() {
+  if (liveSource === 'go2rtc') { loadGo2rtcGrid(); return; }
+
   const grid = document.getElementById('cam-grid');
   const want = Object.keys(cameras).filter(k => {
     if (hidden.has(k)) return false;
@@ -958,6 +998,84 @@ function syncGrid() {
       </svg>Keine Kameras sichtbar</div>`;
   }
   updateLayout();
+}
+
+/* ─────────────────────────── go2rtc grid ───────────────────── */
+async function loadGo2rtcGrid() {
+  const grid = document.getElementById('cam-grid');
+  // Disconnect AgentDVR streams still alive, then clear
+  grid.querySelectorAll('.cam-tile[data-cam]').forEach(t => {
+    t.querySelectorAll('video').forEach(v => { disconnectWebRTC(v); destroyFlvPlayer(v.dataset.camKey || ''); });
+    t.remove();
+  });
+
+  try {
+    const r = await fetch('/agent-dvr/api/go2rtc/streams', { signal: AbortSignal.timeout(5000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    go2rtcStreams = (d.streams || []).sort();
+  } catch (_) { go2rtcStreams = []; }
+
+  grid.innerHTML = '';
+  if (!go2rtcStreams.length) {
+    grid.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Keine go2rtc-Streams</div>';
+    return;
+  }
+  go2rtcStreams.forEach(name => grid.appendChild(makeGo2rtcTile(name)));
+  updateLayout();
+}
+
+function makeGo2rtcTile(streamName) {
+  const tile = document.createElement('div');
+  tile.className = 'cam-tile'; tile.dataset.g2r = streamName;
+
+  const vid = document.createElement('video');
+  vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+  vid.dataset.stream = streamName;
+  connectWebRTC(vid, CFG.go2rtcUrl, streamName);
+
+  const bottom = document.createElement('div'); bottom.className = 'cam-bottom';
+  const name   = document.createElement('div'); name.className   = 'cam-name'; name.textContent = streamName;
+  bottom.appendChild(name);
+
+  const btnBox = document.createElement('div'); btnBox.className = 'tile-btns';
+  const muteBtn = document.createElement('div');
+  muteBtn.className = 'tile-btn mute-btn'; muteBtn.title = t('audioOn');
+  muteBtn.innerHTML = SVG_AUDIO_OFF;
+  muteBtn.addEventListener('click', e => { e.stopPropagation(); applyMuteState(vid, muteBtn, !vid.muted); });
+  btnBox.appendChild(muteBtn);
+
+  tile.appendChild(btnBox);
+  tile.append(vid, bottom);
+
+  vid.onclick    = () => openGo2rtcFs(streamName);
+  bottom.onclick = () => openGo2rtcFs(streamName);
+  tile.onclick   = e => { if (e.target === tile) openGo2rtcFs(streamName); };
+  return tile;
+}
+
+function openGo2rtcFs(streamName) {
+  const fi = document.getElementById('fs-img');
+  const fv = document.getElementById('fs-vid');
+  const fs = document.getElementById('fs-panel');
+  fi.src = ''; disconnectWebRTC(fv);
+  fi.style.display  = 'none';
+  fv.style.display  = 'block';
+  fv.style.objectFit = 'contain';
+  fv.muted = true;
+  connectWebRTC(fv, CFG.go2rtcUrl, streamName);
+  document.getElementById('fs-name').textContent = streamName;
+  fs.dataset.cam = '';
+  const btnBox = document.getElementById('fs-btns');
+  btnBox.innerHTML = '';
+  const muteBtn = document.createElement('div');
+  muteBtn.className = 'tile-btn mute-btn';
+  applyMuteState(fv, muteBtn, true);
+  muteBtn.addEventListener('click', e => { e.stopPropagation(); applyMuteState(fv, muteBtn, !fv.muted); });
+  btnBox.appendChild(muteBtn);
+  document.getElementById('fs-body').querySelectorAll('.ptz-overlay').forEach(o => o.remove());
+  fs.classList.remove('recording','detected','alerted');
+  fs.classList.add('open');
 }
 
 function makeTile(key, cam) {
@@ -1793,6 +1911,9 @@ function disconnectWebRTC(vid) {
 
 /* ─────────────────────────── Boot ──────────────────────────── */
 applyDashTranslations();
+// Restore saved source selection before first load
+document.getElementById('src-agentdvr').classList.toggle('active', liveSource === 'agentdvr');
+document.getElementById('src-go2rtc').classList.toggle('active', liveSource === 'go2rtc');
 loadConfig().then(() => loadData()).then(() => ensureLayoutObserver());
 </script>
 <script src="/socket.io/socket.io.js"></script>
