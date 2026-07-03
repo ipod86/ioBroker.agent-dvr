@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint",
   "cfgDashBtnsVisible": "Buttons immer sichtbar",
   "cfgDashBtnsVisible_tt": "Aufnahme- und PTZ-Button immer anzeigen (sonst nur bei Hover)",
+  "hdrCameraStreams": "Stream-Zuweisung",
   "hdrGo2rtc": "go2rtc WebRTC-Streams",
   "cfgDashStreamType": "Stream-Typ Live",
   "cfgDashStreamType_tt": "Stream-Technologie für die Live-Dashboard-Kacheln",

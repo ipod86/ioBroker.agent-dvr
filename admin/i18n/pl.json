@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Róg kafelka nagrania, w którym pojawia się odznaka tagu",
   "cfgDashBtnsVisible": "Przyciski zawsze widoczne",
   "cfgDashBtnsVisible_tt": "Zawsze pokazuj przyciski nagrywania i PTZ (w przeciwnym razie tylko po najechaniu)",
+  "hdrCameraStreams": "Przypisanie strumieni",
   "hdrGo2rtc": "Strumienie WebRTC go2rtc",
   "cfgDashStreamType": "Typ strumienia na żywo",
   "cfgDashStreamType_tt": "Wybierz technologię strumieniowania dla kafelków panelu na żywo",

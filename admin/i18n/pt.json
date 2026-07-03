@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Canto do bloco de gravação onde o badge de etiqueta aparece",
   "cfgDashBtnsVisible": "Botões sempre visíveis",
   "cfgDashBtnsVisible_tt": "Mostrar sempre os botões de gravação e PTZ (caso contrário, só ao passar o rato)",
+  "hdrCameraStreams": "Atribuição de streams",
   "hdrGo2rtc": "Streams WebRTC go2rtc",
   "cfgDashStreamType": "Tipo de stream ao vivo",
   "cfgDashStreamType_tt": "Escolha a tecnologia de streaming para os painéis do dashboard ao vivo",

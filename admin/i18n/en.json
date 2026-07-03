@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
   "cfgDashBtnsVisible": "Buttons always visible",
   "cfgDashBtnsVisible_tt": "Always show record and PTZ buttons on camera tile (otherwise only visible on hover)",
+  "hdrCameraStreams": "Stream Assignment",
   "hdrGo2rtc": "go2rtc WebRTC Streams",
   "cfgDashStreamType": "Live stream type",
   "cfgDashStreamType_tt": "Choose the stream technology used for the live dashboard tiles",

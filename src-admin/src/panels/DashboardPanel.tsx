@@ -49,6 +49,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
     const [loading, setLoading] = useState(false);
 
     const cameraStreams: Record<string, string> = native.cameraStreams || {};
+    const anyGo2rtc = Object.values(cameraStreams).some(v => v && v !== 'mjpeg' && v !== 'mp4');
 
     function getCameraStream(camKey: string): string {
         return cameraStreams[camKey] ?? 'mjpeg';
@@ -203,18 +204,11 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                 ))}
             </Grid>
 
-            {/* ── go2rtc URL ── */}
-            <SectionHeader textKey="hdrGo2rtc" />
-            <Grid container spacing={2}>
-                <Grid item xs={12} sm={8} md={6} lg={5}>
-                    <FormField type="text" labelKey="cfgGo2rtcUrl" helpKey="cfgGo2rtcUrl_tt" value={native.go2rtcUrl ?? ''} onChange={v => onChange('go2rtcUrl', v)} />
-                </Grid>
-            </Grid>
-
             {/* ── Kamera-Stream-Tabelle ── */}
-            <Box sx={{ mt: 3, mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="h6" sx={{ borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, flex: 1 }}>
-                    {I18n.t('cfgGo2rtcMapping')}
+            <SectionHeader textKey="hdrCameraStreams" />
+            <Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ flex: 1 }}>
+                    {I18n.t('cfgGo2rtcMapping_tt')}
                 </Typography>
                 <Tooltip title="Neu laden">
                     <IconButton size="small" onClick={() => void fetchData()} disabled={loading}>
@@ -223,7 +217,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                 </Tooltip>
             </Box>
 
-            {fetchError && <Alert severity="warning" sx={{ mb: 2 }}>{fetchError}</Alert>}
+            {fetchError && <Alert severity="warning" sx={{ mb: 1 }}>{fetchError}</Alert>}
 
             {loading && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -262,8 +256,18 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                                                 value={getCameraStream(cam.key)}
                                                 onChange={e => setCameraStream(cam.key, e.target.value as string)}
                                             >
-                                                <MenuItem value="mjpeg">MJPEG</MenuItem>
-                                                <MenuItem value="mp4">MP4 / FLV (mit Ton)</MenuItem>
+                                                <MenuItem value="mjpeg">
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        MJPEG
+                                                        <Chip label="AgentDVR" size="small" variant="outlined" />
+                                                    </Box>
+                                                </MenuItem>
+                                                <MenuItem value="mp4">
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                        MP4 / FLV (mit Ton)
+                                                        <Chip label="AgentDVR" size="small" variant="outlined" />
+                                                    </Box>
+                                                </MenuItem>
                                                 {streams.length > 0 && <Divider />}
                                                 {streams.map(s => (
                                                     <MenuItem key={s} value={s}>
@@ -281,6 +285,17 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
                         </TableBody>
                     </Table>
                 </TableContainer>
+            )}
+            {/* ── go2rtc URL — nur sichtbar wenn mind. eine Kamera go2rtc nutzt ── */}
+            {anyGo2rtc && (
+                <>
+                    <SectionHeader textKey="hdrGo2rtc" />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={8} md={6} lg={5}>
+                            <FormField type="text" labelKey="cfgGo2rtcUrl" helpKey="cfgGo2rtcUrl_tt" value={native.go2rtcUrl ?? ''} onChange={v => onChange('go2rtcUrl', v)} />
+                        </Grid>
+                    </Grid>
+                </>
             )}
         </div>
     );

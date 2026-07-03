@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Угол плитки записи, где появляется значок тега",
   "cfgDashBtnsVisible": "Кнопки всегда видны",
   "cfgDashBtnsVisible_tt": "Всегда показывать кнопки записи и PTZ (иначе только при наведении)",
+  "hdrCameraStreams": "Назначение потоков",
   "hdrGo2rtc": "go2rtc WebRTC-потоки",
   "cfgDashStreamType": "Тип прямого потока",
   "cfgDashStreamType_tt": "Выберите технологию потоковой передачи для плиток живой панели",

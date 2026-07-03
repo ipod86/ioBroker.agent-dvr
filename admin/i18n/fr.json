@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Coin de la tuile d'enregistrement où apparaît le badge d'étiquette",
   "cfgDashBtnsVisible": "Boutons toujours visibles",
   "cfgDashBtnsVisible_tt": "Toujours afficher les boutons d'enregistrement et PTZ (sinon visible au survol seulement)",
+  "hdrCameraStreams": "Attribution des flux",
   "hdrGo2rtc": "Flux WebRTC go2rtc",
   "cfgDashStreamType": "Type de flux en direct",
   "cfgDashStreamType_tt": "Choisissez la technologie de streaming pour les tuiles du tableau de bord en direct",

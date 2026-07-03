@@ -125,6 +125,7 @@
   "cfgDashTagPosition_tt": "Hoek van de opnametegel waar de tagbadge verschijnt",
   "cfgDashBtnsVisible": "Knoppen altijd zichtbaar",
   "cfgDashBtnsVisible_tt": "Opname- en PTZ-knoppen altijd tonen (anders alleen bij hover)",
+  "hdrCameraStreams": "Stream-toewijzing",
   "hdrGo2rtc": "go2rtc WebRTC-streams",
   "cfgDashStreamType": "Live stream type",
   "cfgDashStreamType_tt": "Kies de streamingtechnologie voor de live dashboard-tegels",
