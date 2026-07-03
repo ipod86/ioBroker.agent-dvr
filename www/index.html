@@ -37,6 +37,13 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 /* ── Live view ── */
 #view-live{padding:var(--gap);gap:var(--gap);background:var(--bg)}
+#chip-bar{flex-shrink:0;display:flex;gap:5px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
+#chip-bar::-webkit-scrollbar{display:none}
+.chip{background:var(--s1);border:1px solid var(--border);border-radius:99px;
+  padding:4px 12px;font-size:12px;cursor:pointer;user-select:none;color:var(--muted);
+  transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
@@ -274,6 +281,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Live -->
   <div id="view-live" class="view active">
     <div id="info-banner"></div>
+    <div id="chip-bar"></div>
     <div id="cam-grid"></div>
   </div>
 
@@ -750,6 +758,7 @@ function applyDashTranslations() {
 
 /* ─────────────────────────── State ─────────────────────────── */
 let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
+let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
 let recFilters  = { tag: '' };
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
@@ -905,6 +914,7 @@ async function loadData() {
       buildRecCamSel();
       trySocket();
     }
+    syncChips();
     syncGrid();
     if (!refreshTimer) showView(CFG.dashDefaultView || 'live'); // only on first load
     // Periodic refresh
@@ -962,10 +972,32 @@ function showView(name) {
   if (name === 'live') updateLayout();
 }
 
+/* ─────────────────────────── Chips ─────────────────────────── */
+function syncChips() {
+  const bar = document.getElementById('chip-bar');
+  bar.innerHTML = '';
+  if (!Object.keys(cameras).length) return;
+  addChip(bar, t('tagAll'), hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
+  Object.entries(cameras).forEach(([k, cam]) => {
+    addChip(bar, cam.name, !hidden.has(k), () => {
+      hidden.has(k) ? hidden.delete(k) : hidden.add(k);
+      save(); syncChips(); syncGrid();
+    });
+  });
+}
+function addChip(p, label, on, fn) {
+  const c = document.createElement('span');
+  c.className = 'chip' + (on ? ' on' : '');
+  c.textContent = label; c.onclick = fn;
+  p.appendChild(c);
+}
+function save() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
+
 /* ─────────────────────────── Camera grid (smart update) ────── */
 function syncGrid() {
   const grid = document.getElementById('cam-grid');
   const want = Object.keys(cameras).filter(k => {
+    if (hidden.has(k)) return false;
     if (!CFG.dashShowOffline && !cameras[k].online) return false;
     return true;
   });
