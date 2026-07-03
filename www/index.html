@@ -809,14 +809,6 @@ function createFlvPlayer(vid, url, key) {
     flvShowStatus(vid, 'ERR ' + errType + ': ' + (errDetail && errDetail.msg ? errDetail.msg : JSON.stringify(errDetail)));
   });
   p.on(flvjs.Events.MEDIA_INFO, () => { flvShowStatus(vid, ''); });
-
-  vid.addEventListener('loadedmetadata', function onMeta() {
-    vid.removeEventListener('loadedmetadata', onMeta);
-    if (vid.videoWidth && vid.videoHeight) {
-      flvShowStatus(vid, vid.videoWidth + '×' + vid.videoHeight);
-      setTimeout(() => flvShowStatus(vid, ''), 5000);
-    }
-  });
   p.attachMediaElement(vid);
   p.load();
   p.play();
