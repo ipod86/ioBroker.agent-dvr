@@ -104,7 +104,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 
 		if (!ip) {
 			setCameras([]);
-			setFetchError(`${I18n.t('cfgIp')} fehlt`);
+			setFetchError(I18n.t('cfgIpMissing'));
 			return;
 		}
 
@@ -115,7 +115,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 			let cams: Camera[] = [];
 			let strms: string[] = [];
 
-			// --- Kameras von AgentDVR ---
+			// --- Cameras from AgentDVR ---
 			const controller = new AbortController();
 			const timer = setTimeout(() => controller.abort(), 4000);
 			try {
@@ -414,7 +414,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 					severity="info"
 					sx={{ mb: 2 }}
 				>
-					Keine Kameras gefunden — Adapter konfiguriert und mindestens einmal gepollt?
+					{I18n.t('cfgNoCamerasFound')}
 				</Alert>
 			)}
 

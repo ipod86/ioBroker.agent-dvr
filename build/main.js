@@ -386,20 +386,20 @@ class AgentDvr extends utils.Adapter {
       rows.push({ source: "go2rtc", name: s });
     }
     if (!rows.length) {
-      rows.push({ source: "\u2014", name: "Keine Quellen gefunden (Adapter hat noch nicht gepollt)" });
+      rows.push({ source: "\u2014", name: "No sources found (adapter has not polled yet)" });
     }
     return { result: rows };
   }
   fetchGo2rtcStreams(overrideUrl) {
     const url = (overrideUrl || this.config.go2rtcUrl || "").replace(/^https:\/\//i, "http://");
     if (!url) {
-      return Promise.resolve({ streams: [], error: "go2rtcUrl nicht konfiguriert" });
+      return Promise.resolve({ streams: [], error: "go2rtcUrl not configured" });
     }
     let target;
     try {
       target = new URL("/api/streams", url);
     } catch {
-      return Promise.resolve({ streams: [], error: `Ung\xFCltige URL: ${url}` });
+      return Promise.resolve({ streams: [], error: `Invalid URL: ${url}` });
     }
     let httpReq;
     const fetch = new Promise((resolve) => {
@@ -415,20 +415,23 @@ class AgentDvr extends utils.Adapter {
             const streams = Object.keys(parsed || {});
             resolve({
               streams,
-              error: streams.length === 0 ? "go2rtc antwortet, aber keine Streams konfiguriert" : void 0
+              error: streams.length === 0 ? "go2rtc reachable but no streams configured" : void 0
             });
           } catch {
-            resolve({ streams: [], error: `Ung\xFCltige JSON-Antwort von go2rtc (HTTP ${res.statusCode})` });
+            resolve({
+              streams: [],
+              error: `Invalid JSON response from go2rtc (HTTP ${res.statusCode})`
+            });
           }
         });
-        res.on("error", (e) => resolve({ streams: [], error: `Stream-Fehler: ${e.message}` }));
+        res.on("error", (e) => resolve({ streams: [], error: `Stream error: ${e.message}` }));
       });
-      httpReq.on("error", (e) => resolve({ streams: [], error: `Verbindungsfehler: ${e.message}` }));
+      httpReq.on("error", (e) => resolve({ streams: [], error: `Connection error: ${e.message}` }));
     });
     const timeout = new Promise(
       (resolve) => this.setTimeout(() => {
         httpReq == null ? void 0 : httpReq.destroy();
-        resolve({ streams: [], error: `Timeout beim Abrufen von ${target.toString()}` });
+        resolve({ streams: [], error: `Timeout fetching ${target.toString()}` });
       }, 3e3)
     );
     return Promise.race([fetch, timeout]);

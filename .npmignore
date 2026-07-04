@@ -1,0 +1,24 @@
+# Development source — not needed at runtime
+src/
+src-admin/
+
+# Tests
+test/
+*.test.js
+*.test.ts
+
+# Build tools / config
+tsconfig*.json
+eslint.config.mjs
+.releaseconfig.json
+.dev-server/
+.vscode/
+
+# Misc
+*.code-workspace
+nbproject
+Thumbs.db
+.commitinfo
+admin/i18n/flat.txt
+admin/i18n/*/flat.txt
+admin/index.html

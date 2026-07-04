@@ -129,5 +129,7 @@
   "hdrGo2rtc": "go2rtc WebRTC 流",
   "cfgGo2rtcUrl": "go2rtc URL",
   "cfgGo2rtcUrl_tt": "go2rtc 服务器的基础 URL，例如 http://192.168.1.1:1984",
-  "cfgGo2rtcMapping_tt": "为每个摄像头选择流源：MJPEG、MP4/FLV（通过 AgentDVR）或 go2rtc 流。"
+  "cfgGo2rtcMapping_tt": "为每个摄像头选择流来源：MJPEG、MP4/FLV（通过AgentDVR）或go2rtc流。",
+  "cfgIpMissing": "AgentDVR IP地址为必填项",
+  "cfgNoCamerasFound": "未找到摄像头 — 适配器是否已配置并至少轮询过一次？"
 }

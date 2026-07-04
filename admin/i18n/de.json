@@ -129,5 +129,7 @@
   "hdrGo2rtc": "go2rtc WebRTC-Streams",
   "cfgGo2rtcUrl": "go2rtc URL",
   "cfgGo2rtcUrl_tt": "Basis-URL des go2rtc-Servers, z. B. http://192.168.1.1:1984",
-  "cfgGo2rtcMapping_tt": "Wähle die Stream-Quelle je Kamera: MJPEG oder MP4/FLV (über AgentDVR) oder ein go2rtc-Stream."
+  "cfgGo2rtcMapping_tt": "Wähle die Stream-Quelle je Kamera: MJPEG oder MP4/FLV (über AgentDVR) oder ein go2rtc-Stream.",
+  "cfgIpMissing": "AgentDVR-IP-Adresse ist erforderlich",
+  "cfgNoCamerasFound": "Keine Kameras gefunden — Adapter konfiguriert und mindestens einmal gepollt?"
 }
