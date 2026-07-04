@@ -335,7 +335,7 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.1 (2026-07-04)
 * (ipod86) fix: translate all German user-facing strings and error messages to English
 * (ipod86) fix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list
 * (ipod86) chore: add .npmignore to exclude src/ and src-admin/ from npm package
@@ -373,10 +373,6 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 * (ipod86) feat: dashboard — real-time motion and alert indicators via Socket.io
 * (ipod86) feat: dashboard — recording timeline view
 * (ipod86) feat: dashboard — PTZ and record buttons in fullscreen panel
-
-### 0.0.4 (2026-06-27)
-* (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)
-* (ipod86) fix: profile selector role corrected to `level` (E1011)
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "fix: translate all German user-facing strings and error messages to English\nfix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list\nchore: add .npmignore to exclude src/ and src-admin/ from npm package",
+        "de": "Behebung: Alle deutschen Benutzertexte und Fehlermeldungen ins Englische übersetzen.\nBehoben: DashboardPanel zeigt nun i18n-konforme Meldungen für fehlende IP-Adressen und leere Kameralisten an.\nAufgabe: Füge .npmignore hinzu, um src/ und src-admin/ vom npm-Paket auszuschließen",
+        "ru": "Исправление: перевести все текстовые сообщения и сообщения об ошибках, отображаемые пользователям на немецком языке, на английский.\nИсправление: В панели управления DashboardPanel отображаются сообщения с поддержкой интернационализации для отсутствующего IP-адреса и пустого списка камер.\nЗадача: добавить файл .npmignore, чтобы исключить папки src/ и src-admin/ из списка пакетов npm.",
+        "pt": "Correção: traduzir todas as mensagens de texto e de erro exibidas ao usuário em alemão para o inglês.\nCorreção: O DashboardPanel exibe mensagens compatíveis com i18n para IP ausente e lista de câmeras vazia.\ntarefa: adicione .npmignore para excluir src/ e src-admin/ do pacote npm",
+        "nl": "Oplossing: vertaal alle Duitse gebruikersteksten en foutmeldingen naar het Engels.\nOpgelost: DashboardPanel geeft i18n-compatibele meldingen weer voor ontbrekende IP-adressen en een lege cameralijst.\nTaak: voeg .npmignore toe om src/ en src-admin/ uit te sluiten van het npm-pakket.",
+        "fr": "Correction : traduire en anglais toutes les chaînes de caractères et les messages d'erreur destinés aux utilisateurs en allemand\nCorrection : Le panneau de bord affiche des messages compatibles avec l'internationalisation (i18n) pour les adresses IP manquantes et les listes de caméras vides.\nTâche : ajouter .npmignore pour exclure src/ et src-admin/ du package npm",
+        "it": "Correzione: tradurre in inglese tutte le stringhe e i messaggi di errore visualizzati dall'utente in tedesco.\nCorrezione: DashboardPanel mostra messaggi ottimizzati per l'internazionalizzazione (i18n) in caso di IP mancante e elenco di telecamere vuoto.\ncompito: aggiungi .npmignore per escludere src/ e src-admin/ dal pacchetto npm",
+        "es": "Corrección: traducir todas las cadenas de texto y mensajes de error dirigidos al usuario en alemán al inglés.\nCorrección: DashboardPanel muestra mensajes compatibles con i18n para direcciones IP faltantes y listas de cámaras vacías.\ntarea: agregar .npmignore para excluir src/ y src-admin/ del paquete npm",
+        "pl": "poprawka: przetłumacz wszystkie niemieckie ciągi znaków i komunikaty o błędach na angielski\nnaprawiono: Panel sterowania wyświetla komunikaty obsługujące protokół i18n w przypadku braku adresu IP i pustej listy kamer\nzadanie: dodaj .npmignore, aby wykluczyć src/ i src-admin/ z pakietu npm",
+        "uk": "виправлення: переклад усіх рядків та повідомлень про помилки, що використовуються користувачем з Німеччини, на англійську мову\nвиправлення: DashboardPanel показує повідомлення про i18n-залежність для відсутніх IP-адрес та порожнього списку камер.\nзавдання: додати .npmignore, щоб виключити src/ та src-admin/ з npm-пакета",
+        "zh-cn": "修复：将所有面向用户的德语字符串和错误消息翻译成英语\n修复：当缺少 IP 地址或摄像头列表为空时，仪表盘面板会显示国际化提示信息\n任务：添加 .npmignore 文件，将 src/ 和 src-admin/ 目录从 npm 包中排除。"
+      },
       "0.2.0": {
         "en": "feat: dashboard camera filter badges with localStorage persistence\nfeat: FLV/MP4 stream auto-reconnect after network error (5 s delay)\nfeat: go2rtc WebSocket auto-reconnect after unexpected disconnect (5 s delay)\nfeat: go2rtc stall detection — retry if stream stays black after 10 s\nfix: cameraStreams missing from io-package.json native defaults (settings not saved)\nfix: adminUI.config \"custom\" → \"materialize\" (404 on adapter settings page)\nfix: remove resolution overlay on FLV stream load\nfix: remove CDN fallback for flv.js — local copy only\nfix: remove AgentDVR/go2rtc section headers from dashboard grid\nfix: cfgGo2rtcMapping_tt tooltip corrected in all 11 languages\nfix: plain setTimeout() replaced by this.setTimeout() (E5005)\nfix: remove obsolete jsonConfig.json — settings handled by React admin (W5046)\nchore: exclude admin/ directory from ESLint to prevent OOM in CI\ndocs: rewrite README and README.de with all tabs and settings documented",
         "de": "Funktion: Filter-Badges für Dashcams mit Speicherung im lokalen Speicher\nFunktion: Automatische Wiederverbindung des FLV/MP4-Streams nach Netzwerkfehlern (5 Sekunden Verzögerung)\nFunktion: Automatische Wiederverbindung von go2rtc-WebSockets nach unerwarteter Trennung (5 Sekunden Verzögerung)\nFunktion: go2rtc-Stall-Erkennung – Wiederholungsversuch, falls der Stream nach 10 Sekunden schwarz bleibt\nBehoben: cameraStreams fehlen in den nativen Standardeinstellungen von io-package.json (Einstellungen werden nicht gespeichert)\nBehebung: adminUI.config \"custom\" → \"materialize\" (404 auf der Adaptereinstellungsseite)\nBehoben: Auflösungsüberlagerung beim Laden des FLV-Streams entfernt\nBehebung: CDN-Fallback für flv.js entfernen – nur lokale Kopie\nBehebung: Entfernen der Abschnittsüberschriften AgentDVR/go2rtc aus dem Dashboard-Raster\nBehoben: Tooltip für cfgGo2rtcMapping_tt in allen 11 Sprachen korrigiert.\nBehebung: Die einfache setTimeout()-Funktion wurde durch this.setTimeout() ersetzt (E5005)\nBehebung: Entfernen der veralteten Datei jsonConfig.json – Einstellungen werden vom React-Admin verwaltet (W5046)\nAufgabe: Das Verzeichnis „admin/“ von ESLint ausschließen, um einen Speichermangel in der CI zu verhindern.\nDokumentation: README und README.de neu schreiben und alle Tabs und Einstellungen dokumentieren",
@@ -80,19 +93,6 @@
         "pl": "selektor profilu: pobieranie dostępnych profili przez getProfiles, zapisywalny dropdown",
         "uk": "вибір профілю: отримання доступних профілів через getProfiles, записуваний список",
         "zh-cn": "配置文件选择器：通过 getProfiles 获取可用配置文件，可写下拉菜单"
-      },
-      "0.0.2": {
-        "en": "setup npm trusted publishing and fix repochecker findings",
-        "de": "npm Trusted Publishing eingerichtet und Repochecker-Findings behoben",
-        "ru": "настройка npm Trusted Publishing и исправление находок репочекера",
-        "pt": "configuração de publicação confiável npm e correção de resultados do repochecker",
-        "nl": "npm trusted publishing instellen en repochecker-bevindingen corrigeren",
-        "fr": "configuration de la publication de confiance npm et correction des résultats du repochecker",
-        "it": "configurazione della pubblicazione attendibile npm e correzione dei risultati del repochecker",
-        "es": "configuración de publicación de confianza npm y corrección de hallazgos del repochecker",
-        "pl": "konfiguracja zaufanego publikowania npm i poprawki wyników repocheckera",
-        "uk": "налаштування довіреної публікації npm та виправлення знахідок репочекера",
-        "zh-cn": "设置 npm 可信发布并修复 repochecker 问题"
       }
     },
     "titleLang": {

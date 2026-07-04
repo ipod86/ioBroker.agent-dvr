@@ -1,6 +1,10 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.0.4 (2026-06-27)
+* (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)
+* (ipod86) fix: profile selector role corrected to `level` (E1011)
+
 ## 0.0.3 (2026-06-27)
 * (ipod86) feat: profile selector — reads profiles from getObjects, writable dropdown with active profile reflected on every poll
 * (ipod86) feat: snapshot_b64 state (media.picture) always present per camera + manual refresh button; auto-poll optional
