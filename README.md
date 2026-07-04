@@ -335,6 +335,11 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) fix: translate all German user-facing strings and error messages to English
+* (ipod86) fix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list
+* (ipod86) chore: add .npmignore to exclude src/ and src-admin/ from npm package
+
 ### 0.2.0 (2026-07-04)
 * (ipod86) feat: dashboard camera filter badges with localStorage persistence
 * (ipod86) feat: FLV/MP4 stream auto-reconnect after network error (5 s delay)

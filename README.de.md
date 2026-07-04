@@ -331,6 +331,11 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) fix: alle deutschen Benutzer-Strings und Fehlermeldungen auf Englisch übersetzt
+* (ipod86) fix: DashboardPanel zeigt i18n-fähige Meldungen bei fehlender IP und leerer Kameraliste
+* (ipod86) chore: .npmignore hinzugefügt — src/ und src-admin/ werden nicht ans npm-Paket ausgeliefert
+
+### 0.2.0 (2026-07-04)
 * (ipod86) feat: Kamera-Filter-Badges im Dashboard mit localStorage-Persistenz
 * (ipod86) feat: FLV/MP4-Stream automatischer Reconnect nach Netzwerkfehler (5 s Verzögerung)
 * (ipod86) feat: go2rtc WebSocket automatischer Reconnect nach unerwartetem Verbindungsabbruch (5 s)

@@ -51,7 +51,7 @@ function parseCamerasFromObjects(json: any): Camera[] {
 		const ot = e.typeID ?? e.ot ?? e.objectTypeID ?? e.type;
 		if (ot !== 2) {
 			continue;
-		} // ot=2 = Kamera; ot=1 = Mikrofon → ausschließen
+		} // ot=2 = camera; ot=1 = microphone → exclude
 		// Sanitize OID same as adapter's sanitize() + deviceFolder() to ensure key matches ioBroker state path
 		const safeId = String(id)
 			.replace(/[\s.[\]*?"'`,;:/\\]+/g, '_')
