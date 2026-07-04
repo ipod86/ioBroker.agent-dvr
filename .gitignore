@@ -16,3 +16,6 @@ Thumbs.db
 # i18n intermediate files
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
+
+# vite build artifact (gets renamed to index_m.html by build script)
+admin/index.html
