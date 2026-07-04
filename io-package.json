@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "news": {
+      "0.2.2": {
+        "en": "fix: translate remaining German strings in DashboardPanel to English via I18n.t()\nfix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages\nchore: replace POSIX mv with cross-platform node rename in src-admin build script",
+        "de": "Behebung: Die verbleibenden deutschen Zeichenketten im DashboardPanel werden mithilfe von I18n.t() ins Englische übersetzt.\nBehebung: Hinzufügen der i18n-Schlüssel loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn und reload in allen 11 Sprachen\nAufgabe: Ersetzen Sie POSIX mv durch plattformübergreifendes Node-Rename im src-admin-Build-Skript.",
+        "ru": "Исправление: перевести оставшиеся немецкие строки в DashboardPanel на английский язык с помощью I18n.t()\nИсправление: добавлены ключи интернационализации loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload для всех 11 языков.\nЗадача: заменить POSIX mv на кроссплатформенное переименование узла в скрипте сборки src-admin.",
+        "pt": "Correção: traduzir as strings alemãs restantes no DashboardPanel para inglês usando I18n.t().\nCorreção: adicionar as chaves i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn e reload em todos os 11 idiomas.\nTarefa: substituir POSIX mv por renomear nó multiplataforma no script de compilação do src-admin",
+        "nl": "fix: vertaal de resterende Duitse strings in DashboardPanel naar het Engels via I18n.t()\nOplossing: voeg i18n-sleutels toe voor loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn en reload in alle 11 talen.\nTaak: vervang POSIX mv door platformonafhankelijke node rename in het src-admin buildscript",
+        "fr": "Correction : traduire les chaînes de caractères allemandes restantes dans DashboardPanel en anglais via I18n.t()\nCorrection : ajout des clés i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn et reload dans les 11 langues.\nTâche : remplacer la commande POSIX mv par une commande de renommage de nœud multiplateforme dans le script de compilation src-admin",
+        "it": "correzione: tradurre le stringhe tedesche rimanenti in DashboardPanel in inglese tramite I18n.t()\nCorrezione: aggiungi le chiavi i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, ricarica in tutte le 11 lingue\ncompito: sostituire POSIX mv con rename multipiattaforma node nello script di build src-admin",
+        "es": "Corrección: traducir las cadenas de texto alemanas restantes en DashboardPanel al inglés mediante I18n.t().\nCorrección: agregar las claves i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload en los 11 idiomas.\nTarea: reemplazar POSIX mv con node rename multiplataforma en el script de compilación de src-admin",
+        "pl": "naprawiono: przetłumacz pozostałe niemieckie ciągi znaków w DashboardPanel na angielski za pomocą I18n.t()\npoprawka: dodaj klucze i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, przeładuj we wszystkich 11 językach\nzadanie: zastąp POSIX mv zmianą nazwy węzła międzyplatformowego w skrypcie kompilacji src-admin",
+        "uk": "виправлення: перекладіть решту німецьких рядків у DashboardPanel на англійську мову через I18n.t()\nвиправлення: додано ключі i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, перезавантаження всіма 11 мовами\nзавдання: замінити POSIX mv на кросплатформне перейменування вузлів у скрипті збірки src-admin",
+        "zh-cn": "修复：使用 I18n.t() 将 DashboardPanel 中剩余的德语字符串翻译成英语\n修复：在所有 11 种语言中添加 i18n 键 loadingCamerasAndStreams、cfgCameraColumn、cfgStreamSourceColumn 和 reload\n任务：在 src-admin 构建脚本中，将 POSIX mv 替换为跨平台的节点重命名。"
+      },
       "0.2.1": {
         "en": "fix: translate all German user-facing strings and error messages to English\nfix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list\nchore: add .npmignore to exclude src/ and src-admin/ from npm package",
         "de": "Behebung: Alle deutschen Benutzertexte und Fehlermeldungen ins Englische übersetzen.\nBehoben: DashboardPanel zeigt nun i18n-konforme Meldungen für fehlende IP-Adressen und leere Kameralisten an.\nAufgabe: Füge .npmignore hinzu, um src/ und src-admin/ vom npm-Paket auszuschließen",
@@ -80,19 +93,6 @@
         "pl": "poprawiono role DP: snapshot_b64 role state, selektor profilu role level",
         "uk": "виправлено ролі DP: snapshot_b64 role state, вибір профілю role level",
         "zh-cn": "修正 DP 角色：snapshot_b64 角色 state，配置文件选择器角色 level"
-      },
-      "0.0.3": {
-        "en": "profile selector: fetch available profiles via getProfiles, writable dropdown",
-        "de": "Profil-Selektor: verfügbare Profile via getProfiles laden, beschreibbares Dropdown",
-        "ru": "селектор профилей: получение доступных профилей через getProfiles, редактируемый список",
-        "pt": "seletor de perfil: buscar perfis disponíveis via getProfiles, menu suspenso gravável",
-        "nl": "profielkiezer: beschikbare profielen ophalen via getProfiles, beschrijfbare keuzelijst",
-        "fr": "sélecteur de profil: récupérer les profils disponibles via getProfiles, liste déroulante modifiable",
-        "it": "selettore profilo: recupera profili disponibili tramite getProfiles, menu a discesa scrivibile",
-        "es": "selector de perfil: obtener perfiles disponibles via getProfiles, lista desplegable escribible",
-        "pl": "selektor profilu: pobieranie dostępnych profili przez getProfiles, zapisywalny dropdown",
-        "uk": "вибір профілю: отримання доступних профілів через getProfiles, записуваний список",
-        "zh-cn": "配置文件选择器：通过 getProfiles 获取可用配置文件，可写下拉菜单"
       }
     },
     "titleLang": {

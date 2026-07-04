@@ -335,7 +335,7 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.2 (2026-07-04)
 * (ipod86) fix: translate remaining German strings in DashboardPanel to English via I18n.t()
 * (ipod86) fix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages
 * (ipod86) chore: replace POSIX mv with cross-platform node rename in src-admin build script
@@ -368,16 +368,6 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 
 ### 0.0.6 (2026-07-01)
 * (ipod86) docs: add Live Dashboard and go2rtc WebRTC sections to README
-
-### 0.0.5 (2026-07-01)
-* (ipod86) feat: go2rtc WebRTC stream integration — per-camera mapping table in admin, ioBroker WebSocket proxy to bypass browser cross-origin restrictions
-* (ipod86) feat: auto-delete camera/microphone data points when device is removed from AgentDVR
-* (ipod86) feat: dedicated `status.*` data points per camera
-* (ipod86) feat: dashboard — full color theming, configurable tag-badge corner position
-* (ipod86) feat: dashboard — record/stop button on camera tiles and in fullscreen panel
-* (ipod86) feat: dashboard — real-time motion and alert indicators via Socket.io
-* (ipod86) feat: dashboard — recording timeline view
-* (ipod86) feat: dashboard — PTZ and record buttons in fullscreen panel
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
