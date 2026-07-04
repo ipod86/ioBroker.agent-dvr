@@ -335,7 +335,7 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.0 (2026-07-04)
 * (ipod86) feat: dashboard camera filter badges with localStorage persistence
 * (ipod86) feat: FLV/MP4 stream auto-reconnect after network error (5 s delay)
 * (ipod86) feat: go2rtc WebSocket auto-reconnect after unexpected disconnect (5 s delay)
@@ -372,10 +372,6 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 ### 0.0.4 (2026-06-27)
 * (ipod86) fix: snapshot_b64 role corrected to `state` (E1008)
 * (ipod86) fix: profile selector role corrected to `level` (E1011)
-
-### 0.0.3 (2026-06-27)
-* (ipod86) feat: profile selector — reads profiles from getObjects, writable dropdown with active profile reflected on every poll
-* (ipod86) feat: snapshot_b64 state (media.picture) always present per camera + manual refresh button; auto-poll optional
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
