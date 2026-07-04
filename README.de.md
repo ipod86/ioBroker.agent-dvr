@@ -324,6 +324,35 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 |-----------|-----|-----|-------------|
 | `overview` | string | R | HTML-Kachelraster aller Kameras |
 
+## Changelog
+
+<!--
+	Placeholder for the next version (at the beginning of the line):
+	### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
+* (ipod86) feat: Kamera-Filter-Badges im Dashboard mit localStorage-Persistenz
+* (ipod86) feat: FLV/MP4-Stream automatischer Reconnect nach Netzwerkfehler (5 s Verzögerung)
+* (ipod86) feat: go2rtc WebSocket automatischer Reconnect nach unerwartetem Verbindungsabbruch (5 s)
+* (ipod86) feat: go2rtc Stall-Erkennung — Retry wenn Stream nach 10 s schwarz bleibt
+* (ipod86) fix: cameraStreams fehlte in io-package.json native-Defaults (Einstellungen wurden nicht gespeichert)
+* (ipod86) fix: adminUI.config „custom" → „materialize" (404 auf der Adapter-Einstellungsseite)
+* (ipod86) fix: Auflösungsanzeige beim FLV-Stream-Laden entfernt
+* (ipod86) fix: CDN-Fallback für flv.js entfernt — nur lokale Kopie
+* (ipod86) fix: AgentDVR/go2rtc-Sektionsüberschriften aus dem Dashboard-Raster entfernt
+* (ipod86) fix: cfgGo2rtcMapping_tt Tooltip in allen 11 Sprachen korrigiert
+* (ipod86) fix: setTimeout() durch this.setTimeout() ersetzt (E5005)
+* (ipod86) fix: veraltete jsonConfig.json entfernt — Einstellungen werden durch React-Admin verwaltet (W5046)
+* (ipod86) chore: admin/-Verzeichnis aus ESLint ausgeschlossen (OOM im CI verhindert)
+* (ipod86) docs: README und README.de vollständig neu geschrieben mit allen Tabs und Einstellungen
+
+### 0.1.0 (2026-07-01)
+* (ipod86) feat: vollständige i18n im Live-Dashboard — alle UI-Texte in 11 Sprachen übersetzt
+* (ipod86) fix: fehlende sm/md/lg/xl-Größenattribute in go2rtcMapping-Tabelle ergänzt (E5507)
+* (ipod86) fix: fehlende Admin-i18n-Keys in 9 Sprachen übersetzt (E5606)
+
+[Ältere Changelog-Einträge in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
+
 ## Lizenz
 MIT License
 
