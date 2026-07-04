@@ -18,6 +18,6 @@
     },
     "scripts": {
         "start": "vite",
-        "build": "vite build && mv ../admin/index.html ../admin/index_m.html"
+        "build": "vite build && node -e \"require('fs').renameSync('../admin/index.html','../admin/index_m.html')\""
     }
 }

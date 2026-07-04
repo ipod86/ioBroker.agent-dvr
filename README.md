@@ -335,6 +335,11 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) fix: translate remaining German strings in DashboardPanel to English via I18n.t()
+* (ipod86) fix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages
+* (ipod86) chore: replace POSIX mv with cross-platform node rename in src-admin build script
+
 ### 0.2.1 (2026-07-04)
 * (ipod86) fix: translate all German user-facing strings and error messages to English
 * (ipod86) fix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list

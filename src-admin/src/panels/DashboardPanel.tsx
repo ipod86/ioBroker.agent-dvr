@@ -372,7 +372,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 				))}
 			</Grid>
 
-			{/* ── Kamera-Stream-Tabelle ── */}
+			{/* ── Camera stream table ── */}
 			<SectionHeader textKey="hdrCameraStreams" />
 			<Box sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
 				<Typography
@@ -382,7 +382,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 				>
 					{I18n.t('cfgGo2rtcMapping_tt')}
 				</Typography>
-				<Tooltip title="Neu laden">
+				<Tooltip title={I18n.t('reload')}>
 					<IconButton
 						size="small"
 						onClick={() => void fetchData()}
@@ -405,7 +405,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 			{loading && (
 				<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
 					<CircularProgress size={16} />
-					<Typography variant="caption">Lade Kameras und Streams…</Typography>
+					<Typography variant="caption">{I18n.t('loadingCamerasAndStreams')}</Typography>
 				</Box>
 			)}
 
@@ -428,10 +428,10 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 						<TableHead>
 							<TableRow>
 								<TableCell>
-									<strong>AgentDVR Kamera</strong>
+									<strong>{I18n.t('cfgCameraColumn')}</strong>
 								</TableCell>
 								<TableCell>
-									<strong>Stream-Quelle</strong>
+									<strong>{I18n.t('cfgStreamSourceColumn')}</strong>
 								</TableCell>
 							</TableRow>
 						</TableHead>
@@ -508,7 +508,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 					</Table>
 				</TableContainer>
 			)}
-			{/* ── go2rtc URL — nur sichtbar wenn mind. eine Kamera go2rtc nutzt ── */}
+			{/* ── go2rtc URL — only visible when at least one camera uses go2rtc ── */}
 			{anyGo2rtc && (
 				<>
 					<SectionHeader textKey="hdrGo2rtc" />

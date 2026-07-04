@@ -131,5 +131,9 @@
   "cfgGo2rtcUrl_tt": "Базовый URL сервера go2rtc, например http://192.168.1.1:1984",
   "cfgGo2rtcMapping_tt": "Выберите источник потока для каждой камеры: MJPEG, MP4/FLV (через AgentDVR) или поток go2rtc.",
   "cfgIpMissing": "IP-адрес AgentDVR обязателен",
-  "cfgNoCamerasFound": "Камеры не найдены — настроен ли адаптер и выполнен ли хотя бы один опрос?"
+  "cfgNoCamerasFound": "Камеры не найдены — настроен ли адаптер и выполнен ли хотя бы один опрос?",
+  "loadingCamerasAndStreams": "Загрузка камер и потоков…",
+  "cfgCameraColumn": "Камера AgentDVR",
+  "cfgStreamSourceColumn": "Источник потока",
+  "reload": "Обновить"
 }

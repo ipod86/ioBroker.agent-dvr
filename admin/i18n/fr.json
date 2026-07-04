@@ -131,5 +131,9 @@
   "cfgGo2rtcUrl_tt": "URL de base du serveur go2rtc, par ex. http://192.168.1.1:1984",
   "cfgGo2rtcMapping_tt": "Sélectionnez la source de flux par caméra : MJPEG, MP4/FLV (via AgentDVR) ou un flux go2rtc.",
   "cfgIpMissing": "L'adresse IP AgentDVR est requise",
-  "cfgNoCamerasFound": "Aucune caméra trouvée — l'adaptateur est-il configuré et a-t-il effectué au moins un sondage ?"
+  "cfgNoCamerasFound": "Aucune caméra trouvée — l'adaptateur est-il configuré et a-t-il effectué au moins un sondage ?",
+  "loadingCamerasAndStreams": "Chargement des caméras et des flux…",
+  "cfgCameraColumn": "Caméra AgentDVR",
+  "cfgStreamSourceColumn": "Source du flux",
+  "reload": "Recharger"
 }

@@ -331,9 +331,14 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) fix: verbleibende deutsche Strings im DashboardPanel via I18n.t() übersetzt
+* (ipod86) fix: i18n-Keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in allen 11 Sprachen ergänzt
+* (ipod86) chore: POSIX mv durch plattformübergreifendes node rename im src-admin Build-Script ersetzt
+
+### 0.2.1 (2026-07-04)
 * (ipod86) fix: alle deutschen Benutzer-Strings und Fehlermeldungen auf Englisch übersetzt
 * (ipod86) fix: DashboardPanel zeigt i18n-fähige Meldungen bei fehlender IP und leerer Kameraliste
-* (ipod86) chore: .npmignore hinzugefügt — src/ und src-admin/ werden nicht ans npm-Paket ausgeliefert
+* (ipod86) chore: .npmignore entfernt — files-Feld in package.json steuert npm-Paketinhalt korrekt
 
 ### 0.2.0 (2026-07-04)
 * (ipod86) feat: Kamera-Filter-Badges im Dashboard mit localStorage-Persistenz

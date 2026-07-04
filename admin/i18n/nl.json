@@ -131,5 +131,9 @@
   "cfgGo2rtcUrl_tt": "Basis-URL van de go2rtc-server, bijv. http://192.168.1.1:1984",
   "cfgGo2rtcMapping_tt": "Selecteer de streambron per camera: MJPEG, MP4/FLV (via AgentDVR) of een go2rtc-stream.",
   "cfgIpMissing": "Het AgentDVR IP-adres is vereist",
-  "cfgNoCamerasFound": "Geen camera's gevonden — is de adapter geconfigureerd en heeft hij minstens één keer gepolld?"
+  "cfgNoCamerasFound": "Geen camera's gevonden — is de adapter geconfigureerd en heeft hij minstens één keer gepolld?",
+  "loadingCamerasAndStreams": "Camera's en streams laden…",
+  "cfgCameraColumn": "AgentDVR Camera",
+  "cfgStreamSourceColumn": "Streambron",
+  "reload": "Herladen"
 }
