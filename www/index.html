@@ -70,7 +70,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   cursor:pointer;opacity:var(--btn-base-opacity,0);transition:opacity .15s,background .15s;
   box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7)}
 .cam-tile:hover .tile-btn{opacity:1}
-.tile-btn:hover,.ptz-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
+.tile-btn:hover,.ptz-btn.active,.full-btn.active{background:rgba(37,99,235,.85);border-color:var(--accent);opacity:1;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px var(--accent-glow)}
 .rec-btn.active{background:rgba(239,68,68,.85)!important;border-color:var(--red)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(239,68,68,.4)!important}
 .rec-btn:hover{background:rgba(239,68,68,.7)!important;border-color:var(--red)!important}
 .mute-btn.active{background:rgba(34,197,94,.25)!important;border-color:var(--green)!important;opacity:1!important;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.7),0 0 10px rgba(34,197,94,.35)!important}
@@ -8945,9 +8945,22 @@ function openFs(cam, key) {
     btnBox.appendChild(muteBtn);
   }
 
+  const fullBtn = document.createElement('div');
+  fullBtn.className = 'tile-btn full-btn';
+  fullBtn.title = 'Vollbild';
+  fullBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`;
+  fullBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!document.fullscreenElement) fs.requestFullscreen();
+    else document.exitFullscreen();
+  });
+  btnBox.appendChild(fullBtn);
+
   fs.classList.add('open');
 }
+let nativeFsActive = false;
 function closeFs() {
+  if (document.fullscreenElement) document.exitFullscreen();
   const fi = document.getElementById('fs-img');
   const fv = document.getElementById('fs-vid');
   const fsCam = document.getElementById('fs-panel').dataset.cam;
@@ -8962,6 +8975,16 @@ function closeFs() {
   const ov = document.getElementById('fs-body').querySelector('.ptz-overlay');
   if (ov) ov.remove();
 }
+document.addEventListener('fullscreenchange', () => {
+  nativeFsActive = !!document.fullscreenElement;
+  const btn = document.querySelector('#fs-btns .full-btn');
+  if (!btn) return;
+  btn.classList.toggle('active', nativeFsActive);
+  btn.title = nativeFsActive ? 'Vollbild verlassen' : 'Vollbild';
+  btn.innerHTML = nativeFsActive
+    ? `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1v4H1M9 1v4h4M1 9h4v4M13 9h-4v4"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`;
+});
 document.getElementById('fs-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('fs-panel')) closeFs();
 });
@@ -9261,7 +9284,7 @@ function esc(s) {
 
 /* ─────────────────────────── Keyboard shortcuts ─────────────── */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeFs(); closeVideo(); }
+  if (e.key === 'Escape') { if (nativeFsActive) return; closeFs(); closeVideo(); }
   if (document.getElementById('vid-panel').classList.contains('open')) {
     if (e.key === 'ArrowLeft')  { e.preventDefault(); playRecIdx(recPlayIdx - 1); }
     if (e.key === 'ArrowRight') { e.preventDefault(); playRecIdx(recPlayIdx + 1); }
