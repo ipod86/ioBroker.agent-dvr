@@ -105,8 +105,17 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 /* ── Recordings view ── */
 #view-rec{background:var(--s1);overflow:hidden}
-#rec-filter-bar{flex-shrink:0;padding:10px 12px;background:var(--s1);
-  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#rec-filter-bar{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--border)}
+#rec-filter-main{padding:8px 12px;display:flex;align-items:center;gap:8px}
+#rec-filter-tags{overflow:hidden;max-height:200px;transition:max-height .2s ease,padding .2s ease;
+  padding:0 12px 8px}
+#rec-filter-tags.collapsed{max-height:0;padding-bottom:0}
+#rec-tag-toggle{background:none;border:1px solid var(--border2);border-radius:6px;color:var(--muted);
+  cursor:pointer;width:26px;height:26px;display:none;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;font-size:12px}
+#rec-tag-toggle:hover{border-color:var(--border);color:var(--text)}
+#rec-tag-toggle.has-tags{display:flex}
+#rec-tag-toggle.active{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 #rec-search{background:var(--s2);border:1px solid var(--border2);color:var(--text);
   padding:7px 12px;border-radius:var(--radius);font-size:13px;width:180px;outline:none;
   transition:border-color .15s}
@@ -7813,12 +7822,13 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Recordings -->
   <div id="view-rec" class="view">
     <div id="rec-filter-bar">
-      <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Search…" oninput="filterRec()">
-      <select id="rec-cam-sel" onchange="loadAndFilterRec()">
-        <option value="" data-i18n="camSelect">Select camera…</option>
-      </select>
-      <div id="rec-tags"></div>
-      <div id="rec-toolbar">
+      <div id="rec-filter-main">
+        <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Search…" oninput="filterRec()">
+        <select id="rec-cam-sel" onchange="loadAndFilterRec()">
+          <option value="" data-i18n="camSelect">Select camera…</option>
+        </select>
+        <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label">&#127991;</button>
+        <div id="rec-toolbar">
         <span id="rec-count"></span>
         <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Grid view" onclick="setRecView('grid')">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -7832,6 +7842,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             <line x1="0" y1="10" x2="14" y2="10"/><rect x="7" y="8" width="5" height="4" rx="1" fill="currentColor"/>
           </svg>
         </button>
+        </div>
+      </div>
+      <div id="rec-filter-tags" class="collapsed">
+        <div id="rec-tags"></div>
       </div>
     </div>
     <div id="rec-scroll">
@@ -8962,6 +8976,9 @@ function buildRecCamSel() {
   });
   document.getElementById('rec-view-grid').classList.toggle('active', recViewMode === 'grid');
   document.getElementById('rec-view-tl').classList.toggle('active', recViewMode === 'timeline');
+  const tagsOpen = localStorage.getItem('advr_tags_open') === '1';
+  document.getElementById('rec-filter-tags').classList.toggle('collapsed', !tagsOpen);
+  document.getElementById('rec-tag-toggle').classList.toggle('active', tagsOpen);
   if (last && cameras[last]) { sel.value = last; loadAndFilterRec(); }
 }
 
@@ -8989,16 +9006,23 @@ async function loadAndFilterRec() {
     // Build tag chips
     const tags = [...new Set(recAllItems.map(r => r.tag).filter(Boolean))];
     const tagBar = document.getElementById('rec-tags');
+    const toggle = document.getElementById('rec-tag-toggle');
     recFilters.tag = '';
+    tagBar.innerHTML = '';
     if (tags.length) {
       const all = document.createElement('span'); all.className = 'tag-chip on'; all.textContent = t('tagAll'); all.dataset.tagAll = '1';
       all.onclick = () => { recFilters.tag = ''; setActiveTag(null); renderRec(); };
       tagBar.appendChild(all);
-      tags.forEach(t => {
-        const tc = document.createElement('span'); tc.className = 'tag-chip'; tc.textContent = t; tc.dataset.tag = t;
-        tc.onclick = () => { recFilters.tag = t; setActiveTag(t); renderRec(); };
+      tags.forEach(tg => {
+        const tc = document.createElement('span'); tc.className = 'tag-chip'; tc.textContent = tg; tc.dataset.tag = tg;
+        tc.onclick = () => { recFilters.tag = tg; setActiveTag(tg); renderRec(); };
         tagBar.appendChild(tc);
       });
+      toggle.classList.add('has-tags');
+    } else {
+      toggle.classList.remove('has-tags');
+      document.getElementById('rec-filter-tags').classList.add('collapsed');
+      toggle.classList.remove('active');
     }
     renderRec();
   } catch (e) {
@@ -9012,6 +9036,13 @@ function setActiveTag(tag) {
   });
 }
 
+function toggleRecTags() {
+  const row = document.getElementById('rec-filter-tags');
+  const btn = document.getElementById('rec-tag-toggle');
+  const collapsed = row.classList.toggle('collapsed');
+  btn.classList.toggle('active', !collapsed);
+  localStorage.setItem('advr_tags_open', collapsed ? '0' : '1');
+}
 function filterRec() { renderRec(); }
 
 function setRecView(mode) {
