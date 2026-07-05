@@ -7837,7 +7837,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             <rect x="0" y="8" width="6" height="6" rx="1"/><rect x="8" y="8" width="6" height="6" rx="1"/>
           </svg>
         </button>
-        <button id="rec-view-tl" class="rec-view-btn" title="Timeline" onclick="setRecView('timeline')">
+        <button id="rec-view-tl" class="rec-view-btn" data-i18n-title="timelineView" title="Timeline" onclick="setRecView('timeline')">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
             <line x1="0" y1="4" x2="14" y2="4"/><rect x="2" y="2" width="4" height="4" rx="1" fill="currentColor"/>
             <line x1="0" y1="10" x2="14" y2="10"/><rect x="7" y="8" width="5" height="4" rx="1" fill="currentColor"/>
@@ -7887,7 +7887,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <div id="fs-hdr">
     <span id="fs-name"></span>
     <div id="fs-btns"></div>
-    <button id="fs-close" onclick="closeFs()">&#10005;</button>
+    <button id="fs-close" onclick="closeFs()" data-i18n-title="closePanel">&#10005;</button>
   </div>
   <div id="fs-body">
     <img id="fs-img" src="" alt="">
@@ -7906,6 +7906,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Suchen…',
     camSelect:       'Kamera wählen…',
     gridView:        'Rasteransicht',
+    timelineView:    'Zeitachse',
+    closePanel:      'Schließen',
     sbarLoading:     'Lade…',
     vidPrev:         '‹ Vorherige',
     vidNext:         'Nächste ›',
@@ -7942,6 +7944,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Search…',
     camSelect:       'Select camera…',
     gridView:        'Grid view',
+    timelineView:    'Timeline',
+    closePanel:      'Close',
     sbarLoading:     'Loading…',
     vidPrev:         '‹ Previous',
     vidNext:         'Next ›',
@@ -7978,6 +7982,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Buscar…',
     camSelect:       'Seleccionar cámara…',
     gridView:        'Vista de cuadrícula',
+    timelineView:    'Línea de tiempo',
+    closePanel:      'Cerrar',
     sbarLoading:     'Cargando…',
     vidPrev:         '‹ Anterior',
     vidNext:         'Siguiente ›',
@@ -8014,6 +8020,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Rechercher…',
     camSelect:       'Choisir une caméra…',
     gridView:        'Vue en grille',
+    timelineView:    'Chronologie',
+    closePanel:      'Fermer',
     sbarLoading:     'Chargement…',
     vidPrev:         '‹ Précédent',
     vidNext:         'Suivant ›',
@@ -8050,6 +8058,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Cerca…',
     camSelect:       'Seleziona telecamera…',
     gridView:        'Vista griglia',
+    timelineView:    'Sequenza temporale',
+    closePanel:      'Chiudi',
     sbarLoading:     'Caricamento…',
     vidPrev:         '‹ Precedente',
     vidNext:         'Successivo ›',
@@ -8086,6 +8096,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Zoeken…',
     camSelect:       'Camera kiezen…',
     gridView:        'Rasterweergave',
+    timelineView:    'Tijdlijn',
+    closePanel:      'Sluiten',
     sbarLoading:     'Laden…',
     vidPrev:         '‹ Vorige',
     vidNext:         'Volgende ›',
@@ -8122,6 +8134,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Szukaj…',
     camSelect:       'Wybierz kamerę…',
     gridView:        'Widok siatki',
+    timelineView:    'Oś czasu',
+    closePanel:      'Zamknij',
     sbarLoading:     'Ładowanie…',
     vidPrev:         '‹ Poprzednie',
     vidNext:         'Następne ›',
@@ -8158,6 +8172,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Pesquisar…',
     camSelect:       'Selecionar câmera…',
     gridView:        'Visualização em grade',
+    timelineView:    'Linha do tempo',
+    closePanel:      'Fechar',
     sbarLoading:     'Carregando…',
     vidPrev:         '‹ Anterior',
     vidNext:         'Próximo ›',
@@ -8194,6 +8210,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Поиск…',
     camSelect:       'Выбрать камеру…',
     gridView:        'Сетка',
+    timelineView:    'Хронология',
+    closePanel:      'Закрыть',
     sbarLoading:     'Загрузка…',
     vidPrev:         '‹ Предыдущее',
     vidNext:         'Следующее ›',
@@ -8230,6 +8248,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 Пошук…',
     camSelect:       'Обрати камеру…',
     gridView:        'Сітка',
+    timelineView:    'Хронологія',
+    closePanel:      'Закрити',
     sbarLoading:     'Завантаження…',
     vidPrev:         '‹ Попереднє',
     vidNext:         'Наступне ›',
@@ -8266,6 +8286,8 @@ const TRANSLATIONS = {
     searchPlaceholder: '🔍 搜索…',
     camSelect:       '选择摄像头…',
     gridView:        '网格视图',
+    timelineView:    '时间轴',
+    closePanel:      '关闭',
     sbarLoading:     '加载中…',
     vidPrev:         '‹ 上一个',
     vidNext:         '下一个 ›',
