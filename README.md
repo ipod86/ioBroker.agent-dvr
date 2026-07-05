@@ -18,7 +18,7 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 
 - Auto-discovery of all AgentDVR cameras on startup (microphones excluded)
 - All device properties mirrored as data points (flattened from the API)
-- Per-device control buttons: record, snapshot, detect, arm/disarm alerts, switch on/off, object detection, purge, …
+- Per-device control buttons: record, snapshot, detect, arm/disarm alerts, switch on/off, object detection, schedule on/off, detector on/off, sensitivity (min/max/gain), purge, …
 - System-level buttons: arm, disarm, all on/off, reload, storage management, restart, …
 - **Profile selector** — writable dropdown reflecting the current AgentDVR profile (Home / Away / Night / custom)
 - **Snapshot as Base64** — `snapshot_b64` state per camera, writable via button or auto-updated every poll cycle
@@ -31,8 +31,8 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
   - Per-camera stream selection: MJPEG, MP4/FLV with audio, or go2rtc WebRTC/MSE
   - Camera filter badges to show/hide individual cameras (state saved in localStorage)
   - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
-  - Fullscreen view with PTZ overlay and record button
-  - Recordings tab with grid and timeline view, search, tag filter, and video player
+  - Fullscreen view with PTZ overlay, record, mute, and native browser fullscreen button; header auto-hides
+  - Recordings tab with grid and timeline view, search, collapsible tag filter, and video player
   - Auto-reconnect for all stream types after network interruption or tab switch
   - Fully color-themeable via adapter config
 
@@ -204,10 +204,10 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 **Features:**
 - Per-camera stream selection: MJPEG, MP4/FLV with audio (via flv.js), or go2rtc WebRTC/MSE
 - Camera filter badges — click to show/hide individual cameras; state persisted in localStorage
-- Fullscreen view with PTZ overlay and record button
+- Fullscreen view with PTZ overlay, record button, mute button, and **native browser fullscreen** (header auto-hides after 3 s of inactivity; reappears on mouse or touch)
 - Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
 - Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
-- Recordings tab with grid and timeline view, search and tag filter, video player with prev/next navigation
+- Recordings tab with grid and timeline view, search, **collapsible tag filter**, and video player with prev/next navigation
 - Color theming via adapter config
 
 ### go2rtc WebRTC Streams
@@ -283,8 +283,15 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 | `<cam>.control.alertOff` | button | W | Disarm alerts |
 | `<cam>.control.switchOn` | button | W | Switch camera on |
 | `<cam>.control.switchOff` | button | W | Switch camera off |
-| `<cam>.control.objectDetectOn` | button | W | Enable object detection |
-| `<cam>.control.objectDetectOff` | button | W | Disable object detection |
+| `<cam>.control.objectDetectOn` | button | W | Enable object detection *(cameras only)* |
+| `<cam>.control.objectDetectOff` | button | W | Disable object detection *(cameras only)* |
+| `<cam>.control.scheduleOn` | button | W | Enable the device schedule |
+| `<cam>.control.scheduleOff` | button | W | Disable the device schedule |
+| `<cam>.control.detectorOn` | button | W | Enable the motion detector |
+| `<cam>.control.detectorOff` | button | W | Disable the motion detector |
+| `<cam>.control.sensitivityMin` | number 0–100 | R/W | Detector sensitivity — minimum threshold *(cameras only)* |
+| `<cam>.control.sensitivityMax` | number 0–100 | R/W | Detector sensitivity — maximum threshold *(cameras only)* |
+| `<cam>.control.sensitivityGain` | number 0–100 | R/W | Detector sensitivity — gain *(cameras only)* |
 | `<cam>.control.recOnAlert` | button | W | Enable "record on alert" |
 | `<cam>.control.recOnDetect` | button | W | Enable "record on detect" |
 | `<cam>.control.purge` | button | W | Delete all recordings for this camera |
@@ -310,10 +317,12 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `<cam>.urls.snapshot` | string | R | URL to current JPEG snapshot |
-| `<cam>.urls.photo` | string | R | URL to photo endpoint |
-| `<cam>.urls.mjpeg` | string | R | URL to MJPEG live stream |
-| `<cam>.urls.mp4` | string | R | URL to MP4 live stream |
+| `<cam>.urls.snapshot` | string | R | URL to current JPEG snapshot *(cameras only)* |
+| `<cam>.urls.photo` | string | R | URL to photo endpoint *(cameras only)* |
+| `<cam>.urls.mjpeg` | string | R | URL to MJPEG live stream *(cameras only)* |
+| `<cam>.urls.mp4` | string | R | URL to MP4 live stream *(cameras only)* |
+| `<mic>.urls.audio_mp3` | string | R | URL to MP3 audio stream *(microphones only)* |
+| `<mic>.urls.audio_ogg` | string | R | URL to OGG audio stream *(microphones only)* |
 
 ### Events / Gallery *(cameras only)*
 
