@@ -221,7 +221,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #fs-panel{position:fixed;inset:0;z-index:250;display:none;background:#000;flex-direction:column}
 #fs-panel.open{display:flex}
 #fs-hdr{height:44px;background:rgba(0,0,0,.7);display:flex;align-items:center;
-  padding:0 12px;gap:12px;flex-shrink:0}
+  padding:0 12px;gap:12px;flex-shrink:0;
+  position:absolute;top:0;left:0;right:0;z-index:2;
+  transition:opacity .25s,transform .25s;will-change:opacity,transform}
+#fs-panel.hdr-hidden #fs-hdr{opacity:0;transform:translateY(-8px);pointer-events:none}
 #fs-name{font-size:14px;font-weight:600}
 #fs-btns{display:flex;gap:6px;align-items:center;margin-left:auto}
 #fs-btns .tile-btn{opacity:1;width:32px;height:32px;font-size:16px}
@@ -9012,9 +9015,24 @@ function openFs(cam, key) {
   btnBox.appendChild(fullBtn);
 
   fs.classList.add('open');
+  startFsHdrHide(fs);
 }
 let nativeFsActive = false;
+let _fsHdrTimer = null;
+function startFsHdrHide(fs) {
+  if (_fsHdrTimer) clearTimeout(_fsHdrTimer);
+  fs.classList.remove('hdr-hidden');
+  _fsHdrTimer = setTimeout(() => { fs.classList.add('hdr-hidden'); }, 3000);
+}
+function _fsActivity() {
+  const fs = document.getElementById('fs-panel');
+  if (fs.classList.contains('open')) startFsHdrHide(fs);
+}
+document.getElementById('fs-panel').addEventListener('mousemove', _fsActivity);
+document.getElementById('fs-panel').addEventListener('touchstart', _fsActivity, {passive:true});
+document.getElementById('fs-panel').addEventListener('mouseenter', _fsActivity);
 function closeFs() {
+  if (_fsHdrTimer) { clearTimeout(_fsHdrTimer); _fsHdrTimer = null; }
   if (document.fullscreenElement) document.exitFullscreen();
   const fi = document.getElementById('fs-img');
   const fv = document.getElementById('fs-vid');
@@ -9024,7 +9042,7 @@ function closeFs() {
   if (fsCam) destroyFlvPlayer('fs_' + fsCam);
   fv.style.display = 'none';
   const fs = document.getElementById('fs-panel');
-  fs.classList.remove('open', 'recording');
+  fs.classList.remove('open', 'recording', 'hdr-hidden');
   fs.dataset.cam = '';
   document.getElementById('fs-btns').innerHTML = '';
   const ov = document.getElementById('fs-body').querySelector('.ptz-overlay');
