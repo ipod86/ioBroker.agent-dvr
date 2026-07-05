@@ -13,7 +13,7 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 
 - Automatische Erkennung aller AgentDVR-Kameras beim Start (Mikrofone ausgenommen)
 - Alle Geräteeigenschaften als Datenpunkte gespiegelt (aus der API flachgeklopft)
-- Schaltflächen pro Gerät: Aufnahme, Snapshot, Erkennung, Scharf/Unscharf, Ein/Aus, Objekterkennung, Bereinigen, …
+- Schaltflächen pro Gerät: Aufnahme, Snapshot, Erkennung, Scharf/Unscharf, Ein/Aus, Objekterkennung, Zeitplan Ein/Aus, Detektor Ein/Aus, Empfindlichkeit (Min/Max/Gain), Bereinigen, …
 - Systemschaltflächen: Scharf/Unscharf, Alle Ein/Aus, Konfiguration neu laden, Speicherverwaltung, Neustart, …
 - **Profilauswahl** — beschreibbares Dropdown, das das aktuelle AgentDVR-Profil widerspiegelt (Zuhause / Weg / Nacht / eigene)
 - **Snapshot als Base64** — `snapshot_b64`-Zustand pro Kamera, per Schaltfläche oder automatisch bei jedem Poll aktualisierbar
@@ -26,8 +26,8 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
   - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC/MSE
   - Kamera-Filter-Badges zum Ein-/Ausblenden einzelner Kameras (Zustand im localStorage gespeichert)
   - Echtzeit-Bewegungs- und Alarm-Indikatoren (gelber / oranger Kachelrahmen) via Socket.io
-  - Vollbildansicht mit PTZ-Overlay und Aufnahme-Schaltfläche
-  - Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche, Tag-Filter und Video-Player
+  - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und **nativer Browser-Vollbild-Schaltfläche**; Header blendet sich nach 3 s Inaktivität aus
+  - Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche, **ausklappbarem Tag-Filter** und Video-Player
   - Automatischer Reconnect für alle Stream-Typen nach Netzwerkunterbrechung oder Tab-Wechsel
   - Farbdesign vollständig über die Adapter-Konfiguration anpassbar
 
@@ -199,10 +199,10 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 **Funktionen:**
 - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton (via flv.js) oder go2rtc WebRTC/MSE
 - Kamera-Filter-Badges — per Klick einzelne Kameras ein-/ausblenden; Zustand wird im localStorage gespeichert
-- Vollbildansicht mit PTZ-Overlay und Aufnahme-Schaltfläche
+- Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
 - Echtzeit-Bewegungs- (gelber Rahmen) und Alarm-Indikatoren (oranger Rahmen) via Socket.io
 - Automatischer Reconnect: MJPEG und FLV bei Fehler; go2rtc bei unerwartetem WebSocket-Close oder 10 s ohne Bild
-- Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche und Tag-Filter, Video-Player mit Vor-/Zurück-Navigation
+- Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche und ausklappbarem Tag-Filter, Video-Player mit Vor-/Zurück-Navigation
 - Farbdesign über die Adapter-Konfiguration einstellbar
 
 ### go2rtc WebRTC-Streams
@@ -278,8 +278,15 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 | `<cam>.control.alertOff` | Taste | W | Alarme deaktivieren |
 | `<cam>.control.switchOn` | Taste | W | Kamera einschalten |
 | `<cam>.control.switchOff` | Taste | W | Kamera ausschalten |
-| `<cam>.control.objectDetectOn` | Taste | W | Objekterkennung einschalten |
-| `<cam>.control.objectDetectOff` | Taste | W | Objekterkennung ausschalten |
+| `<cam>.control.objectDetectOn` | Taste | W | Objekterkennung einschalten *(nur Kameras)* |
+| `<cam>.control.objectDetectOff` | Taste | W | Objekterkennung ausschalten *(nur Kameras)* |
+| `<cam>.control.scheduleOn` | Taste | W | Gerätezeitplan aktivieren |
+| `<cam>.control.scheduleOff` | Taste | W | Gerätezeitplan deaktivieren |
+| `<cam>.control.detectorOn` | Taste | W | Bewegungsmelder aktivieren |
+| `<cam>.control.detectorOff` | Taste | W | Bewegungsmelder deaktivieren |
+| `<cam>.control.sensitivityMin` | Zahl 0–100 | R/W | Empfindlichkeit — untere Schwelle *(nur Kameras)* |
+| `<cam>.control.sensitivityMax` | Zahl 0–100 | R/W | Empfindlichkeit — obere Schwelle *(nur Kameras)* |
+| `<cam>.control.sensitivityGain` | Zahl 0–100 | R/W | Empfindlichkeit — Verstärkung *(nur Kameras)* |
 | `<cam>.control.recOnAlert` | Taste | W | „Bei Alarm aufnehmen" aktivieren |
 | `<cam>.control.recOnDetect` | Taste | W | „Bei Erkennung aufnehmen" aktivieren |
 | `<cam>.control.purge` | Taste | W | Alle Aufnahmen dieser Kamera löschen |
@@ -305,10 +312,12 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
-| `<cam>.urls.snapshot` | string | R | URL zum aktuellen JPEG-Snapshot |
-| `<cam>.urls.photo` | string | R | URL zum Foto-Endpoint |
-| `<cam>.urls.mjpeg` | string | R | URL zum MJPEG-Livestream |
-| `<cam>.urls.mp4` | string | R | URL zum MP4-Livestream |
+| `<cam>.urls.snapshot` | string | R | URL zum aktuellen JPEG-Snapshot *(nur Kameras)* |
+| `<cam>.urls.photo` | string | R | URL zum Foto-Endpoint *(nur Kameras)* |
+| `<cam>.urls.mjpeg` | string | R | URL zum MJPEG-Livestream *(nur Kameras)* |
+| `<cam>.urls.mp4` | string | R | URL zum MP4-Livestream *(nur Kameras)* |
+| `<mic>.urls.audio_mp3` | string | R | URL zum MP3-Audiostream *(nur Mikrofone)* |
+| `<mic>.urls.audio_ogg` | string | R | URL zum OGG-Audiostream *(nur Mikrofone)* |
 
 ### Ereignisse / Galerie
 
