@@ -252,6 +252,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     return new Promise(function(res,rej){var s=document.createElement('script');s.onload=res;s.onerror=rej;s.src=src;document.head.appendChild(s);});
   }
   window._flvReady = load('flv.min.js')
+    .catch(function(){ return load('https://cdn.jsdelivr.net/npm/flv.js@1.6.2/dist/flv.min.js'); })
     .catch(function(){ window._flvFailed = true; });
 })();
 </script>
