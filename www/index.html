@@ -7932,6 +7932,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE nicht unterstützt (Browser zu alt?)',
     flvConnecting:   'verbinde…',
     reload:          'Neu laden',
+    fsEnter:         'Vollbild',
+    fsExit:          'Vollbild verlassen',
+    filterByLabel:   'Nach Label filtern',
   },
   en: {
     navLive:         'Live',
@@ -7965,6 +7968,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE not supported (browser too old?)',
     flvConnecting:   'connecting…',
     reload:          'Reload',
+    fsEnter:         'Fullscreen',
+    fsExit:          'Exit fullscreen',
+    filterByLabel:   'Filter by label',
   },
   es: {
     navLive:         'En vivo',
@@ -7998,6 +8004,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE no compatible (¿navegador demasiado antiguo?)',
     flvConnecting:   'conectando…',
     reload:          'Recargar',
+    fsEnter:         'Pantalla completa',
+    fsExit:          'Salir de pantalla completa',
+    filterByLabel:   'Filtrar por etiqueta',
   },
   fr: {
     navLive:         'En direct',
@@ -8031,6 +8040,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE non pris en charge (navigateur trop ancien ?)',
     flvConnecting:   'connexion…',
     reload:          'Recharger',
+    fsEnter:         'Plein écran',
+    fsExit:          'Quitter le plein écran',
+    filterByLabel:   'Filtrer par étiquette',
   },
   it: {
     navLive:         'Live',
@@ -8064,6 +8076,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE non supportato (browser troppo vecchio?)',
     flvConnecting:   'connessione…',
     reload:          'Ricarica',
+    fsEnter:         'Schermo intero',
+    fsExit:          'Esci dallo schermo intero',
+    filterByLabel:   'Filtra per etichetta',
   },
   nl: {
     navLive:         'Live',
@@ -8097,6 +8112,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE niet ondersteund (browser te oud?)',
     flvConnecting:   'verbinden…',
     reload:          'Herladen',
+    fsEnter:         'Volledig scherm',
+    fsExit:          'Volledig scherm verlaten',
+    filterByLabel:   'Filteren op label',
   },
   pl: {
     navLive:         'Na żywo',
@@ -8130,6 +8148,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE nieobsługiwane (za stara przeglądarka?)',
     flvConnecting:   'łączenie…',
     reload:          'Odśwież',
+    fsEnter:         'Pełny ekran',
+    fsExit:          'Wyjdź z pełnego ekranu',
+    filterByLabel:   'Filtruj według etykiety',
   },
   pt: {
     navLive:         'Ao vivo',
@@ -8163,6 +8184,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: MSE não suportado (navegador muito antigo?)',
     flvConnecting:   'a conectar…',
     reload:          'Recarregar',
+    fsEnter:         'Tela cheia',
+    fsExit:          'Sair da tela cheia',
+    filterByLabel:   'Filtrar por etiqueta',
   },
   ru: {
     navLive:         'В эфире',
@@ -8196,6 +8220,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ОШИБКА: MSE не поддерживается (браузер устарел?)',
     flvConnecting:   'подключение…',
     reload:          'Обновить',
+    fsEnter:         'Полный экран',
+    fsExit:          'Выйти из полного экрана',
+    filterByLabel:   'Фильтр по метке',
   },
   uk: {
     navLive:         'Наживо',
@@ -8229,6 +8256,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ПОМИЛКА: MSE не підтримується (браузер застарілий?)',
     flvConnecting:   'підключення…',
     reload:          'Оновити',
+    fsEnter:         'Повний екран',
+    fsExit:          'Вийти з повного екрана',
+    filterByLabel:   'Фільтр за міткою',
   },
   'zh-cn': {
     navLive:         '实时',
@@ -8262,6 +8292,9 @@ const TRANSLATIONS = {
     flvNoMse:        'ERR: 不支持 MSE（浏览器版本过旧？）',
     flvConnecting:   '连接中…',
     reload:          '重新加载',
+    fsEnter:         '全屏',
+    fsExit:          '退出全屏',
+    filterByLabel:   '按标签筛选',
   },
 };
 
@@ -8947,7 +8980,7 @@ function openFs(cam, key) {
 
   const fullBtn = document.createElement('div');
   fullBtn.className = 'tile-btn full-btn';
-  fullBtn.title = 'Vollbild';
+  fullBtn.title = t('fsEnter');
   fullBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`;
   fullBtn.addEventListener('click', e => {
     e.stopPropagation();
@@ -8980,7 +9013,7 @@ document.addEventListener('fullscreenchange', () => {
   const btn = document.querySelector('#fs-btns .full-btn');
   if (!btn) return;
   btn.classList.toggle('active', nativeFsActive);
-  btn.title = nativeFsActive ? 'Vollbild verlassen' : 'Vollbild';
+  btn.title = nativeFsActive ? t('fsExit') : t('fsEnter');
   btn.innerHTML = nativeFsActive
     ? `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1v4H1M9 1v4h4M1 9h4v4M13 9h-4v4"/></svg>`
     : `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`;
@@ -9003,6 +9036,7 @@ function buildRecCamSel() {
   const tagsOpen = localStorage.getItem('advr_tags_open') === '1';
   document.getElementById('rec-filter-tags').classList.toggle('collapsed', !tagsOpen);
   document.getElementById('rec-tag-toggle').classList.toggle('active', tagsOpen);
+  document.getElementById('rec-tag-toggle').title = t('filterByLabel');
   if (last && cameras[last]) { sel.value = last; loadAndFilterRec(); }
 }
 
