@@ -8306,6 +8306,11 @@ function camStype(key) {
   return { stype: 'mjpeg', g2mStream: '' };
 }
 
+function flvStreamUrl(oid, aspect) {
+  const p = (aspect || '').split('/').map(Number);
+  const size = (p.length === 2 && p[0] >= 100 && p[1] >= 100) ? '&size=' + p[0] + 'x' + p[1] : '';
+  return '/agent-dvr/api/stream?oid=' + oid + size;
+}
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
   let el = p.querySelector('.flv-status');
@@ -8867,7 +8872,7 @@ function openFs(cam, key) {
     fv.style.display = 'block';
     fv.dataset.camKey = key;
     fv.style.objectFit = 'contain';
-    createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cam.oid, 'fs_' + key);
+    createFlvPlayer(fv, flvStreamUrl(cam.oid, cam.aspect), 'fs_' + key);
   } else {
     fi.style.display = 'block';
     fv.style.display = 'none';
@@ -9272,7 +9277,7 @@ document.addEventListener('visibilitychange', () => {
     document.querySelectorAll('.cam-tile video[data-cam-key]').forEach(vid => {
       const k = vid.dataset.camKey;
       const cam = cameras[k];
-      if (cam) createFlvPlayer(vid, '/agent-dvr/api/stream?oid=' + cam.oid, k);
+      if (cam) createFlvPlayer(vid, flvStreamUrl(cam.oid, cam.aspect), k);
     });
     // Restart fullscreen streams
     const fi = document.getElementById('fs-img');
@@ -9284,7 +9289,7 @@ document.addEventListener('visibilitychange', () => {
       if (fsStype === 'go2rtc' && CFG.go2rtcUrl && fsG2m)
         connectWebRTC(fv, CFG.go2rtcUrl, fsG2m);
       else if (fsStype === 'mp4')
-        createFlvPlayer(fv, '/agent-dvr/api/stream?oid=' + cameras[fsCam].oid, 'fs_' + fsCam);
+        createFlvPlayer(fv, flvStreamUrl(cameras[fsCam].oid, cameras[fsCam].aspect), 'fs_' + fsCam);
     }
   }
 });
