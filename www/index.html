@@ -106,7 +106,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 /* ── Recordings view ── */
 #view-rec{background:var(--s1);overflow:hidden}
 #rec-filter-bar{flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--border)}
-#rec-filter-main{padding:8px 12px;display:flex;align-items:center;gap:8px}
+#rec-filter-main{padding:8px 12px;display:flex;align-items:center;gap:8px;min-width:0}
 #rec-filter-tags{overflow:hidden;max-height:200px;transition:max-height .2s ease,padding .2s ease;
   padding:0 12px 8px}
 #rec-filter-tags.collapsed{max-height:0;padding-bottom:0}
@@ -117,11 +117,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #rec-tag-toggle.has-tags{display:flex}
 #rec-tag-toggle.active{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 #rec-search{background:var(--s2);border:1px solid var(--border2);color:var(--text);
-  padding:7px 12px;border-radius:var(--radius);font-size:13px;width:180px;outline:none;
-  transition:border-color .15s}
+  padding:7px 12px;border-radius:var(--radius);font-size:13px;width:160px;min-width:80px;
+  flex-shrink:1;outline:none;transition:border-color .15s}
 #rec-search:focus{border-color:var(--accent)}
 #rec-cam-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);
-  padding:7px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer}
+  padding:7px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer;
+  flex-shrink:1;min-width:0;max-width:160px}
 #rec-tags{display:flex;gap:5px;flex-wrap:wrap}
 .tag-chip{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
   padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
@@ -7827,7 +7828,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <select id="rec-cam-sel" onchange="loadAndFilterRec()">
           <option value="" data-i18n="camSelect">Select camera…</option>
         </select>
-        <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label">&#127991;</button>
+        <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label"><svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M1 2h10l-4 4.5V11L5 9.5V6.5L1 2z"/></svg></button>
         <div id="rec-toolbar">
         <span id="rec-count"></span>
         <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Grid view" onclick="setRecView('grid')">
