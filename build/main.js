@@ -45,6 +45,10 @@ const CAM_COMMANDS = [
   },
   { id: "recOnAlert", path: "/command/recordOnAlertOn", params: ["oid", "ot"], name: "Record on alert: on" },
   { id: "recOnDetect", path: "/command/recordOnDetectOn", params: ["oid", "ot"], name: "Record on detect: on" },
+  { id: "scheduleOn", path: "/command/scheduleOn", params: ["oid", "ot"], name: "Enable schedule" },
+  { id: "scheduleOff", path: "/command/scheduleOff", params: ["oid", "ot"], name: "Disable schedule" },
+  { id: "detectorOn", path: "/command/switchDetector?on=true", params: ["oid", "ot"], name: "Enable detector" },
+  { id: "detectorOff", path: "/command/switchDetector?on=false", params: ["oid", "ot"], name: "Disable detector" },
   { id: "purge", path: "/command/purge", params: ["oid", "ot"], name: "Purge folder (caution!)" }
 ];
 const SYS_COMMANDS = [
@@ -617,6 +621,19 @@ class AgentDvr extends utils.Adapter {
   ensureButton(id, name, entry) {
     return this.ensureControl(id, name, entry, "button");
   }
+  async ensureLevel(id, name, entry, min, max) {
+    if (!this.ensuredFolders.has(id)) {
+      await this.ensurePath(id);
+      await this.setObjectNotExistsAsync(id, {
+        type: "state",
+        common: { name, type: "number", role: "level", read: true, write: true, min, max },
+        native: {}
+      });
+      await this.setStateAsync(id, { val: 0, ack: true });
+      this.ensuredFolders.add(id);
+    }
+    this.registry.set(id, entry);
+  }
   async ensureSelector(id, name, entry, states) {
     if (!this.ensuredFolders.has(id)) {
       await this.ensurePath(id);
@@ -783,6 +800,30 @@ class AgentDvr extends utils.Adapter {
           await this.ensureButton(cid, `PTZ ${p.id}`, { kind: "ptz", oid: d.oid, dir: p.dir });
         }
       }
+    }
+    if (d.ot === 2) {
+      const sfx = { kind: "levelCmd", path: "/command/setSensitivity", oid: d.oid, ot: d.ot };
+      await this.ensureLevel(
+        `${fid}.control.sensitivityMin`,
+        "Sensitivity min (0-100)",
+        { ...sfx, valueParam: "min" },
+        0,
+        100
+      );
+      await this.ensureLevel(
+        `${fid}.control.sensitivityMax`,
+        "Sensitivity max (0-100)",
+        { ...sfx, valueParam: "max" },
+        0,
+        100
+      );
+      await this.ensureLevel(
+        `${fid}.control.sensitivityGain`,
+        "Sensitivity gain (0-100)",
+        { ...sfx, valueParam: "gain" },
+        0,
+        100
+      );
     }
     if (this.config.enableUrls && d.ot === 2) {
       await this.ensureFolder(`${fid}.urls`, "URLs", "channel");
@@ -1288,7 +1329,9 @@ class AgentDvr extends utils.Adapter {
         qs.push(`ot=${encodeURIComponent(String(entry.ot))}`);
       }
     }
-    return (entry.path || "") + (qs.length ? `?${qs.join("&")}` : "");
+    const base = entry.path || "";
+    const sep = base.includes("?") ? "&" : "?";
+    return base + (qs.length ? `${sep}${qs.join("&")}` : "");
   }
   async clearPtzSiblings(stateId) {
     const prefix = stateId.slice(0, stateId.lastIndexOf(".") + 1);
@@ -1311,6 +1354,21 @@ class AgentDvr extends utils.Adapter {
         if (cmdRes2.ok) {
           this.log.debug(`OK: ${url2}`);
           await this.setStateAsync(relId, { val: ind, ack: true });
+        } else {
+          this.log.warn(`Command failed (${url2}): ${cmdRes2.error}`);
+        }
+        this.scheduleRefresh();
+      }
+      return;
+    }
+    if (entry.kind === "levelCmd") {
+      const num = typeof val === "number" ? val : parseFloat(String(val != null ? val : ""));
+      if (!isNaN(num)) {
+        const url2 = `${entry.path}?oid=${encodeURIComponent(String(entry.oid))}&ot=${encodeURIComponent(String(entry.ot))}&${entry.valueParam}=${Math.round(num)}`;
+        const cmdRes2 = await this.apiGet(url2);
+        if (cmdRes2.ok) {
+          this.log.debug(`OK: ${url2}`);
+          await this.setStateAsync(relId, { val: Math.round(num), ack: true });
         } else {
           this.log.warn(`Command failed (${url2}): ${cmdRes2.error}`);
         }

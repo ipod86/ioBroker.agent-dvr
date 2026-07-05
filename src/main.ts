@@ -32,7 +32,7 @@ interface Device {
 	raw: Record<string, unknown>;
 }
 
-type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile' | 'snapshotB64';
+type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile' | 'snapshotB64' | 'levelCmd';
 
 interface RegistryEntry {
 	kind: RegistryKind;
@@ -42,6 +42,7 @@ interface RegistryEntry {
 	ot?: number;
 	dir?: number;
 	fid?: string;
+	valueParam?: string;
 }
 
 // ---- Commands ----
@@ -66,6 +67,10 @@ const CAM_COMMANDS = [
 	},
 	{ id: 'recOnAlert', path: '/command/recordOnAlertOn', params: ['oid', 'ot'], name: 'Record on alert: on' },
 	{ id: 'recOnDetect', path: '/command/recordOnDetectOn', params: ['oid', 'ot'], name: 'Record on detect: on' },
+	{ id: 'scheduleOn', path: '/command/scheduleOn', params: ['oid', 'ot'], name: 'Enable schedule' },
+	{ id: 'scheduleOff', path: '/command/scheduleOff', params: ['oid', 'ot'], name: 'Disable schedule' },
+	{ id: 'detectorOn', path: '/command/switchDetector?on=true', params: ['oid', 'ot'], name: 'Enable detector' },
+	{ id: 'detectorOff', path: '/command/switchDetector?on=false', params: ['oid', 'ot'], name: 'Disable detector' },
 	{ id: 'purge', path: '/command/purge', params: ['oid', 'ot'], name: 'Purge folder (caution!)' },
 ] as const;
 
@@ -754,6 +759,20 @@ class AgentDvr extends utils.Adapter {
 		return this.ensureControl(id, name, entry, 'button');
 	}
 
+	private async ensureLevel(id: string, name: string, entry: RegistryEntry, min: number, max: number): Promise<void> {
+		if (!this.ensuredFolders.has(id)) {
+			await this.ensurePath(id);
+			await this.setObjectNotExistsAsync(id, {
+				type: 'state',
+				common: { name, type: 'number', role: 'level', read: true, write: true, min, max },
+				native: {},
+			});
+			await this.setStateAsync(id, { val: 0, ack: true });
+			this.ensuredFolders.add(id);
+		}
+		this.registry.set(id, entry);
+	}
+
 	private async ensureSelector(
 		id: string,
 		name: string,
@@ -942,6 +961,31 @@ class AgentDvr extends utils.Adapter {
 					await this.ensureButton(cid, `PTZ ${p.id}`, { kind: 'ptz', oid: d.oid, dir: p.dir });
 				}
 			}
+		}
+
+		if (d.ot === 2) {
+			const sfx = { kind: 'levelCmd' as const, path: '/command/setSensitivity', oid: d.oid, ot: d.ot };
+			await this.ensureLevel(
+				`${fid}.control.sensitivityMin`,
+				'Sensitivity min (0-100)',
+				{ ...sfx, valueParam: 'min' },
+				0,
+				100,
+			);
+			await this.ensureLevel(
+				`${fid}.control.sensitivityMax`,
+				'Sensitivity max (0-100)',
+				{ ...sfx, valueParam: 'max' },
+				0,
+				100,
+			);
+			await this.ensureLevel(
+				`${fid}.control.sensitivityGain`,
+				'Sensitivity gain (0-100)',
+				{ ...sfx, valueParam: 'gain' },
+				0,
+				100,
+			);
 		}
 
 		if (this.config.enableUrls && d.ot === 2) {
@@ -1568,7 +1612,9 @@ class AgentDvr extends utils.Adapter {
 				qs.push(`ot=${encodeURIComponent(String(entry.ot))}`);
 			}
 		}
-		return (entry.path || '') + (qs.length ? `?${qs.join('&')}` : '');
+		const base = entry.path || '';
+		const sep = base.includes('?') ? '&' : '?';
+		return base + (qs.length ? `${sep}${qs.join('&')}` : '');
 	}
 
 	private async clearPtzSiblings(stateId: string): Promise<void> {
@@ -1593,6 +1639,22 @@ class AgentDvr extends utils.Adapter {
 				if (cmdRes.ok) {
 					this.log.debug(`OK: ${url}`);
 					await this.setStateAsync(relId, { val: ind, ack: true });
+				} else {
+					this.log.warn(`Command failed (${url}): ${cmdRes.error}`);
+				}
+				this.scheduleRefresh();
+			}
+			return;
+		}
+
+		if (entry.kind === 'levelCmd') {
+			const num = typeof val === 'number' ? val : parseFloat(String(val ?? ''));
+			if (!isNaN(num)) {
+				const url = `${entry.path}?oid=${encodeURIComponent(String(entry.oid))}&ot=${encodeURIComponent(String(entry.ot))}&${entry.valueParam}=${Math.round(num)}`;
+				const cmdRes = await this.apiGet(url);
+				if (cmdRes.ok) {
+					this.log.debug(`OK: ${url}`);
+					await this.setStateAsync(relId, { val: Math.round(num), ack: true });
 				} else {
 					this.log.warn(`Command failed (${url}): ${cmdRes.error}`);
 				}
