@@ -773,8 +773,9 @@ class AgentDvr extends utils.Adapter {
     await this.flattenWrite(d.raw, fid, 0);
     await this.writeStatusDps(d, fid);
     await this.ensureFolder(`${fid}.control`, "Control", "channel");
+    const CAM_ONLY = /* @__PURE__ */ new Set(["snapshot", "objectDetectOn", "objectDetectOff"]);
     for (const c of CAM_COMMANDS) {
-      if (c.id === "snapshot" && d.ot !== 2) {
+      if (CAM_ONLY.has(c.id) && d.ot !== 2) {
         continue;
       }
       await this.ensureButton(`${fid}.control.${c.id}`, c.name, {
