@@ -117,18 +117,18 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #rec-tag-toggle.has-tags{display:flex}
 #rec-tag-toggle.active{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
 #rec-search{background:var(--s2);border:1px solid var(--border2);color:var(--text);
-  padding:7px 12px;border-radius:var(--radius);font-size:13px;width:160px;min-width:80px;
-  flex-shrink:1;outline:none;transition:border-color .15s}
+  padding:7px 12px;border-radius:var(--radius);font-size:13px;flex:1 1 0;min-width:60px;
+  max-width:180px;outline:none;transition:border-color .15s}
 #rec-search:focus{border-color:var(--accent)}
 #rec-cam-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);
   padding:7px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer;
-  flex-shrink:1;min-width:0;max-width:160px}
+  flex:1 1 0;min-width:0;max-width:180px;overflow:hidden;text-overflow:ellipsis}
 #rec-tags{display:flex;gap:5px;flex-wrap:wrap}
 .tag-chip{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
   padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
 .tag-chip:hover{border-color:var(--border);color:var(--text)}
 .tag-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
-#rec-toolbar{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+#rec-toolbar{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;white-space:nowrap}
 #rec-count{font-size:12px;color:var(--muted);white-space:nowrap}
 .rec-view-btn{background:var(--s2);border:1px solid var(--border2);color:var(--muted);
   width:28px;height:28px;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;
