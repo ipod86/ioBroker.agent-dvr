@@ -826,12 +826,17 @@ class AgentDvr extends utils.Adapter {
         100
       );
     }
-    if (this.config.enableUrls && d.ot === 2) {
+    if (this.config.enableUrls) {
       await this.ensureFolder(`${fid}.urls`, "URLs", "channel");
-      await this.writeLeaf(`${fid}.urls.snapshot`, `${this.baseUrl}/grab.jpg?oid=${d.oid}`);
-      await this.writeLeaf(`${fid}.urls.photo`, `${this.baseUrl}/photo.jpg?oid=${d.oid}`);
-      await this.writeLeaf(`${fid}.urls.mjpeg`, `${this.baseUrl}/video.mjpg?oids=${d.oid}`);
-      await this.writeLeaf(`${fid}.urls.mp4`, `${this.baseUrl}/video.mp4?oids=${d.oid}`);
+      if (d.ot === 2) {
+        await this.writeLeaf(`${fid}.urls.snapshot`, `${this.baseUrl}/grab.jpg?oid=${d.oid}`);
+        await this.writeLeaf(`${fid}.urls.photo`, `${this.baseUrl}/photo.jpg?oid=${d.oid}`);
+        await this.writeLeaf(`${fid}.urls.mjpeg`, `${this.baseUrl}/video.mjpg?oids=${d.oid}`);
+        await this.writeLeaf(`${fid}.urls.mp4`, `${this.baseUrl}/video.mp4?oids=${d.oid}`);
+      } else if (d.ot === 1) {
+        await this.writeLeaf(`${fid}.urls.audio_mp3`, `${this.baseUrl}/audio.mp3?oid=${d.oid}`);
+        await this.writeLeaf(`${fid}.urls.audio_ogg`, `${this.baseUrl}/audio.ogg?oid=${d.oid}`);
+      }
     }
     if (d.ot === 2) {
       const snapId = `${fid}.snapshot_b64`;
