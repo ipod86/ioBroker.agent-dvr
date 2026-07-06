@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "news": {
+      "0.3.0": {
+        "en": "New control buttons (scheduleOn/Off, detectorOn/Off, sensitivityMin/Max/Gain), audio URL states for microphones, native browser fullscreen in dashboard, collapsible tag filter, auto-hide header",
+        "de": "Neue Steuertasten (scheduleOn/Off, detectorOn/Off, Empfindlichkeit), Audio-URL-Zustände für Mikrofone, nativer Browser-Vollbild im Dashboard, ausklappbarer Tag-Filter, Auto-Hide-Header",
+        "ru": "Новые кнопки управления (расписание, детектор, чувствительность), URL-состояния для микрофонов, нативный полноэкранный режим, сворачиваемый фильтр меток",
+        "pt": "Novos botões de controlo (schedule, detector, sensibilidade), URLs de áudio para microfones, tela cheia nativa, filtro de etiquetas recolhível",
+        "nl": "Nieuwe besturingsknoppen (schema, detector, gevoeligheid), audio-URL-staten voor microfoons, native browserfullscreen, inklapbaar labelfilter",
+        "fr": "Nouveaux boutons de commande (planification, détecteur, sensibilité), états URL audio pour microphones, plein écran natif, filtre d'étiquettes rétractable",
+        "it": "Nuovi pulsanti di controllo (pianificazione, rilevatore, sensibilità), stati URL audio per microfoni, schermo intero nativo, filtro etichette comprimibile",
+        "es": "Nuevos botones de control (programación, detector, sensibilidad), estados de URL de audio para micrófonos, pantalla completa nativa, filtro de etiquetas plegable",
+        "pl": "Nowe przyciski sterowania (harmonogram, detektor, czułość), stany URL audio dla mikrofonów, natywny pełny ekran, zwijany filtr etykiet",
+        "zh-cn": "新增控制按钮（计划、检测器、灵敏度），麦克风音频URL状态，本地浏览器全屏，可折叠标签过滤器",
+        "uk": "Нові кнопки керування (розклад, детектор, чутливість), стани URL аудіо для мікрофонів, нативний повноекранний режим, згортуваний фільтр міток"
+      },
       "0.2.2": {
         "en": "fix: translate remaining German strings in DashboardPanel to English via I18n.t()\nfix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages\nchore: replace POSIX mv with cross-platform node rename in src-admin build script",
         "de": "Behebung: Die verbleibenden deutschen Zeichenketten im DashboardPanel werden mithilfe von I18n.t() ins Englische übersetzt.\nBehebung: Hinzufügen der i18n-Schlüssel loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn und reload in allen 11 Sprachen\nAufgabe: Ersetzen Sie POSIX mv durch plattformübergreifendes Node-Rename im src-admin-Build-Skript.",
@@ -80,19 +93,6 @@
         "pl": "integracja go2rtc WebRTC (tabela w admin, proxy WS ioBroker); automatyczne usuwanie nieaktywnych kamer; poprawiona kolejność poprzedni/następny nagrań",
         "uk": "інтеграція go2rtc WebRTC (таблиця в admin, WS-проксі через ioBroker); автовидалення застарілих камер; виправлено порядок кнопок Попередній/Наступний для записів",
         "zh-cn": "go2rtc WebRTC 集成（管理表格映射，ioBroker WS 代理）；自动删除过时摄像头；修正录像上一个/下一个顺序"
-      },
-      "0.0.4": {
-        "en": "fix DP roles: snapshot_b64 role state, profile selector role level",
-        "de": "DP-Rollen korrigiert: snapshot_b64 role state, Profil-Selektor role level",
-        "ru": "исправлены роли DP: snapshot_b64 role state, селектор профиля role level",
-        "pt": "corrigir roles DP: snapshot_b64 role state, seletor de perfil role level",
-        "nl": "DP-rollen gecorrigeerd: snapshot_b64 role state, profielkiezer role level",
-        "fr": "correction des rôles DP: snapshot_b64 role state, sélecteur de profil role level",
-        "it": "corretto ruoli DP: snapshot_b64 role state, selettore profilo role level",
-        "es": "corregir roles DP: snapshot_b64 role state, selector de perfil role level",
-        "pl": "poprawiono role DP: snapshot_b64 role state, selektor profilu role level",
-        "uk": "виправлено ролі DP: snapshot_b64 role state, вибір профілю role level",
-        "zh-cn": "修正 DP 角色：snapshot_b64 角色 state，配置文件选择器角色 level"
       }
     },
     "titleLang": {

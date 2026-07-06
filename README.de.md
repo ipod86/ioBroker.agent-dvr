@@ -339,7 +339,7 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.3.0 (2026-07-06)
 * (ipod86) feat: Steuerbuttons scheduleOn/Off und detectorOn/Off für Kameras und Mikrofone
 * (ipod86) feat: Empfindlichkeitszustände sensitivityMin, sensitivityMax, sensitivityGain für Kameras (0–100)
 * (ipod86) feat: URL-Zustände audio_mp3 und audio_ogg für Mikrofone

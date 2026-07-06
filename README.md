@@ -344,7 +344,7 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.3.0 (2026-07-06)
 * (ipod86) feat: add scheduleOn/Off and detectorOn/Off control buttons for cameras and microphones
 * (ipod86) feat: add sensitivityMin, sensitivityMax, sensitivityGain level states for cameras (0–100)
 * (ipod86) feat: add audio_mp3 and audio_ogg URL states for microphones
