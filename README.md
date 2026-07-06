@@ -344,6 +344,18 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) feat: add scheduleOn/Off and detectorOn/Off control buttons for cameras and microphones
+* (ipod86) feat: add sensitivityMin, sensitivityMax, sensitivityGain level states for cameras (0–100)
+* (ipod86) feat: add audio_mp3 and audio_ogg URL states for microphones
+* (ipod86) fix: restrict objectDetectOn/Off and snapshot buttons to cameras (ot=2) only
+* (ipod86) feat: inline flv.js into dashboard HTML — no external file required
+* (ipod86) fix: preserve FLV stream aspect ratio after tab visibility change (all three player call sites)
+* (ipod86) feat: collapsible tag filter row on recordings and timeline pages
+* (ipod86) feat: native browser fullscreen button in live view modal with correct aspect ratio
+* (ipod86) feat: live view modal header auto-hides after 3 s of inactivity; reappears on mouse/touch
+* (ipod86) fix: add fsEnter, fsExit, filterByLabel, timelineView, closePanel i18n keys in all 10 languages
+
 ### 0.2.2 (2026-07-04)
 * (ipod86) fix: translate remaining German strings in DashboardPanel to English via I18n.t()
 * (ipod86) fix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages

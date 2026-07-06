@@ -340,6 +340,18 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) feat: Steuerbuttons scheduleOn/Off und detectorOn/Off für Kameras und Mikrofone
+* (ipod86) feat: Empfindlichkeitszustände sensitivityMin, sensitivityMax, sensitivityGain für Kameras (0–100)
+* (ipod86) feat: URL-Zustände audio_mp3 und audio_ogg für Mikrofone
+* (ipod86) fix: objectDetectOn/Off und Snapshot-Schaltfläche auf Kameras (ot=2) beschränkt
+* (ipod86) feat: flv.js in Dashboard-HTML eingebettet — keine externe Datei mehr nötig
+* (ipod86) fix: FLV-Stream-Seitenverhältnis nach Tab-Wechsel korrekt beibehalten
+* (ipod86) feat: ausklappbarer Tag-Filter in Aufnahmen- und Timeline-Ansicht
+* (ipod86) feat: nativer Browser-Vollbild-Button im Live-View-Modal mit korrektem Seitenverhältnis
+* (ipod86) feat: Header im Live-View-Modal blendet sich nach 3 s Inaktivität aus, erscheint bei Maus/Touch wieder
+* (ipod86) fix: i18n-Keys fsEnter, fsExit, filterByLabel, timelineView, closePanel in allen 10 Sprachen
+
+### 0.2.2 (2026-07-04)
 * (ipod86) fix: verbleibende deutsche Strings im DashboardPanel via I18n.t() übersetzt
 * (ipod86) fix: i18n-Keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in allen 11 Sprachen ergänzt
 * (ipod86) chore: POSIX mv durch plattformübergreifendes node rename im src-admin Build-Script ersetzt
