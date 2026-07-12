@@ -344,6 +344,14 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.2 (2026-07-12)
+* (ipod86) fix: FLV stream proxy now sends Authorization header (HTTP 401 with AgentDVR auth)
+* (ipod86) fix: dashboard camera online status was read from wrong state path (data.online → status.online)
+* (ipod86) fix: MP4/FLV stream label was hardcoded German — now translated in all 11 languages
+* (ipod86) fix: admin UI default values now match io-package.json (dashTagPosition, widgetAnzahl, widgetBorderRadius)
+* (ipod86) fix: go2rtcEnabled flag now respected when loading streams in admin UI
+* (ipod86) fix: enableStreamProxy missing from native defaults in io-package.json
+
 ### 0.4.1 (2026-07-12)
 * (ipod86) fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled
 
@@ -387,11 +395,6 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 * (ipod86) fix: remove obsolete jsonConfig.json — settings handled by React admin (W5046)
 * (ipod86) chore: exclude admin/ directory from ESLint to prevent OOM in CI
 * (ipod86) docs: rewrite README and README.de with all tabs and settings documented
-
-### 0.1.0 (2026-07-01)
-* (ipod86) feat: add full i18n to live dashboard — all UI strings translated into 11 languages
-* (ipod86) fix: add missing sm/md/lg/xl size attributes to go2rtcMapping table in jsonConfig.json (E5507)
-* (ipod86) fix: translate missing admin i18n keys into 9 languages (E5606)
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

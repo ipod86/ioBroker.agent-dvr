@@ -1,6 +1,11 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.1.0 (2026-07-01)
+* (ipod86) feat: add full i18n to live dashboard — all UI strings translated into 11 languages
+* (ipod86) fix: add missing sm/md/lg/xl size attributes to go2rtcMapping table in jsonConfig.json (E5507)
+* (ipod86) fix: translate missing admin i18n keys into 9 languages (E5606)
+
 ## 0.0.6 (2026-07-01)
 * (ipod86) docs: add Live Dashboard and go2rtc WebRTC sections to README
 

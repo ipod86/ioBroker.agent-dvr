@@ -339,6 +339,14 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.2 (2026-07-12)
+* (ipod86) fix: FLV-Stream-Proxy sendet jetzt Authorization-Header (HTTP 401 bei AgentDVR-Auth)
+* (ipod86) fix: Online-Status der Kameras wurde aus falschem State-Pfad gelesen (data.online → status.online)
+* (ipod86) fix: MP4/FLV-Stream-Label war auf Deutsch hardcodiert — jetzt in allen 11 Sprachen übersetzt
+* (ipod86) fix: Admin-UI-Standardwerte stimmen jetzt mit io-package.json überein (dashTagPosition, widgetAnzahl, widgetBorderRadius)
+* (ipod86) fix: go2rtcEnabled-Flag wird beim Laden der Streams im Admin-UI jetzt berücksichtigt
+* (ipod86) fix: enableStreamProxy fehlte in den native-Defaults der io-package.json
+
 ### 0.4.1 (2026-07-12)
 * (ipod86) fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar
 
@@ -382,11 +390,6 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 * (ipod86) fix: veraltete jsonConfig.json entfernt — Einstellungen werden durch React-Admin verwaltet (W5046)
 * (ipod86) chore: admin/-Verzeichnis aus ESLint ausgeschlossen (OOM im CI verhindert)
 * (ipod86) docs: README und README.de vollständig neu geschrieben mit allen Tabs und Einstellungen
-
-### 0.1.0 (2026-07-01)
-* (ipod86) feat: vollständige i18n im Live-Dashboard — alle UI-Texte in 11 Sprachen übersetzt
-* (ipod86) fix: fehlende sm/md/lg/xl-Größenattribute in go2rtcMapping-Tabelle ergänzt (E5507)
-* (ipod86) fix: fehlende Admin-i18n-Keys in 9 Sprachen übersetzt (E5606)
 
 [Ältere Changelog-Einträge in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
