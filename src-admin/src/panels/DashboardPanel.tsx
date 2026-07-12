@@ -94,7 +94,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 	}
 
 	const fetchData = useCallback(async () => {
-		const ip = (native.ip || '').trim();
+		const ip = (native.serverIp || '').trim();
 		const port = native.port || 8090;
 		let go2rtcUrl = (native.go2rtcUrl || '').trim();
 		go2rtcUrl = go2rtcUrl.replace(/^https:\/\//i, 'http://');
@@ -193,12 +193,12 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 		} finally {
 			setLoading(false);
 		}
-	}, [native.ip, native.port, native.go2rtcUrl, native.user, native.pass, socket, instance]);
+	}, [native.serverIp, native.port, native.go2rtcUrl, native.user, native.pass, socket, instance]);
 
 	useEffect(() => {
 		const t = setTimeout(() => void fetchData(), 600);
 		return () => clearTimeout(t);
-	}, [native.ip, native.port, native.go2rtcUrl, native.user, native.pass, fetchData]);
+	}, [native.serverIp, native.port, native.go2rtcUrl, native.user, native.pass, fetchData]);
 
 	return (
 		<div>

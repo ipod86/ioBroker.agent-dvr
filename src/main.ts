@@ -460,7 +460,7 @@ class AgentDvr extends utils.Adapter {
 		this.wt = getWidgetLabels(rawLang ?? 'en');
 
 		const pollSeconds = Math.max(5, Math.min(3600, this.config.pollSeconds || 30));
-		this.baseUrl = `http://${this.config.ip}:${this.config.port || 8090}`;
+		this.baseUrl = `http://${this.config.serverIp}:${this.config.port || 8090}`;
 
 		if (this.config.user || this.config.pass) {
 			this.authHeader = `Basic ${Buffer.from(`${this.config.user}:${this.config.pass}`).toString('base64')}`;
@@ -612,7 +612,7 @@ class AgentDvr extends utils.Adapter {
 		return new Promise(resolve => {
 			const timeout = Math.max(1000, Math.min(30000, this.config.httpTimeoutMs || 8000));
 			const opts: http.RequestOptions = {
-				hostname: this.config.ip,
+				hostname: this.config.serverIp,
 				port: this.config.port || 8090,
 				path,
 				method: 'GET',
@@ -652,7 +652,7 @@ class AgentDvr extends utils.Adapter {
 		return new Promise(resolve => {
 			const timeout = Math.max(1000, Math.min(30000, this.config.httpTimeoutMs || 8000));
 			const opts: http.RequestOptions = {
-				hostname: this.config.ip,
+				hostname: this.config.serverIp,
 				port: this.config.port || 8090,
 				path,
 				method: 'GET',

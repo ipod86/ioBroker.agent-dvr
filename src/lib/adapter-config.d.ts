@@ -3,7 +3,7 @@ declare global {
     namespace ioBroker {
         interface AdapterConfig {
             // Connection
-            ip: string;
+            serverIp: string;
             port: number;
             user: string;
             pass: string;
