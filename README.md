@@ -344,6 +344,9 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.1 (2026-07-12)
+* (ipod86) fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled
+
 ### 0.4.0 (2026-07-12)
 * (ipod86) feat: optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection to ioBroker, not directly to AgentDVR)
 
@@ -389,9 +392,6 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 * (ipod86) feat: add full i18n to live dashboard — all UI strings translated into 11 languages
 * (ipod86) fix: add missing sm/md/lg/xl size attributes to go2rtcMapping table in jsonConfig.json (E5507)
 * (ipod86) fix: translate missing admin i18n keys into 9 languages (E5606)
-
-### 0.0.6 (2026-07-01)
-* (ipod86) docs: add Live Dashboard and go2rtc WebRTC sections to README
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

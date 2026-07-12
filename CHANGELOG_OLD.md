@@ -1,6 +1,9 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.0.6 (2026-07-01)
+* (ipod86) docs: add Live Dashboard and go2rtc WebRTC sections to README
+
 ## 0.0.5 (2026-07-01)
 * (ipod86) feat: go2rtc WebRTC stream integration — per-camera mapping table in admin, ioBroker WebSocket proxy to bypass browser cross-origin restrictions
 * (ipod86) feat: auto-delete camera/microphone data points when device is removed from AgentDVR

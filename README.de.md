@@ -339,6 +339,9 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.1 (2026-07-12)
+* (ipod86) fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar
+
 ### 0.4.0 (2026-07-12)
 * (ipod86) feat: optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung zu ioBroker, nicht direkt zu AgentDVR)
 

@@ -83,7 +83,6 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 	const [loading, setLoading] = useState(false);
 
 	const cameraStreams: Record<string, string> = native.cameraStreams || {};
-	const anyGo2rtc = Object.values(cameraStreams).some(v => v && v !== 'mjpeg' && v !== 'mp4');
 
 	function getCameraStream(camKey: string): string {
 		return cameraStreams[camKey] ?? 'mjpeg';

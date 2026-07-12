@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "news": {
+      "0.4.1": {
+        "en": "fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled",
+        "de": "fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar",
+        "ru": "fix: плитка обзора ссылается на хост ioBroker; URL go2rtc отображается только при включении",
+        "pt": "fix: tile de visão geral aponta para o host ioBroker; URL go2rtc exibida apenas quando habilitado",
+        "nl": "fix: overzichtstegel verwijst naar ioBroker-host; go2rtc-URL alleen zichtbaar als ingeschakeld",
+        "fr": "fix: la tuile d aperçu pointe vers l hôte ioBroker; URL go2rtc visible uniquement si activé",
+        "it": "fix: il riquadro panoramica punta all host ioBroker; URL go2rtc visibile solo se abilitato",
+        "es": "fix: el tile de vista general apunta al host ioBroker; URL go2rtc visible solo cuando está activado",
+        "pl": "fix: kafelek przeglądu wskazuje na host ioBroker; URL go2rtc widoczny tylko po włączeniu",
+        "uk": "fix: плитка огляду вказує на хост ioBroker; URL go2rtc відображається лише при увімкненні",
+        "zh-cn": "fix: 概览磁贴指向 ioBroker 主机；go2rtc URL 仅在启用时显示"
+      },
       "0.4.0": {
         "en": "Optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection)",
         "de": "Optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung)",
@@ -80,19 +93,6 @@
         "pl": "wyczyn: dodanie pełnego i18n do pulpitu nawigacyjnego na żywo — wszystkie ciągi interfejsu użytkownika przetłumaczone na 11 języków\nnaprawiono: dodano brakujące atrybuty rozmiaru sm/md/lg/xl do tabeli go2rtcMapping w jsonConfig.json (E5507)\nnaprawiono: przetłumaczono brakujące klucze administratora i18n na 9 języków (E5606)",
         "uk": "подвиг: додано повний i18n до панелі керування Live — усі рядки інтерфейсу перекладено 11 мовами\nвиправлення: додано відсутні атрибути розміру sm/md/lg/xl до таблиці go2rtcMapping у jsonConfig.json (E5507)\nвиправлення: переклад відсутніх ключів адміністратора i18n на 9 мов (E5606)",
         "zh-cn": "新增功能：为实时仪表盘添加完整的国际化 (i18n) 功能——所有用户界面字符串均翻译成 11 种语言\n修复：在 jsonConfig.json 中向 go2rtcMapping 表添加缺失的 sm/md/lg/xl 尺寸属性 (E5507)\n修复：将缺失的管理员 i18n 密钥翻译成 9 种语言 (E5606)"
-      },
-      "0.0.6": {
-        "en": "add Live Dashboard and go2rtc WebRTC documentation to README",
-        "de": "Live-Dashboard- und go2rtc-WebRTC-Dokumentation zur README hinzugefügt",
-        "ru": "добавлена документация Live Dashboard и go2rtc WebRTC в README",
-        "pt": "documentação do Live Dashboard e go2rtc WebRTC adicionada ao README",
-        "nl": "Live Dashboard en go2rtc WebRTC documentatie toegevoegd aan README",
-        "fr": "documentation Live Dashboard et go2rtc WebRTC ajoutée au README",
-        "it": "documentazione Live Dashboard e go2rtc WebRTC aggiunta al README",
-        "es": "documentación de Live Dashboard y go2rtc WebRTC añadida al README",
-        "pl": "dodano dokumentację Live Dashboard i go2rtc WebRTC do README",
-        "uk": "додано документацію Live Dashboard і go2rtc WebRTC до README",
-        "zh-cn": "README 中新增 Live Dashboard 和 go2rtc WebRTC 文档"
       }
     },
     "titleLang": {
