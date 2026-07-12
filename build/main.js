@@ -318,10 +318,33 @@ class AgentDvr extends utils.Adapter {
       this.log.info("webInstance set \u2014 web adapter will reload the extension");
     }
   }
+  async ensureLocalLinks() {
+    var _a, _b, _c, _d, _e, _f;
+    const adapterObj = await this.getForeignObjectAsync("system.adapter.agent-dvr");
+    if (!adapterObj) return;
+    const webObj = await this.getForeignObjectAsync("system.adapter.web.0");
+    const webPort = ((_a = webObj == null ? void 0 : webObj.native) == null ? void 0 : _a.port) || 8082;
+    const protocol = ((_b = webObj == null ? void 0 : webObj.native) == null ? void 0 : _b.secure) ? "https" : "http";
+    let ip = this.host || "localhost";
+    if (this.host) {
+      const hostObj = await this.getForeignObjectAsync(`system.host.${this.host}`);
+      const addresses = (_d = (_c = hostObj == null ? void 0 : hostObj.common) == null ? void 0 : _c.address) != null ? _d : [];
+      const lan = addresses.find((a) => !a.startsWith("127.") && a !== "::1" && !a.startsWith("fe80"));
+      if (lan) ip = lan;
+    }
+    const url = `${protocol}://${ip}:${webPort}/agent-dvr/`;
+    const current = (_f = (_e = adapterObj.common) == null ? void 0 : _e.localLinks) == null ? void 0 : _f._default;
+    if (current === url) return;
+    await this.extendForeignObjectAsync("system.adapter.agent-dvr", {
+      common: { localLinks: { _default: url } }
+    });
+    this.log.info(`localLinks set: ${url}`);
+  }
   async onReady() {
     var _a;
     void this.setState("info.connection", false, true);
     await this.ensureWebInstance();
+    await this.ensureLocalLinks();
     const sysConfig = await this.getForeignObjectAsync("system.config");
     const rawLang = (_a = sysConfig == null ? void 0 : sysConfig.common) == null ? void 0 : _a.language;
     this.wt = (0, import_widget_i18n.getWidgetLabels)(rawLang != null ? rawLang : "en");

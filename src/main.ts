@@ -423,9 +423,37 @@ class AgentDvr extends utils.Adapter {
 		}
 	}
 
+	private async ensureLocalLinks(): Promise<void> {
+		const adapterObj = await this.getForeignObjectAsync('system.adapter.agent-dvr');
+		if (!adapterObj) return;
+
+		const webObj = await this.getForeignObjectAsync('system.adapter.web.0');
+		const webPort = (webObj?.native as any)?.port || 8082;
+		const protocol = (webObj?.native as any)?.secure ? 'https' : 'http';
+
+		// Resolve actual LAN IP from system.host — this.host is only the hostname string
+		let ip = this.host || 'localhost';
+		if (this.host) {
+			const hostObj = await this.getForeignObjectAsync(`system.host.${this.host}`);
+			const addresses: string[] = (hostObj?.common as any)?.address ?? [];
+			const lan = addresses.find(a => !a.startsWith('127.') && a !== '::1' && !a.startsWith('fe80'));
+			if (lan) ip = lan;
+		}
+
+		const url = `${protocol}://${ip}:${webPort}/agent-dvr/`;
+		const current = (adapterObj.common as any)?.localLinks?._default;
+		if (current === url) return;
+
+		await this.extendForeignObjectAsync('system.adapter.agent-dvr', {
+			common: { localLinks: { _default: url } } as any,
+		});
+		this.log.info(`localLinks set: ${url}`);
+	}
+
 	private async onReady(): Promise<void> {
 		void this.setState('info.connection', false, true);
 		await this.ensureWebInstance();
+		await this.ensureLocalLinks();
 
 		const sysConfig = await this.getForeignObjectAsync('system.config');
 		const rawLang = (sysConfig?.common as unknown as { language?: string } | undefined)?.language;
