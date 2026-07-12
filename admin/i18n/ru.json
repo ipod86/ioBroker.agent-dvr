@@ -137,6 +137,6 @@
   "cfgStreamSourceColumn": "Источник потока",
   "reload": "Обновить",
   "hdrProxy": "Прокси",
-  "cfgEnableStreamProxy": "Прокси потоков",
-  "cfgEnableStreamProxy_tt": "Маршрутизировать потоки MJPEG и снимки через ioBroker — браузер должен обращаться только к ioBroker, не к AgentDVR напрямую"
+  "cfgEnableStreamProxy": "MJPEG-прокси",
+  "cfgEnableStreamProxy_tt": "Маршрутизировать MJPEG и снимки через ioBroker (только для режима MJPEG — FLV и go2rtc всегда проксируются)"
 }

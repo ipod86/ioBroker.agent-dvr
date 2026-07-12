@@ -137,6 +137,6 @@
   "cfgStreamSourceColumn": "流来源",
   "reload": "重新加载",
   "hdrProxy": "代理",
-  "cfgEnableStreamProxy": "流代理",
-  "cfgEnableStreamProxy_tt": "通过 ioBroker 路由 MJPEG 和快照流——浏览器只需访问 ioBroker，无需直接访问 AgentDVR"
+  "cfgEnableStreamProxy": "MJPEG 代理",
+  "cfgEnableStreamProxy_tt": "通过 ioBroker 路由 MJPEG 和快照（仅 MJPEG 模式需要 — FLV 和 go2rtc 始终通过代理）"
 }

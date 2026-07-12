@@ -137,6 +137,6 @@
   "cfgStreamSourceColumn": "Źródło strumienia",
   "reload": "Odśwież",
   "hdrProxy": "Proxy",
-  "cfgEnableStreamProxy": "Proxy strumienia",
-  "cfgEnableStreamProxy_tt": "Kieruj strumienie MJPEG i migawki przez ioBroker — przeglądarka musi dotrzeć tylko do ioBroker, nie bezpośrednio do AgentDVR"
+  "cfgEnableStreamProxy": "Proxy MJPEG",
+  "cfgEnableStreamProxy_tt": "Kieruj MJPEG i migawki przez ioBroker (tylko w trybie MJPEG — FLV i go2rtc są zawsze proxied)"
 }

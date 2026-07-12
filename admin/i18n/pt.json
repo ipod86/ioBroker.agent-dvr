@@ -137,6 +137,6 @@
   "cfgStreamSourceColumn": "Fonte de stream",
   "reload": "Recarregar",
   "hdrProxy": "Proxy",
-  "cfgEnableStreamProxy": "Proxy de fluxo",
-  "cfgEnableStreamProxy_tt": "Roteie fluxos MJPEG e instantâneos pelo ioBroker — o navegador só precisa alcançar o ioBroker, não o AgentDVR diretamente"
+  "cfgEnableStreamProxy": "Proxy MJPEG",
+  "cfgEnableStreamProxy_tt": "Rotear MJPEG e snapshots pelo ioBroker (necessário apenas no modo MJPEG — FLV e go2rtc já são sempre proxied)"
 }
