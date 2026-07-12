@@ -142,6 +142,10 @@
     "tier": 3,
     "mode": "daemon",
     "type": "alarm",
+    "intro": true,
+    "localLinks": {
+      "_default": "%web_protocol%://%ip%:%web_port%/agent-dvr/"
+    },
     "messagebox": true,
     "compact": true,
     "connectionType": "local",
