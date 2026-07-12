@@ -508,32 +508,27 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 					</Table>
 				</TableContainer>
 			)}
-			{/* ── go2rtc URL — only visible when at least one camera uses go2rtc ── */}
-			{anyGo2rtc && (
-				<>
-					<SectionHeader textKey="hdrGo2rtc" />
-					<Grid
-						container
-						spacing={2}
-					>
-						<Grid
-							item
-							xs={12}
-							sm={8}
-							md={6}
-							lg={5}
-						>
-							<FormField
-								type="text"
-								labelKey="cfgGo2rtcUrl"
-								helpKey="cfgGo2rtcUrl_tt"
-								value={native.go2rtcUrl ?? ''}
-								onChange={v => onChange('go2rtcUrl', v)}
-							/>
-						</Grid>
-					</Grid>
-				</>
-			)}
+			<SectionHeader textKey="hdrGo2rtc" />
+			<Grid
+				container
+				spacing={2}
+			>
+				<Grid
+					item
+					xs={12}
+					sm={8}
+					md={6}
+					lg={5}
+				>
+					<FormField
+						type="text"
+						labelKey="cfgGo2rtcUrl"
+						helpKey="cfgGo2rtcUrl_tt"
+						value={native.go2rtcUrl ?? ''}
+						onChange={v => onChange('go2rtcUrl', v)}
+					/>
+				</Grid>
+			</Grid>
 		</div>
 	);
 };
