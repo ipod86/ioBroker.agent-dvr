@@ -65,7 +65,7 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					type="number"
 					labelKey="cfgWidgetAnzahl"
 					helpKey="cfgWidgetAnzahl_tt"
-					value={native.widgetAnzahl ?? 20}
+					value={native.widgetAnzahl ?? 50}
 					min={1}
 					max={500}
 					onChange={v => onChange('widgetAnzahl', v)}
@@ -354,7 +354,7 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					type="number"
 					labelKey="cfgWidgetBorderRadius"
 					helpKey="cfgWidgetBorderRadius_tt"
-					value={native.widgetBorderRadius ?? 4}
+					value={native.widgetBorderRadius ?? 8}
 					min={0}
 					max={32}
 					onChange={v => onChange('widgetBorderRadius', v)}

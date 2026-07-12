@@ -140,5 +140,6 @@
   "tabConnection": "连接",
   "tabDashboard": "实时仪表板",
   "tabFeatures": "功能",
-  "tabWidget": "小部件"
+  "tabWidget": "小部件",
+  "cfgDashStreamMp4": "MP4 / FLV（含音频）"
 }

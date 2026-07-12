@@ -140,5 +140,6 @@
   "tabConnection": "Połączenie",
   "tabDashboard": "Panel na żywo",
   "tabFeatures": "Funkcje",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgDashStreamMp4": "MP4 / FLV (z dźwiękiem)"
 }

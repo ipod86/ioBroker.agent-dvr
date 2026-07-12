@@ -80,7 +80,6 @@ const ConnectionPanel: React.FC<Props> = ({ native, onChange }) => (
 			<FormField
 				type="number"
 				labelKey="cfgPollSeconds"
-				helpKey="cfgPollSeconds"
 				value={native.pollSeconds ?? 30}
 				min={5}
 				max={3600}

@@ -678,13 +678,6 @@ class AgentDvr extends utils.Adapter {
 		}
 	}
 
-	private guessRole(id: string, val: unknown): ioBroker.CommonType {
-		if (typeof val === 'string' && /^https?:\/\//i.test(val)) {
-			return 'string';
-		}
-		return 'string';
-	}
-
 	private async writeLeaf(id: string, val: unknown): Promise<void> {
 		const t = typeof val;
 		let common: ioBroker.StateCommon;
@@ -910,11 +903,14 @@ class AgentDvr extends utils.Adapter {
 				continue;
 			}
 			const id = `${sfid}.${dp.key}`;
-			await this.setObjectNotExistsAsync(id, {
-				type: 'state',
-				common: { name: dp.name, type: 'boolean', role: dp.role, read: true, write: false, def: false },
-				native: {},
-			});
+			if (!this.ensuredFolders.has(id)) {
+				await this.setObjectNotExistsAsync(id, {
+					type: 'state',
+					common: { name: dp.name, type: 'boolean', role: dp.role, read: true, write: false, def: false },
+					native: {},
+				});
+				this.ensuredFolders.add(id);
+			}
 			await this.setStateAsync(id, { val: !!data[dp.key], ack: true });
 		}
 	}

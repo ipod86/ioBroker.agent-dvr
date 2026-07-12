@@ -550,12 +550,6 @@ class AgentDvr extends utils.Adapter {
       }
     }
   }
-  guessRole(id, val) {
-    if (typeof val === "string" && /^https?:\/\//i.test(val)) {
-      return "string";
-    }
-    return "string";
-  }
   async writeLeaf(id, val) {
     const t = typeof val;
     let common;
@@ -754,11 +748,14 @@ class AgentDvr extends utils.Adapter {
         continue;
       }
       const id = `${sfid}.${dp.key}`;
-      await this.setObjectNotExistsAsync(id, {
-        type: "state",
-        common: { name: dp.name, type: "boolean", role: dp.role, read: true, write: false, def: false },
-        native: {}
-      });
+      if (!this.ensuredFolders.has(id)) {
+        await this.setObjectNotExistsAsync(id, {
+          type: "state",
+          common: { name: dp.name, type: "boolean", role: dp.role, read: true, write: false, def: false },
+          native: {}
+        });
+        this.ensuredFolders.add(id);
+      }
       await this.setStateAsync(id, { val: !!data[dp.key], ack: true });
     }
   }

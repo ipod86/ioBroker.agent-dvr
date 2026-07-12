@@ -140,5 +140,6 @@
   "tabConnection": "З'єднання",
   "tabDashboard": "Live-панель",
   "tabFeatures": "Функції",
-  "tabWidget": "Віджет"
+  "tabWidget": "Віджет",
+  "cfgDashStreamMp4": "MP4 / FLV (зі звуком)"
 }

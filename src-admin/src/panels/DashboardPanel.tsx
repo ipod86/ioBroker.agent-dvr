@@ -152,7 +152,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 			clearTimeout(timer);
 
 			// --- go2rtc Streams ---
-			if (go2rtcUrl) {
+			if (native.go2rtcEnabled && go2rtcUrl) {
 				let browserOk = false;
 				try {
 					const g2ctrl = new AbortController();
@@ -287,7 +287,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 						type="select"
 						labelKey="cfgDashTagPosition"
 						helpKey="cfgDashTagPosition_tt"
-						value={native.dashTagPosition ?? 'bottom-right'}
+						value={native.dashTagPosition ?? 'top-right'}
 						onChange={v => onChange('dashTagPosition', v)}
 						options={[
 							{ value: 'top-left', labelKey: 'cfgTagPosTopLeft' },
@@ -473,7 +473,7 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 												</MenuItem>
 												<MenuItem value="mp4">
 													<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-														MP4 / FLV (mit Ton)
+														{I18n.t('cfgDashStreamMp4')}
 														<Chip
 															label="AgentDVR"
 															size="small"

@@ -221,6 +221,7 @@
     "widgetColorAccent": "#8ab4f8",
     "widgetColorModalBg": "#1c1c1e",
     "widgetBorderRadius": 8,
+    "enableStreamProxy": false,
     "go2rtcEnabled": false,
     "go2rtcUrl": "",
     "cameraStreams": {},
