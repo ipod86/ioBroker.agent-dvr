@@ -23,7 +23,7 @@ const ConnectionPanel: React.FC<Props> = ({ native, onChange }) => (
 				type="text"
 				labelKey="cfgIp"
 				value={native.serverIp ?? ''}
-				onChange={v => onChange('ip', v)}
+				onChange={v => onChange('serverIp', v)}
 			/>
 		</Grid>
 		<Grid
