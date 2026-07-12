@@ -135,5 +135,8 @@
   "loadingCamerasAndStreams": "Загрузка камер и потоков…",
   "cfgCameraColumn": "Камера AgentDVR",
   "cfgStreamSourceColumn": "Источник потока",
-  "reload": "Обновить"
+  "reload": "Обновить",
+  "hdrProxy": "Прокси",
+  "cfgEnableStreamProxy": "Прокси потоков",
+  "cfgEnableStreamProxy_tt": "Маршрутизировать потоки MJPEG и снимки через ioBroker — браузер должен обращаться только к ioBroker, не к AgentDVR напрямую"
 }

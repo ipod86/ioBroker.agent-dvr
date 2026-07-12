@@ -125,7 +125,27 @@ const FeaturesPanel: React.FC<Props> = ({ native, onChange }) => (
 				/>
 			</Grid>
 		</Grid>
-		<SectionHeader textKey="hdrDebug" />
+		<SectionHeader textKey="hdrProxy" />
+	<Grid
+		container
+		spacing={1}
+	>
+		<Grid
+			item
+			xs={12}
+			sm={6}
+			md={4}
+		>
+			<FormField
+				type="checkbox"
+				labelKey="cfgEnableStreamProxy"
+				helpKey="cfgEnableStreamProxy_tt"
+				value={native.enableStreamProxy}
+				onChange={v => onChange('enableStreamProxy', v)}
+			/>
+		</Grid>
+	</Grid>
+	<SectionHeader textKey="hdrDebug" />
 		<Grid
 			container
 			spacing={1}

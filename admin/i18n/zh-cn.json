@@ -135,5 +135,8 @@
   "loadingCamerasAndStreams": "正在加载摄像头和流…",
   "cfgCameraColumn": "AgentDVR 摄像头",
   "cfgStreamSourceColumn": "流来源",
-  "reload": "重新加载"
+  "reload": "重新加载",
+  "hdrProxy": "代理",
+  "cfgEnableStreamProxy": "流代理",
+  "cfgEnableStreamProxy_tt": "通过 ioBroker 路由 MJPEG 和快照流——浏览器只需访问 ioBroker，无需直接访问 AgentDVR"
 }

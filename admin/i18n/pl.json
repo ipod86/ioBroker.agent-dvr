@@ -135,5 +135,8 @@
   "loadingCamerasAndStreams": "Ładowanie kamer i strumieni…",
   "cfgCameraColumn": "Kamera AgentDVR",
   "cfgStreamSourceColumn": "Źródło strumienia",
-  "reload": "Odśwież"
+  "reload": "Odśwież",
+  "hdrProxy": "Proxy",
+  "cfgEnableStreamProxy": "Proxy strumienia",
+  "cfgEnableStreamProxy_tt": "Kieruj strumienie MJPEG i migawki przez ioBroker — przeglądarka musi dotrzeć tylko do ioBroker, nie bezpośrednio do AgentDVR"
 }

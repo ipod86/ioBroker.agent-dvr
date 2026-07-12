@@ -135,5 +135,8 @@
   "loadingCamerasAndStreams": "Loading cameras and streams…",
   "cfgCameraColumn": "AgentDVR Camera",
   "cfgStreamSourceColumn": "Stream Source",
-  "reload": "Reload"
+  "reload": "Reload",
+  "hdrProxy": "Proxy",
+  "cfgEnableStreamProxy": "Stream proxy",
+  "cfgEnableStreamProxy_tt": "Route MJPEG and snapshot streams through ioBroker — the browser only needs to reach ioBroker, not AgentDVR directly"
 }
