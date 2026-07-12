@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "news": {
+      "0.4.0": {
+        "en": "Optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection)",
+        "de": "Optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung)",
+        "ru": "Опциональный прокси потоков MJPEG и снимков через ioBroker",
+        "pt": "Proxy opcional de streams MJPEG e snapshots pelo ioBroker",
+        "nl": "Optionele MJPEG- en snapshot-proxy via ioBroker",
+        "fr": "Proxy optionnel pour les flux MJPEG et snapshots via ioBroker",
+        "it": "Proxy opzionale per stream MJPEG e snapshot tramite ioBroker",
+        "es": "Proxy opcional de flujos MJPEG e instantáneas a través de ioBroker",
+        "pl": "Opcjonalny proxy strumieni MJPEG i migawek przez ioBroker",
+        "zh-cn": "可选的 MJPEG 和快照流代理（通过 ioBroker）",
+        "uk": "Опціональний проксі потоків MJPEG і знімків через ioBroker"
+      },
       "0.3.0": {
         "en": "New control buttons (scheduleOn/Off, detectorOn/Off, sensitivityMin/Max/Gain), audio URL states for microphones, native browser fullscreen in dashboard, collapsible tag filter, auto-hide header",
         "de": "Neue Steuertasten (scheduleOn/Off, detectorOn/Off, Empfindlichkeit), Audio-URL-Zustände für Mikrofone, nativer Browser-Vollbild im Dashboard, ausklappbarer Tag-Filter, Auto-Hide-Header",
@@ -80,19 +93,6 @@
         "pl": "dodano dokumentację Live Dashboard i go2rtc WebRTC do README",
         "uk": "додано документацію Live Dashboard і go2rtc WebRTC до README",
         "zh-cn": "README 中新增 Live Dashboard 和 go2rtc WebRTC 文档"
-      },
-      "0.0.5": {
-        "en": "go2rtc WebRTC integration (admin table mapping, ioBroker WS proxy); auto-delete stale cameras; fix recording prev/next order",
-        "de": "go2rtc WebRTC-Integration (Admin-Tabellen-Mapping, ioBroker WS-Proxy); gelöschte Kameras werden automatisch entfernt; Vor/Zurück-Reihenfolge bei Aufnahmen korrigiert",
-        "ru": "интеграция go2rtc WebRTC (таблица в admin, WS-прокси через ioBroker); автоудаление устаревших камер; исправлен порядок кнопок Пред/След для записей",
-        "pt": "integração go2rtc WebRTC (tabela no admin, proxy WS via ioBroker); remoção automática de câmeras obsoletas; ordem anterior/próximo nas gravações corrigida",
-        "nl": "go2rtc WebRTC-integratie (admintabel, ioBroker WS-proxy); automatisch verwijderen van verouderde camera's; volgorde vorige/volgende opnames gecorrigeerd",
-        "fr": "intégration go2rtc WebRTC (table admin, proxy WS ioBroker); suppression automatique des caméras obsolètes; ordre précédent/suivant des enregistrements corrigé",
-        "it": "integrazione go2rtc WebRTC (tabella admin, proxy WS ioBroker); eliminazione automatica telecamere obsolete; ordine precedente/successivo registrazioni corretto",
-        "es": "integración go2rtc WebRTC (tabla en admin, proxy WS ioBroker); eliminación automática de cámaras obsoletas; orden anterior/siguiente en grabaciones corregido",
-        "pl": "integracja go2rtc WebRTC (tabela w admin, proxy WS ioBroker); automatyczne usuwanie nieaktywnych kamer; poprawiona kolejność poprzedni/następny nagrań",
-        "uk": "інтеграція go2rtc WebRTC (таблиця в admin, WS-проксі через ioBroker); автовидалення застарілих камер; виправлено порядок кнопок Попередній/Наступний для записів",
-        "zh-cn": "go2rtc WebRTC 集成（管理表格映射，ioBroker WS 代理）；自动删除过时摄像头；修正录像上一个/下一个顺序"
       }
     },
     "titleLang": {

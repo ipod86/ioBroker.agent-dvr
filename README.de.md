@@ -339,6 +339,9 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.0 (2026-07-12)
+* (ipod86) feat: optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung zu ioBroker, nicht direkt zu AgentDVR)
+
 ### 0.3.0 (2026-07-06)
 * (ipod86) feat: Steuerbuttons scheduleOn/Off und detectorOn/Off für Kameras und Mikrofone
 * (ipod86) feat: Empfindlichkeitszustände sensitivityMin, sensitivityMax, sensitivityGain für Kameras (0–100)

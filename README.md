@@ -344,6 +344,9 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.4.0 (2026-07-12)
+* (ipod86) feat: optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection to ioBroker, not directly to AgentDVR)
+
 ### 0.3.0 (2026-07-06)
 * (ipod86) feat: add scheduleOn/Off and detectorOn/Off control buttons for cameras and microphones
 * (ipod86) feat: add sensitivityMin, sensitivityMax, sensitivityGain level states for cameras (0–100)
