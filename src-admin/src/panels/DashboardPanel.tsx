@@ -516,19 +516,55 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 				<Grid
 					item
 					xs={12}
-					sm={8}
+					sm={12}
 					md={6}
-					lg={5}
+					lg={4}
 				>
 					<FormField
-						type="text"
-						labelKey="cfgGo2rtcUrl"
-						helpKey="cfgGo2rtcUrl_tt"
-						value={native.go2rtcUrl ?? ''}
-						onChange={v => onChange('go2rtcUrl', v)}
+						type="checkbox"
+						labelKey="cfgGo2rtcEnabled"
+						helpKey="cfgGo2rtcEnabled_tt"
+						value={native.go2rtcEnabled ?? false}
+						onChange={v => onChange('go2rtcEnabled', v)}
 					/>
 				</Grid>
 			</Grid>
+			{native.go2rtcEnabled && (
+				<Grid
+					container
+					spacing={2}
+				>
+					<Grid
+						item
+						xs={12}
+						sm={8}
+						md={6}
+						lg={5}
+					>
+						<FormField
+							type="text"
+							labelKey="cfgGo2rtcUrl"
+							helpKey="cfgGo2rtcUrl_tt"
+							value={native.go2rtcUrl ?? ''}
+							onChange={v => onChange('go2rtcUrl', v)}
+						/>
+					</Grid>
+					<Grid
+						item
+						xs={12}
+						sm={12}
+						md={12}
+						lg={12}
+					>
+						<Typography
+							variant="caption"
+							color="text.secondary"
+						>
+							{I18n.t('cfgGo2rtcEnabled_tt')}
+						</Typography>
+					</Grid>
+				</Grid>
+			)}
 		</div>
 	);
 };
