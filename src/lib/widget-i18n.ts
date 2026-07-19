@@ -86,13 +86,7 @@ const WIDGET_LABELS: Record<string, WidgetLabels> = {
 	},
 };
 
-const SUPPORTED = new Set(Object.keys(WIDGET_LABELS));
-
 export function getWidgetLabels(rawLang: string): WidgetLabels {
 	const lang = (rawLang || 'en').toLowerCase();
 	return WIDGET_LABELS[lang] ?? WIDGET_LABELS.en;
-}
-
-export function isSupportedLang(lang: string): boolean {
-	return SUPPORTED.has(lang.toLowerCase());
 }

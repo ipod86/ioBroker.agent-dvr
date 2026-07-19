@@ -18,8 +18,7 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var widget_i18n_exports = {};
 __export(widget_i18n_exports, {
-  getWidgetLabels: () => getWidgetLabels,
-  isSupportedLang: () => isSupportedLang
+  getWidgetLabels: () => getWidgetLabels
 });
 module.exports = __toCommonJS(widget_i18n_exports);
 const WIDGET_LABELS = {
@@ -101,18 +100,13 @@ const WIDGET_LABELS = {
     live: "\u76F4\u64AD"
   }
 };
-const SUPPORTED = new Set(Object.keys(WIDGET_LABELS));
 function getWidgetLabels(rawLang) {
   var _a;
   const lang = (rawLang || "en").toLowerCase();
   return (_a = WIDGET_LABELS[lang]) != null ? _a : WIDGET_LABELS.en;
 }
-function isSupportedLang(lang) {
-  return SUPPORTED.has(lang.toLowerCase());
-}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  getWidgetLabels,
-  isSupportedLang
+  getWidgetLabels
 });
 //# sourceMappingURL=widget-i18n.js.map

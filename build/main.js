@@ -287,6 +287,7 @@ window.ADVscan=scan;scan();
 class AgentDvr extends utils.Adapter {
   pollTimer = void 0;
   pollBusy = false;
+  _pollStopped = false;
   refreshTimer = void 0;
   authHeader = null;
   baseUrl = "";
@@ -336,17 +337,15 @@ class AgentDvr extends utils.Adapter {
     } catch (e) {
       this.log.warn(`First poll error: ${e.message}`);
     }
-    this.pollTimer = this.setInterval(
-      () => this.poll().catch((e) => this.log.warn(`Poll error: ${e.message}`)),
-      pollSeconds * 1e3
-    );
+    this.schedulePoll(pollSeconds * 1e3);
     this.subscribeStates("*");
     this.log.info(`Agent DVR adapter ready. Polling ${this.baseUrl} every ${pollSeconds}s.`);
   }
   onUnload(callback) {
     try {
+      this._pollStopped = true;
       if (this.pollTimer !== void 0) {
-        this.clearInterval(this.pollTimer);
+        this.clearTimeout(this.pollTimer);
         this.pollTimer = void 0;
       }
       if (this.refreshTimer !== void 0) {
@@ -395,6 +394,9 @@ class AgentDvr extends utils.Adapter {
     return { result: rows };
   }
   fetchGo2rtcStreams(overrideUrl) {
+    if (!overrideUrl && !this.config.go2rtcEnabled) {
+      return Promise.resolve({ streams: [], error: "go2rtc disabled" });
+    }
     const url = (overrideUrl || this.config.go2rtcUrl || "").replace(/^https:\/\//i, "http://");
     if (!url) {
       return Promise.resolve({ streams: [], error: "go2rtcUrl not configured" });
@@ -458,7 +460,12 @@ class AgentDvr extends utils.Adapter {
   }
   apiGet(path) {
     return new Promise((resolve) => {
-      const timeout = Math.max(1e3, Math.min(3e4, this.config.httpTimeoutMs || 8e3));
+      var _a;
+      const rawTimeout = (_a = this.config.httpTimeoutMs) != null ? _a : 8e3;
+      const timeout = Math.max(1e3, Math.min(3e4, rawTimeout));
+      if (timeout !== rawTimeout) {
+        this.log.debug(`httpTimeoutMs ${rawTimeout} clamped to ${timeout} ms`);
+      }
       const opts = {
         hostname: this.config.serverIp,
         port: this.config.port || 8090,
@@ -497,7 +504,12 @@ class AgentDvr extends utils.Adapter {
   }
   apiGetBuffer(path) {
     return new Promise((resolve) => {
-      const timeout = Math.max(1e3, Math.min(3e4, this.config.httpTimeoutMs || 8e3));
+      var _a;
+      const rawTimeout = (_a = this.config.httpTimeoutMs) != null ? _a : 8e3;
+      const timeout = Math.max(1e3, Math.min(3e4, rawTimeout));
+      if (timeout !== rawTimeout) {
+        this.log.debug(`httpTimeoutMs ${rawTimeout} clamped to ${timeout} ms`);
+      }
       const opts = {
         hostname: this.config.serverIp,
         port: this.config.port || 8090,
@@ -1302,6 +1314,12 @@ class AgentDvr extends utils.Adapter {
     } finally {
       this.pollBusy = false;
     }
+  }
+  schedulePoll(delayMs) {
+    if (this._pollStopped) return;
+    this.pollTimer = this.setTimeout(() => {
+      void this.poll().catch((e) => this.log.warn(`Poll error: ${e.message}`)).finally(() => this.schedulePoll(delayMs));
+    }, delayMs);
   }
   scheduleRefresh() {
     if (this.refreshTimer !== void 0) {
