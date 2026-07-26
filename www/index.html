@@ -9340,12 +9340,25 @@ function renderRec() {
     const info = document.createElement('div'); info.className = 'rec-info';
     const date = document.createElement('div'); date.className = 'rec-date'; date.textContent = rec.date + ' ' + rec.time;
     const meta = document.createElement('div'); meta.className = 'rec-meta';
-    meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : ''].filter(Boolean).join(' · ');
+    meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? fmtDur(rec.dur) : ''].filter(Boolean).join(' · ');
     info.append(date, meta);
     tile.append(wrap, info);
     tile.onclick = () => playRec(rec, cam, recPlayList.indexOf(rec));
     grid.appendChild(tile);
   });
+}
+
+function fmtDur(s) {
+  if (!s) return '';
+  s = Math.round(Number(s));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const parts = [];
+  if (h)   parts.push(h   + ' Std');
+  if (m)   parts.push(m   + ' Min');
+  if (sec || !parts.length) parts.push(sec + ' Sek');
+  return parts.join(' ');
 }
 
 function tlZoom(dir) {
@@ -9446,7 +9459,7 @@ function renderTimeline(items, multiCam) {
         block.dataset.tag = rec.tag;
       }
       block.title = (rec._cam?.name ? rec._cam.name + '  ·  ' : '') + rec.time
-        + (rec.dur  ? '  ·  ' + rec.dur  + 's'  : '')
+        + (rec.dur  ? '  ·  ' + fmtDur(rec.dur)  : '')
         + (rec.size ? '  ·  ' + rec.size + ' MB' : '')
         + (rec.tag  ? '  ·  ' + rec.tag          : '');
       block.addEventListener('click', () => playRec(rec, rec._cam, globalIdx));
@@ -9479,7 +9492,7 @@ function playRec(rec, cam, idx) {
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
   document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
   document.getElementById('vid-meta-txt').textContent =
-    [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : '', rec.tag || ''].filter(Boolean).join(' · ');
+    [rec.size ? rec.size + ' MB' : '', rec.dur ? fmtDur(rec.dur) : '', rec.tag || ''].filter(Boolean).join(' · ');
   document.getElementById('vid-dl').href = src;
   updateNavBtns();
   document.getElementById('vid-panel').classList.add('open');
