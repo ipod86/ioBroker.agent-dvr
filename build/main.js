@@ -1316,7 +1316,9 @@ class AgentDvr extends utils.Adapter {
     }
   }
   schedulePoll(delayMs) {
-    if (this._pollStopped) return;
+    if (this._pollStopped) {
+      return;
+    }
     this.pollTimer = this.setTimeout(() => {
       void this.poll().catch((e) => this.log.warn(`Poll error: ${e.message}`)).finally(() => this.schedulePoll(delayMs));
     }, delayMs);
