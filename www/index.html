@@ -237,14 +237,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
 #vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
-#vid-dl{color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
+#vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
 #vid-dl:hover{background:rgba(37,99,235,.15)}
-#vid-del{background:none;border:1px solid var(--border2);color:var(--muted);margin-left:auto;
-  padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;
-  display:flex;align-items:center;gap:4px;transition:all .2s;white-space:nowrap}
-#vid-del:hover:not(:disabled){border-color:#ef4444;color:#ef4444}
-#vid-del.armed{background:#ef4444;border-color:#ef4444;color:#fff;font-weight:600}
-#vid-del:disabled{opacity:.35;cursor:default}
 
 /* ── Fullscreen cam ── */
 #fs-panel{position:fixed;inset:0;z-index:250;display:none;background:#000;flex-direction:column}
@@ -7913,10 +7907,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <svg width="12" height="12" viewBox="0 0 10 11" fill="currentColor"><path d="M4.5 0h1v6.3l2.1-2.1.7.7L5 8.2 1.7 4.9l.7-.7 2.1 2.1V0zM0 10h10v1H0v-1z"/></svg>
         Download
       </a>
-      <button id="vid-del" onclick="deleteRec()">
-        <svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor"><path d="M1 3h9v1H9l-.7 7H2.7L2 4H1V3zm3-3h3v1H4V0zM0 2h11v1H0V2zM4 5h1l.3 5H4.3L4 5zm2 0h1l-.3 5H5.7L6 5z"/></svg>
-        <span id="vid-del-lbl"></span>
-      </button>
     </div>
   </div>
 </div>
@@ -7978,10 +7968,6 @@ const TRANSLATIONS = {
     fsEnter:         'Vollbild',
     fsExit:          'Vollbild verlassen',
     filterByLabel:   'Nach Label filtern',
-    vidDelete:       'Löschen',
-    vidDeleteConfirm:'Sicher?',
-    vidDeleteBusy:   'Lösche…',
-    vidDeleteErr:    'Fehler beim Löschen',
   },
   en: {
     navLive:         'Live',
@@ -8022,10 +8008,6 @@ const TRANSLATIONS = {
     fsEnter:         'Fullscreen',
     fsExit:          'Exit fullscreen',
     filterByLabel:   'Filter by label',
-    vidDelete:       'Delete',
-    vidDeleteConfirm:'Sure?',
-    vidDeleteBusy:   'Deleting…',
-    vidDeleteErr:    'Delete failed',
   },
   es: {
     navLive:         'En vivo',
@@ -8427,8 +8409,6 @@ let recAllItems = [];
 let recFilters  = { tag: '' };
 const CAM_COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#eab308','#ef4444'];
 let selectedCameras = new Set(JSON.parse(localStorage.getItem('advr_rec_cams') || '[]'));
-let recCurrentItem = null;
-let _delTimer = null;
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
 let recPlayList = [], recPlayIdx = -1;
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
@@ -9495,69 +9475,20 @@ function playRec(rec, cam, idx) {
   const src = url.startsWith('/') ? url : (url.startsWith('http') ? url : BASE + url);
   const el  = document.getElementById('vid-el');
   if (el.src !== src) { el.src = src; el.load(); }
-  recPlayIdx    = idx !== undefined ? idx : recPlayList.indexOf(rec);
-  recCurrentItem = rec;
+  recPlayIdx = idx !== undefined ? idx : recPlayList.indexOf(rec);
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
-  document.getElementById('vid-cam').textContent   = cam ? cam.name : (rec._cam?.name || '');
+  document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
   document.getElementById('vid-meta-txt').textContent =
     [rec.size ? rec.size + ' MB' : '', rec.dur ? rec.dur + 's' : '', rec.tag || ''].filter(Boolean).join(' · ');
   document.getElementById('vid-dl').href = src;
-  resetDelBtn();
-  const delBtn = document.getElementById('vid-del');
-  delBtn.disabled = !(rec.oid && rec.fn);
   updateNavBtns();
   document.getElementById('vid-panel').classList.add('open');
   el.play().catch(() => {});
-}
-
-function resetDelBtn() {
-  clearTimeout(_delTimer); _delTimer = null;
-  const btn = document.getElementById('vid-del');
-  btn.classList.remove('armed');
-  btn.disabled = false;
-  document.getElementById('vid-del-lbl').textContent = t('vidDelete');
-}
-
-async function deleteRec() {
-  const btn = document.getElementById('vid-del');
-  if (!recCurrentItem || !recCurrentItem.oid || !recCurrentItem.fn) return;
-
-  if (!btn.classList.contains('armed')) {
-    btn.classList.add('armed');
-    document.getElementById('vid-del-lbl').textContent = t('vidDeleteConfirm');
-    _delTimer = setTimeout(resetDelBtn, 3000);
-    return;
-  }
-
-  // Second click → confirmed
-  clearTimeout(_delTimer);
-  btn.disabled = true;
-  document.getElementById('vid-del-lbl').textContent = t('vidDeleteBusy');
-
-  try {
-    const r = await fetch('/agent-dvr/api/delete?oid=' + encodeURIComponent(recCurrentItem.oid)
-                          + '&fn=' + encodeURIComponent(recCurrentItem.fn),
-                          { signal: AbortSignal.timeout(8000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-
-    // Remove from in-memory lists and re-render
-    const ai = recAllItems.indexOf(recCurrentItem);
-    if (ai !== -1) recAllItems.splice(ai, 1);
-    const pi = recPlayList.indexOf(recCurrentItem);
-    if (pi !== -1) recPlayList.splice(pi, 1);
-    recCurrentItem = null;
-    closeVideo();
-    renderRec();
-  } catch (e) {
-    document.getElementById('vid-del-lbl').textContent = t('vidDeleteErr');
-    setTimeout(resetDelBtn, 2000);
-  }
 }
 function closeVideo() {
   const el = document.getElementById('vid-el');
   el.pause(); el.removeAttribute('src'); el.load();
   document.getElementById('vid-panel').classList.remove('open');
-  resetDelBtn();
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('vid-panel')) closeVideo();
@@ -9751,7 +9682,6 @@ function disconnectWebRTC(vid) {
 
 /* ─────────────────────────── Boot ──────────────────────────── */
 applyDashTranslations();
-document.getElementById('vid-del-lbl').textContent = t('vidDelete');
 loadConfig().then(() => loadData()).then(() => ensureLayoutObserver());
 </script>
 <script src="/socket.io/socket.io.js"></script>
