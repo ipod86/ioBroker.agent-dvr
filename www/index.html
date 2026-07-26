@@ -120,9 +120,31 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   padding:7px 12px;border-radius:var(--radius);font-size:13px;flex:1 1 0;min-width:60px;
   max-width:180px;outline:none;transition:border-color .15s}
 #rec-search:focus{border-color:var(--accent)}
-#rec-cam-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);
-  padding:7px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer;
-  flex:1 1 0;min-width:0;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+#rec-cam-dd{position:relative;flex:1 1 0;min-width:0;max-width:200px}
+#rec-cam-btn{background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  padding:6px 8px 6px 10px;border-radius:var(--radius);font-size:13px;outline:none;cursor:pointer;
+  width:100%;text-align:left;white-space:nowrap;display:flex;align-items:center;gap:6px;
+  transition:border-color .15s}
+#rec-cam-btn:hover{border-color:var(--border)}
+#rec-cam-btn .btn-label{overflow:hidden;text-overflow:ellipsis;flex:1 1 0;min-width:0}
+#rec-cam-btn::after{content:'▾';color:var(--muted);font-size:10px;flex-shrink:0}
+.rec-cam-list{display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:200;
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
+  min-width:170px;max-width:240px;max-height:230px;overflow-y:auto;
+  box-shadow:0 8px 24px rgba(0,0,0,.55)}
+.rec-cam-list.open{display:block}
+.rec-cam-list::-webkit-scrollbar{width:4px}
+.rec-cam-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.rec-cam-item{display:flex;align-items:center;gap:7px;padding:7px 10px;cursor:pointer;
+  font-size:13px;color:var(--text);user-select:none}
+.rec-cam-item:hover{background:var(--s3)}
+.rec-cam-item input[type=checkbox]{width:14px;height:14px;accent-color:var(--accent);
+  cursor:pointer;flex-shrink:0;margin:0}
+.cam-color-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-cam-legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-bottom:8px;padding:0 4px}
+.tl-cam-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.tl-cam-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.badge.cam{font-size:9px;padding:1px 5px;border:none}
 #rec-tags{display:flex;gap:5px;flex-wrap:wrap}
 .tag-chip{background:var(--s2);border:1px solid var(--border2);border-radius:99px;
   padding:4px 11px;font-size:12px;cursor:pointer;color:var(--muted);user-select:none;transition:all .15s}
@@ -7828,9 +7850,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     <div id="rec-filter-bar">
       <div id="rec-filter-main">
         <input id="rec-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="&#128269; Search…" oninput="filterRec()">
-        <select id="rec-cam-sel" onchange="loadAndFilterRec()">
-          <option value="" data-i18n="camSelect">Select camera…</option>
-        </select>
+        <div id="rec-cam-dd">
+          <button id="rec-cam-btn" onclick="toggleCamDd(event)">
+            <span class="btn-label" data-i18n="camAll">All cameras</span>
+          </button>
+          <div id="rec-cam-list" class="rec-cam-list"></div>
+        </div>
         <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label"><svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M1 2h10l-4 4.5V11L5 9.5V6.5L1 2z"/></svg></button>
         <div id="rec-toolbar">
         <span id="rec-count"></span>
@@ -7908,6 +7933,8 @@ const TRANSLATIONS = {
     navRec:          'Aufnahmen',
     searchPlaceholder: '🔍 Suchen…',
     camSelect:       'Kamera wählen…',
+    camAll:          'Alle Kameras',
+    camCount:        '{n} Kameras',
     gridView:        'Rasteransicht',
     timelineView:    'Zeitachse',
     closePanel:      'Schließen',
@@ -7946,6 +7973,8 @@ const TRANSLATIONS = {
     navRec:          'Recordings',
     searchPlaceholder: '🔍 Search…',
     camSelect:       'Select camera…',
+    camAll:          'All cameras',
+    camCount:        '{n} cameras',
     gridView:        'Grid view',
     timelineView:    'Timeline',
     closePanel:      'Close',
@@ -7984,6 +8013,8 @@ const TRANSLATIONS = {
     navRec:          'Grabaciones',
     searchPlaceholder: '🔍 Buscar…',
     camSelect:       'Seleccionar cámara…',
+    camAll:          'Todas las cámaras',
+    camCount:        '{n} cámaras',
     gridView:        'Vista de cuadrícula',
     timelineView:    'Línea de tiempo',
     closePanel:      'Cerrar',
@@ -8022,6 +8053,8 @@ const TRANSLATIONS = {
     navRec:          'Enregistrements',
     searchPlaceholder: '🔍 Rechercher…',
     camSelect:       'Choisir une caméra…',
+    camAll:          'Toutes les caméras',
+    camCount:        '{n} caméras',
     gridView:        'Vue en grille',
     timelineView:    'Chronologie',
     closePanel:      'Fermer',
@@ -8060,6 +8093,8 @@ const TRANSLATIONS = {
     navRec:          'Registrazioni',
     searchPlaceholder: '🔍 Cerca…',
     camSelect:       'Seleziona telecamera…',
+    camAll:          'Tutte le telecamere',
+    camCount:        '{n} telecamere',
     gridView:        'Vista griglia',
     timelineView:    'Sequenza temporale',
     closePanel:      'Chiudi',
@@ -8098,6 +8133,8 @@ const TRANSLATIONS = {
     navRec:          'Opnames',
     searchPlaceholder: '🔍 Zoeken…',
     camSelect:       'Camera kiezen…',
+    camAll:          "Alle camera's",
+    camCount:        "{n} camera's",
     gridView:        'Rasterweergave',
     timelineView:    'Tijdlijn',
     closePanel:      'Sluiten',
@@ -8136,6 +8173,8 @@ const TRANSLATIONS = {
     navRec:          'Nagrania',
     searchPlaceholder: '🔍 Szukaj…',
     camSelect:       'Wybierz kamerę…',
+    camAll:          'Wszystkie kamery',
+    camCount:        '{n} kamery',
     gridView:        'Widok siatki',
     timelineView:    'Oś czasu',
     closePanel:      'Zamknij',
@@ -8174,6 +8213,8 @@ const TRANSLATIONS = {
     navRec:          'Gravações',
     searchPlaceholder: '🔍 Pesquisar…',
     camSelect:       'Selecionar câmera…',
+    camAll:          'Todas as câmeras',
+    camCount:        '{n} câmeras',
     gridView:        'Visualização em grade',
     timelineView:    'Linha do tempo',
     closePanel:      'Fechar',
@@ -8212,6 +8253,8 @@ const TRANSLATIONS = {
     navRec:          'Записи',
     searchPlaceholder: '🔍 Поиск…',
     camSelect:       'Выбрать камеру…',
+    camAll:          'Все камеры',
+    camCount:        '{n} камеры',
     gridView:        'Сетка',
     timelineView:    'Хронология',
     closePanel:      'Закрыть',
@@ -8250,6 +8293,8 @@ const TRANSLATIONS = {
     navRec:          'Записи',
     searchPlaceholder: '🔍 Пошук…',
     camSelect:       'Обрати камеру…',
+    camAll:          'Всі камери',
+    camCount:        '{n} камери',
     gridView:        'Сітка',
     timelineView:    'Хронологія',
     closePanel:      'Закрити',
@@ -8288,6 +8333,8 @@ const TRANSLATIONS = {
     navRec:          '录像',
     searchPlaceholder: '🔍 搜索…',
     camSelect:       '选择摄像头…',
+    camAll:          '所有摄像头',
+    camCount:        '{n} 个摄像头',
     gridView:        '网格视图',
     timelineView:    '时间轴',
     closePanel:      '关闭',
@@ -8359,6 +8406,8 @@ let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
 let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
 let recFilters  = { tag: '' };
+const CAM_COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#eab308','#ef4444'];
+let selectedCameras = new Set(JSON.parse(localStorage.getItem('advr_rec_cams') || '[]'));
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
 let recPlayList = [], recPlayIdx = -1;
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
@@ -9065,40 +9114,109 @@ document.addEventListener('fullscreenchange', () => {
 document.getElementById('fs-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('fs-panel')) closeFs();
 });
+document.addEventListener('mousedown', e => {
+  if (!document.getElementById('rec-cam-dd').contains(e.target)) closeCamDd();
+});
 
 /* ─────────────────────────── Recordings ────────────────────── */
+function camColor(camKey) {
+  const idx = Object.keys(cameras).indexOf(camKey);
+  return CAM_COLORS[(idx < 0 ? 0 : idx) % CAM_COLORS.length];
+}
+
+function syncCamBtn() {
+  const btn = document.querySelector('#rec-cam-btn .btn-label');
+  if (!btn) return;
+  const size = selectedCameras.size;
+  if (!size) {
+    btn.textContent = t('camAll');
+  } else if (size === 1) {
+    const k = [...selectedCameras][0];
+    btn.textContent = cameras[k]?.name || k;
+  } else {
+    btn.textContent = t('camCount').replace('{n}', size);
+  }
+}
+
+function saveCamSel() {
+  localStorage.setItem('advr_rec_cams', JSON.stringify([...selectedCameras]));
+}
+
+function toggleCamDd(e) {
+  e.stopPropagation();
+  document.getElementById('rec-cam-list').classList.toggle('open');
+}
+
+function closeCamDd() {
+  document.getElementById('rec-cam-list').classList.remove('open');
+}
+
 function buildRecCamSel() {
-  const sel = document.getElementById('rec-cam-sel');
-  const last = localStorage.getItem('advr_rec_cam') || '';
-  sel.innerHTML = '<option value="">' + t('camSelect') + '</option>';
+  const list = document.getElementById('rec-cam-list');
+  list.innerHTML = '';
+
+  // "All cameras" row
+  const allItem = document.createElement('label'); allItem.className = 'rec-cam-item';
+  const allChk = document.createElement('input'); allChk.type = 'checkbox';
+  allChk.checked = selectedCameras.size === 0;
+  allChk.onchange = () => {
+    selectedCameras.clear(); saveCamSel(); syncCamBtn();
+    closeCamDd(); loadAndFilterRec();
+  };
+  allItem.append(allChk, document.createTextNode(t('camAll')));
+  list.appendChild(allItem);
+
   Object.entries(cameras).forEach(([k, cam]) => {
-    const o = document.createElement('option'); o.value = k; o.textContent = cam.name;
-    sel.appendChild(o);
+    const item = document.createElement('label'); item.className = 'rec-cam-item';
+    const chk  = document.createElement('input'); chk.type = 'checkbox'; chk.value = k;
+    chk.checked = selectedCameras.has(k);
+    const dot = document.createElement('span'); dot.className = 'cam-color-dot';
+    dot.style.background = camColor(k);
+    chk.onchange = () => {
+      if (chk.checked) selectedCameras.add(k); else selectedCameras.delete(k);
+      saveCamSel(); syncCamBtn(); loadAndFilterRec();
+    };
+    item.append(chk, dot, document.createTextNode(cam.name));
+    list.appendChild(item);
   });
+
   document.getElementById('rec-view-grid').classList.toggle('active', recViewMode === 'grid');
   document.getElementById('rec-view-tl').classList.toggle('active', recViewMode === 'timeline');
   const tagsOpen = localStorage.getItem('advr_tags_open') === '1';
   document.getElementById('rec-filter-tags').classList.toggle('collapsed', !tagsOpen);
   document.getElementById('rec-tag-toggle').classList.toggle('active', tagsOpen);
   document.getElementById('rec-tag-toggle').title = t('filterByLabel');
-  if (last && cameras[last]) { sel.value = last; loadAndFilterRec(); }
+  syncCamBtn();
+  loadAndFilterRec();
 }
 
 async function loadAndFilterRec() {
-  const key = document.getElementById('rec-cam-sel').value;
-  if (!key) return;
-  localStorage.setItem('advr_rec_cam', key);
+  const camKeys = Object.keys(cameras);
+  if (!camKeys.length) return;
+  const keys = selectedCameras.size ? [...selectedCameras].filter(k => cameras[k]) : camKeys;
+
   const grid = document.getElementById('rec-grid');
   grid.innerHTML = '<div class="rec-empty">' + t('recLoading') + '</div>';
   document.getElementById('rec-tags').innerHTML = '';
   recAllItems = [];
 
   try {
-    const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
-                          { signal: AbortSignal.timeout(8000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    recAllItems = Array.isArray(data) ? data : [];
+    const results = await Promise.all(keys.map(async key => {
+      const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
+                            { signal: AbortSignal.timeout(8000) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      return (Array.isArray(data) ? data : []).map(item => ({
+        ...item, _camKey: key, _cam: cameras[key],
+      }));
+    }));
+
+    // Merge and sort newest first
+    recAllItems = results.flat().sort((a, b) => {
+      const da = (a.date || '') + 'T' + (a.time || '');
+      const db = (b.date || '') + 'T' + (b.time || '');
+      return db.localeCompare(da);
+    });
 
     if (!recAllItems.length) {
       grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';
@@ -9112,11 +9230,13 @@ async function loadAndFilterRec() {
     recFilters.tag = '';
     tagBar.innerHTML = '';
     if (tags.length) {
-      const all = document.createElement('span'); all.className = 'tag-chip on'; all.textContent = t('tagAll'); all.dataset.tagAll = '1';
+      const all = document.createElement('span'); all.className = 'tag-chip on';
+      all.textContent = t('tagAll'); all.dataset.tagAll = '1';
       all.onclick = () => { recFilters.tag = ''; setActiveTag(null); renderRec(); };
       tagBar.appendChild(all);
       tags.forEach(tg => {
-        const tc = document.createElement('span'); tc.className = 'tag-chip'; tc.textContent = tg; tc.dataset.tag = tg;
+        const tc = document.createElement('span'); tc.className = 'tag-chip';
+        tc.textContent = tg; tc.dataset.tag = tg;
         tc.onclick = () => { recFilters.tag = tg; setActiveTag(tg); renderRec(); };
         tagBar.appendChild(tc);
       });
@@ -9156,16 +9276,14 @@ function setRecView(mode) {
 }
 
 function renderRec() {
-  const q      = (document.getElementById('rec-search').value || '').toLowerCase();
-  const tag    = recFilters.tag;
-  const grid   = document.getElementById('rec-grid');
-  const camKey = document.getElementById('rec-cam-sel').value;
-  const cam    = cameras[camKey];
+  const q     = (document.getElementById('rec-search').value || '').toLowerCase();
+  const tag   = recFilters.tag;
+  const grid  = document.getElementById('rec-grid');
 
   const items = recAllItems.filter(r => {
     if (tag && r.tag !== tag) return false;
     if (q) {
-      const hay = (r.date + ' ' + r.time + ' ' + (r.tag || '')).toLowerCase();
+      const hay = ((r.date||'') + ' ' + (r.time||'') + ' ' + (r.tag||'') + ' ' + (r._cam?.name||'')).toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -9179,17 +9297,20 @@ function renderRec() {
     return;
   }
 
-  // Sort oldest→newest so "Nächste" (+1) = chronologically later recording
+  // Sort oldest→newest for playlist navigation
   recPlayList = [...items].sort((a, b) => {
     const da = (a.date || '') + 'T' + (a.time || '');
     const db = (b.date || '') + 'T' + (b.time || '');
     return da.localeCompare(db);
   });
 
-  if (recViewMode === 'timeline') { renderTimeline(items, cam); return; }
+  const multiCam = (selectedCameras.size !== 1) && Object.keys(cameras).length > 1;
+
+  if (recViewMode === 'timeline') { renderTimeline(items, multiCam); return; }
 
   grid.className = 'rec-grid';
   items.forEach(rec => {
+    const cam  = rec._cam;
     const tile = document.createElement('div'); tile.className = 'rec-tile';
     const wrap = document.createElement('div'); wrap.className = 'rec-thumb-wrap';
     const img  = document.createElement('img'); img.className = 'rec-thumb'; img.alt = '';
@@ -9201,6 +9322,12 @@ function renderRec() {
       <polygon points="16,12 30,20 16,28" fill="#fff"/>
     </svg>`;
     const badges = document.createElement('div'); badges.className = 'rec-badges';
+    if (multiCam && rec._camKey) {
+      const cb = document.createElement('span'); cb.className = 'badge cam';
+      cb.style.background = camColor(rec._camKey);
+      cb.textContent = cam?.name || rec._camKey;
+      badges.appendChild(cb);
+    }
     if (rec.tag) {
       const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b);
     }
@@ -9235,7 +9362,7 @@ function tlTickInterval(zoom) {
   return 6;
 }
 
-function renderTimeline(items, cam) {
+function renderTimeline(items, multiCam) {
   const grid = document.getElementById('rec-grid');
   grid.className = 'tl-wrap';
 
@@ -9255,6 +9382,22 @@ function renderTimeline(items, cam) {
   zoomRow.append(zOut, zLbl, zIn);
   grid.appendChild(zoomRow);
 
+  // ── Camera legend (multi-cam only) ──
+  if (multiCam) {
+    const activeCamKeys = [...new Set(items.map(r => r._camKey).filter(Boolean))];
+    if (activeCamKeys.length > 1) {
+      const legend = document.createElement('div'); legend.className = 'tl-cam-legend';
+      activeCamKeys.forEach(k => {
+        const item = document.createElement('div'); item.className = 'tl-cam-legend-item';
+        const dot  = document.createElement('div'); dot.className = 'tl-cam-legend-dot';
+        dot.style.background = camColor(k);
+        item.append(dot, document.createTextNode(cameras[k]?.name || k));
+        legend.appendChild(item);
+      });
+      grid.appendChild(legend);
+    }
+  }
+
   // ── Scrollable container ──
   const scroll = document.createElement('div'); scroll.className = 'tl-scroll';
   const inner  = document.createElement('div'); inner.className = 'tl-inner';
@@ -9273,7 +9416,6 @@ function renderTimeline(items, cam) {
     const label = document.createElement('div'); label.className = 'tl-day-label'; label.textContent = date;
     const bar   = document.createElement('div'); bar.className = 'tl-bar';
 
-    // Adaptive ticks
     for (let h = 0; h < 24; h += tickInterval) {
       const tick = document.createElement('span'); tick.className = 'tl-tick';
       tick.style.left = (h / 24 * 100) + '%';
@@ -9293,12 +9435,17 @@ function renderTimeline(items, cam) {
       const block = document.createElement('div'); block.className = 'tl-block';
       block.style.left  = left + '%';
       block.style.width = width + '%';
-      if (rec.tag) block.dataset.tag = rec.tag;
-      block.title = rec.time
+      if (multiCam && rec._camKey) {
+        block.style.backgroundColor = camColor(rec._camKey);
+        block.dataset.cam = rec._camKey;
+      } else if (rec.tag) {
+        block.dataset.tag = rec.tag;
+      }
+      block.title = (rec._cam?.name ? rec._cam.name + '  ·  ' : '') + rec.time
         + (rec.dur  ? '  ·  ' + rec.dur  + 's'  : '')
         + (rec.size ? '  ·  ' + rec.size + ' MB' : '')
         + (rec.tag  ? '  ·  ' + rec.tag          : '');
-      block.addEventListener('click', () => playRec(rec, cam, globalIdx));
+      block.addEventListener('click', () => playRec(rec, rec._cam, globalIdx));
       bar.appendChild(block);
     });
 
@@ -9315,8 +9462,8 @@ function updateNavBtns() {
 }
 function playRecIdx(idx) {
   if (idx < 0 || idx >= recPlayList.length) return;
-  const camKey = document.getElementById('rec-cam-sel').value;
-  playRec(recPlayList[idx], cameras[camKey], idx);
+  const rec = recPlayList[idx];
+  playRec(rec, rec._cam, idx);
 }
 function playRec(rec, cam, idx) {
   const url = rec.video || rec.url || '';
