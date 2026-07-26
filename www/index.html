@@ -9317,7 +9317,7 @@ function playRecIdx(idx) {
 function playRec(rec, cam, idx) {
   const url = rec.video || rec.url || '';
   if (!url) return;
-  const src = url.startsWith('http') ? url : BASE + url;
+  const src = url.startsWith('/') ? url : (url.startsWith('http') ? url : BASE + url);
   const el  = document.getElementById('vid-el');
   if (el.src !== src) { el.src = src; el.load(); }
   recPlayIdx = idx !== undefined ? idx : recPlayList.indexOf(rec);
