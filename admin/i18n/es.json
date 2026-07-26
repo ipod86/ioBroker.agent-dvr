@@ -42,7 +42,7 @@
   "cfgEnableSnapshotB64": "Instantánea como Base64",
   "cfgEnableSnapshotB64_tt": "Guardar imagen de cámara como Base64 en cada sondeo (photo.jpg, resolución completa). Botón de actualización siempre presente.",
   "cfgEnableStreamProxy": "Proxy multimedia",
-  "cfgEnableStreamProxy_tt": "Enruta streams MJPEG, snapshots, miniaturas y vídeos de grabaciones a través de ioBroker — usar cuando AgentDVR no es accesible directamente desde el navegador",
+  "cfgEnableStreamProxy_tt": "Enruta streams MJPEG, snapshots, miniaturas y vídeos de grabaciones a través de ioBroker — usar cuando AgentDVR no es accesible directamente desde el navegador. FLV y go2rtc siempre pasan por ioBroker por razones técnicas (restricción cross-origin del navegador).",
   "cfgEnableSystemControls": "Botones de control del sistema",
   "cfgEnableSystemControls_tt": "Botones Armar/Desarmar/Reiniciar, selector de perfil y todos los comandos de control del sistema",
   "cfgEnableUrls": "Generar URLs de transmisión",

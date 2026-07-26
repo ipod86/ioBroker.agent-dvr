@@ -42,7 +42,7 @@
   "cfgEnableSnapshotB64": "Migawka jako Base64",
   "cfgEnableSnapshotB64_tt": "Zapisuj obraz kamery jako Base64 przy każdym odpytaniu (photo.jpg, pełna rozdzielczość). Przycisk odświeżania zawsze obecny.",
   "cfgEnableStreamProxy": "Proxy mediów",
-  "cfgEnableStreamProxy_tt": "Kieruje strumienie MJPEG, migawki, miniatury i filmy z nagrań przez ioBroker — używać gdy AgentDVR nie jest dostępny bezpośrednio z przeglądarki",
+  "cfgEnableStreamProxy_tt": "Kieruje strumienie MJPEG, migawki, miniatury i filmy z nagrań przez ioBroker — używać gdy AgentDVR nie jest dostępny bezpośrednio z przeglądarki. FLV i go2rtc zawsze przechodzą przez ioBroker ze względów technicznych (ograniczenie cross-origin przeglądarki).",
   "cfgEnableSystemControls": "Przyciski sterowania systemem",
   "cfgEnableSystemControls_tt": "Przyciski Uzbrój/Rozuzbrój/Restart, selektor profilu i wszystkie systemowe polecenia sterowania",
   "cfgEnableUrls": "Generuj URL strumieni",

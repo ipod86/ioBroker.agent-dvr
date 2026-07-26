@@ -42,7 +42,7 @@
   "cfgEnableSnapshotB64": "Snapshot als Base64",
   "cfgEnableSnapshotB64_tt": "Camerabeeld opslaan als Base64 bij elke poll (photo.jpg, volledige resolutie). Vernieuwknop altijd aanwezig.",
   "cfgEnableStreamProxy": "Media-proxy",
-  "cfgEnableStreamProxy_tt": "Leidt MJPEG-streams, snapshots, miniaturen en video's van opnamen via ioBroker — gebruiken als AgentDVR niet rechtstreeks bereikbaar is vanuit de browser",
+  "cfgEnableStreamProxy_tt": "Leidt MJPEG-streams, snapshots, miniaturen en video's van opnamen via ioBroker — gebruiken als AgentDVR niet rechtstreeks bereikbaar is vanuit de browser. FLV en go2rtc lopen altijd via ioBroker om technische redenen (cross-origin-beperking van de browser).",
   "cfgEnableSystemControls": "Systeembedieningsknoppen",
   "cfgEnableSystemControls_tt": "Knoppen Inschakelen/Uitschakelen/Herstarten, profielkiezer en alle systeembrede bedieningsopdrachten",
   "cfgEnableUrls": "Stream-URLs genereren",

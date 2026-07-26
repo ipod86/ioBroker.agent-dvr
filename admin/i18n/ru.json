@@ -42,7 +42,7 @@
   "cfgEnableSnapshotB64": "Снимок в виде Base64",
   "cfgEnableSnapshotB64_tt": "Сохранять изображение камеры в Base64 при каждом опросе (photo.jpg, полное разрешение). Кнопка обновления всегда присутствует.",
   "cfgEnableStreamProxy": "Медиа-прокси",
-  "cfgEnableStreamProxy_tt": "Маршрутизирует потоки MJPEG, снимки, миниатюры и видео записей через ioBroker — использовать когда AgentDVR недоступен напрямую из браузера",
+  "cfgEnableStreamProxy_tt": "Маршрутизирует потоки MJPEG, снимки, миниатюры и видео записей через ioBroker — использовать когда AgentDVR недоступен напрямую из браузера. FLV и go2rtc всегда работают через ioBroker по техническим причинам (ограничение cross-origin браузера).",
   "cfgEnableSystemControls": "Кнопки управления системой",
   "cfgEnableSystemControls_tt": "Кнопки Arm/Disarm/Перезапуск, выбор профиля и все общесистемные команды управления",
   "cfgEnableUrls": "Генерировать URL потоков",
