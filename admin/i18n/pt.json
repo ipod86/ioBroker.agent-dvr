@@ -19,6 +19,8 @@
   "cfgDashColorText_tt": "Cor de texto principal",
   "cfgDashDefaultView": "Vista padrão ao abrir",
   "cfgDashDefaultView_tt": "Qual aba está ativa quando o painel é aberto",
+  "cfgDashEnableRecordings": "Mostrar aba de gravações",
+  "cfgDashEnableRecordings_tt": "Mostra a aba de gravações na navegação do painel. Desativar para ocultar a aba completamente.",
   "cfgDashGridCols": "Número de colunas (0 = automático)",
   "cfgDashGridCols_tt": "Força um número fixo de colunas de câmeras. 0 = o número ideal é calculado automaticamente.",
   "cfgDashRefreshSec": "Recarregar lista de câmeras a cada (segundos)",

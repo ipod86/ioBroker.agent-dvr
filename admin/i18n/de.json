@@ -19,6 +19,8 @@
   "cfgDashColorText_tt": "Primäre Textfarbe",
   "cfgDashDefaultView": "Standard-Ansicht beim Öffnen",
   "cfgDashDefaultView_tt": "Welcher Tab beim Öffnen des Dashboards aktiv ist",
+  "cfgDashEnableRecordings": "Aufnahmen-Tab anzeigen",
+  "cfgDashEnableRecordings_tt": "Den Aufnahmen-Tab in der Dashboard-Navigation anzeigen. Deaktivieren um den Tab vollständig auszublenden.",
   "cfgDashGridCols": "Spaltenanzahl (0 = automatisch)",
   "cfgDashGridCols_tt": "Anzahl Kamera-Spalten fest vorgeben. 0 = optimale Anzahl wird automatisch berechnet.",
   "cfgDashRefreshSec": "Kameraliste neu laden alle (Sekunden)",

@@ -19,6 +19,8 @@
   "cfgDashColorText_tt": "Colore del testo principale",
   "cfgDashDefaultView": "Vista predefinita all'apertura",
   "cfgDashDefaultView_tt": "Quale scheda è attiva quando si apre il pannello",
+  "cfgDashEnableRecordings": "Mostra scheda registrazioni",
+  "cfgDashEnableRecordings_tt": "Mostra la scheda registrazioni nella navigazione del pannello. Disattivare per nascondere completamente la scheda.",
   "cfgDashGridCols": "Numero colonne (0 = automatico)",
   "cfgDashGridCols_tt": "Forza un numero fisso di colonne per le telecamere. 0 = il numero ottimale viene calcolato automaticamente.",
   "cfgDashRefreshSec": "Ricarica lista telecamere ogni (secondi)",

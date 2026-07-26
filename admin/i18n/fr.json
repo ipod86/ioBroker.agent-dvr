@@ -19,6 +19,8 @@
   "cfgDashColorText_tt": "Couleur de texte principale",
   "cfgDashDefaultView": "Vue par défaut à l'ouverture",
   "cfgDashDefaultView_tt": "Onglet actif à l'ouverture du tableau de bord",
+  "cfgDashEnableRecordings": "Afficher l'onglet enregistrements",
+  "cfgDashEnableRecordings_tt": "Afficher l'onglet enregistrements dans la navigation du tableau de bord. Désactiver pour masquer l'onglet complètement.",
   "cfgDashGridCols": "Nombre de colonnes (0 = automatique)",
   "cfgDashGridCols_tt": "Forcer un nombre fixe de colonnes de caméras. 0 = le nombre optimal est calculé automatiquement.",
   "cfgDashRefreshSec": "Recharger la liste des caméras toutes les (secondes)",

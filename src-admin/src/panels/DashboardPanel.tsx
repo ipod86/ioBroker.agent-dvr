@@ -239,6 +239,20 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 						onChange={v => onChange('dashShowOffline', v)}
 					/>
 				</Grid>
+				<Grid
+					item
+					xs={12}
+					sm={6}
+					md={4}
+				>
+					<FormField
+						type="checkbox"
+						labelKey="cfgDashEnableRecordings"
+						helpKey="cfgDashEnableRecordings_tt"
+						value={native.dashEnableRecordings !== false}
+						onChange={v => onChange('dashEnableRecordings', v)}
+					/>
+				</Grid>
 			</Grid>
 
 			<SectionHeader textKey="hdrDashGrid" />

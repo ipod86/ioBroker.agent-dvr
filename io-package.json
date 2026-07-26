@@ -209,6 +209,7 @@
     "widgetThumbSize": "medium",
     "widgetCompact": false,
     "dashDefaultView": "live",
+    "dashEnableRecordings": true,
     "dashShowOffline": true,
     "dashGridCols": 0,
     "dashBtnsVisible": false,

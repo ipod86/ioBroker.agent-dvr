@@ -7805,7 +7805,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
       <span data-i18n="navLive">Live</span>
     </button>
-    <button class="nav-btn" onclick="showView('rec')">
+    <button id="nav-btn-rec" class="nav-btn" onclick="showView('rec')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
       <span data-i18n="navRec">Recordings</span>
     </button>
@@ -8421,6 +8421,7 @@ function destroyFlvPlayer(key) {
 
 /* ─────────────────────────── Dashboard config ──────────────── */
 let CFG = {
+  dashEnableRecordings: true,
   dashDefaultView:     'live',
   dashShowOffline:     true,
   dashGridCols:        0,
@@ -8456,6 +8457,9 @@ async function loadConfig() {
     const r = await fetch('/agent-dvr/api/config', { signal: AbortSignal.timeout(5000) });
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
+  const recEnabled = CFG.dashEnableRecordings !== false;
+  document.getElementById('nav-btn-rec').style.display = recEnabled ? '' : 'none';
+  if (!recEnabled && CFG.dashDefaultView === 'recordings') CFG.dashDefaultView = 'live';
   document.documentElement.style.setProperty('--btn-base-opacity', CFG.dashBtnsVisible ? '1' : '0');
   go2rtcMap = {};
   (Array.isArray(CFG.go2rtcMapping) ? CFG.go2rtcMapping : []).forEach(row => {
