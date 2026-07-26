@@ -213,6 +213,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .rec-tile:hover .rec-play-icon{opacity:1}
 .rec-play-icon svg{filter:drop-shadow(0 2px 6px #000)}
 .rec-badges{position:absolute;top:var(--rec-badge-top,5px);bottom:var(--rec-badge-bot,auto);right:var(--rec-badge-right,5px);left:var(--rec-badge-left,auto);display:flex;flex-direction:column;align-items:var(--rec-badge-align,flex-end);gap:3px}
+.rec-badges-l{position:absolute;top:5px;left:5px;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
 .badge{background:rgba(0,0,0,.65);border-radius:4px;padding:2px 6px;font-size:10px;
   font-weight:500;letter-spacing:.3px;border:1px solid rgba(255,255,255,.1)}
 .badge.tag{color:var(--accent-l);border-color:rgba(37,99,235,.35)}
@@ -9323,16 +9324,18 @@ function renderRec() {
       <polygon points="16,12 30,20 16,28" fill="#fff"/>
     </svg>`;
     const badges = document.createElement('div'); badges.className = 'rec-badges';
-    if (multiCam && rec._camKey) {
-      const cb = document.createElement('span'); cb.className = 'badge cam';
-      cb.style.background = camColor(rec._camKey);
-      cb.textContent = cam?.name || rec._camKey;
-      badges.appendChild(cb);
-    }
     if (rec.tag) {
       const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b);
     }
     wrap.append(img, play, badges);
+    if (multiCam && rec._camKey) {
+      const badgesL = document.createElement('div'); badgesL.className = 'rec-badges-l';
+      const cb = document.createElement('span'); cb.className = 'badge cam';
+      cb.style.background = camColor(rec._camKey);
+      cb.textContent = cam?.name || rec._camKey;
+      badgesL.appendChild(cb);
+      wrap.appendChild(badgesL);
+    }
 
     const info = document.createElement('div'); info.className = 'rec-info';
     const date = document.createElement('div'); date.className = 'rec-date'; date.textContent = rec.date + ' ' + rec.time;
