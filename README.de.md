@@ -68,6 +68,12 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 |-------------|-------------|---------|
 | Übersichts-Widget | Einen HTML-Zustand mit allen Kamerakacheln zusammengefasst anlegen | `ja` |
 
+**Proxy**
+
+| Einstellung | Beschreibung | Standard |
+|-------------|-------------|---------|
+| Medien-Proxy | MJPEG-Streams, Snapshots, Aufnahmen-Vorschaubilder und Videos über ioBroker leiten | `nein` |
+
 **Debug**
 
 | Einstellung | Beschreibung | Standard |
@@ -214,6 +220,34 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 2. Im Adapter-Admin → Tab *Dashboard* → *Stream-Zuweisung* für jede Kamera den gewünschten go2rtc-Streamnamen aus dem Dropdown wählen.
 3. Die **go2rtc-URL** eintragen, die unterhalb der Tabelle erscheint (z. B. `http://192.168.1.10:1984`).
 4. Speichern und Adapter neu starten. Der Adapter proxied den WebSocket-Traffic über ioBroker, um Browser-CORS-Probleme zu umgehen.
+
+## Medien-Proxy
+
+Der Adapter kann alle Medien über ioBroker leiten, sodass der Browser keine direkte Verbindung zu AgentDVR benötigt. Den **Medien-Proxy** aktivierst du im Tab „Funktionen".
+
+| Was wird geleitet | Proxy aus | Proxy an |
+|-------------------|-----------|----------|
+| MJPEG-Livestream | direkte AgentDVR-URL | `/agent-dvr/api/mjpeg?oid=…` |
+| Snapshot | direkte AgentDVR-URL | `/agent-dvr/api/snap?oid=…` |
+| Aufnahmen-Vorschaubilder | direkte AgentDVR-URL | `/agent-dvr/api/thumb?oid=…` |
+| Aufnahmen-Videos | direkte AgentDVR-URL | `/agent-dvr/api/media?oid=…` |
+| FLV-Livestream | **immer über ioBroker** | **immer über ioBroker** |
+| go2rtc-WebSocket | **immer über ioBroker** | **immer über ioBroker** |
+
+FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — der Browser kann diese Endpunkte aus technischen Gründen nicht direkt ansprechen (Browser-Cross-Origin-Beschränkung).
+
+### Wann einschalten
+
+- Du rufst das Dashboard von außerhalb deines Heimnetzes auf, wo AgentDVR vom Browser aus nicht direkt erreichbar ist
+- Nur ioBroker ist nach außen erreichbar (z. B. über einen Reverse-Proxy oder VPN nur zu ioBroker)
+
+### Wann ausgelassen lassen
+
+- Browser und AgentDVR sind im gleichen Netzwerk (lokaler Zugriff)
+- Direktverbindung ist schneller — kein Umweg, geringere Latenz
+- Weniger Last auf dem ioBroker-Server — Streams müssen nicht durch Node.js laufen
+
+> Die Einstellung wird sofort nach dem Speichern wirksam — kein Neustart erforderlich.
 
 ## Datenpunkte
 

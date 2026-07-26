@@ -73,6 +73,12 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 |---------|-------------|---------|
 | Overview widget | Single HTML state combining all camera live tiles | `true` |
 
+**Proxy**
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Media proxy | Route MJPEG streams, snapshots, recording thumbnails and videos through ioBroker | `false` |
+
 **Debug**
 
 | Setting | Description | Default |
@@ -219,6 +225,34 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 2. In the adapter config → *Dashboard* tab, assign the desired go2rtc stream name to each camera from the dropdown.
 3. Enter the **go2rtc URL** that appears below the table (e.g. `http://192.168.1.10:1984`).
 4. Save and restart. The adapter proxies WebSocket traffic through ioBroker to avoid browser cross-origin restrictions.
+
+## Media Proxy
+
+The adapter can route all media through ioBroker so the browser never needs a direct connection to AgentDVR. Enable **Media proxy** on the Features tab.
+
+| What is proxied | Proxy off | Proxy on |
+|-----------------|-----------|----------|
+| MJPEG live stream | direct AgentDVR URL | `/agent-dvr/api/mjpeg?oid=…` |
+| Snapshot | direct AgentDVR URL | `/agent-dvr/api/snap?oid=…` |
+| Recording thumbnails | direct AgentDVR URL | `/agent-dvr/api/thumb?oid=…` |
+| Recording videos | direct AgentDVR URL | `/agent-dvr/api/media?oid=…` |
+| FLV live stream | **always via ioBroker** | **always via ioBroker** |
+| go2rtc WebSocket | **always via ioBroker** | **always via ioBroker** |
+
+FLV and go2rtc always run through ioBroker regardless of the setting — the browser cannot make cross-origin requests to these endpoints directly.
+
+### When to enable
+
+- You access the dashboard from outside your home network where AgentDVR is not directly reachable from the browser
+- Only ioBroker is exposed externally (e.g. via reverse proxy or VPN to ioBroker only)
+
+### When to leave it off
+
+- Browser and AgentDVR are on the same network (local access)
+- Direct connection is faster — no extra hop, lower latency
+- Less load on the ioBroker server — streams do not pass through Node.js
+
+> The setting takes effect immediately after saving — no restart required.
 
 ## Data points
 
