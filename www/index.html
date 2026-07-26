@@ -9134,6 +9134,8 @@ document.addEventListener('mousedown', e => {
 
 /* ─────────────────────────── Recordings ────────────────────── */
 function camColor(camKey) {
+  const c = cameras[camKey]?.color;
+  if (c && /^#[0-9a-fA-F]{3,8}$/.test(c)) return c;
   const idx = Object.keys(cameras).indexOf(camKey);
   return CAM_COLORS[(idx < 0 ? 0 : idx) % CAM_COLORS.length];
 }
