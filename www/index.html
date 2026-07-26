@@ -236,6 +236,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
 #vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
+#vid-err{display:none;margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;font-size:12px}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
 #vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
 #vid-dl:hover{background:rgba(37,99,235,.15)}
@@ -7895,7 +7896,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       <div id="vid-title"></div>
       <div id="vid-cam"></div>
     </div>
-    <video id="vid-el" controls playsinline preload="auto"></video>
+    <video id="vid-el" controls playsinline preload="auto" onerror="showVidErr()"></video>
+    <div id="vid-err"></div>
     <div id="vid-nav">
       <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Previous</button>
       <span id="vid-pos"></span>
@@ -7942,6 +7944,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Lade…',
     vidPrev:         '‹ Vorherige',
     vidNext:         'Nächste ›',
+    vidFmtErr:       'Format nicht unterstützt — bitte in AgentDVR abspielen oder Download verwenden.',
     loadingCameras:  'Lade Kameras…',
     bannerNoCameras: '<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.',
     sbarNoCameras:   'Keine Kameras · ',
@@ -7982,6 +7985,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Loading…',
     vidPrev:         '‹ Previous',
     vidNext:         'Next ›',
+    vidFmtErr:       'Format not supported — please play in AgentDVR or use Download.',
     loadingCameras:  'Loading cameras…',
     bannerNoCameras: '<strong>No cameras</strong><br>Is AgentDVR reachable? Check IP/port in adapter config.',
     sbarNoCameras:   'No cameras · ',
@@ -8022,6 +8026,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Cargando…',
     vidPrev:         '‹ Anterior',
     vidNext:         'Siguiente ›',
+    vidFmtErr:       'Formato no compatible — reproduce en AgentDVR o usa Descargar.',
     loadingCameras:  'Cargando cámaras…',
     bannerNoCameras: '<strong>Sin cámaras</strong><br>¿AgentDVR accesible? Comprueba IP/puerto en la config del adaptador.',
     sbarNoCameras:   'Sin cámaras · ',
@@ -8062,6 +8067,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Chargement…',
     vidPrev:         '‹ Précédent',
     vidNext:         'Suivant ›',
+    vidFmtErr:       'Format non supporté — lisez dans AgentDVR ou utilisez Télécharger.',
     loadingCameras:  'Chargement des caméras…',
     bannerNoCameras: '<strong>Aucune caméra</strong><br>AgentDVR accessible ? Vérifiez IP/port dans la config de l\'adaptateur.',
     sbarNoCameras:   'Aucune caméra · ',
@@ -8102,6 +8108,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Caricamento…',
     vidPrev:         '‹ Precedente',
     vidNext:         'Successivo ›',
+    vidFmtErr:       'Formato non supportato — riprodurre in AgentDVR o usare Scarica.',
     loadingCameras:  'Caricamento telecamere…',
     bannerNoCameras: '<strong>Nessuna telecamera</strong><br>AgentDVR raggiungibile? Controlla IP/porta nella config dell\'adattatore.',
     sbarNoCameras:   'Nessuna telecamera · ',
@@ -8142,6 +8149,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Laden…',
     vidPrev:         '‹ Vorige',
     vidNext:         'Volgende ›',
+    vidFmtErr:       'Formaat niet ondersteund — speel af in AgentDVR of gebruik Downloaden.',
     loadingCameras:  'Camera\'s laden…',
     bannerNoCameras: '<strong>Geen camera\'s</strong><br>AgentDVR bereikbaar? Controleer IP/poort in de adapterconfig.',
     sbarNoCameras:   'Geen camera\'s · ',
@@ -8182,6 +8190,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Ładowanie…',
     vidPrev:         '‹ Poprzednie',
     vidNext:         'Następne ›',
+    vidFmtErr:       'Format nieobsługiwany — odtwórz w AgentDVR lub użyj Pobierz.',
     loadingCameras:  'Ładowanie kamer…',
     bannerNoCameras: '<strong>Brak kamer</strong><br>AgentDVR dostępny? Sprawdź IP/port w konfiguracji adaptera.',
     sbarNoCameras:   'Brak kamer · ',
@@ -8222,6 +8231,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Carregando…',
     vidPrev:         '‹ Anterior',
     vidNext:         'Próximo ›',
+    vidFmtErr:       'Formato não suportado — reproduza no AgentDVR ou use Transferir.',
     loadingCameras:  'Carregando câmeras…',
     bannerNoCameras: '<strong>Nenhuma câmera</strong><br>AgentDVR acessível? Verifique IP/porta na config do adaptador.',
     sbarNoCameras:   'Nenhuma câmera · ',
@@ -8262,6 +8272,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Загрузка…',
     vidPrev:         '‹ Предыдущее',
     vidNext:         'Следующее ›',
+    vidFmtErr:       'Формат не поддерживается — воспроизведите в AgentDVR или используйте Скачать.',
     loadingCameras:  'Загрузка камер…',
     bannerNoCameras: '<strong>Камеры не найдены</strong><br>AgentDVR доступен? Проверьте IP/порт в настройках адаптера.',
     sbarNoCameras:   'Нет камер · ',
@@ -8302,6 +8313,7 @@ const TRANSLATIONS = {
     sbarLoading:     'Завантаження…',
     vidPrev:         '‹ Попереднє',
     vidNext:         'Наступне ›',
+    vidFmtErr:       'Формат не підтримується — відтворіть в AgentDVR або використайте Завантажити.',
     loadingCameras:  'Завантаження камер…',
     bannerNoCameras: '<strong>Камери не знайдено</strong><br>AgentDVR доступний? Перевірте IP/порт у налаштуваннях адаптера.',
     sbarNoCameras:   'Немає камер · ',
@@ -8342,6 +8354,7 @@ const TRANSLATIONS = {
     sbarLoading:     '加载中…',
     vidPrev:         '‹ 上一个',
     vidNext:         '下一个 ›',
+    vidFmtErr:       '格式不支持 — 请在 AgentDVR 中播放或使用下载。',
     loadingCameras:  '正在加载摄像头…',
     bannerNoCameras: '<strong>未找到摄像头</strong><br>AgentDVR 可达？请检查适配器配置中的 IP/端口。',
     sbarNoCameras:   '无摄像头 · ',
@@ -9482,11 +9495,17 @@ function playRecIdx(idx) {
   const rec = recPlayList[idx];
   playRec(rec, rec._cam, idx);
 }
+function showVidErr() {
+  const el = document.getElementById('vid-err');
+  el.style.display = 'block';
+  el.textContent = t('vidFmtErr');
+}
 function playRec(rec, cam, idx) {
   const url = rec.video || rec.url || '';
   if (!url) return;
   const src = url.startsWith('/') ? url : (url.startsWith('http') ? url : BASE + url);
   const el  = document.getElementById('vid-el');
+  document.getElementById('vid-err').style.display = 'none';
   if (el.src !== src) { el.src = src; el.load(); }
   recPlayIdx = idx !== undefined ? idx : recPlayList.indexOf(rec);
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
@@ -9501,6 +9520,7 @@ function playRec(rec, cam, idx) {
 function closeVideo() {
   const el = document.getElementById('vid-el');
   el.pause(); el.removeAttribute('src'); el.load();
+  document.getElementById('vid-err').style.display = 'none';
   document.getElementById('vid-panel').classList.remove('open');
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
