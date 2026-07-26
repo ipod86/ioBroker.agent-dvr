@@ -9304,7 +9304,8 @@ function renderRec() {
     return da.localeCompare(db);
   });
 
-  const multiCam = (selectedCameras.size !== 1) && Object.keys(cameras).length > 1;
+  const activeCamKeys = [...new Set(items.map(r => r._camKey).filter(Boolean))];
+  const multiCam = activeCamKeys.length > 1;
 
   if (recViewMode === 'timeline') { renderTimeline(items, multiCam); return; }
 
