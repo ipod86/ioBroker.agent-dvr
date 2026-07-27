@@ -1067,6 +1067,7 @@ class AgentDvr extends utils.Adapter {
         events.slice(0, Math.max(1, this.config.widgetAnzahl || 50)).map((ev) => {
           const p = this.fmtEvent(ev, oid);
           return {
+            fn: p.fn,
             date: p.date,
             time: p.time,
             dur: p.dur,
