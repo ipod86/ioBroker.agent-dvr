@@ -24,7 +24,7 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - **Snapshot as Base64** — `snapshot_b64` state per camera, writable via button or auto-updated every poll cycle
 - PTZ control with hold-to-move switches
 - Stream URLs per camera (snapshot, photo, MJPEG, MP4)
-- Push trigger state for real-time script reactions to new recordings
+- Webhook endpoint for real-time updates — call it from an AgentDVR action to trigger an immediate full poll
 - HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
 - Overview widget combining all cameras in one HTML state
 - **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr/` — no additional app needed:
@@ -69,7 +69,6 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 | Setting | Description | Default |
 |---------|-------------|---------|
 | Event data points | Mirror recording metadata (latest event, count, tags, …) per camera | `true` |
-| Real-time push trigger | Create a push-trigger state that scripts can subscribe to for new recordings | `true` |
 
 **Display**
 
@@ -371,8 +370,19 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
 | `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
-| `<cam>.push` | string | R | Push trigger — updated when AgentDVR reports a new recording — requires "Real-time push trigger" |
 | `<cam>.gallery` | string | R | HTML recording gallery — requires "Gallery widget" |
+
+## Webhook
+
+The adapter exposes a webhook endpoint that triggers an immediate full poll of AgentDVR:
+
+```
+GET http://<iobroker>:<webport>/agent-dvr/webhook
+```
+
+Configure this URL as an **Action** in AgentDVR (Camera → Edit → Alerts → Actions → URL) to get real-time updates whenever a recording finishes or an alert fires. The adapter will immediately re-fetch all camera data, recordings, and system stats — no need to wait for the next poll cycle.
+
+Returns `{"ok":true}` on success.
 
 ### Overview *(requires "Overview widget")*
 
@@ -382,6 +392,8 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (ipod86) feat: webhook endpoint `/agent-dvr/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
+* (ipod86) refactor: remove per-camera pushTrigger data points in favour of the global webhook
 * (ipod86) feat: PTZ presets — list and navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
 * (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
 * (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)

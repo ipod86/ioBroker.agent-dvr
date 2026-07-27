@@ -1323,28 +1323,6 @@ class AgentDvr extends utils.Adapter {
 
 		await this.ensureFlag(`${fid}.events.new`, 'New event');
 
-		if (this.config.enablePush) {
-			const pid = `${fid}.events.pushTrigger`;
-			if (!this.ensuredFolders.has(pid)) {
-				await this.ensurePath(pid);
-				await this.setObjectNotExistsAsync(pid, {
-					type: 'state',
-					common: {
-						name: 'Push trigger (AgentDVR action)',
-						type: 'string',
-						role: 'text',
-						read: true,
-						write: true,
-						def: '',
-					},
-					native: {},
-				});
-				await this.setStateAsync(pid, { val: '', ack: true });
-				this.ensuredFolders.add(pid);
-			}
-			this.registry.set(pid, { kind: 'push', oid, fid });
-		}
-
 		const ignore = (this.config.eventTagsIgnore || 'detected')
 			.split(',')
 			.map(s => s.trim().toLowerCase())
@@ -1459,24 +1437,6 @@ class AgentDvr extends utils.Adapter {
 			}
 		} finally {
 			this.eventBusy[d.oid] = false;
-		}
-	}
-
-	private pushRefresh(oid: number | string): void {
-		const d = this.devById.get(oid);
-		if (!d) {
-			this.log.warn(`Push: camera ${oid} unknown (available after first poll)`);
-			return;
-		}
-		const fid = this.deviceFolder(d);
-		for (const ms of [0, 1500, 3500, 6000]) {
-			this.setTimeout(
-				() =>
-					this.updateCameraEvents(d, fid).catch(e =>
-						this.log.warn(`Push refresh error: ${(e as Error).message}`),
-					),
-				ms,
-			);
 		}
 	}
 
@@ -1691,13 +1651,6 @@ class AgentDvr extends utils.Adapter {
 			const snapId = `${entry.fid}.snapshot_b64`;
 			await this.fetchSnapshotB64(entry.oid!, snapId);
 			await this.setStateAsync(relId, { val: false, ack: true });
-			return;
-		}
-
-		if (entry.kind === 'push') {
-			this.log.info(`Push trigger cam ${entry.oid}`);
-			await this.setStateAsync(relId, { val: '', ack: true });
-			this.pushRefresh(entry.oid!);
 			return;
 		}
 

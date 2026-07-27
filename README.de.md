@@ -19,7 +19,7 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 - **Snapshot als Base64** — `snapshot_b64`-Zustand pro Kamera, per Schaltfläche oder automatisch bei jedem Poll aktualisierbar
 - PTZ-Steuerung mit Halte-Schaltern (links, rechts, oben, unten, diagonal, Zoom, Stopp, Mitte)
 - Stream-URLs pro Kamera (Snapshot, Foto, MJPEG, MP4)
-- Push-Trigger-Zustand für sofortige Skript-Reaktionen auf neue Aufnahmen
+- Webhook-Endpunkt für Echtzeit-Updates — per AgentDVR-Action aufrufbar, löst sofortigen vollständigen Poll aus
 - HTML-Galerie-Widget pro Kamera (reines HTML/CSS oder JS-Modus mit Suche und Tag-Filter)
 - Übersichts-Widget, das alle Kameras in einem HTML-Zustand kombiniert
 - **Eingebautes Live-Dashboard** unter `http://<iobroker>:<webport>/agent-dvr/` — keine zusätzliche App nötig:
@@ -64,7 +64,6 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 | Einstellung | Beschreibung | Standard |
 |-------------|-------------|---------|
 | Ereignis-Datenpunkte | Aufnahme-Metadaten (neuestes Ereignis, Anzahl, Tags, …) pro Kamera spiegeln | `ja` |
-| Echtzeit-Push-Trigger | Push-Trigger-Zustand anlegen, auf den Skripte bei neuen Aufnahmen reagieren können | `ja` |
 
 **Anzeige**
 
@@ -366,8 +365,19 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
 | `<cam>.events.*` | verschieden | R | Metadaten der letzten Aufnahme — erfordert „Ereignis-Datenpunkte" |
-| `<cam>.push` | string | R | Push-Trigger — wird bei neuer Aufnahme sofort aktualisiert — erfordert „Echtzeit-Push-Trigger" |
 | `<cam>.gallery` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
+
+## Webhook
+
+Der Adapter stellt einen Webhook-Endpunkt bereit, der einen sofortigen vollständigen Poll auslöst:
+
+```
+GET http://<iobroker>:<webport>/agent-dvr/webhook
+```
+
+Diese URL als **Action** in AgentDVR eintragen (Kamera → Bearbeiten → Alarme → Actions → URL), um bei abgeschlossenen Aufnahmen oder Alarmen sofortige Aktualisierungen zu erhalten. Der Adapter holt dann sofort alle Kameradaten, Aufnahmen und Systemstats neu — ohne auf den nächsten Poll-Zyklus warten zu müssen.
+
+Gibt `{"ok":true}` bei Erfolg zurück.
 
 ### Übersicht *(erfordert „Übersichts-Widget")*
 
@@ -382,6 +392,8 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) feat: Webhook-Endpunkt `/agent-dvr/webhook` löst sofortigen vollständigen Poll aus — als AgentDVR-Action konfigurierbar für Echtzeit-Updates
+* (ipod86) refactor: pro-Kamera pushTrigger-Datenpunkte durch globalen Webhook ersetzt
 * (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
 * (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
 * (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)
