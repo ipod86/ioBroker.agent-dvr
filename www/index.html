@@ -8643,7 +8643,7 @@ async function loadData() {
       sbar(t('sbarNoCameras') + INST, true);
     } else {
       hideBanner();
-      sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
+      sbarLive();
       buildRecCamSel();
       trySocket();
     }
@@ -8697,12 +8697,16 @@ function trySocket() {
 }
 
 /* ─────────────────────────── Views ─────────────────────────── */
+function sbarLive() {
+  const n = Object.keys(cameras).length;
+  if (n) sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
+}
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.trim().toLowerCase().includes(name === 'live' ? 'live' : 'aufn'))?.classList.add('active');
-  if (name === 'live') updateLayout();
+  if (name === 'live') { updateLayout(); sbarLive(); }
 }
 
 /* ─────────────────────────── Chips ─────────────────────────── */
