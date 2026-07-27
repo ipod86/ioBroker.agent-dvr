@@ -381,7 +381,7 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 | `overview` | string | R | HTML tile grid of all cameras |
 
 ## Changelog
-### 0.5.0 (2026-07-27)
+### **WORK IN PROGRESS**
 * (ipod86) feat: PTZ presets — list and navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
 * (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
 * (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)

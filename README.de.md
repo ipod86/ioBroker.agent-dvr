@@ -381,7 +381,7 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### 0.5.0 (2026-07-27)
+### **WORK IN PROGRESS**
 * (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
 * (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
 * (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)
