@@ -9387,6 +9387,7 @@ function buildRecCamSel() {
   loadAndFilterRec(true);
 }
 
+let _recPrevNewest = '';
 async function loadAndFilterRec(silent = false) {
   const camKeys = Object.keys(cameras);
   if (!camKeys.length) return;
@@ -9419,8 +9420,13 @@ async function loadAndFilterRec(silent = false) {
 
     if (!recAllItems.length) {
       grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';
+      _recPrevNewest = '';
       return;
     }
+
+    const newest = (recAllItems[0].date || '') + 'T' + (recAllItems[0].time || '');
+    const hasNew = silent && newest !== _recPrevNewest && _recPrevNewest !== '';
+    _recPrevNewest = newest;
 
     // Build tag chips
     const tags = [...new Set(recAllItems.map(r => r.tag).filter(Boolean))];
@@ -9446,6 +9452,7 @@ async function loadAndFilterRec(silent = false) {
       toggle.classList.remove('active');
     }
     renderRec();
+    if (hasNew) grid.scrollTop = 0;
   } catch (e) {
     grid.innerHTML = '<div class="rec-empty">' + t('recError') + esc(e.message) + '</div>';
   }
@@ -9479,7 +9486,6 @@ function renderRec() {
   const q     = (document.getElementById('rec-search').value || '').toLowerCase();
   const tag   = recFilters.tag;
   const grid  = document.getElementById('rec-grid');
-  const savedScroll = grid.scrollTop;
 
   const items = recAllItems.filter(r => {
     if (tag && r.tag !== tag) return false;
@@ -9550,7 +9556,6 @@ function renderRec() {
     tile.onclick = () => playRec(rec, cam, recPlayList.indexOf(rec));
     grid.appendChild(tile);
   });
-  if (savedScroll > 0) grid.scrollTop = savedScroll;
 }
 
 function fmtDur(s) {
