@@ -8497,7 +8497,7 @@ let recFilters  = { tag: '' };
 const CAM_COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#eab308','#ef4444'];
 let selectedCameras = new Set(JSON.parse(localStorage.getItem('advr_rec_cams') || '[]'));
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
-let recPlayList = [], recPlayIdx = -1;
+let recPlayList = [], recPlayIdx = -1, _lastRecSbar = '';
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
 let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
@@ -8707,6 +8707,7 @@ function showView(name) {
   document.getElementById('view-' + name).classList.add('active');
   [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.trim().toLowerCase().includes(name === 'live' ? 'live' : 'aufn'))?.classList.add('active');
   if (name === 'live') { updateLayout(); sbarLive(); }
+  else if (name === 'rec' && _lastRecSbar) sbar(_lastRecSbar);
 }
 
 /* ─────────────────────────── Chips ─────────────────────────── */
@@ -9385,8 +9386,8 @@ function renderRec() {
     return true;
   });
 
-  if (document.getElementById('view-rec')?.classList.contains('active'))
-    sbar((recViewMode === 'events' ? t('evCount') : t('recCount')).replace('{n}', items.length));
+  _lastRecSbar = (recViewMode === 'events' ? t('evCount') : t('recCount')).replace('{n}', items.length);
+  if (document.getElementById('view-rec')?.classList.contains('active')) sbar(_lastRecSbar);
   grid.innerHTML = '';
 
   if (recViewMode === 'events') { renderEventLog(items); return; }
