@@ -8704,9 +8704,22 @@ function trySocket() {
 }
 
 /* ─────────────────────────── Views ─────────────────────────── */
+let _sysStats = {};
+async function loadSysStats() {
+  try {
+    const r = await fetch('/agent-dvr/api/systemstats', { signal: AbortSignal.timeout(5000) });
+    const d = await r.json().catch(() => ({}));
+    if (d && !d.error) _sysStats = d;
+  } catch (_) {}
+  sbarLive();
+}
 function sbarLive() {
   const n = Object.keys(cameras).length;
-  if (n) sbar(n + t('sbarLoaded') + INST + (BASE ? ' · ' + BASE : ''));
+  if (!n) return;
+  const parts = [n + t('sbarLoaded')];
+  if (_sysStats.cpu != null)        parts.push('CPU ' + Math.round(_sysStats.cpu) + '%');
+  if (_sysStats.disk_free != null)  parts.push('Disk ' + _sysStats.disk_free);
+  sbar(parts.join(' · '));
 }
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -9957,7 +9970,11 @@ function disconnectWebRTC(vid) {
 
 /* ─────────────────────────── Boot ──────────────────────────── */
 applyDashTranslations();
-loadConfig().then(() => loadData()).then(() => ensureLayoutObserver());
+loadConfig().then(() => loadData()).then(() => {
+  ensureLayoutObserver();
+  loadSysStats();
+  setInterval(loadSysStats, 60000);
+});
 </script>
 <script src="/socket.io/socket.io.js"></script>
 </body>
