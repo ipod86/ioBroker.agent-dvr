@@ -97,6 +97,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .ptz-close{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;
   background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.2);color:#fff;
   font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ptz-presets{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:160px;margin-top:2px}
+.ptz-preset-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:4px;color:#fff;font-size:10px;padding:2px 7px;cursor:pointer;
+  white-space:nowrap;transition:background .1s,border-color .1s;line-height:1.6}
+.ptz-preset-btn:hover{background:rgba(37,99,235,.5);border-color:var(--accent)}
+.ptz-preset-btn.active{background:rgba(37,99,235,.75);border-color:var(--accent)}
 
 /* Empty state */
 .empty-state{display:flex;align-items:center;justify-content:center;color:var(--muted);
@@ -8944,7 +8950,10 @@ function makePtzOverlay(camKey) {
   closeBtn.textContent = '✕';
   closeBtn.addEventListener('click', e => { e.stopPropagation(); ov.classList.remove('open'); });
 
-  ov.append(closeBtn, pad, zoom);
+  const presetsEl = document.createElement('div'); presetsEl.className = 'ptz-presets';
+  presetsEl.dataset.loaded = '0';
+
+  ov.append(closeBtn, pad, zoom, presetsEl);
   return ov;
 }
 
@@ -8955,11 +8964,57 @@ function togglePtz(tile, camKey) {
   const open = !ov.classList.contains('open');
   ov.classList.toggle('open', open);
   btn.classList.toggle('active', open);
+  if (open) {
+    const presetsEl = ov.querySelector('.ptz-presets');
+    if (presetsEl && presetsEl.dataset.loaded === '0') ptzLoadPresets(camKey, presetsEl);
+  }
 }
 
 async function ptzSend(camKey, dir, val) {
   try {
     await fetch(`/agent-dvr/api/ptz?camKey=${encodeURIComponent(camKey)}&dir=${dir}&val=${val?1:0}`);
+  } catch (_) {}
+}
+
+async function ptzLoadPresets(camKey, container) {
+  const cam = cameras[camKey];
+  const oid = cam?.oid != null ? String(cam.oid) : '';
+  if (!oid) return;
+  container.dataset.loaded = '1';
+  try {
+    const r = await fetch('/agent-dvr/api/ptzpresets?oid=' + encodeURIComponent(oid),
+                          { signal: AbortSignal.timeout(5000) });
+    const data = await r.json().catch(() => ({}));
+    const presets = Array.isArray(data.presets) ? data.presets : [];
+    if (!presets.length) return;
+    const active = data.active || null;
+    container.innerHTML = '';
+    presets.forEach(p => {
+      const name = p.name || p.token || '';
+      if (!name) return;
+      const btn = document.createElement('div');
+      btn.className = 'ptz-preset-btn' + (name === active ? ' active' : '');
+      btn.textContent = name;
+      btn.title = name;
+      btn.addEventListener('click', e => { e.stopPropagation(); ptzGoPreset(camKey, name, btn, container); });
+      container.appendChild(btn);
+    });
+  } catch (_) {}
+}
+
+async function ptzGoPreset(camKey, name, btn, container) {
+  const cam = cameras[camKey];
+  const oid = cam?.oid != null ? String(cam.oid) : '';
+  if (!oid) return;
+  try {
+    const r = await fetch('/agent-dvr/api/ptzpreset?oid=' + encodeURIComponent(oid) +
+                          '&preset=' + encodeURIComponent(name),
+                          { signal: AbortSignal.timeout(5000) });
+    const data = await r.json().catch(() => ({}));
+    if (!data.error && data.status !== 'Command not found') {
+      container.querySelectorAll('.ptz-preset-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
   } catch (_) {}
 }
 
@@ -9134,6 +9189,10 @@ function openFs(cam, key) {
       e.stopPropagation();
       const open = ov.classList.toggle('open');
       ptzBtn.classList.toggle('active', open);
+      if (open) {
+        const presetsEl = ov.querySelector('.ptz-presets');
+        if (presetsEl && presetsEl.dataset.loaded === '0') ptzLoadPresets(key, presetsEl);
+      }
     });
   }
 
