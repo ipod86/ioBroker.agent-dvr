@@ -8686,8 +8686,9 @@ function trySocket() {
     const s = io({ transports: ['websocket','polling'], reconnection: true });
     s.on('connect', () => {
       connDot(true);
-      ['data.online','status.recording','status.detected','status.alerted','push'].forEach(p =>
+      ['data.online','status.recording','status.detected','status.alerted'].forEach(p =>
         s.emit('subscribe', INST + '.cam_*.' + p, () => {}));
+      s.emit('subscribe', INST + '.cam_*.events.pushTrigger', () => {});
     });
     s.on('disconnect', () => connDot(false));
     s.on('stateChange', (id, state) => {
@@ -8709,7 +8710,7 @@ function trySocket() {
       } else if (rel.endsWith('.status.alerted')) {
         cameras[ck].alerted = !!state.val;
         setTileStatus(ck, 'alerted', !!state.val);
-      } else if (rel.endsWith('.push') && state.val) {
+      } else if (rel.endsWith('.events.pushTrigger') && state.val) {
         if (document.getElementById('view-rec')?.classList.contains('active')) loadAndFilterRec();
       }
     });
