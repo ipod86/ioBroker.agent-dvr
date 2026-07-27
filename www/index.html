@@ -8688,11 +8688,17 @@ function trySocket() {
       connDot(true);
       ['data.online','status.recording','status.detected','status.alerted'].forEach(p =>
         s.emit('subscribe', INST + '.cam_*.' + p, () => {}));
+      s.emit('subscribe', INST + '.system.lastUpdate', () => {});
     });
     s.on('disconnect', () => connDot(false));
     s.on('stateChange', (id, state) => {
       if (!state || !id.startsWith(INST + '.')) return;
       const rel = id.slice(INST.length + 1);
+      if (rel === 'system.lastUpdate' && state.val) {
+        loadData();
+        loadSysStats();
+        return;
+      }
       const ck  = rel.split('.')[0];
       if (!cameras[ck]) return;
       if (rel.endsWith('.data.online')) {
