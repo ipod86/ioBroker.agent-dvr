@@ -8637,8 +8637,11 @@ async function loadConfig() {
 }
 
 /* ─────────────────────────── Init ──────────────────────────── */
+let _loadDataBusy = false;
 async function loadData() {
-  sbar(t('loadingCameras'));
+  if (_loadDataBusy) return;
+  _loadDataBusy = true;
+  if (!Object.keys(cameras).length) sbar(t('loadingCameras'));
   // Fetch AgentDVR cameras and go2rtc streams in parallel
   const [camRes] = await Promise.allSettled([
     fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) }),
@@ -8674,8 +8677,13 @@ async function loadData() {
       refreshTimer = setInterval(() => loadData(), CFG.dashRefreshSec * 1000);
     }
   } catch (e) {
-    showBanner(t('bannerLoadError') + esc(e.message), true);
-    sbar(t('sbarError') + e.message, true);
+    // Only show error if we have no camera data yet; silent retry otherwise
+    if (!Object.keys(cameras).length) {
+      showBanner(t('bannerLoadError') + esc(e.message), true);
+      sbar(t('sbarError') + e.message, true);
+    }
+  } finally {
+    _loadDataBusy = false;
   }
 }
 
