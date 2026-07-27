@@ -8686,7 +8686,7 @@ function trySocket() {
     const s = io({ transports: ['websocket','polling'], reconnection: true });
     s.on('connect', () => {
       connDot(true);
-      ['data.online','status.recording','status.detected','status.alerted'].forEach(p =>
+      ['data.online','status.recording','status.detected','status.alerted','push'].forEach(p =>
         s.emit('subscribe', INST + '.cam_*.' + p, () => {}));
     });
     s.on('disconnect', () => connDot(false));
@@ -8709,6 +8709,8 @@ function trySocket() {
       } else if (rel.endsWith('.status.alerted')) {
         cameras[ck].alerted = !!state.val;
         setTileStatus(ck, 'alerted', !!state.val);
+      } else if (rel.endsWith('.push') && state.val) {
+        if (document.getElementById('view-rec')?.classList.contains('active')) loadAndFilterRec();
       }
     });
   } catch (_) {}
