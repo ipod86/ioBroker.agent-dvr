@@ -32,7 +32,11 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
   - Camera filter badges to show/hide individual cameras (state saved in localStorage)
   - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
   - Fullscreen view with PTZ overlay, record, mute, and native browser fullscreen button; header auto-hides
-  - Recordings tab with grid and timeline view, search, collapsible tag filter, and video player
+  - Recordings tab with **grid**, **timeline**, and **event log** view, search, collapsible tag filter, and video player with prev/next navigation
+  - **Delete recording** directly from the video player modal (requires AgentDVR v7.7.8.0+)
+  - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
+  - **PTZ presets** — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+  - Status bar shows camera count on the live view and recording/event count on the recordings view
   - Auto-reconnect for all stream types after network interruption or tab switch
   - Fully color-themeable via adapter config
 
@@ -213,7 +217,11 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 - Fullscreen view with PTZ overlay, record button, mute button, and **native browser fullscreen** (header auto-hides after 3 s of inactivity; reappears on mouse or touch)
 - Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
 - Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
-- Recordings tab with grid and timeline view, search, **collapsible tag filter**, and video player with prev/next navigation
+- Recordings tab with **grid**, **timeline**, and **event log** view, search, **collapsible tag filter**, and video player with prev/next navigation
+- **Delete recording** directly from the video player modal (requires AgentDVR v7.7.8.0+)
+- Camera colors are read from AgentDVR and applied to timeline bars and recording dots
+- **PTZ presets** — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+- Status bar shows camera count on the live view and recording/event count on the recordings view
 - Color theming via adapter config
 
 ### go2rtc WebRTC Streams
@@ -373,6 +381,18 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 | `overview` | string | R | HTML tile grid of all cameras |
 
 ## Changelog
+### 0.5.0 (2026-07-27)
+* (ipod86) feat: PTZ presets — list and navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+* (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
+* (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)
+* (ipod86) feat: read camera color from AgentDVR and use it for timeline bars and recording dots
+* (ipod86) feat: status bar shows camera count on live view and recording/event count on recordings view
+* (ipod86) feat: extend video format error message with AgentDVR auto-convert hint in all 11 languages
+* (ipod86) fix: footer text no longer overwritten when recordings load in the background on the live view
+* (ipod86) fix: Italian i18n string with apostrophe broke page JS (changed to escaped variant)
+* (ipod86) fix: detect AgentDVR "Command not found" response on delete and show proper error message
+* (ipod86) fix: fn field was missing from events.json state — delete could not resolve the filename
+
 ### 0.4.3 (2026-07-19)
 * (ipod86) fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs
 * (ipod86) fix: httpTimeoutMs=0 now correctly clamps to 1000ms instead of falling back to default

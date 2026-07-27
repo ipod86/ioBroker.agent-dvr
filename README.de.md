@@ -27,7 +27,11 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
   - Kamera-Filter-Badges zum Ein-/Ausblenden einzelner Kameras (Zustand im localStorage gespeichert)
   - Echtzeit-Bewegungs- und Alarm-Indikatoren (gelber / oranger Kachelrahmen) via Socket.io
   - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und **nativer Browser-Vollbild-Schaltfläche**; Header blendet sich nach 3 s Inaktivität aus
-  - Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche, **ausklappbarem Tag-Filter** und Video-Player
+  - Aufnahmen-Tab mit **Raster-**, **Timeline-** und **Ereignisprotokoll-Ansicht**, Suche, **ausklappbarem Tag-Filter** und Video-Player mit Vor-/Zurück-Navigation
+  - **Aufnahme löschen** direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+  - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
+  - **PTZ-Presets** — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+  - Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
   - Automatischer Reconnect für alle Stream-Typen nach Netzwerkunterbrechung oder Tab-Wechsel
   - Farbdesign vollständig über die Adapter-Konfiguration anpassbar
 
@@ -208,7 +212,11 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
 - Echtzeit-Bewegungs- (gelber Rahmen) und Alarm-Indikatoren (oranger Rahmen) via Socket.io
 - Automatischer Reconnect: MJPEG und FLV bei Fehler; go2rtc bei unerwartetem WebSocket-Close oder 10 s ohne Bild
-- Aufnahmen-Tab mit Raster- und Timeline-Ansicht, Suche und ausklappbarem Tag-Filter, Video-Player mit Vor-/Zurück-Navigation
+- Aufnahmen-Tab mit **Raster-**, **Timeline-** und **Ereignisprotokoll-Ansicht**, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
+- **Aufnahme löschen** direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+- Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
+- **PTZ-Presets** — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+- Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
 - Farbdesign über die Adapter-Konfiguration einstellbar
 
 ### go2rtc WebRTC-Streams
@@ -373,6 +381,24 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.5.0 (2026-07-27)
+* (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+* (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
+* (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)
+* (ipod86) feat: Kamerafarbe aus AgentDVR lesen und für Timeline-Balken und Aufnahme-Punkte verwenden
+* (ipod86) feat: Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
+* (ipod86) feat: Videofehler-Hinweis um AgentDVR-Auto-Konvertierungs-Hinweis in allen 11 Sprachen erweitert
+* (ipod86) fix: Statuszeile im Live-Bereich wird nicht mehr überschrieben, wenn Aufnahmen im Hintergrund geladen werden
+* (ipod86) fix: Apostroph im italienischen i18n-String hat die gesamte Seiten-JS gebrochen
+* (ipod86) fix: AgentDVR-Antwort „Command not found" beim Löschen wird jetzt erkannt und als Fehler angezeigt
+* (ipod86) fix: fn-Feld fehlte im events.json-State — Dateiname beim Löschen konnte nicht aufgelöst werden
+
+### 0.4.3 (2026-07-19)
+* (ipod86) fix: Poll-Schleife von setInterval auf setTimeout umgestellt (verhindert parallele Polls)
+* (ipod86) fix: httpTimeoutMs=0 wird jetzt korrekt auf 1000 ms geclampt statt auf Standardwert zu fallen
+* (ipod86) fix: go2rtcEnabled-Flag wird in fetchGo2rtcStreams jetzt berücksichtigt
+* (ipod86) fix: nicht verwendeter isSupportedLang-Export aus widget-i18n entfernt
+
 ### 0.4.2 (2026-07-12)
 * (ipod86) fix: FLV-Stream-Proxy sendet jetzt Authorization-Header (HTTP 401 bei AgentDVR-Auth)
 * (ipod86) fix: Online-Status der Kameras wurde aus falschem State-Pfad gelesen (data.online → status.online)
