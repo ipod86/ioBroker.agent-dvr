@@ -9586,13 +9586,19 @@ function armDelete() {
   clearTimeout(_delTimer);
   _delTimer = setTimeout(resetDelBtn, 4000);
 }
+function _showDelErr(msg) {
+  const errEl = document.getElementById('vid-err');
+  errEl.textContent = msg;
+  errEl.style.display = 'block';
+  resetDelBtn();
+}
 async function confirmDelete() {
   clearTimeout(_delTimer);
   const rec = recPlayList[recPlayIdx];
-  if (!rec) { resetDelBtn(); return; }
-  const oid = rec.oid != null ? rec.oid : rec._cam?.oid;
-  const fn  = rec.fn;
-  if (!oid || !fn) { resetDelBtn(); return; }
+  if (!rec) { _showDelErr('DBG: no rec'); return; }
+  const oid = rec.oid != null ? String(rec.oid) : (rec._cam?.oid ? String(rec._cam.oid) : '');
+  const fn  = rec.fn ? String(rec.fn) : '';
+  if (!oid || !fn) { _showDelErr('DBG: oid=' + oid + ' fn=' + fn); return; }
   const btn = document.getElementById('vid-del');
   btn.disabled = true;
   try {
@@ -9607,10 +9613,7 @@ async function confirmDelete() {
     closeVideo();
     renderRec();
   } catch (e) {
-    const errEl = document.getElementById('vid-err');
-    errEl.textContent = t('delErr') + (e?.message ? ' (' + e.message + ')' : '');
-    errEl.style.display = 'block';
-    resetDelBtn();
+    _showDelErr(t('delErr') + (e?.message ? ' (' + e.message + ')' : ''));
   }
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
