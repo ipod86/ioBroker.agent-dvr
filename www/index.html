@@ -9384,17 +9384,19 @@ function buildRecCamSel() {
   document.getElementById('rec-tag-toggle').classList.toggle('active', tagsOpen);
   document.getElementById('rec-tag-toggle').title = t('filterByLabel');
   syncCamBtn();
-  loadAndFilterRec();
+  loadAndFilterRec(true);
 }
 
-async function loadAndFilterRec() {
+async function loadAndFilterRec(silent = false) {
   const camKeys = Object.keys(cameras);
   if (!camKeys.length) return;
   const keys = selectedCameras.size ? [...selectedCameras].filter(k => cameras[k]) : camKeys;
 
   const grid = document.getElementById('rec-grid');
-  grid.innerHTML = '<div class="rec-empty">' + t('recLoading') + '</div>';
-  document.getElementById('rec-tags').innerHTML = '';
+  if (!silent) {
+    grid.innerHTML = '<div class="rec-empty">' + t('recLoading') + '</div>';
+    document.getElementById('rec-tags').innerHTML = '';
+  }
   recAllItems = [];
 
   try {
@@ -9477,6 +9479,7 @@ function renderRec() {
   const q     = (document.getElementById('rec-search').value || '').toLowerCase();
   const tag   = recFilters.tag;
   const grid  = document.getElementById('rec-grid');
+  const savedScroll = grid.scrollTop;
 
   const items = recAllItems.filter(r => {
     if (tag && r.tag !== tag) return false;
@@ -9547,6 +9550,7 @@ function renderRec() {
     tile.onclick = () => playRec(rec, cam, recPlayList.indexOf(rec));
     grid.appendChild(tile);
   });
+  if (savedScroll > 0) grid.scrollTop = savedScroll;
 }
 
 function fmtDur(s) {
