@@ -7978,6 +7978,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.',
     sbarNoCameras:   'Keine Kameras · ',
     sbarLoaded:      ' Kamera(s) · ',
+    diskFree:        'frei',
     bannerLoadError: '<strong>Ladefehler</strong><br>',
     sbarError:       'Fehler: ',
     tagAll:          'Alle',
@@ -8024,6 +8025,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>No cameras</strong><br>Is AgentDVR reachable? Check IP/port in adapter config.',
     sbarNoCameras:   'No cameras · ',
     sbarLoaded:      ' camera(s) · ',
+    diskFree:        'free',
     bannerLoadError: '<strong>Load error</strong><br>',
     sbarError:       'Error: ',
     tagAll:          'All',
@@ -8070,6 +8072,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Sin cámaras</strong><br>¿AgentDVR accesible? Comprueba IP/puerto en la config del adaptador.',
     sbarNoCameras:   'Sin cámaras · ',
     sbarLoaded:      ' cámara(s) · ',
+    diskFree:        'libre',
     bannerLoadError: '<strong>Error de carga</strong><br>',
     sbarError:       'Error: ',
     tagAll:          'Todas',
@@ -8116,6 +8119,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Aucune caméra</strong><br>AgentDVR accessible ? Vérifiez IP/port dans la config de l\'adaptateur.',
     sbarNoCameras:   'Aucune caméra · ',
     sbarLoaded:      ' caméra(s) · ',
+    diskFree:        'libre',
     bannerLoadError: '<strong>Erreur de chargement</strong><br>',
     sbarError:       'Erreur : ',
     tagAll:          'Tout',
@@ -8162,6 +8166,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Nessuna telecamera</strong><br>AgentDVR raggiungibile? Controlla IP/porta nella config dell\'adattatore.',
     sbarNoCameras:   'Nessuna telecamera · ',
     sbarLoaded:      ' telecamera(e) · ',
+    diskFree:        'libero',
     bannerLoadError: '<strong>Errore di caricamento</strong><br>',
     sbarError:       'Errore: ',
     tagAll:          'Tutte',
@@ -8208,6 +8213,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Geen camera\'s</strong><br>AgentDVR bereikbaar? Controleer IP/poort in de adapterconfig.',
     sbarNoCameras:   'Geen camera\'s · ',
     sbarLoaded:      ' camera(\'s) · ',
+    diskFree:        'vrij',
     bannerLoadError: '<strong>Laadsfout</strong><br>',
     sbarError:       'Fout: ',
     tagAll:          'Alle',
@@ -8254,6 +8260,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Brak kamer</strong><br>AgentDVR dostępny? Sprawdź IP/port w konfiguracji adaptera.',
     sbarNoCameras:   'Brak kamer · ',
     sbarLoaded:      ' kamera(y) · ',
+    diskFree:        'wolne',
     bannerLoadError: '<strong>Błąd ładowania</strong><br>',
     sbarError:       'Błąd: ',
     tagAll:          'Wszystkie',
@@ -8300,6 +8307,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Nenhuma câmera</strong><br>AgentDVR acessível? Verifique IP/porta na config do adaptador.',
     sbarNoCameras:   'Nenhuma câmera · ',
     sbarLoaded:      ' câmera(s) · ',
+    diskFree:        'livre',
     bannerLoadError: '<strong>Erro de carregamento</strong><br>',
     sbarError:       'Erro: ',
     tagAll:          'Todas',
@@ -8346,6 +8354,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Камеры не найдены</strong><br>AgentDVR доступен? Проверьте IP/порт в настройках адаптера.',
     sbarNoCameras:   'Нет камер · ',
     sbarLoaded:      ' камер(а) · ',
+    diskFree:        'свободно',
     bannerLoadError: '<strong>Ошибка загрузки</strong><br>',
     sbarError:       'Ошибка: ',
     tagAll:          'Все',
@@ -8392,6 +8401,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>Камери не знайдено</strong><br>AgentDVR доступний? Перевірте IP/порт у налаштуваннях адаптера.',
     sbarNoCameras:   'Немає камер · ',
     sbarLoaded:      ' камер(а) · ',
+    diskFree:        'вільно',
     bannerLoadError: '<strong>Помилка завантаження</strong><br>',
     sbarError:       'Помилка: ',
     tagAll:          'Всі',
@@ -8438,6 +8448,7 @@ const TRANSLATIONS = {
     bannerNoCameras: '<strong>未找到摄像头</strong><br>AgentDVR 可达？请检查适配器配置中的 IP/端口。',
     sbarNoCameras:   '无摄像头 · ',
     sbarLoaded:      ' 个摄像头 · ',
+    diskFree:        '可用',
     bannerLoadError: '<strong>加载错误</strong><br>',
     sbarError:       '错误：',
     tagAll:          '全部',
@@ -8716,10 +8727,11 @@ async function loadSysStats() {
 function sbarLive() {
   const n = Object.keys(cameras).length;
   if (!n) return;
-  const parts = [n + t('sbarLoaded')];
-  if (_sysStats.cpu != null)        parts.push('CPU ' + Math.round(_sysStats.cpu) + '%');
-  if (_sysStats.disk_free != null)  parts.push('Disk ' + _sysStats.disk_free);
-  sbar(parts.join(' · '));
+  const base = n + t('sbarLoaded').replace(/\s*·\s*$/, '');
+  const extras = [];
+  if (_sysStats.cpu != null)       extras.push('CPU ' + Math.round(_sysStats.cpu) + '%');
+  if (_sysStats.disk_free != null) extras.push(_sysStats.disk_free + ' ' + t('diskFree'));
+  sbar(extras.length ? base + ' · ' + extras.join(' · ') : base);
 }
 function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
