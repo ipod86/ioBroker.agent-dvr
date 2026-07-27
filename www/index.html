@@ -9598,14 +9598,19 @@ async function confirmDelete() {
   try {
     const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
                           { signal: AbortSignal.timeout(10000) });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok || (data.status && data.status !== 'ok') || data.error) {
+      throw new Error(data.error || data.status || 'HTTP ' + r.status);
+    }
     recPlayList.splice(recPlayIdx, 1);
     recAllItems = recAllItems.filter(x => x !== rec);
     closeVideo();
     renderRec();
-  } catch (_) {
-    document.getElementById('vid-del-lbl').textContent = t('delErr');
-    setTimeout(resetDelBtn, 2500);
+  } catch (e) {
+    const errEl = document.getElementById('vid-err');
+    errEl.textContent = t('delErr') + (e?.message ? ' (' + e.message + ')' : '');
+    errEl.style.display = 'block';
+    resetDelBtn();
   }
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
