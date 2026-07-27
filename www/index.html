@@ -9597,7 +9597,15 @@ async function confirmDelete() {
   const rec = recPlayList[recPlayIdx];
   if (!rec) { _showDelErr('DBG: no rec'); return; }
   const oid = rec.oid != null ? String(rec.oid) : (rec._cam?.oid ? String(rec._cam.oid) : '');
-  const fn  = rec.fn ? String(rec.fn) : '';
+  let fn = rec.fn ? String(rec.fn) : '';
+  if (!fn) {
+    // Fallback: extract fn from video or thumb URL
+    const urlSrc = rec.video || rec.thumb || '';
+    try {
+      const u = new URL(urlSrc, location.href);
+      fn = u.searchParams.get('fn') || '';
+    } catch (_) {}
+  }
   if (!oid || !fn) { _showDelErr('DBG: oid=' + oid + ' fn=' + fn); return; }
   const btn = document.getElementById('vid-del');
   btn.disabled = true;
