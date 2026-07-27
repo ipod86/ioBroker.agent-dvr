@@ -8729,8 +8729,10 @@ function sbarLive() {
   if (!n) return;
   const base = n + t('sbarLoaded').replace(/\s*·\s*$/, '');
   const extras = [];
-  if (_sysStats.cpu != null)       extras.push('CPU ' + Math.round(_sysStats.cpu) + '%');
-  if (_sysStats.disk_free != null) extras.push(_sysStats.disk_free + ' ' + t('diskFree'));
+  const _cpu = parseFloat(_sysStats.cpu_used);
+  if (!isNaN(_cpu))                               extras.push('CPU ' + Math.round(_cpu) + '%');
+  if (_sysStats.ram_free  && _sysStats.ram_free  !== '-') extras.push('RAM ' + _sysStats.ram_free + ' ' + t('diskFree'));
+  if (_sysStats.disk_free && _sysStats.disk_free !== '-') extras.push('Disk ' + _sysStats.disk_free + ' ' + t('diskFree'));
   sbar(extras.length ? base + ' · ' + extras.join(' · ') : base);
 }
 function showView(name) {
