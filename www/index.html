@@ -9385,7 +9385,8 @@ function renderRec() {
     return true;
   });
 
-  sbar((recViewMode === 'events' ? t('evCount') : t('recCount')).replace('{n}', items.length));
+  if (document.getElementById('view-rec')?.classList.contains('active'))
+    sbar((recViewMode === 'events' ? t('evCount') : t('recCount')).replace('{n}', items.length));
   grid.innerHTML = '';
 
   if (recViewMode === 'events') { renderEventLog(items); return; }
