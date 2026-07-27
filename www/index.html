@@ -240,6 +240,9 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
 #vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
 #vid-dl:hover{background:rgba(37,99,235,.15)}
+#vid-del{background:none;border:1px solid transparent;cursor:pointer;color:var(--muted);padding:3px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-family:inherit;transition:color .15s,background .15s,border-color .15s;white-space:nowrap}
+#vid-del:hover{color:var(--red);border-color:rgba(239,68,68,.35)}
+#vid-del.armed{color:#fff;background:rgba(239,68,68,.85);border-color:var(--red)}
 
 /* ── Fullscreen cam ── */
 #fs-panel{position:fixed;inset:0;z-index:250;display:none;background:#000;flex-direction:column}
@@ -7905,6 +7908,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </div>
     <div id="vid-meta">
       <span id="vid-meta-txt"></span>
+      <button id="vid-del" onclick="armDelete()" title="Aufnahme löschen">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3V6zm2 3h14l-1.5 13H6.5L5 9zm5-6h4v2h-4V3z"/></svg>
+        <span id="vid-del-lbl" data-i18n="delRec">Löschen</span>
+      </button>
       <a id="vid-dl" download>
         <svg width="12" height="12" viewBox="0 0 10 11" fill="currentColor"><path d="M4.5 0h1v6.3l2.1-2.1.7.7L5 8.2 1.7 4.9l.7-.7 2.1 2.1V0zM0 10h10v1H0v-1z"/></svg>
         Download
@@ -7945,6 +7952,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Vorherige',
     vidNext:         'Nächste ›',
     vidFmtErr:       'Format nicht unterstützt — bitte Aufnahme herunterladen, in AgentDVR abspielen oder dort automatisch konvertieren lassen.',
+    delRec:          'Löschen',
+    delConfirm:      'Wirklich löschen?',
+    delErr:          'Fehler beim Löschen',
     loadingCameras:  'Lade Kameras…',
     bannerNoCameras: '<strong>Keine Kameras</strong><br>AgentDVR erreichbar? IP/Port in Adapter-Config prüfen.',
     sbarNoCameras:   'Keine Kameras · ',
@@ -7986,6 +7996,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Previous',
     vidNext:         'Next ›',
     vidFmtErr:       'Format not supported — please download the recording, play it in AgentDVR, or have it converted automatically there.',
+    delRec:          'Delete',
+    delConfirm:      'Really delete?',
+    delErr:          'Delete failed',
     loadingCameras:  'Loading cameras…',
     bannerNoCameras: '<strong>No cameras</strong><br>Is AgentDVR reachable? Check IP/port in adapter config.',
     sbarNoCameras:   'No cameras · ',
@@ -8027,6 +8040,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Anterior',
     vidNext:         'Siguiente ›',
     vidFmtErr:       'Formato no compatible — descarga la grabación, reprodúcela en AgentDVR o deja que se convierta allí automáticamente.',
+    delRec:          'Eliminar',
+    delConfirm:      '¿Eliminar de verdad?',
+    delErr:          'Error al eliminar',
     loadingCameras:  'Cargando cámaras…',
     bannerNoCameras: '<strong>Sin cámaras</strong><br>¿AgentDVR accesible? Comprueba IP/puerto en la config del adaptador.',
     sbarNoCameras:   'Sin cámaras · ',
@@ -8068,6 +8084,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Précédent',
     vidNext:         'Suivant ›',
     vidFmtErr:       'Format non supporté — téléchargez l\'enregistrement, lisez-le dans AgentDVR ou laissez-le y être converti automatiquement.',
+    delRec:          'Supprimer',
+    delConfirm:      'Vraiment supprimer ?',
+    delErr:          'Erreur de suppression',
     loadingCameras:  'Chargement des caméras…',
     bannerNoCameras: '<strong>Aucune caméra</strong><br>AgentDVR accessible ? Vérifiez IP/port dans la config de l\'adaptateur.',
     sbarNoCameras:   'Aucune caméra · ',
@@ -8109,6 +8128,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Precedente',
     vidNext:         'Successivo ›',
     vidFmtErr:       'Formato non supportato — scarica la registrazione, riproducila in AgentDVR o lascia che venga convertita automaticamente lì.',
+    delRec:          'Elimina',
+    delConfirm:      'Eliminare davvero?',
+    delErr:          'Errore durante l'eliminazione',
     loadingCameras:  'Caricamento telecamere…',
     bannerNoCameras: '<strong>Nessuna telecamera</strong><br>AgentDVR raggiungibile? Controlla IP/porta nella config dell\'adattatore.',
     sbarNoCameras:   'Nessuna telecamera · ',
@@ -8150,6 +8172,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Vorige',
     vidNext:         'Volgende ›',
     vidFmtErr:       'Formaat niet ondersteund — download de opname, speel af in AgentDVR of laat het daar automatisch converteren.',
+    delRec:          'Verwijderen',
+    delConfirm:      'Echt verwijderen?',
+    delErr:          'Verwijderen mislukt',
     loadingCameras:  'Camera\'s laden…',
     bannerNoCameras: '<strong>Geen camera\'s</strong><br>AgentDVR bereikbaar? Controleer IP/poort in de adapterconfig.',
     sbarNoCameras:   'Geen camera\'s · ',
@@ -8191,6 +8216,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Poprzednie',
     vidNext:         'Następne ›',
     vidFmtErr:       'Format nieobsługiwany — pobierz nagranie, odtwórz w AgentDVR lub pozwól na automatyczną konwersję tam.',
+    delRec:          'Usuń',
+    delConfirm:      'Na pewno usunąć?',
+    delErr:          'Błąd usuwania',
     loadingCameras:  'Ładowanie kamer…',
     bannerNoCameras: '<strong>Brak kamer</strong><br>AgentDVR dostępny? Sprawdź IP/port w konfiguracji adaptera.',
     sbarNoCameras:   'Brak kamer · ',
@@ -8232,6 +8260,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Anterior',
     vidNext:         'Próximo ›',
     vidFmtErr:       'Formato não suportado — transfira a gravação, reproduza no AgentDVR ou deixe-a ser convertida automaticamente lá.',
+    delRec:          'Eliminar',
+    delConfirm:      'Eliminar mesmo?',
+    delErr:          'Erro ao eliminar',
     loadingCameras:  'Carregando câmeras…',
     bannerNoCameras: '<strong>Nenhuma câmera</strong><br>AgentDVR acessível? Verifique IP/porta na config do adaptador.',
     sbarNoCameras:   'Nenhuma câmera · ',
@@ -8273,6 +8304,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Предыдущее',
     vidNext:         'Следующее ›',
     vidFmtErr:       'Формат не поддерживается — скачайте запись, воспроизведите в AgentDVR или выполните там автоматическую конвертацию.',
+    delRec:          'Удалить',
+    delConfirm:      'Действительно удалить?',
+    delErr:          'Ошибка удаления',
     loadingCameras:  'Загрузка камер…',
     bannerNoCameras: '<strong>Камеры не найдены</strong><br>AgentDVR доступен? Проверьте IP/порт в настройках адаптера.',
     sbarNoCameras:   'Нет камер · ',
@@ -8314,6 +8348,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ Попереднє',
     vidNext:         'Наступне ›',
     vidFmtErr:       'Формат не підтримується — завантажте запис, відтворіть в AgentDVR або виконайте там автоматичне перетворення.',
+    delRec:          'Видалити',
+    delConfirm:      'Справді видалити?',
+    delErr:          'Помилка видалення',
     loadingCameras:  'Завантаження камер…',
     bannerNoCameras: '<strong>Камери не знайдено</strong><br>AgentDVR доступний? Перевірте IP/порт у налаштуваннях адаптера.',
     sbarNoCameras:   'Немає камер · ',
@@ -8355,6 +8392,9 @@ const TRANSLATIONS = {
     vidPrev:         '‹ 上一个',
     vidNext:         '下一个 ›',
     vidFmtErr:       '格式不支持 — 请下载录像、在 AgentDVR 中播放或在那里自动转换。',
+    delRec:          '删除',
+    delConfirm:      '确定删除？',
+    delErr:          '删除失败',
     loadingCameras:  '正在加载摄像头…',
     bannerNoCameras: '<strong>未找到摄像头</strong><br>AgentDVR 可达？请检查适配器配置中的 IP/端口。',
     sbarNoCameras:   '无摄像头 · ',
@@ -9524,6 +9564,49 @@ function closeVideo() {
   el.pause(); el.removeAttribute('src'); el.load();
   document.getElementById('vid-err').style.display = 'none';
   document.getElementById('vid-panel').classList.remove('open');
+  resetDelBtn();
+}
+
+let _delArmed = false, _delTimer = null;
+function resetDelBtn() {
+  _delArmed = false;
+  clearTimeout(_delTimer);
+  const btn = document.getElementById('vid-del');
+  if (!btn) return;
+  btn.classList.remove('armed');
+  btn.disabled = false;
+  document.getElementById('vid-del-lbl').textContent = t('delRec');
+}
+function armDelete() {
+  if (_delArmed) { confirmDelete(); return; }
+  _delArmed = true;
+  const btn = document.getElementById('vid-del');
+  btn.classList.add('armed');
+  document.getElementById('vid-del-lbl').textContent = t('delConfirm');
+  clearTimeout(_delTimer);
+  _delTimer = setTimeout(resetDelBtn, 4000);
+}
+async function confirmDelete() {
+  clearTimeout(_delTimer);
+  const rec = recPlayList[recPlayIdx];
+  if (!rec) { resetDelBtn(); return; }
+  const oid = rec.oid != null ? rec.oid : rec._cam?.oid;
+  const fn  = rec.fn;
+  if (!oid || !fn) { resetDelBtn(); return; }
+  const btn = document.getElementById('vid-del');
+  btn.disabled = true;
+  try {
+    const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
+                          { signal: AbortSignal.timeout(10000) });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    recPlayList.splice(recPlayIdx, 1);
+    recAllItems = recAllItems.filter(x => x !== rec);
+    closeVideo();
+    renderRec();
+  } catch (_) {
+    document.getElementById('vid-del-lbl').textContent = t('delErr');
+    setTimeout(resetDelBtn, 2500);
+  }
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('vid-panel')) closeVideo();
