@@ -32,10 +32,10 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
   - Camera filter badges to show/hide individual cameras (state saved in localStorage)
   - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
   - Fullscreen view with PTZ overlay, record, mute, and native browser fullscreen button; header auto-hides
-  - Recordings tab with **grid**, **timeline**, and **event log** view, search, collapsible tag filter, and video player with prev/next navigation
-  - **Delete recording** directly from the video player modal (requires AgentDVR v7.7.8.0+)
+  - Recordings tab with grid, timeline, and event log view, search, collapsible tag filter, and video player with prev/next navigation
+  - Delete recording directly from the video player modal (requires AgentDVR v7.7.8.0+)
   - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
-  - **PTZ presets** — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+  - PTZ presets — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
   - Status bar shows camera count on the live view and recording/event count on the recordings view
   - Auto-reconnect for all stream types after network interruption or tab switch
   - Fully color-themeable via adapter config
@@ -214,13 +214,13 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 **Features:**
 - Per-camera stream selection: MJPEG, MP4/FLV with audio (via flv.js), or go2rtc WebRTC/MSE
 - Camera filter badges — click to show/hide individual cameras; state persisted in localStorage
-- Fullscreen view with PTZ overlay, record button, mute button, and **native browser fullscreen** (header auto-hides after 3 s of inactivity; reappears on mouse or touch)
+- Fullscreen view with PTZ overlay, record button, mute button, and native browser fullscreen (header auto-hides after 3 s of inactivity; reappears on mouse or touch)
 - Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
 - Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
-- Recordings tab with **grid**, **timeline**, and **event log** view, search, **collapsible tag filter**, and video player with prev/next navigation
-- **Delete recording** directly from the video player modal (requires AgentDVR v7.7.8.0+)
+- Recordings tab with grid, timeline, and event log view, search, collapsible tag filter, and video player with prev/next navigation
+- Delete recording directly from the video player modal (requires AgentDVR v7.7.8.0+)
 - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
-- **PTZ presets** — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+- PTZ presets — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
 - Status bar shows camera count on the live view and recording/event count on the recordings view
 - Color theming via adapter config
 

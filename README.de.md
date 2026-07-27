@@ -26,11 +26,11 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
   - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC/MSE
   - Kamera-Filter-Badges zum Ein-/Ausblenden einzelner Kameras (Zustand im localStorage gespeichert)
   - Echtzeit-Bewegungs- und Alarm-Indikatoren (gelber / oranger Kachelrahmen) via Socket.io
-  - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und **nativer Browser-Vollbild-Schaltfläche**; Header blendet sich nach 3 s Inaktivität aus
-  - Aufnahmen-Tab mit **Raster-**, **Timeline-** und **Ereignisprotokoll-Ansicht**, Suche, **ausklappbarem Tag-Filter** und Video-Player mit Vor-/Zurück-Navigation
-  - **Aufnahme löschen** direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+  - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
+  - Aufnahmen-Tab mit Raster-, Timeline- und Ereignisprotokoll-Ansicht, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
+  - Aufnahme löschen direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
   - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
-  - **PTZ-Presets** — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+  - PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
   - Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
   - Automatischer Reconnect für alle Stream-Typen nach Netzwerkunterbrechung oder Tab-Wechsel
   - Farbdesign vollständig über die Adapter-Konfiguration anpassbar
@@ -212,10 +212,10 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
 - Echtzeit-Bewegungs- (gelber Rahmen) und Alarm-Indikatoren (oranger Rahmen) via Socket.io
 - Automatischer Reconnect: MJPEG und FLV bei Fehler; go2rtc bei unerwartetem WebSocket-Close oder 10 s ohne Bild
-- Aufnahmen-Tab mit **Raster-**, **Timeline-** und **Ereignisprotokoll-Ansicht**, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
-- **Aufnahme löschen** direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+- Aufnahmen-Tab mit Raster-, Timeline- und Ereignisprotokoll-Ansicht, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
+- Aufnahme löschen direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
 - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
-- **PTZ-Presets** — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+- PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
 - Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
 - Farbdesign über die Adapter-Konfiguration einstellbar
 
