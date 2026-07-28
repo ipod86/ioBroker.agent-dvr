@@ -9,6 +9,11 @@
 
 Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automatisch alle Kameras, spiegelt jede Geräteeigenschaft als Datenpunkt, stellt Schaltflächen für alle gängigen Befehle bereit (Aufnahme, Scharf, PTZ, …), liefert Push-getriggerte Galerie-Updates bei neuen Aufnahmen, erzeugt ein responsives HTML-Galerie-Widget pro Kamera und enthält ein eingebautes Live-Dashboard mit kameraindividueller Stream-Auswahl (MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC).
 
+## Voraussetzungen
+
+- ioBroker mit `iobroker.web` Adapter
+- **AgentDVR ≥ 7.8.0.0** — ältere Versionen haben eine Regression im `streamFile.cgi`-Endpunkt (fehlerhafte Chunked-Kodierung, falscher MIME-Typ), die die Wiedergabe von Aufzeichnungen im integrierten Dashboard verhindert. Der Entwickler hat bestätigt, dass der Fix in Version 7.8.0.0 enthalten ist.
+
 ## Funktionen
 
 - Automatische Erkennung aller AgentDVR-Kameras beim Start (Mikrofone ausgenommen)
