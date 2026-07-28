@@ -234,6 +234,20 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .rec-date{font-size:12px;font-weight:600;color:var(--text)}
 .rec-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .rec-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px}
+/* ── Multi-select ── */
+.rec-chk{position:absolute;top:6px;left:6px;width:18px;height:18px;accent-color:var(--accent);
+  cursor:pointer;opacity:0;pointer-events:none;transition:opacity .1s;z-index:2}
+.rec-grid.select-mode .rec-chk{opacity:1;pointer-events:auto}
+.rec-tile.rec-selected{border-color:var(--accent) !important;box-shadow:0 0 0 2px rgba(37,99,235,.3)}
+#rec-multi-del{display:none;background:rgba(239,68,68,.85);border:1px solid var(--red);color:#fff;
+  padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;
+  white-space:nowrap;transition:opacity .15s}
+#rec-multi-del:hover:not(:disabled){background:var(--red)}
+#rec-multi-del:disabled{opacity:.4;cursor:default}
+#rec-multi-cancel{display:none;background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;
+  white-space:nowrap;transition:background .15s}
+#rec-multi-cancel:hover{background:var(--s3)}
 
 /* ── Persistent video panel ── */
 #vid-panel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
@@ -7895,6 +7909,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             <circle cx="7" cy="7" r="6"/><line x1="7" y1="4" x2="7" y2="7"/><line x1="7" y1="7" x2="9.5" y2="9.5"/>
           </svg>
         </button>
+        <button id="rec-multi-cancel" onclick="exitSelectMode()" data-i18n="cancelSel">Abbrechen</button>
+        <button id="rec-multi-del" onclick="deleteSelectedRecs()">Löschen (0)</button>
         </div>
       </div>
       <div id="rec-filter-tags" class="collapsed">
@@ -8003,6 +8019,8 @@ const TRANSLATIONS = {
     fsEnter:         'Vollbild',
     fsExit:          'Vollbild verlassen',
     filterByLabel:   'Nach Label filtern',
+    delSelected:     'Löschen ({n})',
+    cancelSel:       'Abbrechen',
   },
   en: {
     navLive:         'Live',
@@ -8050,6 +8068,8 @@ const TRANSLATIONS = {
     fsEnter:         'Fullscreen',
     fsExit:          'Exit fullscreen',
     filterByLabel:   'Filter by label',
+    delSelected:     'Delete ({n})',
+    cancelSel:       'Cancel',
   },
   es: {
     navLive:         'En vivo',
@@ -8097,6 +8117,8 @@ const TRANSLATIONS = {
     fsEnter:         'Pantalla completa',
     fsExit:          'Salir de pantalla completa',
     filterByLabel:   'Filtrar por etiqueta',
+    delSelected:     'Eliminar ({n})',
+    cancelSel:       'Cancelar',
   },
   fr: {
     navLive:         'En direct',
@@ -8144,6 +8166,8 @@ const TRANSLATIONS = {
     fsEnter:         'Plein écran',
     fsExit:          'Quitter le plein écran',
     filterByLabel:   'Filtrer par étiquette',
+    delSelected:     'Supprimer ({n})',
+    cancelSel:       'Annuler',
   },
   it: {
     navLive:         'Live',
@@ -8191,6 +8215,8 @@ const TRANSLATIONS = {
     fsEnter:         'Schermo intero',
     fsExit:          'Esci dallo schermo intero',
     filterByLabel:   'Filtra per etichetta',
+    delSelected:     'Elimina ({n})',
+    cancelSel:       'Annulla',
   },
   nl: {
     navLive:         'Live',
@@ -8238,6 +8264,8 @@ const TRANSLATIONS = {
     fsEnter:         'Volledig scherm',
     fsExit:          'Volledig scherm verlaten',
     filterByLabel:   'Filteren op label',
+    delSelected:     'Verwijderen ({n})',
+    cancelSel:       'Annuleren',
   },
   pl: {
     navLive:         'Na żywo',
@@ -8285,6 +8313,8 @@ const TRANSLATIONS = {
     fsEnter:         'Pełny ekran',
     fsExit:          'Wyjdź z pełnego ekranu',
     filterByLabel:   'Filtruj według etykiety',
+    delSelected:     'Usuń ({n})',
+    cancelSel:       'Anuluj',
   },
   pt: {
     navLive:         'Ao vivo',
@@ -8332,6 +8362,8 @@ const TRANSLATIONS = {
     fsEnter:         'Tela cheia',
     fsExit:          'Sair da tela cheia',
     filterByLabel:   'Filtrar por etiqueta',
+    delSelected:     'Eliminar ({n})',
+    cancelSel:       'Cancelar',
   },
   ru: {
     navLive:         'В эфире',
@@ -8379,6 +8411,8 @@ const TRANSLATIONS = {
     fsEnter:         'Полный экран',
     fsExit:          'Выйти из полного экрана',
     filterByLabel:   'Фильтр по метке',
+    delSelected:     'Удалить ({n})',
+    cancelSel:       'Отмена',
   },
   uk: {
     navLive:         'Наживо',
@@ -8426,6 +8460,8 @@ const TRANSLATIONS = {
     fsEnter:         'Повний екран',
     fsExit:          'Вийти з повного екрана',
     filterByLabel:   'Фільтр за міткою',
+    delSelected:     'Видалити ({n})',
+    cancelSel:       'Скасувати',
   },
   'zh-cn': {
     navLive:         '实时',
@@ -8473,6 +8509,8 @@ const TRANSLATIONS = {
     fsEnter:         '全屏',
     fsExit:          '退出全屏',
     filterByLabel:   '按标签筛选',
+    delSelected:     '删除 ({n})',
+    cancelSel:       '取消',
   },
 };
 
@@ -8516,6 +8554,8 @@ const CAM_COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6',
 let selectedCameras = new Set(JSON.parse(localStorage.getItem('advr_rec_cams') || '[]'));
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
 let recPlayList = [], recPlayIdx = -1, _lastRecSbar = '';
+let _selectMode = false, _skipNextTileClick = false;
+const _selectedRecs = new Set();
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
 let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
@@ -9527,7 +9567,7 @@ function renderRec() {
   if (recViewMode === 'timeline') { renderTimeline(items, multiCam); return; }
   if (recViewMode === 'events')   { return; }
 
-  grid.className = 'rec-grid';
+  grid.className = 'rec-grid' + (_selectMode ? ' select-mode' : '');
   items.forEach(rec => {
     const cam  = rec._cam;
     const tile = document.createElement('div'); tile.className = 'rec-tile';
@@ -9559,8 +9599,38 @@ function renderRec() {
     const meta = document.createElement('div'); meta.className = 'rec-meta';
     meta.textContent = [rec.size ? rec.size + ' MB' : '', rec.dur ? fmtDur(rec.dur) : ''].filter(Boolean).join(' · ');
     info.append(date, meta);
+    const chk = document.createElement('input'); chk.type = 'checkbox'; chk.className = 'rec-chk';
+    chk.checked = _selectedRecs.has(rec);
+    chk.addEventListener('click', e => e.stopPropagation());
+    chk.addEventListener('change', () => {
+      if (chk.checked) _selectedRecs.add(rec); else _selectedRecs.delete(rec);
+      tile.classList.toggle('rec-selected', chk.checked);
+      updateMultiDelBtn();
+    });
+    wrap.appendChild(chk);
+
     tile.append(wrap, info);
-    tile.onclick = () => playRec(rec, cam, recPlayList.indexOf(rec));
+
+    let _lpt = null;
+    tile.addEventListener('pointerdown', () => {
+      _lpt = setTimeout(() => { _lpt = null; _skipNextTileClick = true; enterSelectMode(rec); }, 500);
+    });
+    const _cancelLp = () => clearTimeout(_lpt);
+    tile.addEventListener('pointerup', _cancelLp);
+    tile.addEventListener('pointerleave', _cancelLp);
+    tile.addEventListener('contextmenu', e => e.preventDefault());
+    tile.onclick = () => {
+      if (_skipNextTileClick) { _skipNextTileClick = false; return; }
+      if (_selectMode) {
+        chk.checked = !chk.checked;
+        if (chk.checked) _selectedRecs.add(rec); else _selectedRecs.delete(rec);
+        tile.classList.toggle('rec-selected', chk.checked);
+        updateMultiDelBtn();
+        return;
+      }
+      playRec(rec, cam, recPlayList.indexOf(rec));
+    };
+    if (_selectMode) tile.classList.toggle('rec-selected', _selectedRecs.has(rec));
     grid.appendChild(tile);
   });
 }
@@ -9825,6 +9895,51 @@ async function confirmDelete() {
 document.getElementById('vid-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('vid-panel')) closeVideo();
 });
+
+/* ─────────────────────────── Multi-select delete ─────────────── */
+function enterSelectMode(rec) {
+  _selectMode = true;
+  _selectedRecs.clear();
+  if (rec) _selectedRecs.add(rec);
+  document.getElementById('rec-multi-cancel').style.display = '';
+  updateMultiDelBtn();
+  renderRec();
+}
+function exitSelectMode() {
+  _selectMode = false;
+  _selectedRecs.clear();
+  document.getElementById('rec-multi-del').style.display = 'none';
+  document.getElementById('rec-multi-cancel').style.display = 'none';
+  renderRec();
+}
+function updateMultiDelBtn() {
+  const n = _selectedRecs.size;
+  const btn = document.getElementById('rec-multi-del');
+  btn.textContent = t('delSelected').replace('{n}', n);
+  btn.disabled = n === 0;
+  btn.style.display = '';
+}
+async function deleteSelectedRecs() {
+  const recs = [..._selectedRecs];
+  if (!recs.length) return;
+  const btn = document.getElementById('rec-multi-del');
+  btn.disabled = true;
+  let failed = 0;
+  for (const rec of recs) {
+    const oid = rec.oid != null ? String(rec.oid) : (rec._cam?.oid ? String(rec._cam.oid) : '');
+    const fn  = rec.fn ? String(rec.fn) : '';
+    if (!oid || !fn) continue;
+    try {
+      const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
+                            { signal: AbortSignal.timeout(10000) });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok || (data.status && data.status !== 'ok') || data.error) { failed++; }
+      else { recAllItems = recAllItems.filter(x => x !== rec); }
+    } catch (_) { failed++; }
+  }
+  exitSelectMode();
+  if (failed) sbar(t('delErr') + ' (' + failed + ')', true);
+}
 
 /* ─────────────────────────── Banner / Status ─────────────────── */
 function showBanner(html, retry) {
