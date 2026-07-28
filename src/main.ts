@@ -1487,26 +1487,56 @@ class AgentDvr extends utils.Adapter {
 
 			const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
 			if (stats) {
-				const { disks: _disks, cpup, ramp, ramu, diskp, ...statsRest } = stats;
-				const statsFlat: Record<string, unknown> = {
-					...statsRest,
-					...(cpup !== undefined && { cpu_percent: cpup }),
-					...(ramp !== undefined && { ram_percent: ramp }),
-					...(ramu !== undefined && { ram_used: ramu }),
-					...(diskp !== undefined && { disk_percent: diskp }),
-				};
-				await this.flattenWrite(statsFlat, 'system.stats', 0);
-				// set % unit on percent states (flattenWrite can't set units)
-				for (const key of ['cpu_percent', 'ram_percent', 'disk_percent']) {
-					const fullId = `${this.namespace}.system.stats.${key}`;
-					const obj = await this.getForeignObjectAsync(fullId);
-					if (obj?.common && !obj.common.unit) {
-						obj.common.unit = '%';
-						await this.setForeignObjectAsync(fullId, obj);
-					}
+				const {
+					disks: _disks,
+					cpup,
+					ramp,
+					ramu,
+					cpu_used,
+					ram_free,
+					disk_free: _disk_free,
+					diskp,
+					...statsRest
+				} = stats;
+				// CPU
+				if (cpup !== undefined) {
+					await this.writeLeaf('system.cpu.percent', cpup, '%');
 				}
-				// remove old single-letter states if still present
-				for (const old of ['cpup', 'ramp', 'ramu', 'diskp']) {
+				if (cpu_used !== undefined) {
+					await this.writeLeaf('system.cpu.used', toStr(cpu_used));
+				}
+				// RAM
+				if (ramp !== undefined) {
+					await this.writeLeaf('system.ram.percent', ramp, '%');
+				}
+				if (ramu !== undefined) {
+					await this.writeLeaf('system.ram.used', toStr(ramu));
+				}
+				if (ram_free !== undefined) {
+					await this.writeLeaf('system.ram.free', toStr(ram_free));
+				}
+				// remaining unknown fields
+				if (Object.keys(statsRest).length) {
+					await this.flattenWrite(
+						{ ...statsRest, ...(diskp !== undefined && { disk_percent: diskp }) },
+						'system.stats',
+						0,
+					);
+				}
+				// clean up old states from previous layout
+				for (const old of [
+					'cpup',
+					'ramp',
+					'ramu',
+					'diskp',
+					'cpu_used',
+					'ram_free',
+					'disk_free',
+					'cpu_percent',
+					'ram_percent',
+					'ram_used',
+					'disk_percent',
+				]) {
 					await this.delObjectAsync(`system.stats.${old}`).catch(() => {
 						/* already gone */
 					});

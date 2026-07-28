@@ -1218,24 +1218,38 @@ class AgentDvr extends utils.Adapter {
       await this.pruneStaleDevices(activeFolders);
       const stats = asJson((await this.apiGet("/command/getSystemStats")).data);
       if (stats) {
-        const { disks: _disks, cpup, ramp, ramu, diskp, ...statsRest } = stats;
-        const statsFlat = {
-          ...statsRest,
-          ...cpup !== void 0 && { cpu_percent: cpup },
-          ...ramp !== void 0 && { ram_percent: ramp },
-          ...ramu !== void 0 && { ram_used: ramu },
-          ...diskp !== void 0 && { disk_percent: diskp }
-        };
-        await this.flattenWrite(statsFlat, "system.stats", 0);
-        for (const key of ["cpu_percent", "ram_percent", "disk_percent"]) {
-          const fullId = `${this.namespace}.system.stats.${key}`;
-          const obj = await this.getForeignObjectAsync(fullId);
-          if ((obj == null ? void 0 : obj.common) && !obj.common.unit) {
-            obj.common.unit = "%";
-            await this.setForeignObjectAsync(fullId, obj);
-          }
+        const { disks: _disks, cpup, ramp, ramu, cpu_used, ram_free, disk_free: _disk_free, diskp, ...statsRest } = stats;
+        if (cpup !== void 0) {
+          await this.writeLeaf("system.cpu.percent", cpup, "%");
         }
-        for (const old of ["cpup", "ramp", "ramu", "diskp"]) {
+        if (cpu_used !== void 0) {
+          await this.writeLeaf("system.cpu.used", toStr(cpu_used));
+        }
+        if (ramp !== void 0) {
+          await this.writeLeaf("system.ram.percent", ramp, "%");
+        }
+        if (ramu !== void 0) {
+          await this.writeLeaf("system.ram.used", toStr(ramu));
+        }
+        if (ram_free !== void 0) {
+          await this.writeLeaf("system.ram.free", toStr(ram_free));
+        }
+        if (Object.keys(statsRest).length) {
+          await this.flattenWrite({ ...statsRest, ...diskp !== void 0 && { disk_percent: diskp } }, "system.stats", 0);
+        }
+        for (const old of [
+          "cpup",
+          "ramp",
+          "ramu",
+          "diskp",
+          "cpu_used",
+          "ram_free",
+          "disk_free",
+          "cpu_percent",
+          "ram_percent",
+          "ram_used",
+          "disk_percent"
+        ]) {
           await this.delObjectAsync(`system.stats.${old}`).catch(() => {
           });
         }
