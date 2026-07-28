@@ -9425,20 +9425,34 @@ function buildRecCamSel() {
   const allChk = document.createElement('input'); allChk.type = 'checkbox';
   allChk.checked = selectedCameras.size === 0;
   allChk.onchange = () => {
-    selectedCameras.clear(); saveCamSel(); syncCamBtn();
-    closeCamDd(); loadAndFilterRec();
+    selectedCameras.clear();
+    list.querySelectorAll('input[type=checkbox][value]').forEach(c => { c.checked = true; });
+    saveCamSel(); syncCamBtn(); closeCamDd(); loadAndFilterRec();
   };
   allItem.append(allChk, document.createTextNode(t('camAll')));
   list.appendChild(allItem);
 
+  const camKeys = Object.keys(cameras);
   Object.entries(cameras).forEach(([k, cam]) => {
     const item = document.createElement('label'); item.className = 'rec-cam-item';
     const chk  = document.createElement('input'); chk.type = 'checkbox'; chk.value = k;
-    chk.checked = selectedCameras.has(k);
+    chk.checked = selectedCameras.size === 0 || selectedCameras.has(k);
     const dot = document.createElement('span'); dot.className = 'cam-color-dot';
     dot.style.background = camColor(k);
     chk.onchange = () => {
+      if (selectedCameras.size === 0) {
+        // switching away from "Alle" mode — add all cams first
+        camKeys.forEach(ck => selectedCameras.add(ck));
+      }
       if (chk.checked) selectedCameras.add(k); else selectedCameras.delete(k);
+      // if all individually checked → collapse back to "Alle" mode
+      if (selectedCameras.size === camKeys.length) {
+        selectedCameras.clear();
+        allChk.checked = true;
+        list.querySelectorAll('input[type=checkbox][value]').forEach(c => { c.checked = true; });
+      } else {
+        allChk.checked = false;
+      }
       saveCamSel(); syncCamBtn(); loadAndFilterRec();
     };
     item.append(chk, dot, document.createTextNode(cam.name));
