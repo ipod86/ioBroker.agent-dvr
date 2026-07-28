@@ -1232,9 +1232,8 @@ class AgentDvr extends utils.Adapter {
         if (cpup !== void 0) {
           await this.writeLeaf("system.hardware.cpu.percent", cpup, "%");
         }
-        if (cpu_used !== void 0) {
-          await this.writeLeaf("system.hardware.cpu.used", toStr(cpu_used));
-        }
+        await this.delObjectAsync("system.hardware.cpu.used").catch(() => {
+        });
         if (ramp !== void 0) {
           await this.writeLeaf("system.hardware.ram.percent", ramp, "%");
         }
