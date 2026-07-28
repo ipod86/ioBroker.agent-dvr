@@ -1218,8 +1218,27 @@ class AgentDvr extends utils.Adapter {
       await this.pruneStaleDevices(activeFolders);
       const stats = asJson((await this.apiGet("/command/getSystemStats")).data);
       if (stats) {
-        const { disks: _disks, ...statsFlat } = stats;
+        const { disks: _disks, cpup, ramp, ramu, diskp, ...statsRest } = stats;
+        const statsFlat = {
+          ...statsRest,
+          ...cpup !== void 0 && { cpu_percent: cpup },
+          ...ramp !== void 0 && { ram_percent: ramp },
+          ...ramu !== void 0 && { ram_used: ramu },
+          ...diskp !== void 0 && { disk_percent: diskp }
+        };
         await this.flattenWrite(statsFlat, "system.stats", 0);
+        for (const key of ["cpu_percent", "ram_percent", "disk_percent"]) {
+          const fullId = `${this.namespace}.system.stats.${key}`;
+          const obj = await this.getForeignObjectAsync(fullId);
+          if ((obj == null ? void 0 : obj.common) && !obj.common.unit) {
+            obj.common.unit = "%";
+            await this.setForeignObjectAsync(fullId, obj);
+          }
+        }
+        for (const old of ["cpup", "ramp", "ramu", "diskp"]) {
+          await this.delObjectAsync(`system.stats.${old}`).catch(() => {
+          });
+        }
         const gb = parseSizeGb(stats.disk_free);
         if (gb !== null) {
           await this.writeLeaf("system.disk_free_gb", gb);
@@ -1235,7 +1254,11 @@ class AgentDvr extends utils.Adapter {
             await this.writeLeaf(`system.drives.${key}.name`, toStr(drv.n));
             await this.writeLeaf(`system.drives.${key}.free`, toStr(drv.d));
             await this.writeLeaf(`system.drives.${key}.used`, toStr(drv.u));
-            await this.writeLeaf(`system.drives.${key}.percent`, typeof drv.p === "number" ? drv.p : 0, "%");
+            await this.writeLeaf(
+              `system.drives.${key}.percent`,
+              typeof drv.p === "number" ? drv.p : 0,
+              "%"
+            );
             const fgb = parseSizeGb(drv.d);
             if (fgb !== null) {
               await this.writeLeaf(`system.drives.${key}.free_gb`, fgb);

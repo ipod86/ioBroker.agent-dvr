@@ -1487,8 +1487,30 @@ class AgentDvr extends utils.Adapter {
 
 			const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
 			if (stats) {
-				const { disks: _disks, ...statsFlat } = stats;
+				const { disks: _disks, cpup, ramp, ramu, diskp, ...statsRest } = stats;
+				const statsFlat: Record<string, unknown> = {
+					...statsRest,
+					...(cpup !== undefined && { cpu_percent: cpup }),
+					...(ramp !== undefined && { ram_percent: ramp }),
+					...(ramu !== undefined && { ram_used: ramu }),
+					...(diskp !== undefined && { disk_percent: diskp }),
+				};
 				await this.flattenWrite(statsFlat, 'system.stats', 0);
+				// set % unit on percent states (flattenWrite can't set units)
+				for (const key of ['cpu_percent', 'ram_percent', 'disk_percent']) {
+					const fullId = `${this.namespace}.system.stats.${key}`;
+					const obj = await this.getForeignObjectAsync(fullId);
+					if (obj?.common && !obj.common.unit) {
+						obj.common.unit = '%';
+						await this.setForeignObjectAsync(fullId, obj);
+					}
+				}
+				// remove old single-letter states if still present
+				for (const old of ['cpup', 'ramp', 'ramu', 'diskp']) {
+					await this.delObjectAsync(`system.stats.${old}`).catch(() => {
+						/* already gone */
+					});
+				}
 				const gb = parseSizeGb(stats.disk_free);
 				if (gb !== null) {
 					await this.writeLeaf('system.disk_free_gb', gb);
