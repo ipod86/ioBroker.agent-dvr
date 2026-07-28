@@ -562,13 +562,16 @@ class AgentDvr extends utils.Adapter {
       }
     }
   }
-  async writeLeaf(id, val) {
+  async writeLeaf(id, val, unit) {
     const t = typeof val;
     let common;
     if (t === "boolean") {
       common = { name: id.split(".").pop() || id, type: "boolean", role: "indicator", read: true, write: false };
     } else if (t === "number") {
       common = { name: id.split(".").pop() || id, type: "number", role: "value", read: true, write: false };
+      if (unit) {
+        common.unit = unit;
+      }
     } else {
       const role = typeof val === "string" && /^https?:\/\//i.test(val) ? "text.url" : "text";
       common = { name: id.split(".").pop() || id, type: "string", role, read: true, write: false };
@@ -1230,7 +1233,7 @@ class AgentDvr extends utils.Adapter {
             await this.writeLeaf(`system.drives.${i}.name`, toStr(drv.n));
             await this.writeLeaf(`system.drives.${i}.free`, toStr(drv.d));
             await this.writeLeaf(`system.drives.${i}.used`, toStr(drv.u));
-            await this.writeLeaf(`system.drives.${i}.percent`, typeof drv.p === "number" ? drv.p : 0);
+            await this.writeLeaf(`system.drives.${i}.percent`, typeof drv.p === "number" ? drv.p : 0, "%");
             const fgb = parseSizeGb(drv.d);
             if (fgb !== null) {
               await this.writeLeaf(`system.drives.${i}.free_gb`, fgb);
