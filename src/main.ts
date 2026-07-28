@@ -1484,7 +1484,8 @@ class AgentDvr extends utils.Adapter {
 
 			const stats = asJson((await this.apiGet('/command/getSystemStats')).data);
 			if (stats) {
-				await this.flattenWrite(stats, 'system.stats', 0);
+				const { disks: _disks, ...statsFlat } = stats;
+				await this.flattenWrite(statsFlat, 'system.stats', 0);
 				const gb = parseSizeGb(stats.disk_free);
 				if (gb !== null) {
 					await this.writeLeaf('system.disk_free_gb', gb);
