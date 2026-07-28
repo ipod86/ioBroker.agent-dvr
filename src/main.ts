@@ -1067,7 +1067,7 @@ class AgentDvr extends utils.Adapter {
 		const date = `${two(dt.getDate())}.${two(dt.getMonth() + 1)}.`;
 		const time = `${two(dt.getHours())}:${two(dt.getMinutes())}`;
 		const thumb = `${this.baseUrl}/fileThumb.jpg?oid=${oid}&fn=${encodeURIComponent(jpg)}`;
-		const video = `${this.baseUrl}/video.mp4?oid=${oid}&ot=2&fn=${encodeURIComponent(fn)}`;
+		const video = `${this.baseUrl}/streamFile.cgi?oid=${oid}&ot=2&fn=${encodeURIComponent(fn)}`;
 		return { fn, sizeMB, dur, tag, date, time, thumb, video };
 	}
 
