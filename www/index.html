@@ -8746,7 +8746,13 @@ function sbarLive() {
   const _cpu = parseFloat(_sysStats.cpu_used);
   if (!isNaN(_cpu))                               extras.push('CPU ' + Math.round(_cpu) + '%');
   if (_sysStats.ram_free  && _sysStats.ram_free  !== '-') extras.push('RAM ' + _sysStats.ram_free + ' ' + t('diskFree'));
-  if (_sysStats.disk_free && _sysStats.disk_free !== '-') extras.push('Disk ' + _sysStats.disk_free + ' ' + t('diskFree'));
+  if (Array.isArray(_sysStats.disks) && _sysStats.disks.length) {
+    _sysStats.disks.forEach(d => {
+      if (d && d.d && d.d !== '-') extras.push((d.n || 'Disk') + ' ' + d.d + ' ' + t('diskFree'));
+    });
+  } else if (_sysStats.disk_free && _sysStats.disk_free !== '-') {
+    extras.push('Disk ' + _sysStats.disk_free + ' ' + t('diskFree'));
+  }
   sbar(extras.length ? base + ' · ' + extras.join(' · ') : base);
 }
 function showView(name) {

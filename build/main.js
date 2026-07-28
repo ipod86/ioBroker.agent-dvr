@@ -1220,6 +1220,22 @@ class AgentDvr extends utils.Adapter {
         if (gb !== null) {
           await this.writeLeaf("system.disk_free_gb", gb);
         }
+        if (Array.isArray(stats.disks)) {
+          for (let i = 0; i < stats.disks.length; i++) {
+            const drv = stats.disks[i];
+            if (!drv || typeof drv !== "object") {
+              continue;
+            }
+            await this.writeLeaf(`system.drives.${i}.name`, toStr(drv.n));
+            await this.writeLeaf(`system.drives.${i}.free`, toStr(drv.d));
+            await this.writeLeaf(`system.drives.${i}.used`, toStr(drv.u));
+            await this.writeLeaf(`system.drives.${i}.percent`, typeof drv.p === "number" ? drv.p : 0);
+            const fgb = parseSizeGb(drv.d);
+            if (fgb !== null) {
+              await this.writeLeaf(`system.drives.${i}.free_gb`, fgb);
+            }
+          }
+        }
       }
       const status = asJson((await this.apiGet("/command/getStatus")).data);
       if (status) {
