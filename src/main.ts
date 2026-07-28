@@ -1494,18 +1494,33 @@ class AgentDvr extends utils.Adapter {
 					await this.writeLeaf('system.disk_free_gb', gb);
 				}
 				if (Array.isArray(stats.disks)) {
-					for (let i = 0; i < (stats.disks as unknown[]).length; i++) {
-						const drv = (stats.disks as Record<string, unknown>[])[i];
+					const activeKeys = new Set<string>();
+					for (const drv of stats.disks as Record<string, unknown>[]) {
 						if (!drv || typeof drv !== 'object') {
 							continue;
 						}
-						await this.writeLeaf(`system.drives.${i}.name`, toStr(drv.n));
-						await this.writeLeaf(`system.drives.${i}.free`, toStr(drv.d));
-						await this.writeLeaf(`system.drives.${i}.used`, toStr(drv.u));
-						await this.writeLeaf(`system.drives.${i}.percent`, typeof drv.p === 'number' ? drv.p : 0, '%');
+						const key = sanitize(toStr(drv.n).replace(/^\//, '') || 'root') || 'root';
+						activeKeys.add(key);
+						await this.writeLeaf(`system.drives.${key}.name`, toStr(drv.n));
+						await this.writeLeaf(`system.drives.${key}.free`, toStr(drv.d));
+						await this.writeLeaf(`system.drives.${key}.used`, toStr(drv.u));
+						await this.writeLeaf(
+							`system.drives.${key}.percent`,
+							typeof drv.p === 'number' ? drv.p : 0,
+							'%',
+						);
 						const fgb = parseSizeGb(drv.d);
 						if (fgb !== null) {
-							await this.writeLeaf(`system.drives.${i}.free_gb`, fgb);
+							await this.writeLeaf(`system.drives.${key}.free_gb`, fgb);
+						}
+					}
+					// prune drives no longer reported by the API
+					const allObjs = await this.getAdapterObjectsAsync();
+					for (const fullId of Object.keys(allObjs)) {
+						const rel = fullId.slice(this.namespace.length + 1);
+						const m = rel.match(/^system\.drives\.([^.]+)$/);
+						if (m && !activeKeys.has(m[1])) {
+							await this.delObjectAsync(rel, { recursive: true });
 						}
 					}
 				}
