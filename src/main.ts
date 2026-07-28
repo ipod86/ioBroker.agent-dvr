@@ -1559,7 +1559,10 @@ class AgentDvr extends utils.Adapter {
 						}
 						const key = sanitize(toStr(drv.n).replace(/^\//, '') || 'root') || 'root';
 						activeKeys.add(key);
-						await this.writeLeaf(`system.hardware.drives.${key}.name`, toStr(drv.n));
+						await this.writeLeaf(
+							`system.hardware.drives.${key}.name`,
+							toStr(drv.n) === '/' ? '/ Root' : toStr(drv.n),
+						);
 						await this.writeLeaf(`system.hardware.drives.${key}.free`, toStr(drv.d));
 						await this.writeLeaf(`system.hardware.drives.${key}.used`, toStr(drv.u));
 						await this.writeLeaf(

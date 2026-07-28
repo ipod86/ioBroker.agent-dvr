@@ -8810,7 +8810,7 @@ function sbarLive() {
   if (_sysStats.ram_free  && _sysStats.ram_free  !== '-') extras.push('RAM ' + _sysStats.ram_free + ' ' + t('diskFree'));
   if (Array.isArray(_sysStats.disks) && _sysStats.disks.length) {
     _sysStats.disks.forEach(d => {
-      if (d && typeof d.p === 'number') extras.push((d.n || 'Disk') + ' ' + d.p + '%');
+      if (d && typeof d.p === 'number') extras.push((d.n === '/' ? '/ Root' : d.n || 'Disk') + ' ' + d.p + '%');
     });
   } else if (_sysStats.disk_free && _sysStats.disk_free !== '-') {
     extras.push('Disk ' + _sysStats.disk_free + ' ' + t('diskFree'));
