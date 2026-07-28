@@ -248,10 +248,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   white-space:nowrap;transition:opacity .15s}
 #rec-multi-del:hover:not(:disabled){background:var(--red)}
 #rec-multi-del:disabled{opacity:.4;cursor:default}
-#rec-multi-cancel{background:var(--s3);border:1px solid var(--border2);color:var(--text);
+#rec-multi-cancel,#rec-sel-all{background:var(--s3);border:1px solid var(--border2);color:var(--text);
   padding:5px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-family:inherit;
   white-space:nowrap;transition:background .15s}
-#rec-multi-cancel:hover{background:var(--s3);border-color:var(--border)}
+#rec-multi-cancel:hover,#rec-sel-all:hover{background:var(--s3);border-color:var(--border)}
 
 /* ── Persistent video panel ── */
 #vid-panel{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
@@ -7924,6 +7924,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </div>
     <div id="rec-sel-bar">
       <span id="rec-sel-count"></span>
+      <button id="rec-sel-all" onclick="toggleSelectAll()" data-i18n="selAll">Alle</button>
       <div style="margin-left:auto;display:flex;gap:6px">
         <button id="rec-multi-cancel" onclick="exitSelectMode()" data-i18n="cancelSel">Abbrechen</button>
         <button id="rec-multi-del" onclick="deleteSelectedRecs()">Löschen (0)</button>
@@ -8030,6 +8031,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Nach Label filtern',
     delSelected:     'Löschen ({n})',
     cancelSel:       'Abbrechen',
+    selAll:          'Alle',
   },
   en: {
     navLive:         'Live',
@@ -8079,6 +8081,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filter by label',
     delSelected:     'Delete ({n})',
     cancelSel:       'Cancel',
+    selAll:          'All',
   },
   es: {
     navLive:         'En vivo',
@@ -8128,6 +8131,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filtrar por etiqueta',
     delSelected:     'Eliminar ({n})',
     cancelSel:       'Cancelar',
+    selAll:          'Todas',
   },
   fr: {
     navLive:         'En direct',
@@ -8177,6 +8181,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filtrer par étiquette',
     delSelected:     'Supprimer ({n})',
     cancelSel:       'Annuler',
+    selAll:          'Tout',
   },
   it: {
     navLive:         'Live',
@@ -8226,6 +8231,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filtra per etichetta',
     delSelected:     'Elimina ({n})',
     cancelSel:       'Annulla',
+    selAll:          'Tutto',
   },
   nl: {
     navLive:         'Live',
@@ -8275,6 +8281,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filteren op label',
     delSelected:     'Verwijderen ({n})',
     cancelSel:       'Annuleren',
+    selAll:          'Alles',
   },
   pl: {
     navLive:         'Na żywo',
@@ -8324,6 +8331,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filtruj według etykiety',
     delSelected:     'Usuń ({n})',
     cancelSel:       'Anuluj',
+    selAll:          'Wszystkie',
   },
   pt: {
     navLive:         'Ao vivo',
@@ -8373,6 +8381,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Filtrar por etiqueta',
     delSelected:     'Eliminar ({n})',
     cancelSel:       'Cancelar',
+    selAll:          'Todas',
   },
   ru: {
     navLive:         'В эфире',
@@ -8422,6 +8431,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Фильтр по метке',
     delSelected:     'Удалить ({n})',
     cancelSel:       'Отмена',
+    selAll:          'Все',
   },
   uk: {
     navLive:         'Наживо',
@@ -8471,6 +8481,7 @@ const TRANSLATIONS = {
     filterByLabel:   'Фільтр за міткою',
     delSelected:     'Видалити ({n})',
     cancelSel:       'Скасувати',
+    selAll:          'Усі',
   },
   'zh-cn': {
     navLive:         '实时',
@@ -8520,6 +8531,7 @@ const TRANSLATIONS = {
     filterByLabel:   '按标签筛选',
     delSelected:     '删除 ({n})',
     cancelSel:       '取消',
+    selAll:          '全选',
   },
 };
 
@@ -8565,6 +8577,7 @@ let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
 let recPlayList = [], recPlayIdx = -1, _lastRecSbar = '';
 let _selectMode = false, _skipNextTileClick = false;
 const _selectedFns = new Set(); // stores rec.fn strings, stable across re-renders
+let _lastFilteredFns = [];
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
 let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
@@ -9576,6 +9589,8 @@ function renderRec() {
   if (recViewMode === 'timeline') { renderTimeline(items, multiCam); return; }
   if (recViewMode === 'events')   { return; }
 
+  _lastFilteredFns = items.map(r => r.fn);
+  if (_selectMode) updateMultiDelBtn();
   grid.className = 'rec-grid' + (_selectMode ? ' select-mode' : '');
   items.forEach(rec => {
     const cam  = rec._cam;
@@ -9925,6 +9940,17 @@ function updateMultiDelBtn() {
   document.getElementById('rec-multi-del').textContent = t('delSelected').replace('{n}', n);
   document.getElementById('rec-multi-del').disabled = n === 0;
   document.getElementById('rec-sel-count').textContent = n ? n + ' ✓' : '';
+  const allSelected = _lastFilteredFns.length > 0 && _lastFilteredFns.every(fn => _selectedFns.has(fn));
+  document.getElementById('rec-sel-all').textContent = allSelected ? '✕ ' + t('selAll') : t('selAll');
+}
+function toggleSelectAll() {
+  const allSelected = _lastFilteredFns.length > 0 && _lastFilteredFns.every(fn => _selectedFns.has(fn));
+  if (allSelected) {
+    _lastFilteredFns.forEach(fn => _selectedFns.delete(fn));
+  } else {
+    _lastFilteredFns.forEach(fn => _selectedFns.add(fn));
+  }
+  renderRec();
 }
 async function deleteSelectedRecs() {
   const fns = [..._selectedFns];
