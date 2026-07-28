@@ -9881,25 +9881,20 @@ async function confirmDelete() {
     } catch (_) {}
   }
   if (!oid || !fn) { resetDelBtn(); return; }
-  const btn = document.getElementById('vid-del');
-  btn.disabled = true;
-  try {
-    const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
-                          { signal: AbortSignal.timeout(10000) });
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok || (data.status && data.status !== 'ok') || data.error) {
-      throw new Error(data.error || data.status || 'HTTP ' + r.status);
-    }
-    recPlayList.splice(recPlayIdx, 1);
-    recAllItems = recAllItems.filter(x => x !== rec);
-    closeVideo();
-    renderRec();
-  } catch (e) {
-    const errEl = document.getElementById('vid-err');
-    errEl.textContent = t('delErr') + (e?.message ? ' (' + e.message + ')' : '');
-    errEl.style.display = 'block';
-    resetDelBtn();
-  }
+  // Optimistic removal — update UI immediately, restore on error
+  recPlayList.splice(recPlayIdx, 1);
+  recAllItems = recAllItems.filter(x => x !== rec);
+  closeVideo();
+  renderRec();
+  resetDelBtn();
+  fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
+        { signal: AbortSignal.timeout(10000) })
+    .then(r => r.json().catch(() => ({})).then(data => {
+      if (!r.ok || (data.status && data.status !== 'ok') || data.error) {
+        throw new Error(data.error || data.status || 'HTTP ' + r.status);
+      }
+    }))
+    .catch(e => sbar(t('delErr') + (e?.message ? ' (' + e.message + ')' : ''), true));
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('vid-panel')) closeVideo();
@@ -9929,22 +9924,22 @@ function updateMultiDelBtn() {
 async function deleteSelectedRecs() {
   const fns = [..._selectedFns];
   if (!fns.length) return;
-  document.getElementById('rec-multi-del').disabled = true;
   const recs = recAllItems.filter(r => fns.includes(r.fn));
+  // Optimistic removal — update UI immediately, fire API calls in background
+  recAllItems = recAllItems.filter(r => !fns.includes(r.fn));
+  exitSelectMode(); // clears _selectedFns, calls renderRec()
   let failed = 0;
-  for (const rec of recs) {
+  await Promise.all(recs.map(async rec => {
     const oid = rec.oid != null ? String(rec.oid) : (rec._cam?.oid ? String(rec._cam.oid) : '');
     const fn  = rec.fn ? String(rec.fn) : '';
-    if (!oid || !fn) continue;
+    if (!oid || !fn) return;
     try {
       const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
                             { signal: AbortSignal.timeout(10000) });
       const data = await r.json().catch(() => ({}));
-      if (!r.ok || (data.status && data.status !== 'ok') || data.error) { failed++; }
-      else { recAllItems = recAllItems.filter(x => x.fn !== fn); }
+      if (!r.ok || (data.status && data.status !== 'ok') || data.error) failed++;
     } catch (_) { failed++; }
-  }
-  exitSelectMode();
+  }));
   if (failed) sbar(t('delErr') + ' (' + failed + ')', true);
 }
 
