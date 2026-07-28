@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Con qué frecuencia se recarga la lista de cámaras desde el servidor (0 = sin recarga automática)",
   "cfgDashShowOffline": "Mostrar cámaras sin conexión",
   "cfgDashShowOffline_tt": "Incluir cámaras actualmente sin conexión en la cuadrícula en vivo",
+  "cfgDashStreamMp4": "MP4 / FLV (con audio)",
   "cfgDashStreamReconnect": "Reconexión automática del stream",
   "cfgDashStreamReconnect_tt": "Reiniciar automáticamente el stream MJPEG tras una interrupción de conexión",
   "cfgDashTagPosition": "Posición del badge de etiqueta",
   "cfgDashTagPosition_tt": "Esquina del mosaico de grabación donde aparece el badge de etiqueta",
+  "cfgDashTileAspect": "Relación de aspecto del mosaico",
+  "cfgDashTileAspect_tt": "Relación de aspecto de los mosaicos de cámara en la vista en vivo. 16:9 = panorámico. 4:3 = cuadrado.",
   "cfgDashViewLive": "Vista en vivo",
   "cfgDashViewRec": "Grabaciones",
   "cfgEnableEventDps": "Puntos de datos de eventos",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Abajo a la derecha",
   "cfgTagPosTopLeft": "Arriba a la izquierda",
   "cfgTagPosTopRight": "Arriba a la derecha",
+  "cfgTileAspect169": "16:9 – Panorámico",
+  "cfgTileAspect43": "4:3 – Cuadrado",
   "cfgUser": "Nombre de usuario (opcional)",
   "cfgWidgetAnzahl": "Máx. grabaciones en la galería",
   "cfgWidgetAnzahl_tt": "Número máximo de grabaciones en la galería por cámara",
@@ -142,6 +147,5 @@
   "tabConnection": "Conexión",
   "tabDashboard": "Panel en vivo",
   "tabFeatures": "Funciones",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (con audio)"
+  "tabWidget": "Widget"
 }

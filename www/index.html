@@ -9092,7 +9092,8 @@ function updateLayout() {
   const gap = 6;
   const { cols, rows } = calcLayout(tiles, W, H, gap);
   const colW = (W - gap * (cols - 1)) / cols;
-  const rowH = Math.floor(colW * 9 / 16);
+  const [arW, arH] = (CFG.dashTileAspect || '16/9').split('/').map(Number);
+  const rowH = Math.floor(colW * (arH || 9) / (arW || 16));
   grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
   grid.style.gridTemplateRows    = `repeat(${rows},${rowH}px)`;
 }

@@ -212,6 +212,7 @@
     "dashEnableRecordings": true,
     "dashShowOffline": true,
     "dashGridCols": 0,
+    "dashTileAspect": "16/9",
     "dashBtnsVisible": false,
     "dashTagPosition": "top-right",
     "dashRefreshSec": 60,

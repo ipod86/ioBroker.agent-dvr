@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Как часто список камер обновляется с сервера (0 = без автоматического обновления)",
   "cfgDashShowOffline": "Показывать офлайн-камеры",
   "cfgDashShowOffline_tt": "Включать камеры, находящиеся офлайн, в живую сетку",
+  "cfgDashStreamMp4": "MP4 / FLV (со звуком)",
   "cfgDashStreamReconnect": "Авто-переподключение потока",
   "cfgDashStreamReconnect_tt": "Автоматически перезапускать поток MJPEG после разрыва соединения",
   "cfgDashTagPosition": "Положение значка тега",
   "cfgDashTagPosition_tt": "Угол плитки записи, где появляется значок тега",
+  "cfgDashTileAspect": "Соотношение сторон плитки",
+  "cfgDashTileAspect_tt": "Соотношение сторон плиток камер в живом виде. 16:9 = широкоэкранный. 4:3 = квадратный.",
   "cfgDashViewLive": "Live-просмотр",
   "cfgDashViewRec": "Записи",
   "cfgEnableEventDps": "Точки данных событий",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Внизу справа",
   "cfgTagPosTopLeft": "Вверху слева",
   "cfgTagPosTopRight": "Вверху справа",
+  "cfgTileAspect169": "16:9 – Широкоэкранный",
+  "cfgTileAspect43": "4:3 – Квадратный",
   "cfgUser": "Имя пользователя (необязательно)",
   "cfgWidgetAnzahl": "Макс. записей в галерее",
   "cfgWidgetAnzahl_tt": "Максимальное количество записей в галерее для каждой камеры",
@@ -142,6 +147,5 @@
   "tabConnection": "Соединение",
   "tabDashboard": "Live-панель",
   "tabFeatures": "Функции",
-  "tabWidget": "Виджет",
-  "cfgDashStreamMp4": "MP4 / FLV (со звуком)"
+  "tabWidget": "Виджет"
 }

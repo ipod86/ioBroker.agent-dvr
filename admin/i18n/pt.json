@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Com que frequência a lista de câmeras é recarregada do servidor (0 = sem recarregamento automático)",
   "cfgDashShowOffline": "Mostrar câmeras offline",
   "cfgDashShowOffline_tt": "Incluir câmeras atualmente offline na grade ao vivo",
+  "cfgDashStreamMp4": "MP4 / FLV (com áudio)",
   "cfgDashStreamReconnect": "Reconexão automática do stream",
   "cfgDashStreamReconnect_tt": "Reiniciar automaticamente o stream MJPEG após uma queda de conexão",
   "cfgDashTagPosition": "Posição do badge de etiqueta",
   "cfgDashTagPosition_tt": "Canto do bloco de gravação onde o badge de etiqueta aparece",
+  "cfgDashTileAspect": "Proporção do bloco",
+  "cfgDashTileAspect_tt": "Proporção dos blocos de câmera na vista ao vivo. 16:9 = widescreen. 4:3 = quadrado.",
   "cfgDashViewLive": "Vista ao vivo",
   "cfgDashViewRec": "Gravações",
   "cfgEnableEventDps": "Pontos de dados de eventos",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Canto inferior direito",
   "cfgTagPosTopLeft": "Canto superior esquerdo",
   "cfgTagPosTopRight": "Canto superior direito",
+  "cfgTileAspect169": "16:9 – Widescreen",
+  "cfgTileAspect43": "4:3 – Quadrado",
   "cfgUser": "Nome de utilizador (opcional)",
   "cfgWidgetAnzahl": "Máx. gravações na galeria",
   "cfgWidgetAnzahl_tt": "Número máximo de gravações na galeria por câmera",
@@ -142,6 +147,5 @@
   "tabConnection": "Conexão",
   "tabDashboard": "Painel ao vivo",
   "tabFeatures": "Funcionalidades",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (com áudio)"
+  "tabWidget": "Widget"
 }

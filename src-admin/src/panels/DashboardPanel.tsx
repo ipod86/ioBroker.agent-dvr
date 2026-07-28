@@ -281,6 +281,25 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 					item
 					xs={12}
 					sm={6}
+					md={3}
+					lg={2}
+				>
+					<FormField
+						type="select"
+						labelKey="cfgDashTileAspect"
+						helpKey="cfgDashTileAspect_tt"
+						value={native.dashTileAspect ?? '16/9'}
+						onChange={v => onChange('dashTileAspect', v)}
+						options={[
+							{ value: '16/9', labelKey: 'cfgTileAspect169' },
+							{ value: '4/3', labelKey: 'cfgTileAspect43' },
+						]}
+					/>
+				</Grid>
+				<Grid
+					item
+					xs={12}
+					sm={6}
 					md={4}
 				>
 					<FormField

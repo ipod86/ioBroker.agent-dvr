@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Fréquence de rechargement de la liste des caméras depuis le serveur (0 = pas de rechargement automatique)",
   "cfgDashShowOffline": "Afficher les caméras hors ligne",
   "cfgDashShowOffline_tt": "Inclure les caméras actuellement hors ligne dans la grille en direct",
+  "cfgDashStreamMp4": "MP4 / FLV (avec audio)",
   "cfgDashStreamReconnect": "Reconnexion automatique du flux",
   "cfgDashStreamReconnect_tt": "Redémarrer automatiquement le flux MJPEG après une coupure de connexion",
   "cfgDashTagPosition": "Position du badge d'étiquette",
   "cfgDashTagPosition_tt": "Coin de la tuile d'enregistrement où apparaît le badge d'étiquette",
+  "cfgDashTileAspect": "Ratio d'aspect des tuiles",
+  "cfgDashTileAspect_tt": "Ratio d'aspect des tuiles caméra dans la vue en direct. 16:9 = grand écran. 4:3 = carré.",
   "cfgDashViewLive": "Vue en direct",
   "cfgDashViewRec": "Enregistrements",
   "cfgEnableEventDps": "Points de données d'événements",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "En bas à droite",
   "cfgTagPosTopLeft": "En haut à gauche",
   "cfgTagPosTopRight": "En haut à droite",
+  "cfgTileAspect169": "16:9 – Grand écran",
+  "cfgTileAspect43": "4:3 – Carré",
   "cfgUser": "Nom d'utilisateur (optionnel)",
   "cfgWidgetAnzahl": "Nb max. d'enregistrements dans la galerie",
   "cfgWidgetAnzahl_tt": "Nombre maximum d'enregistrements dans la galerie par caméra",
@@ -142,6 +147,5 @@
   "tabConnection": "Connexion",
   "tabDashboard": "Tableau de bord",
   "tabFeatures": "Fonctionnalités",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (avec audio)"
+  "tabWidget": "Widget"
 }

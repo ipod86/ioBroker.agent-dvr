@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Wie oft die Kameraliste vom Server neu geladen wird (0 = kein automatischer Reload)",
   "cfgDashShowOffline": "Offline-Kameras anzeigen",
   "cfgDashShowOffline_tt": "Kameras die gerade offline sind trotzdem im Live-Grid einblenden",
+  "cfgDashStreamMp4": "MP4 / FLV (mit Ton)",
   "cfgDashStreamReconnect": "Stream bei Fehler automatisch neu verbinden",
   "cfgDashStreamReconnect_tt": "MJPEG-Stream wird nach einem Verbindungsabbruch automatisch neu gestartet",
   "cfgDashTagPosition": "Tag-Badge-Position",
   "cfgDashTagPosition_tt": "Ecke der Aufnahme-Kachel, in der der Tag-Badge erscheint",
+  "cfgDashTileAspect": "Kachel-Seitenverhältnis",
+  "cfgDashTileAspect_tt": "Seitenverhältnis der Kamera-Kacheln im Live-Grid. 16:9 = Querformat (schwarze Balken bei Hochformat-Kameras). 4:3 = quadratischer (schwarze Balken bei Breitbild-Kameras).",
   "cfgDashViewLive": "Live-Ansicht",
   "cfgDashViewRec": "Aufnahmen",
   "cfgEnableEventDps": "Ereignis-Datenpunkte",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Unten rechts",
   "cfgTagPosTopLeft": "Oben links",
   "cfgTagPosTopRight": "Oben rechts",
+  "cfgTileAspect169": "16:9 – Breitbild",
+  "cfgTileAspect43": "4:3 – Quadratisch",
   "cfgUser": "Benutzername (optional)",
   "cfgWidgetAnzahl": "Max. Aufnahmen in der Galerie",
   "cfgWidgetAnzahl_tt": "Maximale Anzahl Aufnahmen in der Galerie pro Kamera",
@@ -142,6 +147,5 @@
   "tabConnection": "Verbindung",
   "tabDashboard": "Live-Dashboard",
   "tabFeatures": "Funktionen",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (mit Ton)"
+  "tabWidget": "Widget"
 }

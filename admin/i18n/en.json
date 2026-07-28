@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "How often the camera list is reloaded from the server (0 = no automatic reload)",
   "cfgDashShowOffline": "Show offline cameras",
   "cfgDashShowOffline_tt": "Include cameras that are currently offline in the live grid",
+  "cfgDashStreamMp4": "MP4 / FLV (with audio)",
   "cfgDashStreamReconnect": "Auto-reconnect stream on error",
   "cfgDashStreamReconnect_tt": "Automatically restart the MJPEG stream after a connection drop",
   "cfgDashTagPosition": "Tag badge position",
   "cfgDashTagPosition_tt": "Corner of the recording tile where the tag badge appears",
+  "cfgDashTileAspect": "Tile aspect ratio",
+  "cfgDashTileAspect_tt": "Aspect ratio of camera tiles in the live grid. 16:9 = widescreen (letterbox bars for portrait cameras). 4:3 = squarer (pillarbox bars for widescreen cameras).",
   "cfgDashViewLive": "Live view",
   "cfgDashViewRec": "Recordings",
   "cfgEnableEventDps": "Event data points",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Bottom right",
   "cfgTagPosTopLeft": "Top left",
   "cfgTagPosTopRight": "Top right",
+  "cfgTileAspect169": "16:9 – Widescreen",
+  "cfgTileAspect43": "4:3 – Square",
   "cfgUser": "Username (optional)",
   "cfgWidgetAnzahl": "Max. recordings in gallery",
   "cfgWidgetAnzahl_tt": "Maximum number of recordings in the gallery per camera",
@@ -142,6 +147,5 @@
   "tabConnection": "Connection",
   "tabDashboard": "Live Dashboard",
   "tabFeatures": "Features",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (with audio)"
+  "tabWidget": "Widget"
 }

@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "从服务器重新加载摄像头列表的频率（0 = 不自动重新加载）",
   "cfgDashShowOffline": "显示离线摄像头",
   "cfgDashShowOffline_tt": "在实时网格中显示当前离线的摄像头",
+  "cfgDashStreamMp4": "MP4 / FLV（含音频）",
   "cfgDashStreamReconnect": "自动重新连接流",
   "cfgDashStreamReconnect_tt": "连接断开后自动重启 MJPEG 流",
   "cfgDashTagPosition": "标签徽章位置",
   "cfgDashTagPosition_tt": "录像磁贴上标签徽章显示的角落",
+  "cfgDashTileAspect": "磁贴宽高比",
+  "cfgDashTileAspect_tt": "直播网格中摄像头磁贴的宽高比。16:9 = 宽屏（竖向摄像头显示黑边）。4:3 = 方形（横向摄像头显示黑边）。",
   "cfgDashViewLive": "实时视图",
   "cfgDashViewRec": "录像",
   "cfgEnableEventDps": "事件数据点",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "右下",
   "cfgTagPosTopLeft": "左上",
   "cfgTagPosTopRight": "右上",
+  "cfgTileAspect169": "16:9 – 宽屏",
+  "cfgTileAspect43": "4:3 – 方形",
   "cfgUser": "用户名（可选）",
   "cfgWidgetAnzahl": "图库中最大录像数",
   "cfgWidgetAnzahl_tt": "每个摄像头在图库中的最大录像数",
@@ -142,6 +147,5 @@
   "tabConnection": "连接",
   "tabDashboard": "实时仪表板",
   "tabFeatures": "功能",
-  "tabWidget": "小部件",
-  "cfgDashStreamMp4": "MP4 / FLV（含音频）"
+  "tabWidget": "小部件"
 }

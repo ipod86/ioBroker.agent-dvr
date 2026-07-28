@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Con quale frequenza la lista telecamere viene ricaricata dal server (0 = nessun ricaricamento automatico)",
   "cfgDashShowOffline": "Mostra telecamere offline",
   "cfgDashShowOffline_tt": "Includi le telecamere attualmente offline nella griglia live",
+  "cfgDashStreamMp4": "MP4 / FLV (con audio)",
   "cfgDashStreamReconnect": "Riconnessione automatica stream",
   "cfgDashStreamReconnect_tt": "Riavvia automaticamente lo stream MJPEG dopo un'interruzione della connessione",
   "cfgDashTagPosition": "Posizione badge etichetta",
   "cfgDashTagPosition_tt": "Angolo del riquadro di registrazione dove appare il badge etichetta",
+  "cfgDashTileAspect": "Proporzioni riquadro",
+  "cfgDashTileAspect_tt": "Proporzioni dei riquadri fotocamera nella vista live. 16:9 = widescreen. 4:3 = quadrato.",
   "cfgDashViewLive": "Vista live",
   "cfgDashViewRec": "Registrazioni",
   "cfgEnableEventDps": "Punti dati degli eventi",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "In basso a destra",
   "cfgTagPosTopLeft": "In alto a sinistra",
   "cfgTagPosTopRight": "In alto a destra",
+  "cfgTileAspect169": "16:9 – Widescreen",
+  "cfgTileAspect43": "4:3 – Quadrato",
   "cfgUser": "Nome utente (opzionale)",
   "cfgWidgetAnzahl": "Numero massimo di registrazioni nella galleria",
   "cfgWidgetAnzahl_tt": "Numero massimo di registrazioni nella galleria per telecamera",
@@ -142,6 +147,5 @@
   "tabConnection": "Connessione",
   "tabDashboard": "Pannello live",
   "tabFeatures": "Funzionalità",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (con audio)"
+  "tabWidget": "Widget"
 }

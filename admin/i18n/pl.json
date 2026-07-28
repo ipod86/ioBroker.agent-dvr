@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Jak często lista kamer jest odświeżana z serwera (0 = brak automatycznego odświeżania)",
   "cfgDashShowOffline": "Pokaż kamery offline",
   "cfgDashShowOffline_tt": "Dołącz kamery aktualnie offline do siatki na żywo",
+  "cfgDashStreamMp4": "MP4 / FLV (z dźwiękiem)",
   "cfgDashStreamReconnect": "Automatyczne ponowne połączenie strumienia",
   "cfgDashStreamReconnect_tt": "Automatycznie uruchom ponownie strumień MJPEG po utracie połączenia",
   "cfgDashTagPosition": "Pozycja odznaki tagu",
   "cfgDashTagPosition_tt": "Róg kafelka nagrania, w którym pojawia się odznaka tagu",
+  "cfgDashTileAspect": "Proporcje kafelka",
+  "cfgDashTileAspect_tt": "Proporcje kafelków kamery w widoku na żywo. 16:9 = szerokoekranowy. 4:3 = kwadratowy.",
   "cfgDashViewLive": "Widok na żywo",
   "cfgDashViewRec": "Nagrania",
   "cfgEnableEventDps": "Punkty danych zdarzeń",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Dół prawa",
   "cfgTagPosTopLeft": "Góra lewa",
   "cfgTagPosTopRight": "Góra prawa",
+  "cfgTileAspect169": "16:9 – Panoramiczny",
+  "cfgTileAspect43": "4:3 – Kwadratowy",
   "cfgUser": "Nazwa użytkownika (opcjonalnie)",
   "cfgWidgetAnzahl": "Maks. nagrania w galerii",
   "cfgWidgetAnzahl_tt": "Maksymalna liczba nagrań w galerii per kamera",
@@ -142,6 +147,5 @@
   "tabConnection": "Połączenie",
   "tabDashboard": "Panel na żywo",
   "tabFeatures": "Funkcje",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (z dźwiękiem)"
+  "tabWidget": "Widget"
 }

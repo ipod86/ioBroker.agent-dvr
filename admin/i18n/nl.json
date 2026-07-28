@@ -27,10 +27,13 @@
   "cfgDashRefreshSec_tt": "Hoe vaak de cameralijst van de server wordt herladen (0 = geen automatisch herladen)",
   "cfgDashShowOffline": "Offline camera's tonen",
   "cfgDashShowOffline_tt": "Camera's die momenteel offline zijn opnemen in het live raster",
+  "cfgDashStreamMp4": "MP4 / FLV (met audio)",
   "cfgDashStreamReconnect": "Stream automatisch herverbinden",
   "cfgDashStreamReconnect_tt": "MJPEG-stream automatisch herstarten na verbindingsverlies",
   "cfgDashTagPosition": "Positie tagbadge",
   "cfgDashTagPosition_tt": "Hoek van de opnametegel waar de tagbadge verschijnt",
+  "cfgDashTileAspect": "Beeldverhouding tegel",
+  "cfgDashTileAspect_tt": "Beeldverhouding van camerategels in het live-raster. 16:9 = breedbeeld. 4:3 = vierkant.",
   "cfgDashViewLive": "Live weergave",
   "cfgDashViewRec": "Opnames",
   "cfgEnableEventDps": "Gebeurtenisdatapunten",
@@ -75,6 +78,8 @@
   "cfgTagPosBotRight": "Rechtsonder",
   "cfgTagPosTopLeft": "Linksboven",
   "cfgTagPosTopRight": "Rechtsboven",
+  "cfgTileAspect169": "16:9 – Breedbeeld",
+  "cfgTileAspect43": "4:3 – Vierkant",
   "cfgUser": "Gebruikersnaam (optioneel)",
   "cfgWidgetAnzahl": "Max. opnames in de galerie",
   "cfgWidgetAnzahl_tt": "Maximum aantal opnames in de galerij per camera",
@@ -142,6 +147,5 @@
   "tabConnection": "Verbinding",
   "tabDashboard": "Live dashboard",
   "tabFeatures": "Functies",
-  "tabWidget": "Widget",
-  "cfgDashStreamMp4": "MP4 / FLV (met audio)"
+  "tabWidget": "Widget"
 }
