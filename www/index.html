@@ -9894,7 +9894,12 @@ async function confirmDelete() {
         throw new Error(data.error || data.status || 'HTTP ' + r.status);
       }
     }))
-    .catch(e => sbar(t('delErr') + (e?.message ? ' (' + e.message + ')' : ''), true));
+    .catch(e => {
+      recAllItems = [...recAllItems, rec].sort((a, b) =>
+        ((b.date||'') + 'T' + (b.time||'')).localeCompare((a.date||'') + 'T' + (a.time||'')));
+      renderRec();
+      sbar(t('delErr') + (e?.message ? ' (' + e.message + ')' : ''), true);
+    });
 }
 document.getElementById('vid-panel').addEventListener('click', e => {
   if (e.target === document.getElementById('vid-panel')) closeVideo();
@@ -9928,7 +9933,7 @@ async function deleteSelectedRecs() {
   // Optimistic removal — update UI immediately, fire API calls in background
   recAllItems = recAllItems.filter(r => !fns.includes(r.fn));
   exitSelectMode(); // clears _selectedFns, calls renderRec()
-  let failed = 0;
+  const failedRecs = [];
   await Promise.all(recs.map(async rec => {
     const oid = rec.oid != null ? String(rec.oid) : (rec._cam?.oid ? String(rec._cam.oid) : '');
     const fn  = rec.fn ? String(rec.fn) : '';
@@ -9937,10 +9942,15 @@ async function deleteSelectedRecs() {
       const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn),
                             { signal: AbortSignal.timeout(10000) });
       const data = await r.json().catch(() => ({}));
-      if (!r.ok || (data.status && data.status !== 'ok') || data.error) failed++;
-    } catch (_) { failed++; }
+      if (!r.ok || (data.status && data.status !== 'ok') || data.error) failedRecs.push(rec);
+    } catch (_) { failedRecs.push(rec); }
   }));
-  if (failed) sbar(t('delErr') + ' (' + failed + ')', true);
+  if (failedRecs.length) {
+    recAllItems = [...recAllItems, ...failedRecs].sort((a, b) =>
+      ((b.date||'') + 'T' + (b.time||'')).localeCompare((a.date||'') + 'T' + (a.time||'')));
+    renderRec();
+    sbar(t('delErr') + ' (' + failedRecs.length + ')', true);
+  }
 }
 
 /* ─────────────────────────── Banner / Status ─────────────────── */
