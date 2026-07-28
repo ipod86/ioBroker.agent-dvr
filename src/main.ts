@@ -1500,20 +1500,20 @@ class AgentDvr extends utils.Adapter {
 				} = stats;
 				// CPU
 				if (cpup !== undefined) {
-					await this.writeLeaf('system.cpu.percent', cpup, '%');
+					await this.writeLeaf('system.hardware.cpu.percent', cpup, '%');
 				}
 				if (cpu_used !== undefined) {
-					await this.writeLeaf('system.cpu.used', toStr(cpu_used));
+					await this.writeLeaf('system.hardware.cpu.used', toStr(cpu_used));
 				}
 				// RAM
 				if (ramp !== undefined) {
-					await this.writeLeaf('system.ram.percent', ramp, '%');
+					await this.writeLeaf('system.hardware.ram.percent', ramp, '%');
 				}
 				if (ramu !== undefined) {
-					await this.writeLeaf('system.ram.used', toStr(ramu));
+					await this.writeLeaf('system.hardware.ram.used', toStr(ramu));
 				}
 				if (ram_free !== undefined) {
-					await this.writeLeaf('system.ram.free', toStr(ram_free));
+					await this.writeLeaf('system.hardware.ram.free', toStr(ram_free));
 				}
 				// remaining unknown fields
 				if (Object.keys(statsRest).length) {
@@ -1523,7 +1523,7 @@ class AgentDvr extends utils.Adapter {
 						0,
 					);
 				}
-				// clean up old states from previous layout
+				// clean up old states from previous layouts
 				for (const old of [
 					'cpup',
 					'ramp',
@@ -1541,9 +1541,15 @@ class AgentDvr extends utils.Adapter {
 						/* already gone */
 					});
 				}
+				// clean up old top-level folders from previous layout
+				for (const old of ['system.cpu', 'system.ram', 'system.drives', 'system.disk_free_gb']) {
+					await this.delObjectAsync(old, { recursive: true }).catch(() => {
+						/* already gone */
+					});
+				}
 				const gb = parseSizeGb(stats.disk_free);
 				if (gb !== null) {
-					await this.writeLeaf('system.disk_free_gb', gb);
+					await this.writeLeaf('system.hardware.disk_free_gb', gb);
 				}
 				if (Array.isArray(stats.disks)) {
 					const activeKeys = new Set<string>();
@@ -1553,17 +1559,17 @@ class AgentDvr extends utils.Adapter {
 						}
 						const key = sanitize(toStr(drv.n).replace(/^\//, '') || 'root') || 'root';
 						activeKeys.add(key);
-						await this.writeLeaf(`system.drives.${key}.name`, toStr(drv.n));
-						await this.writeLeaf(`system.drives.${key}.free`, toStr(drv.d));
-						await this.writeLeaf(`system.drives.${key}.used`, toStr(drv.u));
+						await this.writeLeaf(`system.hardware.drives.${key}.name`, toStr(drv.n));
+						await this.writeLeaf(`system.hardware.drives.${key}.free`, toStr(drv.d));
+						await this.writeLeaf(`system.hardware.drives.${key}.used`, toStr(drv.u));
 						await this.writeLeaf(
-							`system.drives.${key}.percent`,
+							`system.hardware.drives.${key}.percent`,
 							typeof drv.p === 'number' ? drv.p : 0,
 							'%',
 						);
 						const fgb = parseSizeGb(drv.d);
 						if (fgb !== null) {
-							await this.writeLeaf(`system.drives.${key}.free_gb`, fgb);
+							await this.writeLeaf(`system.hardware.drives.${key}.free_gb`, fgb);
 						}
 					}
 					// prune drives no longer reported by the API

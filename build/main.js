@@ -1218,24 +1218,38 @@ class AgentDvr extends utils.Adapter {
       await this.pruneStaleDevices(activeFolders);
       const stats = asJson((await this.apiGet("/command/getSystemStats")).data);
       if (stats) {
-        const { disks: _disks, cpup, ramp, ramu, cpu_used, ram_free, disk_free: _disk_free, diskp, ...statsRest } = stats;
+        const {
+          disks: _disks,
+          cpup,
+          ramp,
+          ramu,
+          cpu_used,
+          ram_free,
+          disk_free: _disk_free,
+          diskp,
+          ...statsRest
+        } = stats;
         if (cpup !== void 0) {
-          await this.writeLeaf("system.cpu.percent", cpup, "%");
+          await this.writeLeaf("system.hardware.cpu.percent", cpup, "%");
         }
         if (cpu_used !== void 0) {
-          await this.writeLeaf("system.cpu.used", toStr(cpu_used));
+          await this.writeLeaf("system.hardware.cpu.used", toStr(cpu_used));
         }
         if (ramp !== void 0) {
-          await this.writeLeaf("system.ram.percent", ramp, "%");
+          await this.writeLeaf("system.hardware.ram.percent", ramp, "%");
         }
         if (ramu !== void 0) {
-          await this.writeLeaf("system.ram.used", toStr(ramu));
+          await this.writeLeaf("system.hardware.ram.used", toStr(ramu));
         }
         if (ram_free !== void 0) {
-          await this.writeLeaf("system.ram.free", toStr(ram_free));
+          await this.writeLeaf("system.hardware.ram.free", toStr(ram_free));
         }
         if (Object.keys(statsRest).length) {
-          await this.flattenWrite({ ...statsRest, ...diskp !== void 0 && { disk_percent: diskp } }, "system.stats", 0);
+          await this.flattenWrite(
+            { ...statsRest, ...diskp !== void 0 && { disk_percent: diskp } },
+            "system.stats",
+            0
+          );
         }
         for (const old of [
           "cpup",
@@ -1253,9 +1267,13 @@ class AgentDvr extends utils.Adapter {
           await this.delObjectAsync(`system.stats.${old}`).catch(() => {
           });
         }
+        for (const old of ["system.cpu", "system.ram", "system.drives", "system.disk_free_gb"]) {
+          await this.delObjectAsync(old, { recursive: true }).catch(() => {
+          });
+        }
         const gb = parseSizeGb(stats.disk_free);
         if (gb !== null) {
-          await this.writeLeaf("system.disk_free_gb", gb);
+          await this.writeLeaf("system.hardware.disk_free_gb", gb);
         }
         if (Array.isArray(stats.disks)) {
           const activeKeys = /* @__PURE__ */ new Set();
@@ -1265,17 +1283,17 @@ class AgentDvr extends utils.Adapter {
             }
             const key = sanitize(toStr(drv.n).replace(/^\//, "") || "root") || "root";
             activeKeys.add(key);
-            await this.writeLeaf(`system.drives.${key}.name`, toStr(drv.n));
-            await this.writeLeaf(`system.drives.${key}.free`, toStr(drv.d));
-            await this.writeLeaf(`system.drives.${key}.used`, toStr(drv.u));
+            await this.writeLeaf(`system.hardware.drives.${key}.name`, toStr(drv.n));
+            await this.writeLeaf(`system.hardware.drives.${key}.free`, toStr(drv.d));
+            await this.writeLeaf(`system.hardware.drives.${key}.used`, toStr(drv.u));
             await this.writeLeaf(
-              `system.drives.${key}.percent`,
+              `system.hardware.drives.${key}.percent`,
               typeof drv.p === "number" ? drv.p : 0,
               "%"
             );
             const fgb = parseSizeGb(drv.d);
             if (fgb !== null) {
-              await this.writeLeaf(`system.drives.${key}.free_gb`, fgb);
+              await this.writeLeaf(`system.hardware.drives.${key}.free_gb`, fgb);
             }
           }
           const allObjs = await this.getAdapterObjectsAsync();
