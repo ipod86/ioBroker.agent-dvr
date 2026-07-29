@@ -8808,15 +8808,18 @@ function sbarLive() {
   const _cpu = parseFloat(_sysStats.cpu_used);
   if (!isNaN(_cpu))                               extras.push('CPU ' + Math.round(_cpu) + '%');
   if (_sysStats.ram_free && _sysStats.ram_free !== '-') {
-    const ramPct = typeof _sysStats.ramp === 'number' ? _sysStats.ramp + '% · ' : '';
+    const ramPct = typeof _sysStats.ramp === 'number' ? _sysStats.ramp + '% - ' : '';
     extras.push('RAM ' + ramPct + _sysStats.ram_free + ' ' + t('diskFree'));
   }
   if (Array.isArray(_sysStats.disks) && _sysStats.disks.length) {
     _sysStats.disks.forEach(d => {
-      if (d && typeof d.p === 'number') extras.push((d.n === '/' ? '/ Root' : d.n || 'Disk') + ' ' + d.p + '%');
+      if (!d || typeof d.p !== 'number') return;
+      const label = d.n === '/' ? '/ Root' : d.n || 'Disk';
+      const free  = d.d && d.d !== '-' ? ' - ' + d.d + ' ' + t('diskFree') : '';
+      extras.push(label + ' ' + d.p + '%' + free);
     });
   } else if (_sysStats.disk_free && _sysStats.disk_free !== '-') {
-    extras.push('Disk ' + _sysStats.disk_free + ' ' + t('diskFree'));
+    extras.push('Disk ' + (_sysStats.diskp != null ? _sysStats.diskp + '% - ' : '') + _sysStats.disk_free + ' ' + t('diskFree'));
   }
   sbar(extras.length ? base + ' · ' + extras.join(' · ') : base);
 }
