@@ -9511,6 +9511,11 @@ async function loadAndFilterRec(silent = false) {
     const maxRec = CFG.dashMaxRec || 200;
     recAllItems = maxRec > 0 ? merged.slice(0, maxRec) : merged;
 
+    // Split comma-separated tags into individual arrays for filtering
+    recAllItems.forEach(r => {
+      r._tags = (r.tag || '').split(',').map(s => s.trim()).filter(Boolean);
+    });
+
     if (!recAllItems.length) {
       grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';
       _recPrevNewest = '';
@@ -9521,8 +9526,8 @@ async function loadAndFilterRec(silent = false) {
     const hasNew = silent && newest !== _recPrevNewest && _recPrevNewest !== '';
     _recPrevNewest = newest;
 
-    // Build tag chips
-    const tags = [...new Set(recAllItems.map(r => r.tag).filter(Boolean))];
+    // Build tag chips from individual split tags
+    const tags = [...new Set(recAllItems.flatMap(r => r._tags))];
     const tagBar = document.getElementById('rec-tags');
     const toggle = document.getElementById('rec-tag-toggle');
     recFilters.tag = '';
@@ -9581,7 +9586,7 @@ function renderRec() {
   const grid  = document.getElementById('rec-grid');
 
   const items = recAllItems.filter(r => {
-    if (tag && r.tag !== tag) return false;
+    if (tag && !(r._tags || []).includes(tag)) return false;
     if (q) {
       const hay = ((r.date||'') + ' ' + (r.time||'') + ' ' + (r.tag||'') + ' ' + (r._cam?.name||'')).toLowerCase();
       if (!hay.includes(q)) return false;
@@ -9629,9 +9634,9 @@ function renderRec() {
       <polygon points="16,12 30,20 16,28" fill="#fff"/>
     </svg>`;
     const badges = document.createElement('div'); badges.className = 'rec-badges';
-    if (rec.tag) {
-      const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = rec.tag; badges.appendChild(b);
-    }
+    (rec._tags || []).forEach(tg => {
+      const b = document.createElement('span'); b.className = 'badge tag'; b.textContent = tg; badges.appendChild(b);
+    });
     wrap.append(img, play, badges);
     if (multiCam && rec._camKey) {
       const badgesL = document.createElement('div'); badgesL.className = 'rec-badges-l';
@@ -9745,7 +9750,7 @@ function renderEventLog(items) {
     const parts = [];
     if (rec.dur)  parts.push(fmtDur(rec.dur));
     if (rec.size) parts.push(rec.size + ' MB');
-    if (rec.tag)  parts.push(rec.tag);
+    if (rec._tags && rec._tags.length) parts.push(rec._tags.join(', '));
     meta.textContent = parts.join(' · ');
     info.append(top, meta);
     row.append(dot, info);
@@ -9830,13 +9835,13 @@ function renderTimeline(items, multiCam) {
       if (multiCam && rec._camKey) {
         block.style.backgroundColor = camColor(rec._camKey);
         block.dataset.cam = rec._camKey;
-      } else if (rec.tag) {
-        block.dataset.tag = rec.tag;
+      } else if (rec._tags && rec._tags[0]) {
+        block.dataset.tag = rec._tags[0];
       }
       block.title = (rec._cam?.name ? rec._cam.name + '  ·  ' : '') + rec.time
         + (rec.dur  ? '  ·  ' + fmtDur(rec.dur)  : '')
         + (rec.size ? '  ·  ' + rec.size + ' MB' : '')
-        + (rec.tag  ? '  ·  ' + rec.tag          : '');
+        + (rec._tags && rec._tags.length ? '  ·  ' + rec._tags.join(', ') : '');
       block.addEventListener('click', () => playRec(rec, rec._cam, globalIdx));
       bar.appendChild(block);
     });
@@ -9873,7 +9878,7 @@ function playRec(rec, cam, idx) {
   document.getElementById('vid-title').textContent = rec.date + ' ' + rec.time;
   document.getElementById('vid-cam').textContent   = cam ? cam.name : '';
   document.getElementById('vid-meta-txt').textContent =
-    [rec.size ? rec.size + ' MB' : '', rec.dur ? fmtDur(rec.dur) : '', rec.tag || ''].filter(Boolean).join(' · ');
+    [rec.size ? rec.size + ' MB' : '', rec.dur ? fmtDur(rec.dur) : '', rec._tags && rec._tags.length ? rec._tags.join(', ') : ''].filter(Boolean).join(' · ');
   document.getElementById('vid-dl').href = src;
   updateNavBtns();
   document.getElementById('vid-panel').classList.add('open');
