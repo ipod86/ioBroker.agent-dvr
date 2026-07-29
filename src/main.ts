@@ -32,7 +32,16 @@ interface Device {
 	raw: Record<string, unknown>;
 }
 
-type RegistryKind = 'cam' | 'sys' | 'ptz' | 'ptzHold' | 'push' | 'setProfile' | 'snapshotB64' | 'levelCmd';
+type RegistryKind =
+	| 'cam'
+	| 'sys'
+	| 'ptz'
+	| 'ptzHold'
+	| 'push'
+	| 'setProfile'
+	| 'snapshotB64'
+	| 'levelCmd'
+	| 'ptzPreset';
 
 interface RegistryEntry {
 	kind: RegistryKind;
@@ -971,6 +980,7 @@ class AgentDvr extends utils.Adapter {
 					await this.ensureButton(cid, `PTZ ${p.id}`, { kind: 'ptz', oid: d.oid, dir: p.dir });
 				}
 			}
+			await this.buildPtzPresets(d, fid);
 		}
 
 		if (d.ot === 2) {
@@ -1040,6 +1050,69 @@ class AgentDvr extends utils.Adapter {
 		}
 
 		await this.updateCameraEvents(d, fid);
+	}
+
+	// ---- PTZ presets ----
+
+	private async buildPtzPresets(d: Device, fid: string): Promise<void> {
+		const base = `${fid}.control.ptz.preset`;
+		const gotoId = `${base}.goto`;
+		const activeId = `${base}.active`;
+		const listId = `${base}.list`;
+
+		// Always re-register the command handler (registry is rebuilt each poll)
+		this.registry.set(gotoId, { kind: 'ptzPreset', oid: d.oid, ot: d.ot });
+
+		if (this.ensuredFolders.has(base)) {
+			return; // objects already created, presets already fetched this run
+		}
+
+		await this.ensureFolder(base, 'Presets', 'channel');
+
+		await this.ensurePath(gotoId);
+		await this.setObjectNotExistsAsync(gotoId, {
+			type: 'state',
+			common: { name: 'Go to preset', type: 'string', role: 'text', read: true, write: true, def: '' },
+			native: {},
+		});
+		await this.setStateAsync(gotoId, { val: '', ack: true });
+		this.ensuredFolders.add(gotoId);
+
+		await this.ensurePath(activeId);
+		await this.setObjectNotExistsAsync(activeId, {
+			type: 'state',
+			common: { name: 'Active preset', type: 'string', role: 'text', read: true, write: false, def: '' },
+			native: {},
+		});
+		await this.setStateAsync(activeId, { val: '', ack: true });
+		this.ensuredFolders.add(activeId);
+
+		await this.ensurePath(listId);
+		await this.setObjectNotExistsAsync(listId, {
+			type: 'state',
+			common: { name: 'Preset list (JSON)', type: 'string', role: 'json', read: true, write: false, def: '[]' },
+			native: {},
+		});
+		await this.setStateAsync(listId, { val: '[]', ack: true });
+		this.ensuredFolders.add(listId);
+
+		// Fetch available presets from AgentDVR
+		const res = await this.apiGet(`/command/ptzpresets?oid=${d.oid}&ot=2`);
+		const json = asJson(res.data);
+		if (json) {
+			const raw = Array.isArray(json.presets) ? (json.presets as Record<string, unknown>[]) : [];
+			const names = raw.map(p => toStr(p.name ?? p.token ?? '')).filter(Boolean);
+			await this.setStateAsync(listId, { val: JSON.stringify(names), ack: true });
+			if (names.length) {
+				const states: Record<string, string> = {};
+				names.forEach(n => {
+					states[n] = n;
+				});
+				await this.extendObjectAsync(gotoId, { common: { states } });
+			}
+			const active = typeof json.active === 'string' ? json.active : '';
+			await this.setStateAsync(activeId, { val: active, ack: true });
+		}
 	}
 
 	// ---- event formatting ----
@@ -1747,6 +1820,23 @@ class AgentDvr extends utils.Adapter {
 			const snapId = `${entry.fid}.snapshot_b64`;
 			await this.fetchSnapshotB64(entry.oid!, snapId);
 			await this.setStateAsync(relId, { val: false, ack: true });
+			return;
+		}
+
+		if (entry.kind === 'ptzPreset') {
+			const name = typeof val === 'string' ? val.trim() : '';
+			if (!name) {
+				return;
+			}
+			const url = `/command/ptzpreset?oid=${encodeURIComponent(String(entry.oid))}&ot=2&preset=${encodeURIComponent(name)}`;
+			const cmdRes = await this.apiGet(url);
+			if (cmdRes.ok) {
+				this.log.debug(`PTZ preset: ${name}`);
+				await this.setStateAsync(relId, { val: name, ack: true });
+				await this.setStateAsync(relId.replace(/\.goto$/, '.active'), { val: name, ack: true });
+			} else {
+				this.log.warn(`PTZ preset failed (${url}): ${cmdRes.error}`);
+			}
 			return;
 		}
 

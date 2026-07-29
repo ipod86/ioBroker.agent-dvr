@@ -813,6 +813,7 @@ class AgentDvr extends utils.Adapter {
           await this.ensureButton(cid, `PTZ ${p.id}`, { kind: "ptz", oid: d.oid, dir: p.dir });
         }
       }
+      await this.buildPtzPresets(d, fid);
     }
     if (d.ot === 2) {
       const sfx = { kind: "levelCmd", path: "/command/setSensitivity", oid: d.oid, ot: d.ot };
@@ -878,6 +879,61 @@ class AgentDvr extends utils.Adapter {
       }
     }
     await this.updateCameraEvents(d, fid);
+  }
+  // ---- PTZ presets ----
+  async buildPtzPresets(d, fid) {
+    const base = `${fid}.control.ptz.preset`;
+    const gotoId = `${base}.goto`;
+    const activeId = `${base}.active`;
+    const listId = `${base}.list`;
+    this.registry.set(gotoId, { kind: "ptzPreset", oid: d.oid, ot: d.ot });
+    if (this.ensuredFolders.has(base)) {
+      return;
+    }
+    await this.ensureFolder(base, "Presets", "channel");
+    await this.ensurePath(gotoId);
+    await this.setObjectNotExistsAsync(gotoId, {
+      type: "state",
+      common: { name: "Go to preset", type: "string", role: "text", read: true, write: true, def: "" },
+      native: {}
+    });
+    await this.setStateAsync(gotoId, { val: "", ack: true });
+    this.ensuredFolders.add(gotoId);
+    await this.ensurePath(activeId);
+    await this.setObjectNotExistsAsync(activeId, {
+      type: "state",
+      common: { name: "Active preset", type: "string", role: "text", read: true, write: false, def: "" },
+      native: {}
+    });
+    await this.setStateAsync(activeId, { val: "", ack: true });
+    this.ensuredFolders.add(activeId);
+    await this.ensurePath(listId);
+    await this.setObjectNotExistsAsync(listId, {
+      type: "state",
+      common: { name: "Preset list (JSON)", type: "string", role: "json", read: true, write: false, def: "[]" },
+      native: {}
+    });
+    await this.setStateAsync(listId, { val: "[]", ack: true });
+    this.ensuredFolders.add(listId);
+    const res = await this.apiGet(`/command/ptzpresets?oid=${d.oid}&ot=2`);
+    const json = asJson(res.data);
+    if (json) {
+      const raw = Array.isArray(json.presets) ? json.presets : [];
+      const names = raw.map((p) => {
+        var _a, _b;
+        return toStr((_b = (_a = p.name) != null ? _a : p.token) != null ? _b : "");
+      }).filter(Boolean);
+      await this.setStateAsync(listId, { val: JSON.stringify(names), ack: true });
+      if (names.length) {
+        const states = {};
+        names.forEach((n) => {
+          states[n] = n;
+        });
+        await this.extendObjectAsync(gotoId, { common: { states } });
+      }
+      const active = typeof json.active === "string" ? json.active : "";
+      await this.setStateAsync(activeId, { val: active, ack: true });
+    }
   }
   // ---- event formatting ----
   fmtEvent(ev, oid) {
@@ -1282,7 +1338,10 @@ class AgentDvr extends utils.Adapter {
             }
             const key = sanitize(toStr(drv.n).replace(/^\//, "") || "root") || "root";
             activeKeys.add(key);
-            await this.writeLeaf(`system.hardware.drives.${key}.name`, toStr(drv.n) === "/" ? "/ Root" : toStr(drv.n));
+            await this.writeLeaf(
+              `system.hardware.drives.${key}.name`,
+              toStr(drv.n) === "/" ? "/ Root" : toStr(drv.n)
+            );
             await this.writeLeaf(`system.hardware.drives.${key}.free`, toStr(drv.d));
             await this.writeLeaf(`system.hardware.drives.${key}.used`, toStr(drv.u));
             await this.writeLeaf(
@@ -1451,6 +1510,22 @@ class AgentDvr extends utils.Adapter {
       const snapId = `${entry.fid}.snapshot_b64`;
       await this.fetchSnapshotB64(entry.oid, snapId);
       await this.setStateAsync(relId, { val: false, ack: true });
+      return;
+    }
+    if (entry.kind === "ptzPreset") {
+      const name = typeof val === "string" ? val.trim() : "";
+      if (!name) {
+        return;
+      }
+      const url2 = `/command/ptzpreset?oid=${encodeURIComponent(String(entry.oid))}&ot=2&preset=${encodeURIComponent(name)}`;
+      const cmdRes2 = await this.apiGet(url2);
+      if (cmdRes2.ok) {
+        this.log.debug(`PTZ preset: ${name}`);
+        await this.setStateAsync(relId, { val: name, ack: true });
+        await this.setStateAsync(relId.replace(/\.goto$/, ".active"), { val: name, ack: true });
+      } else {
+        this.log.warn(`PTZ preset failed (${url2}): ${cmdRes2.error}`);
+      }
       return;
     }
     if (entry.kind === "ptzHold") {
