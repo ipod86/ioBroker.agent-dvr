@@ -40,6 +40,7 @@ declare global {
             widgetColorModalBg: string;
             widgetBorderRadius: number;
             // Dashboard
+            dashMaxRec: number;
             dashDefaultView: 'live' | 'recordings';
             dashShowOffline: boolean;
             dashGridCols: number;

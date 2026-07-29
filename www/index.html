@@ -9502,12 +9502,14 @@ async function loadAndFilterRec(silent = false) {
       }));
     }));
 
-    // Merge and sort newest first
-    recAllItems = results.flat().sort((a, b) => {
+    // Merge, sort newest first, cap to dashMaxRec total
+    const merged = results.flat().sort((a, b) => {
       const da = (a.date || '') + 'T' + (a.time || '');
       const db = (b.date || '') + 'T' + (b.time || '');
       return db.localeCompare(da);
     });
+    const maxRec = CFG.dashMaxRec || 200;
+    recAllItems = maxRec > 0 ? merged.slice(0, maxRec) : merged;
 
     if (!recAllItems.length) {
       grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';

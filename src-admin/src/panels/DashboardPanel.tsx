@@ -253,6 +253,23 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 						onChange={v => onChange('dashEnableRecordings', v)}
 					/>
 				</Grid>
+				<Grid
+					item
+					xs={12}
+					sm={6}
+					md={4}
+					lg={3}
+				>
+					<FormField
+						type="number"
+						labelKey="cfgDashMaxRec"
+						helpKey="cfgDashMaxRec_tt"
+						value={native.dashMaxRec ?? 200}
+						min={10}
+						max={5000}
+						onChange={v => onChange('dashMaxRec', v)}
+					/>
+				</Grid>
 			</Grid>
 
 			<SectionHeader textKey="hdrDashGrid" />

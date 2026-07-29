@@ -1065,7 +1065,7 @@ class AgentDvr extends utils.Adapter {
   }
   // ---- event data points ----
   async writeEventDps(d, fid, events) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     const oid = d.oid;
     await this.ensureFolder(`${fid}.events`, "Events", "channel");
     await this.ensureFolder(`${fid}.events.last`, "Last event", "channel");
@@ -1098,7 +1098,7 @@ class AgentDvr extends utils.Adapter {
     }
     await this.setStateAsync(jsonId, {
       val: JSON.stringify(
-        events.slice(0, Math.max(1, this.config.widgetAnzahl || 50)).map((ev) => {
+        events.slice(0, Math.max(1, (_b = this.config.dashMaxRec) != null ? _b : 200)).map((ev) => {
           const p = this.fmtEvent(ev, oid);
           return {
             fn: p.fn,
@@ -1123,7 +1123,7 @@ class AgentDvr extends utils.Adapter {
     if (this.config.eventTagsDynamic) {
       const seen = /* @__PURE__ */ new Set();
       for (const ev of events) {
-        tokensOf((_b = ev.tg) != null ? _b : "").forEach((t) => seen.add(t));
+        tokensOf((_c = ev.tg) != null ? _c : "").forEach((t) => seen.add(t));
       }
       for (const t of seen) {
         if (ignore.includes(t)) {
@@ -1139,13 +1139,13 @@ class AgentDvr extends utils.Adapter {
         const i = events.findIndex((e) => e.fn === prev);
         newCount = i === -1 ? events.length : i;
       }
-      this.lastEventFn[oid] = (_c = events[0].fn) != null ? _c : "";
+      this.lastEventFn[oid] = (_d = events[0].fn) != null ? _d : "";
     }
     if (newCount > 0) {
       await this.pulse(`${fid}.events.new`);
       const tags = /* @__PURE__ */ new Set();
       for (let i = 0; i < newCount && i < events.length; i++) {
-        tokensOf((_d = events[i].tg) != null ? _d : "").forEach((t) => tags.add(t));
+        tokensOf((_e = events[i].tg) != null ? _e : "").forEach((t) => tags.add(t));
       }
       for (const t of tags) {
         if (ignore.includes(t)) {

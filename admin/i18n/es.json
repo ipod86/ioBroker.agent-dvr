@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "Qué pestaña está activa cuando se abre el panel",
   "cfgDashEnableRecordings": "Mostrar pestaña de grabaciones",
   "cfgDashEnableRecordings_tt": "Muestra la pestaña de grabaciones en la navegación del panel. Desactivar para ocultar la pestaña por completo.",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "Número de columnas (0 = automático)",
   "cfgDashGridCols_tt": "Forzar un número fijo de columnas de cámara. 0 = el número óptimo se calcula automáticamente.",
   "cfgDashRefreshSec": "Recargar lista de cámaras cada (segundos)",

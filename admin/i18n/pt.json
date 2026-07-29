@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "Qual aba está ativa quando o painel é aberto",
   "cfgDashEnableRecordings": "Mostrar aba de gravações",
   "cfgDashEnableRecordings_tt": "Mostra a aba de gravações na navegação do painel. Desativar para ocultar a aba completamente.",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "Número de colunas (0 = automático)",
   "cfgDashGridCols_tt": "Força um número fixo de colunas de câmeras. 0 = o número ideal é calculado automaticamente.",
   "cfgDashRefreshSec": "Recarregar lista de câmeras a cada (segundos)",

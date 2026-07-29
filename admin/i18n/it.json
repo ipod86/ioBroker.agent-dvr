@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "Quale scheda è attiva quando si apre il pannello",
   "cfgDashEnableRecordings": "Mostra scheda registrazioni",
   "cfgDashEnableRecordings_tt": "Mostra la scheda registrazioni nella navigazione del pannello. Disattivare per nascondere completamente la scheda.",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "Numero colonne (0 = automatico)",
   "cfgDashGridCols_tt": "Forza un numero fisso di colonne per le telecamere. 0 = il numero ottimale viene calcolato automaticamente.",
   "cfgDashRefreshSec": "Ricarica lista telecamere ogni (secondi)",

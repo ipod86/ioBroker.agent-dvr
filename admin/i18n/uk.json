@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "Яка вкладка активна при відкритті панелі",
   "cfgDashEnableRecordings": "Показувати вкладку записів",
   "cfgDashEnableRecordings_tt": "Відображає вкладку записів у навігації панелі. Вимкніть щоб повністю приховати вкладку.",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "Кількість стовпців (0 = авто)",
   "cfgDashGridCols_tt": "Примусово задати фіксовану кількість стовпців камер. 0 = оптимальна кількість обчислюється автоматично.",
   "cfgDashRefreshSec": "Оновлювати список камер кожні (секунд)",

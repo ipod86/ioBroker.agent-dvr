@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "打开仪表板时哪个选项卡处于活动状态",
   "cfgDashEnableRecordings": "显示录像标签页",
   "cfgDashEnableRecordings_tt": "在仪表板导航中显示录像标签页。禁用则完全隐藏该标签页。",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "列数（0 = 自动）",
   "cfgDashGridCols_tt": "强制设置固定的摄像头列数。0 = 自动计算最优数量。",
   "cfgDashRefreshSec": "每隔（秒）重新加载摄像头列表",

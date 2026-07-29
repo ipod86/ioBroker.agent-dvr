@@ -21,6 +21,8 @@
   "cfgDashDefaultView_tt": "Welk tabblad actief is bij het openen van het dashboard",
   "cfgDashEnableRecordings": "Opnamen-tabblad tonen",
   "cfgDashEnableRecordings_tt": "Toont het opnamen-tabblad in de dashboardnavigatie. Uitschakelen om het tabblad volledig te verbergen.",
+  "cfgDashMaxRec": "Max. recordings total",
+  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
   "cfgDashGridCols": "Aantal kolommen (0 = automatisch)",
   "cfgDashGridCols_tt": "Forceer een vast aantal camerakolommen. 0 = optimaal aantal wordt automatisch berekend.",
   "cfgDashRefreshSec": "Cameralijst elke (seconden) herladen",

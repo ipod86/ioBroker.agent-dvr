@@ -208,6 +208,7 @@
     "widgetDefaultTag": "",
     "widgetThumbSize": "medium",
     "widgetCompact": false,
+    "dashMaxRec": 200,
     "dashDefaultView": "live",
     "dashEnableRecordings": true,
     "dashShowOffline": true,

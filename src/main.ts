@@ -1351,7 +1351,7 @@ class AgentDvr extends utils.Adapter {
 		}
 		await this.setStateAsync(jsonId, {
 			val: JSON.stringify(
-				events.slice(0, Math.max(1, this.config.widgetAnzahl || 50)).map(ev => {
+				events.slice(0, Math.max(1, this.config.dashMaxRec ?? 200)).map(ev => {
 					const p = this.fmtEvent(ev, oid);
 					return {
 						fn: p.fn,
