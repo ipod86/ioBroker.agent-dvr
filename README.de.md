@@ -96,6 +96,7 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 |-------------|-------------|---------|
 | Standardansicht | Welcher Tab beim Öffnen des Dashboards aktiv ist: Live oder Aufnahmen | `Live` |
 | Offline-Kameras anzeigen | Kamerakacheln auch dann anzeigen, wenn die Kamera offline ist | `ja` |
+| Max. Aufnahmen gesamt | Maximale Gesamtanzahl Aufnahmen, die das Dashboard über alle Kameras hinweg anzeigt (neueste zuerst). Unabhängig vom Widget-Limit. | `200` |
 
 **Kameraraster**
 
@@ -217,10 +218,11 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 - Echtzeit-Bewegungs- (gelber Rahmen) und Alarm-Indikatoren (oranger Rahmen) via Socket.io
 - Automatischer Reconnect: MJPEG und FLV bei Fehler; go2rtc bei unerwartetem WebSocket-Close oder 10 s ohne Bild
 - Aufnahmen-Tab mit Raster-, Timeline- und Ereignisprotokoll-Ansicht, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
-- Aufnahme löschen direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+- Tag-Filter splittet AgentDVRs kommagetrennte Tags in einzelne Chips — jeder Tag einzeln filterbar
+- Aufnahme löschen aus dem Video-Player-Modal oder per Mehrfachauswahl (Langer Druck → Checkbox-Modus, Sammel-Löschen, ab AgentDVR v7.7.8.0+)
 - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
-- PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
-- Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
+- PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; ein Selektor-Datenpunkt pro Kamera (ab AgentDVR v7.7.8.0+)
+- Statuszeile zeigt Kameraanzahl, CPU-/RAM-Auslastung und freien Festplattenspeicher
 - Farbdesign über die Adapter-Konfiguration einstellbar
 
 ### go2rtc WebRTC-Streams
@@ -353,6 +355,7 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 | `<cam>.control.ptz.zoomOut` | Schalter | R/W | Herauszoomen |
 | `<cam>.control.ptz.stop` | Taste | W | PTZ-Bewegung stoppen |
 | `<cam>.control.ptz.center` | Taste | W | Mitte-/Ausgangsposition anfahren |
+| `<cam>.control.ptz.preset` | Zahl | R/W | Preset-Selektor — Index schreiben um die Position anzufahren; States-Enum enthält die Preset-Namen (ab AgentDVR v7.7.8.0+) |
 
 ### Stream-URLs *(erfordert „Stream-URLs generieren")*
 
@@ -399,13 +402,18 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 ### **WORK IN PROGRESS**
 * (ipod86) feat: Webhook-Endpunkt `/agent-dvr/webhook` löst sofortigen vollständigen Poll aus — als AgentDVR-Action konfigurierbar für Echtzeit-Updates
 * (ipod86) refactor: pro-Kamera pushTrigger-Datenpunkte durch globalen Webhook ersetzt
-* (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
+* (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; Selektor-Datenpunkt `<cam>.control.ptz.preset` pro Kamera (ab AgentDVR v7.7.8.0+)
 * (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
 * (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)
+* (ipod86) feat: Mehrfachauswahl im Aufnahmen-Bereich — langer Druck aktiviert Checkbox-Modus, Sammel-Löschen und „Alle auswählen"-Schaltfläche
+* (ipod86) feat: neue Einstellung `dashMaxRec` — begrenzt die Gesamtanzahl Aufnahmen im Dashboard über alle Kameras (unabhängig vom Widget-Limit, Standard 200)
+* (ipod86) feat: Tag-Filter splittet kommagetrennte Tags in einzelne Chips für kameraübergreifende Filterung pro Tag
 * (ipod86) feat: Kamerafarbe aus AgentDVR lesen und für Timeline-Balken und Aufnahme-Punkte verwenden
-* (ipod86) feat: Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
+* (ipod86) feat: Statuszeile zeigt CPU-Auslastung, RAM-% und freien Speicher sowie freien Festplattenspeicher
 * (ipod86) feat: Videofehler-Hinweis um AgentDVR-Auto-Konvertierungs-Hinweis in allen 11 Sprachen erweitert
+* (ipod86) fix: gelöschte Aufnahmen erscheinen nach dem nächsten Adapter-Poll nicht mehr erneut (events.json wird sofort aktualisiert)
 * (ipod86) fix: Statuszeile im Live-Bereich wird nicht mehr überschrieben, wenn Aufnahmen im Hintergrund geladen werden
+* (ipod86) fix: FLV-Stream- und Raster-Kachel-Skalierung korrigiert
 * (ipod86) fix: Apostroph im italienischen i18n-String hat die gesamte Seiten-JS gebrochen
 * (ipod86) fix: AgentDVR-Antwort „Command not found" beim Löschen wird jetzt erkannt und als Fehler angezeigt
 * (ipod86) fix: fn-Feld fehlte im events.json-State — Dateiname beim Löschen konnte nicht aufgelöst werden

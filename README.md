@@ -101,6 +101,7 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 |---------|-------------|---------|
 | Default view | Which tab opens when the dashboard loads: Live or Recordings | `Live` |
 | Show offline cameras | Display camera tiles even when the camera is offline | `true` |
+| Max. recordings total | Maximum number of recordings shown across all cameras in the dashboard (newest first). Independent of the widget limit. | `200` |
 
 **Camera grid**
 
@@ -222,10 +223,11 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 - Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
 - Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
 - Recordings tab with grid, timeline, and event log view, search, collapsible tag filter, and video player with prev/next navigation
-- Delete recording directly from the video player modal (requires AgentDVR v7.7.8.0+)
+- Tag filter splits AgentDVR's comma-separated tags into individual chips for per-tag filtering
+- Delete recording from the video player modal or select multiple with a long-press and bulk-delete (requires AgentDVR v7.7.8.0+)
 - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
-- PTZ presets — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
-- Status bar shows camera count on the live view and recording/event count on the recordings view
+- PTZ presets — navigate to saved presets from the PTZ overlay; single selector data point per camera (requires AgentDVR v7.7.8.0+)
+- Status bar shows camera count, CPU/RAM usage and disk free space
 - Color theming via adapter config
 
 ### go2rtc WebRTC Streams
@@ -358,6 +360,7 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 | `<cam>.control.ptz.zoomOut` | switch | R/W | Zoom out |
 | `<cam>.control.ptz.stop` | button | W | Stop PTZ movement |
 | `<cam>.control.ptz.center` | button | W | Move to center/home position |
+| `<cam>.control.ptz.preset` | number | R/W | Preset selector — write index to move to that preset; states enum lists preset names (requires AgentDVR v7.7.8.0+) |
 
 ### Stream URLs *(requires "Generate stream URLs")*
 
@@ -399,13 +402,18 @@ Returns `{"ok":true}` on success.
 ### **WORK IN PROGRESS**
 * (ipod86) feat: webhook endpoint `/agent-dvr/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
 * (ipod86) refactor: remove per-camera pushTrigger data points in favour of the global webhook
-* (ipod86) feat: PTZ presets — list and navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
+* (ipod86) feat: PTZ presets — navigate to saved presets from PTZ overlay; single selector DP `<cam>.control.ptz.preset` per camera (requires AgentDVR v7.7.8.0+)
 * (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
 * (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)
+* (ipod86) feat: bulk-delete recordings — long-press a tile to enter select mode, checkbox each recording, delete all at once; includes select-all button
+* (ipod86) feat: new `dashMaxRec` config setting — limits total recordings shown across all cameras in the dashboard (independent of widget limit, default 200)
+* (ipod86) feat: tag filter splits AgentDVR's comma-separated tags into individual chips for per-tag filtering
 * (ipod86) feat: read camera color from AgentDVR and use it for timeline bars and recording dots
-* (ipod86) feat: status bar shows camera count on live view and recording/event count on recordings view
+* (ipod86) feat: status bar shows CPU usage, RAM % and free, disk usage % and free alongside camera/recording counts
 * (ipod86) feat: extend video format error message with AgentDVR auto-convert hint in all 11 languages
+* (ipod86) fix: deleted recordings no longer reappear after the next adapter poll (events.json updated immediately on delete)
 * (ipod86) fix: footer text no longer overwritten when recordings load in the background on the live view
+* (ipod86) fix: FLV stream and grid tile layout scaling corrections
 * (ipod86) fix: Italian i18n string with apostrophe broke page JS (changed to escaped variant)
 * (ipod86) fix: detect AgentDVR "Command not found" response on delete and show proper error message
 * (ipod86) fix: fn field was missing from events.json state — delete could not resolve the filename
