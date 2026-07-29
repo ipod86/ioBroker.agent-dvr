@@ -9160,9 +9160,11 @@ function updateLayout() {
   const gap = 6;
   const { cols, rows } = calcLayout(tiles, W, H, gap);
   const [arW, arH] = (CFG.dashTileAspect || '16/9').split('/').map(Number);
-  // Constrain tile size to fit both dimensions without overflow
+  // Constrain tile size to fit both dimensions without overflow.
+  // Subtract one extra gap worth of height so tiles never sit flush against
+  // the cam-grid bottom edge (which would look like touching the footer).
   const maxColW = (W - gap * (cols - 1)) / cols;
-  const maxRowH = (H - gap * (rows - 1)) / rows;
+  const maxRowH = (H - gap * rows) / rows;
   const rowByW  = maxColW * (arH || 9) / (arW || 16);
   const rowH    = Math.floor(Math.min(rowByW, maxRowH));
   const colW    = Math.floor(rowH * (arW || 16) / (arH || 9));
