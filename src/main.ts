@@ -52,6 +52,7 @@ interface RegistryEntry {
 	dir?: number;
 	fid?: string;
 	valueParam?: string;
+	presetNames?: string[];
 }
 
 // ---- Commands ----
@@ -406,6 +407,7 @@ class AgentDvr extends utils.Adapter {
 	private readonly ensuredFolders = new Set<string>();
 	private readonly registry = new Map<string, RegistryEntry>();
 	private readonly ptzActive = new Map<string | number, string>();
+	private readonly ptzPresetNames = new Map<string | number, string[]>();
 	private readonly widgetSig: Record<string, string> = {};
 	private profileSig = '';
 	private lastCamNames: { key: string; name: string }[] = [];
@@ -1055,64 +1057,33 @@ class AgentDvr extends utils.Adapter {
 	// ---- PTZ presets ----
 
 	private async buildPtzPresets(d: Device, fid: string): Promise<void> {
-		const base = `${fid}.control.ptz.preset`;
-		const gotoId = `${base}.goto`;
-		const activeId = `${base}.active`;
-		const listId = `${base}.list`;
+		const selectorId = `${fid}.control.ptz.preset`;
 
-		// Always re-register the command handler (registry is rebuilt each poll)
-		this.registry.set(gotoId, { kind: 'ptzPreset', oid: d.oid, ot: d.ot });
-
-		if (this.ensuredFolders.has(base)) {
-			return; // objects already created, presets already fetched this run
-		}
-
-		await this.ensureFolder(base, 'Presets', 'channel');
-
-		await this.ensurePath(gotoId);
-		await this.setObjectNotExistsAsync(gotoId, {
-			type: 'state',
-			common: { name: 'Go to preset', type: 'string', role: 'text', read: true, write: true, def: '' },
-			native: {},
-		});
-		await this.setStateAsync(gotoId, { val: '', ack: true });
-		this.ensuredFolders.add(gotoId);
-
-		await this.ensurePath(activeId);
-		await this.setObjectNotExistsAsync(activeId, {
-			type: 'state',
-			common: { name: 'Active preset', type: 'string', role: 'text', read: true, write: false, def: '' },
-			native: {},
-		});
-		await this.setStateAsync(activeId, { val: '', ack: true });
-		this.ensuredFolders.add(activeId);
-
-		await this.ensurePath(listId);
-		await this.setObjectNotExistsAsync(listId, {
-			type: 'state',
-			common: { name: 'Preset list (JSON)', type: 'string', role: 'json', read: true, write: false, def: '[]' },
-			native: {},
-		});
-		await this.setStateAsync(listId, { val: '[]', ack: true });
-		this.ensuredFolders.add(listId);
-
-		// Fetch available presets from AgentDVR
-		const res = await this.apiGet(`/command/ptzpresets?oid=${d.oid}&ot=2`);
-		const json = asJson(res.data);
-		if (json) {
-			const raw = Array.isArray(json.presets) ? (json.presets as Record<string, unknown>[]) : [];
+		// Fetch preset list once per adapter run per camera
+		if (!this.ptzPresetNames.has(d.oid)) {
+			const res = await this.apiGet(`/command/ptzpresets?oid=${d.oid}&ot=2`);
+			const json = asJson(res.data);
+			const raw = json && Array.isArray(json.presets) ? (json.presets as Record<string, unknown>[]) : [];
 			const names = raw.map(p => toStr(p.name ?? p.token ?? '')).filter(Boolean);
-			await this.setStateAsync(listId, { val: JSON.stringify(names), ack: true });
-			if (names.length) {
-				const states: Record<string, string> = {};
-				names.forEach(n => {
-					states[n] = n;
-				});
-				await this.extendObjectAsync(gotoId, { common: { states } });
-			}
-			const active = typeof json.active === 'string' ? json.active : '';
-			await this.setStateAsync(activeId, { val: active, ack: true });
+			this.ptzPresetNames.set(d.oid, names);
 		}
+
+		const names = this.ptzPresetNames.get(d.oid) ?? [];
+		if (!names.length) {
+			return;
+		}
+
+		const states: Record<number, string> = {};
+		names.forEach((n, i) => {
+			states[i] = n;
+		});
+
+		await this.ensureSelector(
+			selectorId,
+			'Preset',
+			{ kind: 'ptzPreset', oid: d.oid, ot: d.ot, presetNames: names },
+			states,
+		);
 	}
 
 	// ---- event formatting ----
@@ -1824,16 +1795,16 @@ class AgentDvr extends utils.Adapter {
 		}
 
 		if (entry.kind === 'ptzPreset') {
-			const name = typeof val === 'string' ? val.trim() : '';
+			const idx = typeof val === 'number' ? val : parseInt(String(val ?? ''), 10);
+			const name = isNaN(idx) ? '' : ((entry.presetNames ?? [])[idx] ?? '');
 			if (!name) {
 				return;
 			}
 			const url = `/command/ptzpreset?oid=${encodeURIComponent(String(entry.oid))}&ot=2&preset=${encodeURIComponent(name)}`;
 			const cmdRes = await this.apiGet(url);
 			if (cmdRes.ok) {
-				this.log.debug(`PTZ preset: ${name}`);
-				await this.setStateAsync(relId, { val: name, ack: true });
-				await this.setStateAsync(relId.replace(/\.goto$/, '.active'), { val: name, ack: true });
+				this.log.debug(`PTZ preset → ${name}`);
+				await this.setStateAsync(relId, { val: idx, ack: true });
 			} else {
 				this.log.warn(`PTZ preset failed (${url}): ${cmdRes.error}`);
 			}
