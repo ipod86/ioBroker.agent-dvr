@@ -1100,6 +1100,7 @@ class AgentDvr extends utils.Adapter {
 		time: string;
 		thumb: string;
 		video: string;
+		ts: number;
 	} {
 		const e = ev as AgentDvrEvent;
 		const fn = e.fn ?? '';
@@ -1109,13 +1110,14 @@ class AgentDvr extends utils.Adapter {
 		const dur = e.d != null ? String(e.d) : '';
 		const tag = e.tg ?? '';
 		const ms = (parseFloat(String(e.c ?? 0)) - 621355968000000000) / 10000;
+		const ts = Number.isFinite(ms) ? Math.round(ms) : 0;
 		const dt = new Date(ms);
 		const two = (n: number): string => String(n).padStart(2, '0');
 		const date = `${two(dt.getDate())}.${two(dt.getMonth() + 1)}.`;
 		const time = `${two(dt.getHours())}:${two(dt.getMinutes())}`;
 		const thumb = `${this.baseUrl}/fileThumb.jpg?oid=${oid}&fn=${encodeURIComponent(jpg)}`;
 		const video = `${this.baseUrl}/streamFile.cgi?oid=${oid}&ot=2&fn=${encodeURIComponent(fn)}`;
-		return { fn, sizeMB, dur, tag, date, time, thumb, video };
+		return { fn, sizeMB, dur, tag, date, time, thumb, video, ts };
 	}
 
 	// ---- gallery HTML builders ----
@@ -1362,6 +1364,7 @@ class AgentDvr extends utils.Adapter {
 						tag: p.tag,
 						thumb: p.thumb,
 						video: p.video,
+						ts: p.ts,
 					};
 				}),
 			),

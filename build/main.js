@@ -921,13 +921,14 @@ class AgentDvr extends utils.Adapter {
     const dur = e.d != null ? String(e.d) : "";
     const tag = (_b = e.tg) != null ? _b : "";
     const ms = (parseFloat(String((_c = e.c) != null ? _c : 0)) - 621355968e9) / 1e4;
+    const ts = Number.isFinite(ms) ? Math.round(ms) : 0;
     const dt = new Date(ms);
     const two = (n) => String(n).padStart(2, "0");
     const date = `${two(dt.getDate())}.${two(dt.getMonth() + 1)}.`;
     const time = `${two(dt.getHours())}:${two(dt.getMinutes())}`;
     const thumb = `${this.baseUrl}/fileThumb.jpg?oid=${oid}&fn=${encodeURIComponent(jpg)}`;
     const video = `${this.baseUrl}/streamFile.cgi?oid=${oid}&ot=2&fn=${encodeURIComponent(fn)}`;
-    return { fn, sizeMB, dur, tag, date, time, thumb, video };
+    return { fn, sizeMB, dur, tag, date, time, thumb, video, ts };
   }
   // ---- gallery HTML builders ----
   effectiveMinCol() {
@@ -1108,7 +1109,8 @@ class AgentDvr extends utils.Adapter {
             size: p.sizeMB,
             tag: p.tag,
             thumb: p.thumb,
-            video: p.video
+            video: p.video,
+            ts: p.ts
           };
         })
       ),

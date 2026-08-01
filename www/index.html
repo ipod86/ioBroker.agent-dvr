@@ -9509,11 +9509,14 @@ async function loadAndFilterRec(silent = false) {
     }));
 
     // Merge, sort newest first, cap to dashMaxRec total
-    const merged = results.flat().sort((a, b) => {
-      const da = (a.date || '') + 'T' + (a.time || '');
-      const db = (b.date || '') + 'T' + (b.time || '');
-      return db.localeCompare(da);
-    });
+    // Use ts (Unix ms) when present; fall back to ISO date from filename (YYYY-MM-DD_HH-MM-SS)
+    // DD.MM. string sort is unreliable across month boundaries
+    const recSortKey = r => {
+      if (typeof r.ts === 'number' && r.ts > 0) return r.ts;
+      const m = (r.fn || '').match(/_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
+      return m ? parseInt(m[1].replace(/-/g, '') + m[2].replace(/-/g, ''), 10) : 0;
+    };
+    const merged = results.flat().sort((a, b) => recSortKey(b) - recSortKey(a));
     const maxRec = CFG.dashMaxRec || 200;
     recAllItems = maxRec > 0 ? merged.slice(0, maxRec) : merged;
 
