@@ -9535,19 +9535,23 @@ async function loadAndFilterRec(silent = false) {
     const hasNew = silent && newest !== _recPrevNewest && _recPrevNewest !== '';
     _recPrevNewest = newest;
 
-    // Build tag chips from individual split tags
+    // Build tag chips — preserve active filter across background reloads
     const tags = [...new Set(recAllItems.flatMap(r => r._tags))];
     const tagBar = document.getElementById('rec-tags');
     const toggle = document.getElementById('rec-tag-toggle');
-    recFilters.tag = '';
+    const prevTag = recFilters.tag;
+    const restoredTag = tags.includes(prevTag) ? prevTag : '';
+    recFilters.tag = restoredTag;
     tagBar.innerHTML = '';
     if (tags.length) {
-      const all = document.createElement('span'); all.className = 'tag-chip on';
+      const all = document.createElement('span');
+      all.className = 'tag-chip' + (restoredTag === '' ? ' on' : '');
       all.textContent = t('tagAll'); all.dataset.tagAll = '1';
       all.onclick = () => { recFilters.tag = ''; setActiveTag(null); renderRec(); };
       tagBar.appendChild(all);
       tags.forEach(tg => {
-        const tc = document.createElement('span'); tc.className = 'tag-chip';
+        const tc = document.createElement('span');
+        tc.className = 'tag-chip' + (tg === restoredTag ? ' on' : '');
         tc.textContent = tg; tc.dataset.tag = tg;
         tc.onclick = () => { recFilters.tag = tg; setActiveTag(tg); renderRec(); };
         tagBar.appendChild(tc);
