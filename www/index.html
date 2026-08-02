@@ -8785,6 +8785,11 @@ let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
 let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
 let recFilters  = { tag: '' };
+const recSortKey = r => {
+  if (typeof r.ts === 'number' && r.ts > 0) return r.ts;
+  const m = (r.fn || '').match(/_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
+  return m ? parseInt(m[1].replace(/-/g, '') + m[2].replace(/-/g, ''), 10) : 0;
+};
 const CAM_COLORS = ['#3b82f6','#22c55e','#f97316','#a855f7','#ec4899','#14b8a6','#eab308','#ef4444'];
 let selectedCameras = new Set(JSON.parse(localStorage.getItem('advr_rec_cams') || '[]'));
 let recViewMode = localStorage.getItem('advr_rec_view') || 'grid';
@@ -9871,13 +9876,6 @@ async function loadAndFilterRec(silent = false) {
     }));
 
     // Merge, sort newest first, cap to dashMaxRec total
-    // Use ts (Unix ms) when present; fall back to ISO date from filename (YYYY-MM-DD_HH-MM-SS)
-    // DD.MM. string sort is unreliable across month boundaries
-    const recSortKey = r => {
-      if (typeof r.ts === 'number' && r.ts > 0) return r.ts;
-      const m = (r.fn || '').match(/_(\d{4}-\d{2}-\d{2})_(\d{2}-\d{2}-\d{2})/);
-      return m ? parseInt(m[1].replace(/-/g, '') + m[2].replace(/-/g, ''), 10) : 0;
-    };
     const merged = results.flat().sort((a, b) => recSortKey(b) - recSortKey(a));
     const maxRec = recMaxOverride !== null ? recMaxOverride : (CFG.dashMaxRec || 200);
     recAllItems = maxRec > 0 ? merged.slice(0, maxRec) : merged;
@@ -9888,8 +9886,8 @@ async function loadAndFilterRec(silent = false) {
     });
 
     // Establish baseline on first ever load so badge works without visiting recordings tab
-    if (localStorage.getItem('advr_rec_last_count') === null) {
-      localStorage.setItem('advr_rec_last_count', recAllItems.length);
+    if (localStorage.getItem('advr_rec_last_ts') === null) {
+      localStorage.setItem('advr_rec_last_ts', recAllItems.length ? recSortKey(recAllItems[0]) : 0);
     }
 
     if (!recAllItems.length) {
@@ -10654,9 +10652,9 @@ function updateRecNewBadge() {
   const badge = document.getElementById('rec-new-badge');
   if (!badge) return;
   if (!recNewBadgeEnabled) { badge.style.display = 'none'; return; }
-  const lastCount = parseInt(localStorage.getItem('advr_rec_last_count') || '-1', 10);
-  if (lastCount < 0) { badge.style.display = 'none'; return; }
-  const diff = recAllItems.length - lastCount;
+  const lastTs = parseInt(localStorage.getItem('advr_rec_last_ts') || '-1', 10);
+  if (lastTs < 0) { badge.style.display = 'none'; return; }
+  const diff = recAllItems.filter(r => recSortKey(r) > lastTs).length;
   if (diff > 0) {
     badge.textContent = diff > 99 ? '99+' : diff;
     badge.style.display = '';
@@ -10666,7 +10664,8 @@ function updateRecNewBadge() {
 }
 
 function clearRecNewBadge() {
-  localStorage.setItem('advr_rec_last_count', recAllItems.length);
+  const ts = recAllItems.length ? recSortKey(recAllItems[0]) : 0;
+  localStorage.setItem('advr_rec_last_ts', ts);
   const badge = document.getElementById('rec-new-badge');
   if (badge) badge.style.display = 'none';
 }
