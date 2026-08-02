@@ -170,8 +170,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   justify-content:center;transition:all .15s;flex-shrink:0}
 .rec-view-btn:hover{color:var(--text);border-color:var(--border)}
 .rec-view-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
-#rec-footer{flex-shrink:0;display:flex;justify-content:flex-end;align-items:center;
-  padding:4px 8px;border-top:1px solid var(--border);background:var(--s1);position:relative}
+#sbar{position:relative}
 #rec-settings-panel{display:none;position:absolute;bottom:calc(100% + 6px);right:0;z-index:300;
   background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
   padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.55);min-width:220px}
@@ -7942,31 +7941,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     <div id="rec-scroll">
       <div id="rec-grid" class="rec-grid"></div>
     </div>
-    <div id="rec-footer">
-      <button id="rec-settings-btn" class="rec-view-btn" title="Anzeigeeinstellungen" onclick="toggleRecSettings(event)">
-        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clip-rule="evenodd"/>
-        </svg>
-      </button>
-      <div id="rec-settings-panel">
-        <div class="rsp-title">Anzeigeeinstellungen</div>
-        <div class="rsp-row">
-          <label for="rsp-grid-size">Rastergröße</label>
-          <div class="rsp-slider-wrap">
-            <input type="range" id="rsp-grid-size" min="100" max="350" step="25" oninput="setRecGridSize(this.value)">
-            <span class="rsp-grid-lbl" id="rsp-grid-lbl">175px</span>
-          </div>
-        </div>
-        <div class="rsp-row">
-          <label for="rsp-max-rec">Max. Aufnahmen</label>
-          <select id="rsp-max-rec" onchange="setRecMaxRec(this.value)"></select>
-        </div>
-        <div class="rsp-row">
-          <label for="rsp-badges-chk">Badges anzeigen</label>
-          <input type="checkbox" class="rsp-chk" id="rsp-badges-chk" onchange="setRecBadges(this.checked)">
-        </div>
-      </div>
-    </div>
     <div id="rec-sel-bar">
       <span id="rec-sel-count"></span>
       <button id="rec-sel-all" onclick="toggleSelectAll()" data-i18n="selAll">Alle</button>
@@ -7978,7 +7952,32 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   </div>
 </main>
 
-<div id="sbar"><span id="sbar-msg" data-i18n="sbarLoading">Loading…</span></div>
+<div id="sbar">
+  <span id="sbar-msg" data-i18n="sbarLoading">Loading…</span>
+  <button id="rec-settings-btn" class="rec-view-btn" title="Anzeigeeinstellungen" onclick="toggleRecSettings(event)" style="display:none;width:20px;height:20px;flex-shrink:0">
+    <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clip-rule="evenodd"/>
+    </svg>
+  </button>
+  <div id="rec-settings-panel">
+    <div class="rsp-title">Anzeigeeinstellungen</div>
+    <div class="rsp-row">
+      <label for="rsp-grid-size">Rastergröße</label>
+      <div class="rsp-slider-wrap">
+        <input type="range" id="rsp-grid-size" min="100" max="350" step="25" oninput="setRecGridSize(this.value)">
+        <span class="rsp-grid-lbl" id="rsp-grid-lbl">175px</span>
+      </div>
+    </div>
+    <div class="rsp-row">
+      <label for="rsp-max-rec">Max. Aufnahmen</label>
+      <select id="rsp-max-rec" onchange="setRecMaxRec(this.value)"></select>
+    </div>
+    <div class="rsp-row">
+      <label for="rsp-badges-chk">Badges anzeigen</label>
+      <input type="checkbox" class="rsp-chk" id="rsp-badges-chk" onchange="setRecBadges(this.checked)">
+    </div>
+  </div>
+</div>
 </div><!-- #app -->
 
 <!-- Video panel (persistent overlay, survives tab switch) -->
@@ -8876,6 +8875,7 @@ function showView(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.trim().toLowerCase().includes(name === 'live' ? 'live' : 'aufn'))?.classList.add('active');
+  document.getElementById('rec-settings-btn').style.display = name === 'rec' ? 'flex' : 'none';
   if (name === 'live') { updateLayout(); sbarLive(); }
   else if (name === 'rec' && _lastRecSbar) sbar(_lastRecSbar);
 }
