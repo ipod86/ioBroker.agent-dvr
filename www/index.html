@@ -10658,7 +10658,7 @@ function updateRecNewBadge() {
   const diff = idx < 0 ? 0 : idx;
   if (diff > 0) {
     badge.textContent = diff > 99 ? '99+' : diff;
-    badge.style.display = '';
+    badge.style.display = 'inline';
   } else {
     badge.style.display = 'none';
   }
