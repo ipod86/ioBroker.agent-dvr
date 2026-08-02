@@ -149,5 +149,7 @@
   "tabConnection": "Connection",
   "tabDashboard": "Live Dashboard",
   "tabFeatures": "Features",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Reset colors to defaults",
+  "cfgResetColors_tt": "Resets all dashboard colors to the built-in dark theme defaults"
 }

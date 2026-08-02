@@ -149,5 +149,7 @@
   "tabConnection": "连接",
   "tabDashboard": "实时仪表板",
   "tabFeatures": "功能",
-  "tabWidget": "小部件"
+  "tabWidget": "小部件",
+  "cfgResetColors": "重置颜色",
+  "cfgResetColors_tt": "将所有仪表板颜色重置为内置深色主题的默认值"
 }

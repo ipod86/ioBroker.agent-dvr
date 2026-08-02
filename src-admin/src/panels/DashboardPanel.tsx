@@ -3,6 +3,7 @@ import { I18n } from '@iobroker/adapter-react-v5';
 import {
 	Grid,
 	Box,
+	Button,
 	Typography,
 	CircularProgress,
 	Alert,
@@ -22,6 +23,7 @@ import {
 	Tooltip,
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import FormatColorResetIcon from '@mui/icons-material/FormatColorReset';
 import FormField, { SectionHeader, ColorField } from '../components/FormField';
 
 interface Camera {
@@ -420,6 +422,30 @@ const DashboardPanel: React.FC<Props> = ({ native, onChange, socket, instance })
 					</Grid>
 				))}
 			</Grid>
+			<Box sx={{ mt: 1 }}>
+				<Tooltip title={I18n.t('cfgResetColors_tt')}>
+					<Button
+						size="small"
+						variant="outlined"
+						color="warning"
+						startIcon={<FormatColorResetIcon />}
+						onClick={() => {
+							const defaults: Record<string, string> = {
+								dashColorBg: '#080b0f',
+								dashColorSurface: '#0d1117',
+								dashColorAccent: '#2563eb',
+								dashColorText: '#dde4ef',
+								dashColorBorder: '#1e2a38',
+								dashColorOnline: '#22c55e',
+								dashColorOffline: '#ef4444',
+							};
+							Object.entries(defaults).forEach(([k, v]) => onChange(k, v));
+						}}
+					>
+						{I18n.t('cfgResetColors')}
+					</Button>
+				</Tooltip>
+			</Box>
 
 			{/* ── Camera stream table ── */}
 			<SectionHeader textKey="hdrCameraStreams" />

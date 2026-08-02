@@ -149,5 +149,7 @@
   "tabConnection": "Conexão",
   "tabDashboard": "Painel ao vivo",
   "tabFeatures": "Funcionalidades",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Redefinir cores padrão",
+  "cfgResetColors_tt": "Redefine todas as cores do painel para os valores padrão do tema escuro"
 }

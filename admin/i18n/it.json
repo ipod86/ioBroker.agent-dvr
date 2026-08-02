@@ -149,5 +149,7 @@
   "tabConnection": "Connessione",
   "tabDashboard": "Pannello live",
   "tabFeatures": "Funzionalità",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Ripristina colori predefiniti",
+  "cfgResetColors_tt": "Ripristina tutti i colori della dashboard ai valori predefiniti del tema scuro"
 }

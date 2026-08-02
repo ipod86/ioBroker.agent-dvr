@@ -149,5 +149,7 @@
   "tabConnection": "Verbinding",
   "tabDashboard": "Live dashboard",
   "tabFeatures": "Functies",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Kleuren herstellen",
+  "cfgResetColors_tt": "Zet alle dashboardkleuren terug naar de standaard donkere themawaarden"
 }

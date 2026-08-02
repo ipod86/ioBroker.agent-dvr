@@ -149,5 +149,7 @@
   "tabConnection": "Соединение",
   "tabDashboard": "Live-панель",
   "tabFeatures": "Функции",
-  "tabWidget": "Виджет"
+  "tabWidget": "Виджет",
+  "cfgResetColors": "Сбросить цвета",
+  "cfgResetColors_tt": "Сбрасывает все цвета панели к значениям тёмной темы по умолчанию"
 }

@@ -149,5 +149,7 @@
   "tabConnection": "Verbindung",
   "tabDashboard": "Live-Dashboard",
   "tabFeatures": "Funktionen",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Farben auf Werkseinstellung",
+  "cfgResetColors_tt": "Setzt alle Dashboard-Farben auf die eingebauten Standardwerte zurück"
 }

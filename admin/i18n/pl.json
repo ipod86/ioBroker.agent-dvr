@@ -149,5 +149,7 @@
   "tabConnection": "Połączenie",
   "tabDashboard": "Panel na żywo",
   "tabFeatures": "Funkcje",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Przywróć domyślne kolory",
+  "cfgResetColors_tt": "Przywraca wszystkie kolory pulpitu do domyślnych wartości ciemnego motywu"
 }

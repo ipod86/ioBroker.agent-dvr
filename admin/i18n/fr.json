@@ -149,5 +149,7 @@
   "tabConnection": "Connexion",
   "tabDashboard": "Tableau de bord",
   "tabFeatures": "Fonctionnalités",
-  "tabWidget": "Widget"
+  "tabWidget": "Widget",
+  "cfgResetColors": "Réinitialiser les couleurs",
+  "cfgResetColors_tt": "Réinitialise toutes les couleurs du tableau de bord aux valeurs par défaut du thème sombre"
 }
