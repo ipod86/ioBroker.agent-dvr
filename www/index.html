@@ -185,6 +185,8 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .rsp-slider-wrap input[type=range]{width:90px;accent-color:var(--accent);cursor:pointer}
 .rsp-grid-lbl{font-size:11px;color:var(--muted);min-width:36px;text-align:right}
 .rsp-chk{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+#rsp-max-rec{background:var(--s3);border:1px solid var(--border2);color:var(--text);
+  font-size:12px;border-radius:4px;padding:3px 6px;cursor:pointer;outline:none}
 #rec-scroll.rec-hide-badges .rec-badges,
 #rec-scroll.rec-hide-badges .rec-badges-l{display:none!important}
 
@@ -7945,6 +7947,17 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             </div>
           </div>
           <div class="rsp-row">
+            <label for="rsp-max-rec">Max. Aufnahmen</label>
+            <select id="rsp-max-rec" onchange="setRecMaxRec(this.value)">
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+              <option value="500">500</option>
+              <option value="0">Alle</option>
+            </select>
+          </div>
+          <div class="rsp-row">
             <label for="rsp-badges-chk">Badges anzeigen</label>
             <input type="checkbox" class="rsp-chk" id="rsp-badges-chk" onchange="setRecBadges(this.checked)">
           </div>
@@ -8619,6 +8632,7 @@ let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
 let recGridSize      = Math.max(100, Math.min(350, parseInt(localStorage.getItem('advr_rec_grid_size') || '175', 10)));
 let recBadgesVisible = localStorage.getItem('advr_rec_badges') !== '0';
+let recMaxOverride   = localStorage.getItem('advr_rec_max') !== null ? parseInt(localStorage.getItem('advr_rec_max'), 10) : null;
 let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
@@ -9555,7 +9569,7 @@ async function loadAndFilterRec(silent = false) {
       return m ? parseInt(m[1].replace(/-/g, '') + m[2].replace(/-/g, ''), 10) : 0;
     };
     const merged = results.flat().sort((a, b) => recSortKey(b) - recSortKey(a));
-    const maxRec = CFG.dashMaxRec || 200;
+    const maxRec = recMaxOverride !== null ? recMaxOverride : (CFG.dashMaxRec || 200);
     recAllItems = maxRec > 0 ? merged.slice(0, maxRec) : merged;
 
     // Split comma-separated tags into individual arrays for filtering
@@ -10257,6 +10271,18 @@ function applyRecSettings() {
   if (lbl) lbl.textContent = recGridSize + 'px';
   const chk = document.getElementById('rsp-badges-chk');
   if (chk) chk.checked = recBadgesVisible;
+  const sel = document.getElementById('rsp-max-rec');
+  if (sel) {
+    const effectiveMax = recMaxOverride !== null ? recMaxOverride : (CFG.dashMaxRec || 200);
+    const exists = Array.from(sel.options).some(o => parseInt(o.value, 10) === effectiveMax);
+    if (!exists) {
+      const opt = document.createElement('option');
+      opt.value = effectiveMax;
+      opt.textContent = effectiveMax + ' (Adapter)';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = effectiveMax;
+  }
 }
 
 function toggleRecSettings(e) {
@@ -10272,6 +10298,18 @@ function setRecGridSize(val) {
   localStorage.setItem('advr_rec_grid_size', recGridSize);
   document.documentElement.style.setProperty('--rec-grid-min', recGridSize + 'px');
   document.getElementById('rsp-grid-lbl').textContent = recGridSize + 'px';
+}
+
+function setRecMaxRec(val) {
+  const cfgDefault = CFG.dashMaxRec || 200;
+  const parsed = parseInt(val, 10);
+  recMaxOverride = parsed === cfgDefault ? null : parsed;
+  if (recMaxOverride !== null) {
+    localStorage.setItem('advr_rec_max', recMaxOverride);
+  } else {
+    localStorage.removeItem('advr_rec_max');
+  }
+  loadAndFilterRec(true);
 }
 
 function setRecBadges(visible) {
