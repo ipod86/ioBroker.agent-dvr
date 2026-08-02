@@ -29,11 +29,12 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 - Übersichts-Widget, das alle Kameras in einem HTML-Zustand kombiniert
 - **Eingebautes Live-Dashboard** unter `http://<iobroker>:<webport>/agent-dvr/` — keine zusätzliche App nötig:
   - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC/MSE
-  - Kamera-Filter-Badges zum Ein-/Ausblenden einzelner Kameras (Zustand im localStorage gespeichert)
+  - Kamera-Filter-Schaltfläche im Header (Trichter-Symbol) — öffnet ein Popover mit Checkboxen pro Kamera und einem „Alle"-Toggle; Badge zeigt Anzahl verborgen Kameras; Zustand im localStorage gespeichert
   - Echtzeit-Bewegungs- und Alarm-Indikatoren (gelber / oranger Kachelrahmen) via Socket.io
   - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
   - Aufnahmen-Tab mit Raster-, Timeline- und Ereignisprotokoll-Ansicht, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
   - Aufnahme löschen direkt aus dem Video-Player-Modal (ab AgentDVR v7.7.8.0+)
+  - Aufnahmen-Anzeigeeinstellungen — ⚙ Zahnrad im Auswahl-/Löschen-Balken; Schieberegler für Rasterspaltengröße, maximale Aufnahmen-Anzahl und Badge-Toggle — alles im localStorage gespeichert
   - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
   - PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren (ab AgentDVR v7.7.8.0+)
   - Statuszeile zeigt Kameraanzahl im Live-Bereich und Aufnahmen-/Ereignisanzahl im Aufnahmen-Bereich
@@ -213,13 +214,14 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 
 **Funktionen:**
 - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton (via flv.js) oder go2rtc WebRTC/MSE
-- Kamera-Filter-Badges — per Klick einzelne Kameras ein-/ausblenden; Zustand wird im localStorage gespeichert
+- Kamera-Filter-Schaltfläche (Trichter-Symbol, oben rechts im Header) — öffnet ein Popover mit Checkboxen pro Kamera und „Alle"-Toggle; Badge zeigt Anzahl verborgener Kameras; Zustand im localStorage gespeichert
 - Vollbildansicht mit PTZ-Overlay, Aufnahme-, Ton- und nativer Browser-Vollbild-Schaltfläche; Header blendet sich nach 3 s Inaktivität aus
 - Echtzeit-Bewegungs- (gelber Rahmen) und Alarm-Indikatoren (oranger Rahmen) via Socket.io
 - Automatischer Reconnect: MJPEG und FLV bei Fehler; go2rtc bei unerwartetem WebSocket-Close oder 10 s ohne Bild
 - Aufnahmen-Tab mit Raster-, Timeline- und Ereignisprotokoll-Ansicht, Suche, ausklappbarem Tag-Filter und Video-Player mit Vor-/Zurück-Navigation
 - Tag-Filter splittet AgentDVRs kommagetrennte Tags in einzelne Chips — jeder Tag einzeln filterbar
 - Aufnahme löschen aus dem Video-Player-Modal oder per Mehrfachauswahl (Langer Druck → Checkbox-Modus, Sammel-Löschen, ab AgentDVR v7.7.8.0+)
+- Aufnahmen-Anzeigeeinstellungen — ⚙ Zahnrad im Auswahl-/Löschen-Balken; Schieberegler für Rasterspaltengröße, Override für maximale Aufnahmen und Badge-Toggle — alles im localStorage gespeichert
 - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
 - PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; ein Selektor-Datenpunkt pro Kamera (ab AgentDVR v7.7.8.0+)
 - Statuszeile zeigt Kameraanzahl, CPU-/RAM-Auslastung und freien Festplattenspeicher

@@ -34,11 +34,12 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - Overview widget combining all cameras in one HTML state
 - **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr/` — no additional app needed:
   - Per-camera stream selection: MJPEG, MP4/FLV with audio, or go2rtc WebRTC/MSE
-  - Camera filter badges to show/hide individual cameras (state saved in localStorage)
+  - Camera filter button in the header (funnel icon) — opens a per-camera checkbox popover; badge shows how many cameras are hidden; state saved in localStorage
   - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
   - Fullscreen view with PTZ overlay, record, mute, and native browser fullscreen button; header auto-hides
   - Recordings tab with grid, timeline, and event log view, search, collapsible tag filter, and video player with prev/next navigation
   - Delete recording directly from the video player modal (requires AgentDVR v7.7.8.0+)
+  - Recording display settings — ⚙ gear in the select/delete bar adjusts grid column width, max recordings shown and badge visibility (persisted in localStorage)
   - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
   - PTZ presets — navigate to saved presets from the PTZ overlay (requires AgentDVR v7.7.8.0+)
   - Status bar shows camera count on the live view and recording/event count on the recordings view
@@ -218,13 +219,14 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 
 **Features:**
 - Per-camera stream selection: MJPEG, MP4/FLV with audio (via flv.js), or go2rtc WebRTC/MSE
-- Camera filter badges — click to show/hide individual cameras; state persisted in localStorage
+- Camera filter button (funnel icon, header top-right) — opens a per-camera checkbox popover with an "All" toggle; badge shows the number of hidden cameras; state persisted in localStorage
 - Fullscreen view with PTZ overlay, record button, mute button, and native browser fullscreen (header auto-hides after 3 s of inactivity; reappears on mouse or touch)
 - Real-time motion (yellow border) and alert (orange border) indicators via Socket.io
 - Auto-reconnect: MJPEG and FLV reconnect after error; go2rtc reconnects after unexpected WebSocket close or 10 s stall
 - Recordings tab with grid, timeline, and event log view, search, collapsible tag filter, and video player with prev/next navigation
 - Tag filter splits AgentDVR's comma-separated tags into individual chips for per-tag filtering
 - Delete recording from the video player modal or select multiple with a long-press and bulk-delete (requires AgentDVR v7.7.8.0+)
+- Recording display settings — ⚙ gear button in the select/delete bar; slider for grid column width, max recordings override, and badge toggle — all saved in localStorage
 - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
 - PTZ presets — navigate to saved presets from the PTZ overlay; single selector data point per camera (requires AgentDVR v7.7.8.0+)
 - Status bar shows camera count, CPU/RAM usage and disk free space
@@ -400,6 +402,10 @@ Returns `{"ok":true}` on success.
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (ipod86) feat: replace live-view camera chip-bar with compact header filter button — funnel icon opens a popover with per-camera checkboxes and an "All" toggle; hidden-camera count shown as badge on the button
+* (ipod86) feat: recording display settings panel — ⚙ gear button in the select/delete bar opens a panel with grid-size slider, max-recordings override and badge toggle (all persisted in localStorage)
+* (ipod86) feat: first-visit onboarding modals for both live view (camera filter) and recordings tab (long-press gesture + gear panel), dismissed with OK and suppressed in localStorage on subsequent visits
+* (ipod86) fix: header z-index lifted so the camera filter popover renders above the main content area
 * (ipod86) feat: webhook endpoint `/agent-dvr/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
 * (ipod86) refactor: remove per-camera pushTrigger data points in favour of the global webhook
 * (ipod86) feat: PTZ presets — navigate to saved presets from PTZ overlay; single selector DP `<cam>.control.ptz.preset` per camera (requires AgentDVR v7.7.8.0+)
