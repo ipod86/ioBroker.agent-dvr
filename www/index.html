@@ -8999,6 +8999,7 @@ function trySocket() {
         cameras[ck].recording = !!state.val;
         const t = document.querySelector('.cam-tile[data-cam="' + ck + '"]');
         if (t) { const rb = t.querySelector('.rec-btn'); if (rb) setTileRecording(t, rb, !!state.val); }
+        if (!state.val) setTimeout(() => loadAndFilterRec(true), 4000);
       } else if (rel.endsWith('.status.detected')) {
         cameras[ck].detected = !!state.val;
         setTileStatus(ck, 'detected', !!state.val);
@@ -9885,6 +9886,11 @@ async function loadAndFilterRec(silent = false) {
     recAllItems.forEach(r => {
       r._tags = (r.tag || '').split(',').map(s => s.trim()).filter(Boolean);
     });
+
+    // Establish baseline on first ever load so badge works without visiting recordings tab
+    if (localStorage.getItem('advr_rec_last_count') === null) {
+      localStorage.setItem('advr_rec_last_count', recAllItems.length);
+    }
 
     if (!recAllItems.length) {
       grid.innerHTML = '<div class="rec-empty">' + t('recNone') + '</div>';
