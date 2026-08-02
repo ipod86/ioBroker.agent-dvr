@@ -43,9 +43,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   align-items:center;justify-content:center;position:relative;transition:all .15s;flex-shrink:0}
 .hdr-icon-btn:hover{color:var(--text);border-color:var(--border)}
 .hdr-icon-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
-#cam-filter-badge{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;
-  border-radius:99px;font-size:9px;font-weight:700;padding:1px 4px;line-height:1.4;
-  pointer-events:none;display:none}
 #cam-filter-wrap{position:relative}
 #cam-filter-panel{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:400;
   background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
@@ -7927,7 +7924,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2 3a1 1 0 0 1 1-1h14a1 1 0 0 1 .894 1.447l-5 10A1 1 0 0 1 12 14H8a1 1 0 0 1-.894-.553l-5-10A1 1 0 0 1 2 3z"/>
         </svg>
-        <span id="cam-filter-badge"></span>
       </button>
       <div id="cam-filter-panel"></div>
     </div>
@@ -9190,13 +9186,6 @@ function syncCamFilter() {
     panel.appendChild(row);
   });
 
-  const badge = document.getElementById('cam-filter-badge');
-  if (badge) {
-    badge.textContent = hidden.size;
-    badge.style.display = hidden.size > 0 ? '' : 'none';
-  }
-  const btn = document.getElementById('cam-filter-btn');
-  if (btn) btn.classList.toggle('active', hidden.size > 0);
 }
 
 function toggleCamFilter(e) {
