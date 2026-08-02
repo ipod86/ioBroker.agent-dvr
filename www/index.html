@@ -56,6 +56,22 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cfp-row:hover{background:var(--s3);color:var(--text)}
 .cfp-chk{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .cfp-sep{height:1px;background:var(--border2);margin:4px 0}
+.cfp-handle{color:var(--border2);font-size:13px;cursor:grab;flex-shrink:0;padding-right:4px;
+  user-select:none;line-height:1}
+.cfp-handle:hover{color:var(--muted)}
+.cfp-row[draggable]{cursor:default}
+.cfp-row.cfp-dragging{opacity:.35}
+.cfp-row.cfp-drag-over{border-top:2px solid var(--accent);margin-top:-2px}
+.nav-badge{background:var(--red,#ef4444);color:#fff;border-radius:99px;font-size:9px;
+  font-weight:700;padding:1px 5px;line-height:1.4;margin-left:3px;display:none}
+#rec-date-chips{display:flex;gap:5px;flex-shrink:0}
+.rec-date-chip{background:none;border:1px solid var(--border2);border-radius:99px;
+  padding:3px 10px;font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s}
+.rec-date-chip:hover{border-color:var(--border);color:var(--text)}
+.rec-date-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
+.cam-tile[draggable]{cursor:grab}
+.cam-tile.cam-dragging{opacity:.35;pointer-events:none}
+.cam-tile.cam-drag-over{outline:2px dashed var(--accent);outline-offset:-3px}
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
@@ -7910,6 +7926,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     <button id="nav-btn-rec" class="nav-btn" onclick="showView('rec')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
       <span data-i18n="navRec">Recordings</span>
+      <span id="rec-new-badge" class="nav-badge"></span>
     </button>
   </div>
   <div class="hdr-r">
@@ -7943,6 +7960,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             <span class="btn-label" data-i18n="camAll">All cameras</span>
           </button>
           <div id="rec-cam-list" class="rec-cam-list"></div>
+        </div>
+        <div id="rec-date-chips">
+          <button class="rec-date-chip" data-filter="today" data-i18n="dateToday" onclick="setRecDateFilter('today')">Heute</button>
+          <button class="rec-date-chip" data-filter="week" data-i18n="dateWeek" onclick="setRecDateFilter('week')">Diese Woche</button>
         </div>
         <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label"><svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M1 2h10l-4 4.5V11L5 9.5V6.5L1 2z"/></svg></button>
         <div id="rec-toolbar">
@@ -8000,6 +8021,10 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <div class="rsp-row">
           <label for="rsp-badges-chk" data-i18n="rspBadges">Badges anzeigen</label>
           <input type="checkbox" class="rsp-chk" id="rsp-badges-chk" onchange="setRecBadges(this.checked)">
+        </div>
+        <div class="rsp-row">
+          <label for="rsp-new-badge-chk" data-i18n="rspNewBadge">Neue Aufnahmen</label>
+          <input type="checkbox" class="rsp-chk" id="rsp-new-badge-chk" onchange="setRecNewBadge(this.checked)">
         </div>
       </div>
     </div>
@@ -8112,6 +8137,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Aufnahmen – Hinweis',
     rhmOk:           'OK, verstanden',
     rhmBody:         '<strong>Aufnahme lange drücken</strong> öffnet das Bearbeitungsmenü.<br>Dort Aufnahmen <strong>löschen</strong> oder über das <strong>⚙ Zahnrad</strong> die Ansicht anpassen (Rastergröße, Max. Aufnahmen, Badges).',
+    rspNewBadge:     'Neue Aufnahmen',
+    dateToday:       'Heute',
+    dateWeek:        'Diese Woche',
     camFilterTip:    'Kameras ein-/ausblenden',
     cfhTitle:        'Live-Ansicht – Hinweis',
     cfhOk:           'OK, verstanden',
@@ -8173,6 +8201,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Recordings – Tip',
     rhmOk:           'OK, got it',
     rhmBody:         '<strong>Long-press</strong> a recording to open the edit bar.<br><strong>Delete</strong> recordings or use the <strong>⚙ gear</strong> to adjust the view (grid size, max recordings, badges).',
+    rspNewBadge:     'New recordings badge',
+    dateToday:       'Today',
+    dateWeek:        'This week',
     camFilterTip:    'Show / hide cameras',
     cfhTitle:        'Live view – Tip',
     cfhOk:           'OK, got it',
@@ -8234,6 +8265,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Grabaciones – Consejo',
     rhmOk:           'OK, entendido',
     rhmBody:         '<strong>Mantén pulsada</strong> una grabación para abrir el menú de edición.<br><strong>Elimina</strong> grabaciones o usa el <strong>⚙ engranaje</strong> para ajustar la vista (tamaño de cuadrícula, máx. grabaciones, insignias).',
+    rspNewBadge:     'Insignia nuevas grabaciones',
+    dateToday:       'Hoy',
+    dateWeek:        'Esta semana',
     camFilterTip:    'Mostrar/ocultar cámaras',
     cfhTitle:        'Vista en vivo – Consejo',
     cfhOk:           'OK, entendido',
@@ -8295,6 +8329,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Enregistrements – Conseil',
     rhmOk:           'OK, compris',
     rhmBody:         '<strong>Appuyer longuement</strong> sur un enregistrement ouvre le menu d\'édition.<br><strong>Supprimer</strong> des enregistrements ou utiliser l\'<strong>⚙ engrenage</strong> pour ajuster la vue (taille de grille, max. enregistrements, badges).',
+    rspNewBadge:     'Badge nouvelles vidéos',
+    dateToday:       "Aujourd'hui",
+    dateWeek:        'Cette semaine',
     camFilterTip:    'Afficher/masquer les caméras',
     cfhTitle:        'Vue en direct – Conseil',
     cfhOk:           'OK, compris',
@@ -8356,6 +8393,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Registrazioni – Suggerimento',
     rhmOk:           'OK, capito',
     rhmBody:         '<strong>Tieni premuta</strong> una registrazione per aprire il menu di modifica.<br><strong>Elimina</strong> registrazioni o usa l\'<strong>⚙ ingranaggio</strong> per regolare la visualizzazione (dimensione griglia, max. registrazioni, badge).',
+    rspNewBadge:     'Badge nuove registrazioni',
+    dateToday:       'Oggi',
+    dateWeek:        'Questa settimana',
     camFilterTip:    'Mostra/nascondi telecamere',
     cfhTitle:        'Vista live – Suggerimento',
     cfhOk:           'OK, capito',
@@ -8417,6 +8457,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Opnames – Tip',
     rhmOk:           'OK, begrepen',
     rhmBody:         '<strong>Lang indrukken</strong> op een opname opent het bewerkingsmenu.<br><strong>Verwijder</strong> opnames of gebruik het <strong>⚙ tandwiel</strong> om de weergave aan te passen (rastergrootte, max. opnames, badges).',
+    rspNewBadge:     'Badge nieuwe opnames',
+    dateToday:       'Vandaag',
+    dateWeek:        'Deze week',
     camFilterTip:    'Camera\'s tonen/verbergen',
     cfhTitle:        'Live weergave – Tip',
     cfhOk:           'OK, begrepen',
@@ -8478,6 +8521,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Nagrania – Wskazówka',
     rhmOk:           'OK, rozumiem',
     rhmBody:         '<strong>Przytrzymaj</strong> nagranie, aby otworzyć menu edycji.<br><strong>Usuń</strong> nagrania lub użyj <strong>⚙ koła zębatego</strong>, aby dostosować widok (rozmiar siatki, maks. nagrania, odznaki).',
+    rspNewBadge:     'Odznaka nowych nagrań',
+    dateToday:       'Dziś',
+    dateWeek:        'Ten tydzień',
     camFilterTip:    'Pokaż/ukryj kamery',
     cfhTitle:        'Widok na żywo – Wskazówka',
     cfhOk:           'OK, rozumiem',
@@ -8539,6 +8585,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Gravações – Dica',
     rhmOk:           'OK, entendi',
     rhmBody:         '<strong>Pressione e segure</strong> uma gravação para abrir o menu de edição.<br><strong>Exclua</strong> gravações ou use a <strong>⚙ engrenagem</strong> para ajustar a exibição (tamanho da grade, máx. gravações, emblemas).',
+    rspNewBadge:     'Badge novas gravações',
+    dateToday:       'Hoje',
+    dateWeek:        'Esta semana',
     camFilterTip:    'Mostrar/ocultar câmeras',
     cfhTitle:        'Vista ao vivo – Dica',
     cfhOk:           'OK, entendi',
@@ -8600,6 +8649,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Записи – Подсказка',
     rhmOk:           'ОК, понятно',
     rhmBody:         '<strong>Удерживайте</strong> запись, чтобы открыть меню редактирования.<br><strong>Удаляйте</strong> записи или используйте <strong>⚙ шестерёнку</strong> для настройки отображения (размер сетки, макс. записей, метки).',
+    rspNewBadge:     'Метка новых записей',
+    dateToday:       'Сегодня',
+    dateWeek:        'На этой неделе',
     camFilterTip:    'Показать/скрыть камеры',
     cfhTitle:        'Прямой эфир – Подсказка',
     cfhOk:           'ОК, понятно',
@@ -8661,6 +8713,9 @@ const TRANSLATIONS = {
     rhmTitle:        'Записи – Підказка',
     rhmOk:           'ОК, зрозуміло',
     rhmBody:         '<strong>Утримуйте</strong> запис, щоб відкрити меню редагування.<br><strong>Видаляйте</strong> записи або використовуйте <strong>⚙ шестерінку</strong> для налаштування відображення (розмір сітки, макс. записів, мітки).',
+    rspNewBadge:     'Мітка нових записів',
+    dateToday:       'Сьогодні',
+    dateWeek:        'Цього тижня',
     camFilterTip:    'Показати/приховати камери',
     cfhTitle:        'Живий перегляд – Підказка',
     cfhOk:           'ОК, зрозуміло',
@@ -8722,6 +8777,9 @@ const TRANSLATIONS = {
     rhmTitle:        '录像 – 提示',
     rhmOk:           '好的，明白了',
     rhmBody:         '<strong>长按</strong>录像可打开编辑菜单。<br><strong>删除</strong>录像，或通过 <strong>⚙ 齿轮</strong>调整显示设置（网格大小、最大录像数、标签）。',
+    rspNewBadge:     '新录像提示角标',
+    dateToday:       '今天',
+    dateWeek:        '本周',
     camFilterTip:    '显示/隐藏摄像头',
     cfhTitle:        '实时视图 – 提示',
     cfhOk:           '好的，明白了',
@@ -8778,6 +8836,10 @@ if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
 let recGridSize      = Math.max(100, Math.min(350, parseInt(localStorage.getItem('advr_rec_grid_size') || '175', 10)));
 let recBadgesVisible = localStorage.getItem('advr_rec_badges') !== '0';
 let recMaxOverride   = localStorage.getItem('advr_rec_max') !== null ? parseInt(localStorage.getItem('advr_rec_max'), 10) : null;
+let recNewBadgeEnabled = localStorage.getItem('advr_rec_new_badge') !== '0';
+let recDateFilter    = null;
+let camOrder         = JSON.parse(localStorage.getItem('advr_cam_order') || '[]');
+let _dragSrcCamKey   = null;
 let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
@@ -9030,6 +9092,7 @@ function showView(name) {
   if (name === 'live') { updateLayout(); sbarLive(); showCamFilterHintIfNeeded(); }
   else if (name === 'rec') {
     if (_lastRecSbar) sbar(_lastRecSbar);
+    clearRecNewBadge();
     showRecHintIfNeeded();
   }
 }
@@ -9065,11 +9128,61 @@ function syncCamFilter() {
   sep.className = 'cfp-sep';
   panel.appendChild(sep);
 
-  camKeys.forEach(k => {
-    panel.appendChild(makeRow(cameras[k].name, !hidden.has(k), function() {
+  const sortedKeys = [...camKeys].sort((a, b) => {
+    const ia = camOrder.indexOf(a), ib = camOrder.indexOf(b);
+    if (ia === -1 && ib === -1) return 0;
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+
+  sortedKeys.forEach(k => {
+    const row = makeRow(cameras[k].name, !hidden.has(k), function() {
       this.checked ? hidden.delete(k) : hidden.add(k);
       save(); syncCamFilter(); syncGrid();
-    }));
+    });
+    row.dataset.cam = k;
+
+    const handle = document.createElement('span');
+    handle.className = 'cfp-handle';
+    handle.textContent = '⠿';
+    handle.onclick = e => e.stopPropagation();
+    row.insertBefore(handle, row.firstChild);
+
+    row.draggable = true;
+    row.addEventListener('dragstart', e => {
+      _dragSrcCamKey = k;
+      row.classList.add('cfp-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      _dragSrcCamKey = null;
+      row.classList.remove('cfp-dragging');
+      panel.querySelectorAll('.cfp-row.cfp-drag-over').forEach(r => r.classList.remove('cfp-drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (k !== _dragSrcCamKey) row.classList.add('cfp-drag-over');
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('cfp-drag-over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('cfp-drag-over');
+      const fromKey = _dragSrcCamKey;
+      if (!fromKey || fromKey === k) return;
+      const rows = [...panel.querySelectorAll('.cfp-row[data-cam]')];
+      const fromRow = rows.find(r => r.dataset.cam === fromKey);
+      if (!fromRow) return;
+      if (rows.indexOf(fromRow) < rows.indexOf(row))
+        panel.insertBefore(fromRow, row.nextSibling);
+      else
+        panel.insertBefore(fromRow, row);
+      camOrder = [...panel.querySelectorAll('.cfp-row[data-cam]')].map(r => r.dataset.cam);
+      localStorage.setItem('advr_cam_order', JSON.stringify(camOrder));
+      syncGrid();
+    });
+
+    panel.appendChild(row);
   });
 
   const badge = document.getElementById('cam-filter-badge');
@@ -9104,6 +9217,15 @@ function syncGrid() {
     if (hidden.has(k)) return false;
     if (!CFG.dashShowOffline && !cameras[k].online) return false;
     return true;
+  });
+
+  // Sort by saved user order; unknown keys go to the end
+  want.sort((a, b) => {
+    const ia = camOrder.indexOf(a), ib = camOrder.indexOf(b);
+    if (ia === -1 && ib === -1) return 0;
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
   });
 
   // Save existing live tiles so we can re-insert them without restarting streams
@@ -9236,6 +9358,40 @@ function makeTile(key, cam) {
     const _el = mediaEl, _oid = cam.oid, _key = key, _size = sizeParam;
     setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid + _size, _key), 0);
   }
+
+  // Grid drag-to-reorder
+  tile.draggable = true;
+  tile.addEventListener('dragstart', e => {
+    _dragSrcCamKey = key;
+    tile.classList.add('cam-dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  tile.addEventListener('dragend', () => {
+    _dragSrcCamKey = null;
+    tile.classList.remove('cam-dragging');
+    document.querySelectorAll('.cam-tile.cam-drag-over').forEach(t => t.classList.remove('cam-drag-over'));
+  });
+  tile.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (tile.dataset.cam !== _dragSrcCamKey) tile.classList.add('cam-drag-over');
+  });
+  tile.addEventListener('dragleave', () => tile.classList.remove('cam-drag-over'));
+  tile.addEventListener('drop', e => {
+    e.preventDefault();
+    tile.classList.remove('cam-drag-over');
+    const fromKey = _dragSrcCamKey;
+    if (!fromKey || fromKey === key) return;
+    const grid = document.getElementById('cam-grid');
+    const fromTile = grid.querySelector('.cam-tile[data-cam="' + fromKey + '"]');
+    if (!fromTile) return;
+    const tiles = [...grid.querySelectorAll('.cam-tile[data-cam]')];
+    if (tiles.indexOf(fromTile) < tiles.indexOf(tile))
+      grid.insertBefore(fromTile, tile.nextSibling);
+    else
+      grid.insertBefore(fromTile, tile);
+    saveCamOrder();
+  });
+
   return tile;
 }
 
@@ -9843,6 +9999,18 @@ function renderRec() {
   const grid  = document.getElementById('rec-grid');
 
   const items = recAllItems.filter(r => {
+    if (recDateFilter) {
+      const rd = parseRecDate(r);
+      if (!rd) return false;
+      const now = new Date();
+      if (recDateFilter === 'today') {
+        if (rd.toDateString() !== now.toDateString()) return false;
+      } else if (recDateFilter === 'week') {
+        const mon = new Date(now); mon.setHours(0,0,0,0);
+        mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
+        if (rd < mon) return false;
+      }
+    }
     if (tag && !(r._tags || []).includes(tag)) return false;
     if (q) {
       const hay = ((r.date||'') + ' ' + (r.time||'') + ' ' + (r.tag||'') + ' ' + (r._cam?.name||'')).toLowerCase();
@@ -9853,6 +10021,7 @@ function renderRec() {
 
   _lastRecSbar = (recViewMode === 'events' ? t('evCount') : t('recCount')).replace('{n}', items.length);
   if (document.getElementById('view-rec')?.classList.contains('active')) sbar(_lastRecSbar);
+  updateRecNewBadge();
   grid.innerHTML = '';
 
   if (recViewMode === 'events') { renderEventLog(items); return; }
@@ -10463,6 +10632,8 @@ function applyRecSettings() {
   if (lbl) lbl.textContent = recGridSize + 'px';
   const chk = document.getElementById('rsp-badges-chk');
   if (chk) chk.checked = recBadgesVisible;
+  const nbChk = document.getElementById('rsp-new-badge-chk');
+  if (nbChk) nbChk.checked = recNewBadgeEnabled;
   const sel = document.getElementById('rsp-max-rec');
   if (sel) {
     const cfgMax = CFG.dashMaxRec || 200;
@@ -10518,6 +10689,54 @@ function setRecBadges(visible) {
   document.getElementById('rec-scroll').classList.toggle('rec-hide-badges', !visible);
 }
 
+function setRecNewBadge(enabled) {
+  recNewBadgeEnabled = enabled;
+  localStorage.setItem('advr_rec_new_badge', enabled ? '1' : '0');
+  updateRecNewBadge();
+}
+
+function updateRecNewBadge() {
+  const badge = document.getElementById('rec-new-badge');
+  if (!badge) return;
+  if (!recNewBadgeEnabled) { badge.style.display = 'none'; return; }
+  const lastCount = parseInt(localStorage.getItem('advr_rec_last_count') || '-1', 10);
+  if (lastCount < 0) { badge.style.display = 'none'; return; }
+  const diff = recAllItems.length - lastCount;
+  if (diff > 0) {
+    badge.textContent = diff > 99 ? '99+' : diff;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function clearRecNewBadge() {
+  localStorage.setItem('advr_rec_last_count', recAllItems.length);
+  const badge = document.getElementById('rec-new-badge');
+  if (badge) badge.style.display = 'none';
+}
+
+function parseRecDate(r) {
+  if (r.date && r.time) { const d = new Date(r.date + 'T' + r.time); if (!isNaN(d)) return d; }
+  if (r.date) { const d = new Date(r.date); if (!isNaN(d)) return d; }
+  return null;
+}
+
+function setRecDateFilter(f) {
+  recDateFilter = recDateFilter === f ? null : f;
+  document.querySelectorAll('.rec-date-chip').forEach(c => {
+    c.classList.toggle('on', c.dataset.filter === recDateFilter);
+  });
+  renderRec();
+}
+
+function saveCamOrder() {
+  const grid = document.getElementById('cam-grid');
+  camOrder = [...grid.querySelectorAll('.cam-tile[data-cam]')].map(t => t.dataset.cam);
+  localStorage.setItem('advr_cam_order', JSON.stringify(camOrder));
+  syncCamFilter();
+}
+
 function showCamFilterHintIfNeeded() {
   if (localStorage.getItem('advr_cam_filter_hint_seen')) return;
   const bodyEl = document.getElementById('cfh-body');
@@ -10560,6 +10779,17 @@ loadConfig().then(() => loadData()).then(() => {
   loadSysStats();
   setInterval(loadSysStats, 60000);
 });
+
+// Swipe left/right in video player for next/prev recording
+(function() {
+  let _sx = 0;
+  const box = document.getElementById('vid-box');
+  box.addEventListener('touchstart', e => { _sx = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - _sx;
+    if (Math.abs(dx) > 55) dx < 0 ? playRecIdx(recPlayIdx + 1) : playRecIdx(recPlayIdx - 1);
+  }, { passive: true });
+})();
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <div id="cam-filter-hint-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);align-items:center;justify-content:center">
