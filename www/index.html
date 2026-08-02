@@ -10273,13 +10273,12 @@ function applyRecSettings() {
       localStorage.removeItem('advr_rec_max');
     }
     // Rebuild options: presets ≤ cfgMax only, cfgMax always included, plus "Alle"
-    const presets = [25, 50, 100, 200, 500];
     sel.innerHTML = '';
-    presets.filter(p => p < cfgMax).forEach(p => {
+    for (let p = 25; p < cfgMax; p += 25) {
       const o = document.createElement('option');
       o.value = p; o.textContent = p;
       sel.appendChild(o);
-    });
+    }
     const maxOpt = document.createElement('option');
     maxOpt.value = cfgMax; maxOpt.textContent = cfgMax;
     sel.appendChild(maxOpt);
