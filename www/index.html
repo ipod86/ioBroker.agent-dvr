@@ -9319,14 +9319,8 @@ function makeTile(key, cam) {
   bottom.onclick  = () => openFs(cam, key);
   tile.onclick    = e => { if (e.target === tile) openFs(cam, key); };
 
-  // Button container (rec + optional PTZ)
+  // Button container (PTZ + mute left, rec rightmost)
   const btnBox = document.createElement('div'); btnBox.className = 'tile-btns';
-
-  const recBtn = document.createElement('div');
-  recBtn.className = 'tile-btn rec-btn'; recBtn.title = t('recStart');
-  recBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
-  recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, tile); });
-  btnBox.appendChild(recBtn);
 
   if (cam.hasPtz) {
     const ptzToggle = document.createElement('div');
@@ -9347,6 +9341,12 @@ function makeTile(key, cam) {
     muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(mediaEl, muteBtn, key); });
     btnBox.appendChild(muteBtn);
   }
+
+  const recBtn = document.createElement('div');
+  recBtn.className = 'tile-btn rec-btn'; recBtn.title = t('recStart');
+  recBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
+  recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, tile); });
+  btnBox.appendChild(recBtn);
 
   tile.appendChild(btnBox);
   if (cam.detected) tile.classList.add('detected');
@@ -9651,19 +9651,9 @@ function openFs(cam, key) {
   const isRec = gridTile ? gridTile.classList.contains('recording') : !!cam.recording;
   fs.classList.toggle('recording', isRec);
 
-  // Build header buttons
+  // Build header buttons (PTZ left, rec rightmost)
   const btnBox = document.getElementById('fs-btns');
   btnBox.innerHTML = '';
-
-  const recBtn = document.createElement('div');
-  recBtn.className = 'tile-btn rec-btn';
-  recBtn.classList.toggle('active', isRec);
-  recBtn.title = isRec ? t('recStop') : t('recStart');
-  recBtn.innerHTML = isRec
-    ? `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`
-    : `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
-  recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, fs); });
-  btnBox.appendChild(recBtn);
 
   if (cam.hasPtz) {
     const ptzBtn = document.createElement('div');
@@ -9699,6 +9689,16 @@ function openFs(cam, key) {
     muteBtn.addEventListener('click', e => { e.stopPropagation(); toggleMute(fvEl, muteBtn, key); });
     btnBox.appendChild(muteBtn);
   }
+
+  const recBtn = document.createElement('div');
+  recBtn.className = 'tile-btn rec-btn';
+  recBtn.classList.toggle('active', isRec);
+  recBtn.title = isRec ? t('recStop') : t('recStart');
+  recBtn.innerHTML = isRec
+    ? `<svg width="12" height="12" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></svg>`
+    : `<svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="currentColor"/></svg>`;
+  recBtn.addEventListener('click', e => { e.stopPropagation(); toggleRec(key, recBtn, fs); });
+  btnBox.appendChild(recBtn);
 
   const fullBtn = document.createElement('div');
   fullBtn.className = 'tile-btn full-btn';
@@ -9886,8 +9886,8 @@ async function loadAndFilterRec(silent = false) {
     });
 
     // Establish baseline on first ever load so badge works without visiting recordings tab
-    if (localStorage.getItem('advr_rec_last_ts') === null) {
-      localStorage.setItem('advr_rec_last_ts', recAllItems.length ? recSortKey(recAllItems[0]) : 0);
+    if (localStorage.getItem('advr_rec_last_fn') === null) {
+      localStorage.setItem('advr_rec_last_fn', recAllItems.length ? (recAllItems[0].fn || '') : '');
     }
 
     if (!recAllItems.length) {
@@ -10652,9 +10652,10 @@ function updateRecNewBadge() {
   const badge = document.getElementById('rec-new-badge');
   if (!badge) return;
   if (!recNewBadgeEnabled) { badge.style.display = 'none'; return; }
-  const lastTs = parseInt(localStorage.getItem('advr_rec_last_ts') || '-1', 10);
-  if (lastTs < 0) { badge.style.display = 'none'; return; }
-  const diff = recAllItems.filter(r => recSortKey(r) > lastTs).length;
+  const lastFn = localStorage.getItem('advr_rec_last_fn');
+  if (lastFn === null) { badge.style.display = 'none'; return; }
+  const idx = lastFn === '' ? recAllItems.length : recAllItems.findIndex(r => r.fn === lastFn);
+  const diff = idx < 0 ? 0 : idx;
   if (diff > 0) {
     badge.textContent = diff > 99 ? '99+' : diff;
     badge.style.display = '';
@@ -10664,8 +10665,7 @@ function updateRecNewBadge() {
 }
 
 function clearRecNewBadge() {
-  const ts = recAllItems.length ? recSortKey(recAllItems[0]) : 0;
-  localStorage.setItem('advr_rec_last_ts', ts);
+  localStorage.setItem('advr_rec_last_fn', recAllItems.length ? (recAllItems[0].fn || '') : '');
   const badge = document.getElementById('rec-new-badge');
   if (badge) badge.style.display = 'none';
 }
