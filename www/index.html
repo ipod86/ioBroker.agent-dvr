@@ -53,9 +53,9 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cfp-row:hover{background:var(--s3);color:var(--text)}
 .cfp-chk{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .cfp-sep{height:1px;background:var(--border2);margin:4px 0}
-.cfp-handle{color:var(--border2);font-size:13px;cursor:grab;flex-shrink:0;padding-right:4px;
+.cfp-handle{color:var(--muted);font-size:15px;cursor:grab;flex-shrink:0;padding-right:4px;
   user-select:none;line-height:1}
-.cfp-handle:hover{color:var(--muted)}
+.cfp-handle:hover{color:var(--text)}
 .cfp-row[draggable]{cursor:default}
 .cfp-row.cfp-dragging{opacity:.35}
 .cfp-row.cfp-drag-over{border-top:2px solid var(--accent);margin-top:-2px}
@@ -8120,12 +8120,12 @@ const TRANSLATIONS = {
     rspBadges:       'Badges anzeigen',
     rhmTitle:        'Aufnahmen – Hinweis',
     rhmOk:           'OK, verstanden',
-    rhmBody:         '<strong>Aufnahme lange drücken</strong> öffnet das Bearbeitungsmenü.<br>Dort Aufnahmen <strong>löschen</strong> oder über das <strong>⚙ Zahnrad</strong> die Ansicht anpassen (Rastergröße, Max. Aufnahmen, Badges).',
+    rhmBody:         '<strong>Aufnahme lange drücken</strong> öffnet das Bearbeitungsmenü.<br>Dort Aufnahmen <strong>löschen</strong> oder über das <strong>⚙ Zahnrad</strong> die Ansicht anpassen.<br>Das <strong>rote Badge</strong> am Tab zeigt neue Aufnahmen seit dem letzten Besuch an.',
     rspNewBadge:     'Neue Aufnahmen',
     camFilterTip:    'Kameras ein-/ausblenden',
     cfhTitle:        'Live-Ansicht – Hinweis',
     cfhOk:           'OK, verstanden',
-    cfhBody:         'Über das <strong>Trichter-Symbol</strong> oben rechts kannst du einzelne Kameras <strong>ein- oder ausblenden</strong>.<br>Ein blauer Punkt zeigt an, dass Kameras verborgen sind.',
+    cfhBody:         'Über das <strong>Trichter-Symbol</strong> oben rechts kannst du einzelne Kameras <strong>ein- oder ausblenden</strong>.<br>Im gleichen Menü lässt sich die <strong>Reihenfolge</strong> per Drag & Drop anpassen.',
   },
   en: {
     navLive:         'Live',
@@ -8182,12 +8182,12 @@ const TRANSLATIONS = {
     rspBadges:       'Show badges',
     rhmTitle:        'Recordings – Tip',
     rhmOk:           'OK, got it',
-    rhmBody:         '<strong>Long-press</strong> a recording to open the edit bar.<br><strong>Delete</strong> recordings or use the <strong>⚙ gear</strong> to adjust the view (grid size, max recordings, badges).',
+    rhmBody:         '<strong>Long-press</strong> a recording to open the edit bar.<br><strong>Delete</strong> recordings or use the <strong>⚙ gear</strong> to adjust the view.<br>The <strong>red badge</strong> on the tab shows new recordings since your last visit.',
     rspNewBadge:     'New recordings badge',
     camFilterTip:    'Show / hide cameras',
     cfhTitle:        'Live view – Tip',
     cfhOk:           'OK, got it',
-    cfhBody:         'Use the <strong>filter icon</strong> in the top right to <strong>show or hide</strong> individual cameras.<br>A blue dot indicates that cameras are hidden.',
+    cfhBody:         'Use the <strong>filter icon</strong> in the top right to <strong>show or hide</strong> cameras.<br>Drag the handle in the same menu to <strong>reorder</strong> cameras.',
   },
   es: {
     navLive:         'En vivo',
@@ -8244,12 +8244,12 @@ const TRANSLATIONS = {
     rspBadges:       'Mostrar insignias',
     rhmTitle:        'Grabaciones – Consejo',
     rhmOk:           'OK, entendido',
-    rhmBody:         '<strong>Mantén pulsada</strong> una grabación para abrir el menú de edición.<br><strong>Elimina</strong> grabaciones o usa el <strong>⚙ engranaje</strong> para ajustar la vista (tamaño de cuadrícula, máx. grabaciones, insignias).',
+    rhmBody:         '<strong>Mantén pulsada</strong> una grabación para abrir el menú de edición.<br><strong>Elimina</strong> grabaciones o usa el <strong>⚙ engranaje</strong> para ajustar la vista.<br>El <strong>badge rojo</strong> en la pestaña muestra nuevas grabaciones desde tu última visita.',
     rspNewBadge:     'Insignia nuevas grabaciones',
     camFilterTip:    'Mostrar/ocultar cámaras',
     cfhTitle:        'Vista en vivo – Consejo',
     cfhOk:           'OK, entendido',
-    cfhBody:         'Usa el <strong>icono de filtro</strong> en la esquina superior derecha para <strong>mostrar u ocultar</strong> cámaras individuales.<br>Un punto azul indica que hay cámaras ocultas.',
+    cfhBody:         'Usa el <strong>icono de filtro</strong> en la esquina superior derecha para <strong>mostrar u ocultar</strong> cámaras.<br>En el mismo menú puedes <strong>reordenar</strong> las cámaras arrastrando el control.',
   },
   fr: {
     navLive:         'En direct',
@@ -8306,12 +8306,12 @@ const TRANSLATIONS = {
     rspBadges:       'Afficher les badges',
     rhmTitle:        'Enregistrements – Conseil',
     rhmOk:           'OK, compris',
-    rhmBody:         '<strong>Appuyer longuement</strong> sur un enregistrement ouvre le menu d\'édition.<br><strong>Supprimer</strong> des enregistrements ou utiliser l\'<strong>⚙ engrenage</strong> pour ajuster la vue (taille de grille, max. enregistrements, badges).',
+    rhmBody:         '<strong>Appuyer longuement</strong> sur un enregistrement ouvre le menu d\'édition.<br><strong>Supprimer</strong> des enregistrements ou utiliser l\'<strong>⚙ engrenage</strong> pour ajuster la vue.<br>Le <strong>badge rouge</strong> sur l\'onglet indique les nouveaux enregistrements depuis votre dernière visite.',
     rspNewBadge:     'Badge nouvelles vidéos',
     camFilterTip:    'Afficher/masquer les caméras',
     cfhTitle:        'Vue en direct – Conseil',
     cfhOk:           'OK, compris',
-    cfhBody:         'Utilisez l\'<strong>icône de filtre</strong> en haut à droite pour <strong>afficher ou masquer</strong> les caméras individuellement.<br>Un point bleu indique que des caméras sont masquées.',
+    cfhBody:         'Utilisez l\'<strong>icône de filtre</strong> en haut à droite pour <strong>afficher ou masquer</strong> les caméras.<br>Dans le même menu, <strong>réorganisez</strong> les caméras en faisant glisser la poignée.',
   },
   it: {
     navLive:         'Live',
@@ -8368,12 +8368,12 @@ const TRANSLATIONS = {
     rspBadges:       'Mostra badge',
     rhmTitle:        'Registrazioni – Suggerimento',
     rhmOk:           'OK, capito',
-    rhmBody:         '<strong>Tieni premuta</strong> una registrazione per aprire il menu di modifica.<br><strong>Elimina</strong> registrazioni o usa l\'<strong>⚙ ingranaggio</strong> per regolare la visualizzazione (dimensione griglia, max. registrazioni, badge).',
+    rhmBody:         '<strong>Tieni premuta</strong> una registrazione per aprire il menu di modifica.<br><strong>Elimina</strong> registrazioni o usa l\'<strong>⚙ ingranaggio</strong> per regolare la visualizzazione.<br>Il <strong>badge rosso</strong> sul tab mostra le nuove registrazioni dall\'ultima visita.',
     rspNewBadge:     'Badge nuove registrazioni',
     camFilterTip:    'Mostra/nascondi telecamere',
     cfhTitle:        'Vista live – Suggerimento',
     cfhOk:           'OK, capito',
-    cfhBody:         'Usa l\'<strong>icona filtro</strong> in alto a destra per <strong>mostrare o nascondere</strong> singole telecamere.<br>Un punto blu indica che alcune telecamere sono nascoste.',
+    cfhBody:         'Usa l\'<strong>icona filtro</strong> in alto a destra per <strong>mostrare o nascondere</strong> le telecamere.<br>Nello stesso menu puoi <strong>riordinare</strong> le telecamere trascinando la maniglia.',
   },
   nl: {
     navLive:         'Live',
@@ -8430,12 +8430,12 @@ const TRANSLATIONS = {
     rspBadges:       'Badges tonen',
     rhmTitle:        'Opnames – Tip',
     rhmOk:           'OK, begrepen',
-    rhmBody:         '<strong>Lang indrukken</strong> op een opname opent het bewerkingsmenu.<br><strong>Verwijder</strong> opnames of gebruik het <strong>⚙ tandwiel</strong> om de weergave aan te passen (rastergrootte, max. opnames, badges).',
+    rhmBody:         '<strong>Lang indrukken</strong> op een opname opent het bewerkingsmenu.<br><strong>Verwijder</strong> opnames of gebruik het <strong>⚙ tandwiel</strong> om de weergave aan te passen.<br>De <strong>rode badge</strong> op de tab toont nieuwe opnames sinds je laatste bezoek.',
     rspNewBadge:     'Badge nieuwe opnames',
     camFilterTip:    'Camera\'s tonen/verbergen',
     cfhTitle:        'Live weergave – Tip',
     cfhOk:           'OK, begrepen',
-    cfhBody:         'Gebruik het <strong>filterpictogram</strong> rechtsboven om afzonderlijke camera\'s <strong>te tonen of te verbergen</strong>.<br>Een blauwe stip geeft aan dat er camera\'s verborgen zijn.',
+    cfhBody:         'Gebruik het <strong>filterpictogram</strong> rechtsboven om camera\'s <strong>te tonen of te verbergen</strong>.<br>In hetzelfde menu kun je camera\'s <strong>herordenen</strong> door de greep te slepen.',
   },
   pl: {
     navLive:         'Na żywo',
@@ -8492,12 +8492,12 @@ const TRANSLATIONS = {
     rspBadges:       'Pokaż odznaki',
     rhmTitle:        'Nagrania – Wskazówka',
     rhmOk:           'OK, rozumiem',
-    rhmBody:         '<strong>Przytrzymaj</strong> nagranie, aby otworzyć menu edycji.<br><strong>Usuń</strong> nagrania lub użyj <strong>⚙ koła zębatego</strong>, aby dostosować widok (rozmiar siatki, maks. nagrania, odznaki).',
+    rhmBody:         '<strong>Przytrzymaj</strong> nagranie, aby otworzyć menu edycji.<br><strong>Usuń</strong> nagrania lub użyj <strong>⚙ koła zębatego</strong>, aby dostosować widok.<br><strong>Czerwona odznaka</strong> na karcie pokazuje nowe nagrania od ostatniej wizyty.',
     rspNewBadge:     'Odznaka nowych nagrań',
     camFilterTip:    'Pokaż/ukryj kamery',
     cfhTitle:        'Widok na żywo – Wskazówka',
     cfhOk:           'OK, rozumiem',
-    cfhBody:         'Użyj <strong>ikony filtru</strong> w prawym górnym rogu, aby <strong>pokazać lub ukryć</strong> poszczególne kamery.<br>Niebieski punkt oznacza, że kamery są ukryte.',
+    cfhBody:         'Użyj <strong>ikony filtru</strong> w prawym górnym rogu, aby <strong>pokazać lub ukryć</strong> kamery.<br>W tym samym menu możesz <strong>zmieniać kolejność</strong> kamer przeciągając uchwyt.',
   },
   pt: {
     navLive:         'Ao vivo',
@@ -8554,12 +8554,12 @@ const TRANSLATIONS = {
     rspBadges:       'Mostrar emblemas',
     rhmTitle:        'Gravações – Dica',
     rhmOk:           'OK, entendi',
-    rhmBody:         '<strong>Pressione e segure</strong> uma gravação para abrir o menu de edição.<br><strong>Exclua</strong> gravações ou use a <strong>⚙ engrenagem</strong> para ajustar a exibição (tamanho da grade, máx. gravações, emblemas).',
+    rhmBody:         '<strong>Pressione e segure</strong> uma gravação para abrir o menu de edição.<br><strong>Exclua</strong> gravações ou use a <strong>⚙ engrenagem</strong> para ajustar a exibição.<br>O <strong>badge vermelho</strong> na aba mostra novas gravações desde a sua última visita.',
     rspNewBadge:     'Badge novas gravações',
     camFilterTip:    'Mostrar/ocultar câmeras',
     cfhTitle:        'Vista ao vivo – Dica',
     cfhOk:           'OK, entendi',
-    cfhBody:         'Use o <strong>ícone de filtro</strong> no canto superior direito para <strong>mostrar ou ocultar</strong> câmeras individuais.<br>Um ponto azul indica que há câmeras ocultas.',
+    cfhBody:         'Use o <strong>ícone de filtro</strong> no canto superior direito para <strong>mostrar ou ocultar</strong> câmeras.<br>No mesmo menu você pode <strong>reordenar</strong> as câmeras arrastando o controle.',
   },
   ru: {
     navLive:         'В эфире',
@@ -8616,12 +8616,12 @@ const TRANSLATIONS = {
     rspBadges:       'Показать метки',
     rhmTitle:        'Записи – Подсказка',
     rhmOk:           'ОК, понятно',
-    rhmBody:         '<strong>Удерживайте</strong> запись, чтобы открыть меню редактирования.<br><strong>Удаляйте</strong> записи или используйте <strong>⚙ шестерёнку</strong> для настройки отображения (размер сетки, макс. записей, метки).',
+    rhmBody:         '<strong>Удерживайте</strong> запись, чтобы открыть меню редактирования.<br><strong>Удаляйте</strong> записи или используйте <strong>⚙ шестерёнку</strong> для настройки отображения.<br><strong>Красная метка</strong> на вкладке показывает новые записи с момента последнего посещения.',
     rspNewBadge:     'Метка новых записей',
     camFilterTip:    'Показать/скрыть камеры',
     cfhTitle:        'Прямой эфир – Подсказка',
     cfhOk:           'ОК, понятно',
-    cfhBody:         'Используйте <strong>значок фильтра</strong> в правом верхнем углу, чтобы <strong>показать или скрыть</strong> отдельные камеры.<br>Синяя точка означает, что камеры скрыты.',
+    cfhBody:         'Используйте <strong>значок фильтра</strong> в правом верхнем углу, чтобы <strong>показать или скрыть</strong> камеры.<br>В том же меню можно <strong>изменить порядок</strong> камер перетаскиванием.',
   },
   uk: {
     navLive:         'Наживо',
@@ -8678,12 +8678,12 @@ const TRANSLATIONS = {
     rspBadges:       'Показати мітки',
     rhmTitle:        'Записи – Підказка',
     rhmOk:           'ОК, зрозуміло',
-    rhmBody:         '<strong>Утримуйте</strong> запис, щоб відкрити меню редагування.<br><strong>Видаляйте</strong> записи або використовуйте <strong>⚙ шестерінку</strong> для налаштування відображення (розмір сітки, макс. записів, мітки).',
+    rhmBody:         '<strong>Утримуйте</strong> запис, щоб відкрити меню редагування.<br><strong>Видаляйте</strong> записи або використовуйте <strong>⚙ шестерінку</strong> для налаштування відображення.<br><strong>Червона мітка</strong> на вкладці показує нові записи з моменту останнього відвідування.',
     rspNewBadge:     'Мітка нових записів',
     camFilterTip:    'Показати/приховати камери',
     cfhTitle:        'Живий перегляд – Підказка',
     cfhOk:           'ОК, зрозуміло',
-    cfhBody:         'Використовуйте <strong>значок фільтра</strong> у правому верхньому куті, щоб <strong>показати або приховати</strong> окремі камери.<br>Синя точка означає, що камери приховані.',
+    cfhBody:         'Використовуйте <strong>значок фільтра</strong> у правому верхньому куті, щоб <strong>показати або приховати</strong> камери.<br>У тому ж меню можна <strong>змінити порядок</strong> камер перетягуванням.',
   },
   'zh-cn': {
     navLive:         '实时',
@@ -8740,12 +8740,12 @@ const TRANSLATIONS = {
     rspBadges:       '显示标签',
     rhmTitle:        '录像 – 提示',
     rhmOk:           '好的，明白了',
-    rhmBody:         '<strong>长按</strong>录像可打开编辑菜单。<br><strong>删除</strong>录像，或通过 <strong>⚙ 齿轮</strong>调整显示设置（网格大小、最大录像数、标签）。',
+    rhmBody:         '<strong>长按</strong>录像可打开编辑菜单。<br><strong>删除</strong>录像，或通过 <strong>⚙ 齿轮</strong>调整显示设置。<br>标签上的<strong>红色角标</strong>显示自上次访问以来的新录像数量。',
     rspNewBadge:     '新录像提示角标',
     camFilterTip:    '显示/隐藏摄像头',
     cfhTitle:        '实时视图 – 提示',
     cfhOk:           '好的，明白了',
-    cfhBody:         '点击右上角的<strong>过滤器图标</strong>可<strong>显示或隐藏</strong>单个摄像头。<br>蓝色圆点表示有摄像头被隐藏。',
+    cfhBody:         '点击右上角的<strong>过滤器图标</strong>可<strong>显示或隐藏</strong>摄像头。<br>在同一菜单中，可通过拖动手柄<strong>调整摄像头顺序</strong>。',
   },
 };
 
