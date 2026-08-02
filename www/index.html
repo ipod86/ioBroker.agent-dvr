@@ -64,14 +64,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 .cfp-row.cfp-drag-over{border-top:2px solid var(--accent);margin-top:-2px}
 .nav-badge{background:var(--red,#ef4444);color:#fff;border-radius:99px;font-size:9px;
   font-weight:700;padding:1px 5px;line-height:1.4;margin-left:3px;display:none}
-#rec-date-chips{display:flex;gap:5px;flex-shrink:0}
-.rec-date-chip{background:none;border:1px solid var(--border2);border-radius:99px;
-  padding:3px 10px;font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s}
-.rec-date-chip:hover{border-color:var(--border);color:var(--text)}
-.rec-date-chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
-.cam-tile[draggable]{cursor:grab}
-.cam-tile.cam-dragging{opacity:.35;pointer-events:none}
-.cam-tile.cam-drag-over{outline:2px dashed var(--accent);outline-offset:-3px}
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
@@ -7961,10 +7953,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
           </button>
           <div id="rec-cam-list" class="rec-cam-list"></div>
         </div>
-        <div id="rec-date-chips">
-          <button class="rec-date-chip" data-filter="today" data-i18n="dateToday" onclick="setRecDateFilter('today')">Heute</button>
-          <button class="rec-date-chip" data-filter="week" data-i18n="dateWeek" onclick="setRecDateFilter('week')">Diese Woche</button>
-        </div>
         <button id="rec-tag-toggle" onclick="toggleRecTags()" title="Filter by label"><svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M1 2h10l-4 4.5V11L5 9.5V6.5L1 2z"/></svg></button>
         <div id="rec-toolbar">
         <button id="rec-view-grid" class="rec-view-btn active" data-i18n-title="gridView" title="Grid view" onclick="setRecView('grid')">
@@ -8138,8 +8126,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, verstanden',
     rhmBody:         '<strong>Aufnahme lange drücken</strong> öffnet das Bearbeitungsmenü.<br>Dort Aufnahmen <strong>löschen</strong> oder über das <strong>⚙ Zahnrad</strong> die Ansicht anpassen (Rastergröße, Max. Aufnahmen, Badges).',
     rspNewBadge:     'Neue Aufnahmen',
-    dateToday:       'Heute',
-    dateWeek:        'Diese Woche',
     camFilterTip:    'Kameras ein-/ausblenden',
     cfhTitle:        'Live-Ansicht – Hinweis',
     cfhOk:           'OK, verstanden',
@@ -8202,8 +8188,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, got it',
     rhmBody:         '<strong>Long-press</strong> a recording to open the edit bar.<br><strong>Delete</strong> recordings or use the <strong>⚙ gear</strong> to adjust the view (grid size, max recordings, badges).',
     rspNewBadge:     'New recordings badge',
-    dateToday:       'Today',
-    dateWeek:        'This week',
     camFilterTip:    'Show / hide cameras',
     cfhTitle:        'Live view – Tip',
     cfhOk:           'OK, got it',
@@ -8266,8 +8250,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, entendido',
     rhmBody:         '<strong>Mantén pulsada</strong> una grabación para abrir el menú de edición.<br><strong>Elimina</strong> grabaciones o usa el <strong>⚙ engranaje</strong> para ajustar la vista (tamaño de cuadrícula, máx. grabaciones, insignias).',
     rspNewBadge:     'Insignia nuevas grabaciones',
-    dateToday:       'Hoy',
-    dateWeek:        'Esta semana',
     camFilterTip:    'Mostrar/ocultar cámaras',
     cfhTitle:        'Vista en vivo – Consejo',
     cfhOk:           'OK, entendido',
@@ -8330,8 +8312,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, compris',
     rhmBody:         '<strong>Appuyer longuement</strong> sur un enregistrement ouvre le menu d\'édition.<br><strong>Supprimer</strong> des enregistrements ou utiliser l\'<strong>⚙ engrenage</strong> pour ajuster la vue (taille de grille, max. enregistrements, badges).',
     rspNewBadge:     'Badge nouvelles vidéos',
-    dateToday:       "Aujourd'hui",
-    dateWeek:        'Cette semaine',
     camFilterTip:    'Afficher/masquer les caméras',
     cfhTitle:        'Vue en direct – Conseil',
     cfhOk:           'OK, compris',
@@ -8394,8 +8374,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, capito',
     rhmBody:         '<strong>Tieni premuta</strong> una registrazione per aprire il menu di modifica.<br><strong>Elimina</strong> registrazioni o usa l\'<strong>⚙ ingranaggio</strong> per regolare la visualizzazione (dimensione griglia, max. registrazioni, badge).',
     rspNewBadge:     'Badge nuove registrazioni',
-    dateToday:       'Oggi',
-    dateWeek:        'Questa settimana',
     camFilterTip:    'Mostra/nascondi telecamere',
     cfhTitle:        'Vista live – Suggerimento',
     cfhOk:           'OK, capito',
@@ -8458,8 +8436,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, begrepen',
     rhmBody:         '<strong>Lang indrukken</strong> op een opname opent het bewerkingsmenu.<br><strong>Verwijder</strong> opnames of gebruik het <strong>⚙ tandwiel</strong> om de weergave aan te passen (rastergrootte, max. opnames, badges).',
     rspNewBadge:     'Badge nieuwe opnames',
-    dateToday:       'Vandaag',
-    dateWeek:        'Deze week',
     camFilterTip:    'Camera\'s tonen/verbergen',
     cfhTitle:        'Live weergave – Tip',
     cfhOk:           'OK, begrepen',
@@ -8522,8 +8498,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, rozumiem',
     rhmBody:         '<strong>Przytrzymaj</strong> nagranie, aby otworzyć menu edycji.<br><strong>Usuń</strong> nagrania lub użyj <strong>⚙ koła zębatego</strong>, aby dostosować widok (rozmiar siatki, maks. nagrania, odznaki).',
     rspNewBadge:     'Odznaka nowych nagrań',
-    dateToday:       'Dziś',
-    dateWeek:        'Ten tydzień',
     camFilterTip:    'Pokaż/ukryj kamery',
     cfhTitle:        'Widok na żywo – Wskazówka',
     cfhOk:           'OK, rozumiem',
@@ -8586,8 +8560,6 @@ const TRANSLATIONS = {
     rhmOk:           'OK, entendi',
     rhmBody:         '<strong>Pressione e segure</strong> uma gravação para abrir o menu de edição.<br><strong>Exclua</strong> gravações ou use a <strong>⚙ engrenagem</strong> para ajustar a exibição (tamanho da grade, máx. gravações, emblemas).',
     rspNewBadge:     'Badge novas gravações',
-    dateToday:       'Hoje',
-    dateWeek:        'Esta semana',
     camFilterTip:    'Mostrar/ocultar câmeras',
     cfhTitle:        'Vista ao vivo – Dica',
     cfhOk:           'OK, entendi',
@@ -8650,8 +8622,6 @@ const TRANSLATIONS = {
     rhmOk:           'ОК, понятно',
     rhmBody:         '<strong>Удерживайте</strong> запись, чтобы открыть меню редактирования.<br><strong>Удаляйте</strong> записи или используйте <strong>⚙ шестерёнку</strong> для настройки отображения (размер сетки, макс. записей, метки).',
     rspNewBadge:     'Метка новых записей',
-    dateToday:       'Сегодня',
-    dateWeek:        'На этой неделе',
     camFilterTip:    'Показать/скрыть камеры',
     cfhTitle:        'Прямой эфир – Подсказка',
     cfhOk:           'ОК, понятно',
@@ -8714,8 +8684,6 @@ const TRANSLATIONS = {
     rhmOk:           'ОК, зрозуміло',
     rhmBody:         '<strong>Утримуйте</strong> запис, щоб відкрити меню редагування.<br><strong>Видаляйте</strong> записи або використовуйте <strong>⚙ шестерінку</strong> для налаштування відображення (розмір сітки, макс. записів, мітки).',
     rspNewBadge:     'Мітка нових записів',
-    dateToday:       'Сьогодні',
-    dateWeek:        'Цього тижня',
     camFilterTip:    'Показати/приховати камери',
     cfhTitle:        'Живий перегляд – Підказка',
     cfhOk:           'ОК, зрозуміло',
@@ -8778,8 +8746,6 @@ const TRANSLATIONS = {
     rhmOk:           '好的，明白了',
     rhmBody:         '<strong>长按</strong>录像可打开编辑菜单。<br><strong>删除</strong>录像，或通过 <strong>⚙ 齿轮</strong>调整显示设置（网格大小、最大录像数、标签）。',
     rspNewBadge:     '新录像提示角标',
-    dateToday:       '今天',
-    dateWeek:        '本周',
     camFilterTip:    '显示/隐藏摄像头',
     cfhTitle:        '实时视图 – 提示',
     cfhOk:           '好的，明白了',
@@ -8837,7 +8803,6 @@ let recGridSize      = Math.max(100, Math.min(350, parseInt(localStorage.getItem
 let recBadgesVisible = localStorage.getItem('advr_rec_badges') !== '0';
 let recMaxOverride   = localStorage.getItem('advr_rec_max') !== null ? parseInt(localStorage.getItem('advr_rec_max'), 10) : null;
 let recNewBadgeEnabled = localStorage.getItem('advr_rec_new_badge') !== '0';
-let recDateFilter    = null;
 let camOrder         = JSON.parse(localStorage.getItem('advr_cam_order') || '[]');
 let _dragSrcCamKey   = null;
 let ptzHeld      = null;
@@ -9182,6 +9147,46 @@ function syncCamFilter() {
       syncGrid();
     });
 
+    handle.addEventListener('touchstart', e => {
+      e.stopPropagation();
+      _dragSrcCamKey = k;
+      row.classList.add('cfp-dragging');
+    }, { passive: true });
+    handle.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const overRow = target && target.closest('.cfp-row[data-cam]');
+      panel.querySelectorAll('.cfp-row.cfp-drag-over').forEach(r => r.classList.remove('cfp-drag-over'));
+      if (overRow && overRow !== row) overRow.classList.add('cfp-drag-over');
+    }, { passive: false });
+    handle.addEventListener('touchend', e => {
+      row.classList.remove('cfp-dragging');
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const overRow = target && target.closest('.cfp-row[data-cam]');
+      panel.querySelectorAll('.cfp-row.cfp-drag-over').forEach(r => r.classList.remove('cfp-drag-over'));
+      if (overRow && overRow !== row) {
+        const fromKey = _dragSrcCamKey;
+        _dragSrcCamKey = null;
+        if (fromKey) {
+          const rows = [...panel.querySelectorAll('.cfp-row[data-cam]')];
+          const fromRow = rows.find(r => r.dataset.cam === fromKey);
+          if (fromRow) {
+            if (rows.indexOf(fromRow) < rows.indexOf(overRow))
+              panel.insertBefore(fromRow, overRow.nextSibling);
+            else
+              panel.insertBefore(fromRow, overRow);
+            camOrder = [...panel.querySelectorAll('.cfp-row[data-cam]')].map(r => r.dataset.cam);
+            localStorage.setItem('advr_cam_order', JSON.stringify(camOrder));
+            syncGrid();
+          }
+        }
+      } else {
+        _dragSrcCamKey = null;
+      }
+    }, { passive: true });
+
     panel.appendChild(row);
   });
 
@@ -9358,39 +9363,6 @@ function makeTile(key, cam) {
     const _el = mediaEl, _oid = cam.oid, _key = key, _size = sizeParam;
     setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid + _size, _key), 0);
   }
-
-  // Grid drag-to-reorder
-  tile.draggable = true;
-  tile.addEventListener('dragstart', e => {
-    _dragSrcCamKey = key;
-    tile.classList.add('cam-dragging');
-    e.dataTransfer.effectAllowed = 'move';
-  });
-  tile.addEventListener('dragend', () => {
-    _dragSrcCamKey = null;
-    tile.classList.remove('cam-dragging');
-    document.querySelectorAll('.cam-tile.cam-drag-over').forEach(t => t.classList.remove('cam-drag-over'));
-  });
-  tile.addEventListener('dragover', e => {
-    e.preventDefault();
-    if (tile.dataset.cam !== _dragSrcCamKey) tile.classList.add('cam-drag-over');
-  });
-  tile.addEventListener('dragleave', () => tile.classList.remove('cam-drag-over'));
-  tile.addEventListener('drop', e => {
-    e.preventDefault();
-    tile.classList.remove('cam-drag-over');
-    const fromKey = _dragSrcCamKey;
-    if (!fromKey || fromKey === key) return;
-    const grid = document.getElementById('cam-grid');
-    const fromTile = grid.querySelector('.cam-tile[data-cam="' + fromKey + '"]');
-    if (!fromTile) return;
-    const tiles = [...grid.querySelectorAll('.cam-tile[data-cam]')];
-    if (tiles.indexOf(fromTile) < tiles.indexOf(tile))
-      grid.insertBefore(fromTile, tile.nextSibling);
-    else
-      grid.insertBefore(fromTile, tile);
-    saveCamOrder();
-  });
 
   return tile;
 }
@@ -9999,18 +9971,6 @@ function renderRec() {
   const grid  = document.getElementById('rec-grid');
 
   const items = recAllItems.filter(r => {
-    if (recDateFilter) {
-      const rd = parseRecDate(r);
-      if (!rd) return false;
-      const now = new Date();
-      if (recDateFilter === 'today') {
-        if (rd.toDateString() !== now.toDateString()) return false;
-      } else if (recDateFilter === 'week') {
-        const mon = new Date(now); mon.setHours(0,0,0,0);
-        mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
-        if (rd < mon) return false;
-      }
-    }
     if (tag && !(r._tags || []).includes(tag)) return false;
     if (q) {
       const hay = ((r.date||'') + ' ' + (r.time||'') + ' ' + (r.tag||'') + ' ' + (r._cam?.name||'')).toLowerCase();
@@ -10714,27 +10674,6 @@ function clearRecNewBadge() {
   localStorage.setItem('advr_rec_last_count', recAllItems.length);
   const badge = document.getElementById('rec-new-badge');
   if (badge) badge.style.display = 'none';
-}
-
-function parseRecDate(r) {
-  if (r.date && r.time) { const d = new Date(r.date + 'T' + r.time); if (!isNaN(d)) return d; }
-  if (r.date) { const d = new Date(r.date); if (!isNaN(d)) return d; }
-  return null;
-}
-
-function setRecDateFilter(f) {
-  recDateFilter = recDateFilter === f ? null : f;
-  document.querySelectorAll('.rec-date-chip').forEach(c => {
-    c.classList.toggle('on', c.dataset.filter === recDateFilter);
-  });
-  renderRec();
-}
-
-function saveCamOrder() {
-  const grid = document.getElementById('cam-grid');
-  camOrder = [...grid.querySelectorAll('.cam-tile[data-cam]')].map(t => t.dataset.cam);
-  localStorage.setItem('advr_cam_order', JSON.stringify(camOrder));
-  syncCamFilter();
 }
 
 function showCamFilterHintIfNeeded() {
