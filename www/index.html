@@ -7948,14 +7948,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
           </div>
           <div class="rsp-row">
             <label for="rsp-max-rec">Max. Aufnahmen</label>
-            <select id="rsp-max-rec" onchange="setRecMaxRec(this.value)">
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-              <option value="200">200</option>
-              <option value="500">500</option>
-              <option value="0">Alle</option>
-            </select>
+            <select id="rsp-max-rec" onchange="setRecMaxRec(this.value)"></select>
           </div>
           <div class="rsp-row">
             <label for="rsp-badges-chk">Badges anzeigen</label>
@@ -10273,15 +10266,28 @@ function applyRecSettings() {
   if (chk) chk.checked = recBadgesVisible;
   const sel = document.getElementById('rsp-max-rec');
   if (sel) {
-    const effectiveMax = recMaxOverride !== null ? recMaxOverride : (CFG.dashMaxRec || 200);
-    const exists = Array.from(sel.options).some(o => parseInt(o.value, 10) === effectiveMax);
-    if (!exists) {
-      const opt = document.createElement('option');
-      opt.value = effectiveMax;
-      opt.textContent = effectiveMax + ' (Adapter)';
-      sel.insertBefore(opt, sel.firstChild);
+    const cfgMax = CFG.dashMaxRec || 200;
+    // Clamp stored override if it somehow exceeds the adapter limit
+    if (recMaxOverride !== null && recMaxOverride > 0 && recMaxOverride > cfgMax) {
+      recMaxOverride = null;
+      localStorage.removeItem('advr_rec_max');
     }
-    sel.value = effectiveMax;
+    // Rebuild options: presets ≤ cfgMax only, cfgMax always included, plus "Alle"
+    const presets = [25, 50, 100, 200, 500];
+    sel.innerHTML = '';
+    presets.filter(p => p < cfgMax).forEach(p => {
+      const o = document.createElement('option');
+      o.value = p; o.textContent = p;
+      sel.appendChild(o);
+    });
+    const stdOpt = document.createElement('option');
+    stdOpt.value = cfgMax;
+    stdOpt.textContent = cfgMax + ' (Standard)';
+    sel.appendChild(stdOpt);
+    const allOpt = document.createElement('option');
+    allOpt.value = 0; allOpt.textContent = 'Alle';
+    sel.appendChild(allOpt);
+    sel.value = recMaxOverride !== null ? recMaxOverride : cfgMax;
   }
 }
 
