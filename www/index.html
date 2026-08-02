@@ -10280,13 +10280,9 @@ function applyRecSettings() {
       o.value = p; o.textContent = p;
       sel.appendChild(o);
     });
-    const stdOpt = document.createElement('option');
-    stdOpt.value = cfgMax;
-    stdOpt.textContent = cfgMax + ' (Standard)';
-    sel.appendChild(stdOpt);
-    const allOpt = document.createElement('option');
-    allOpt.value = 0; allOpt.textContent = 'Alle';
-    sel.appendChild(allOpt);
+    const maxOpt = document.createElement('option');
+    maxOpt.value = cfgMax; maxOpt.textContent = cfgMax;
+    sel.appendChild(maxOpt);
     sel.value = recMaxOverride !== null ? recMaxOverride : cfgMax;
   }
 }
