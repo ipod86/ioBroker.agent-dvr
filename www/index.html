@@ -37,13 +37,24 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 
 /* ── Live view ── */
 #view-live{padding:var(--gap);gap:var(--gap);background:var(--bg)}
-#chip-bar{flex-shrink:0;display:flex;gap:5px;flex-wrap:nowrap;align-items:center;overflow-x:auto;scrollbar-width:none}
-#chip-bar::-webkit-scrollbar{display:none}
-.chip{background:var(--s1);border:1px solid var(--border);border-radius:99px;
-  padding:4px 12px;font-size:12px;cursor:pointer;user-select:none;color:var(--muted);
-  transition:all .15s;white-space:nowrap}
-.chip:hover{border-color:var(--border2);color:var(--text)}
-.chip.on{background:rgba(37,99,235,.15);border-color:var(--accent);color:var(--accent-l)}
+.hdr-icon-btn{background:none;border:1px solid var(--border2);color:var(--muted);
+  width:30px;height:30px;border-radius:var(--radius);cursor:pointer;display:flex;
+  align-items:center;justify-content:center;position:relative;transition:all .15s;flex-shrink:0}
+.hdr-icon-btn:hover{color:var(--text);border-color:var(--border)}
+.hdr-icon-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
+#cam-filter-badge{position:absolute;top:-5px;right:-5px;background:var(--accent);color:#fff;
+  border-radius:99px;font-size:9px;font-weight:700;padding:1px 4px;line-height:1.4;
+  pointer-events:none;display:none}
+#cam-filter-wrap{position:relative}
+#cam-filter-panel{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:400;
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:6px 0;box-shadow:0 8px 24px rgba(0,0,0,.55);min-width:180px;max-height:320px;overflow-y:auto}
+#cam-filter-panel.open{display:block}
+.cfp-row{display:flex;align-items:center;gap:10px;padding:7px 14px;cursor:pointer;
+  font-size:13px;color:var(--muted);transition:background .1s;user-select:none}
+.cfp-row:hover{background:var(--s3);color:var(--text)}
+.cfp-chk{width:14px;height:14px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.cfp-sep{height:1px;background:var(--border2);margin:4px 0}
 #cam-grid{flex:1;min-height:0;display:grid;gap:var(--gap)}
 .cam-tile{background:#000;border-radius:var(--radius);overflow:hidden;position:relative;
   cursor:pointer;min-width:0;min-height:0;border:2px solid transparent;
@@ -7901,6 +7912,15 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
     </button>
   </div>
   <div class="hdr-r">
+    <div id="cam-filter-wrap">
+      <button id="cam-filter-btn" class="hdr-icon-btn" onclick="toggleCamFilter(event)" data-i18n-title="camFilterTip">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2 3a1 1 0 0 1 1-1h14a1 1 0 0 1 .894 1.447l-5 10A1 1 0 0 1 12 14H8a1 1 0 0 1-.894-.553l-5-10A1 1 0 0 1 2 3z"/>
+        </svg>
+        <span id="cam-filter-badge"></span>
+      </button>
+      <div id="cam-filter-panel"></div>
+    </div>
     <span id="conn-wrap"><div id="conn-dot"></div></span>
   </div>
 </div>
@@ -7909,7 +7929,6 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   <!-- Live -->
   <div id="view-live" class="view active">
     <div id="info-banner"></div>
-    <div id="chip-bar"></div>
     <div id="cam-grid"></div>
   </div>
 
@@ -8092,6 +8111,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Aufnahmen – Hinweis',
     rhmOk:           'OK, verstanden',
     rhmBody:         '<strong>Aufnahme lange drücken</strong> öffnet das Bearbeitungsmenü.<br>Dort Aufnahmen <strong>löschen</strong> oder über das <strong>⚙ Zahnrad</strong> die Ansicht anpassen (Rastergröße, Max. Aufnahmen, Badges).',
+    camFilterTip:    'Kameras ein-/ausblenden',
+    cfhTitle:        'Live-Ansicht – Hinweis',
+    cfhOk:           'OK, verstanden',
+    cfhBody:         'Über das <strong>Trichter-Symbol</strong> oben rechts kannst du einzelne Kameras <strong>ein- oder ausblenden</strong>.<br>Ein blauer Punkt zeigt an, dass Kameras verborgen sind.',
   },
   en: {
     navLive:         'Live',
@@ -8149,6 +8172,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Recordings – Tip',
     rhmOk:           'OK, got it',
     rhmBody:         '<strong>Long-press</strong> a recording to open the edit bar.<br><strong>Delete</strong> recordings or use the <strong>⚙ gear</strong> to adjust the view (grid size, max recordings, badges).',
+    camFilterTip:    'Show / hide cameras',
+    cfhTitle:        'Live view – Tip',
+    cfhOk:           'OK, got it',
+    cfhBody:         'Use the <strong>filter icon</strong> in the top right to <strong>show or hide</strong> individual cameras.<br>A blue dot indicates that cameras are hidden.',
   },
   es: {
     navLive:         'En vivo',
@@ -8206,6 +8233,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Grabaciones – Consejo',
     rhmOk:           'OK, entendido',
     rhmBody:         '<strong>Mantén pulsada</strong> una grabación para abrir el menú de edición.<br><strong>Elimina</strong> grabaciones o usa el <strong>⚙ engranaje</strong> para ajustar la vista (tamaño de cuadrícula, máx. grabaciones, insignias).',
+    camFilterTip:    'Mostrar/ocultar cámaras',
+    cfhTitle:        'Vista en vivo – Consejo',
+    cfhOk:           'OK, entendido',
+    cfhBody:         'Usa el <strong>icono de filtro</strong> en la esquina superior derecha para <strong>mostrar u ocultar</strong> cámaras individuales.<br>Un punto azul indica que hay cámaras ocultas.',
   },
   fr: {
     navLive:         'En direct',
@@ -8263,6 +8294,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Enregistrements – Conseil',
     rhmOk:           'OK, compris',
     rhmBody:         '<strong>Appuyer longuement</strong> sur un enregistrement ouvre le menu d\'édition.<br><strong>Supprimer</strong> des enregistrements ou utiliser l\'<strong>⚙ engrenage</strong> pour ajuster la vue (taille de grille, max. enregistrements, badges).',
+    camFilterTip:    'Afficher/masquer les caméras',
+    cfhTitle:        'Vue en direct – Conseil',
+    cfhOk:           'OK, compris',
+    cfhBody:         'Utilisez l\'<strong>icône de filtre</strong> en haut à droite pour <strong>afficher ou masquer</strong> les caméras individuellement.<br>Un point bleu indique que des caméras sont masquées.',
   },
   it: {
     navLive:         'Live',
@@ -8320,6 +8355,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Registrazioni – Suggerimento',
     rhmOk:           'OK, capito',
     rhmBody:         '<strong>Tieni premuta</strong> una registrazione per aprire il menu di modifica.<br><strong>Elimina</strong> registrazioni o usa l\'<strong>⚙ ingranaggio</strong> per regolare la visualizzazione (dimensione griglia, max. registrazioni, badge).',
+    camFilterTip:    'Mostra/nascondi telecamere',
+    cfhTitle:        'Vista live – Suggerimento',
+    cfhOk:           'OK, capito',
+    cfhBody:         'Usa l\'<strong>icona filtro</strong> in alto a destra per <strong>mostrare o nascondere</strong> singole telecamere.<br>Un punto blu indica che alcune telecamere sono nascoste.',
   },
   nl: {
     navLive:         'Live',
@@ -8377,6 +8416,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Opnames – Tip',
     rhmOk:           'OK, begrepen',
     rhmBody:         '<strong>Lang indrukken</strong> op een opname opent het bewerkingsmenu.<br><strong>Verwijder</strong> opnames of gebruik het <strong>⚙ tandwiel</strong> om de weergave aan te passen (rastergrootte, max. opnames, badges).',
+    camFilterTip:    'Camera\'s tonen/verbergen',
+    cfhTitle:        'Live weergave – Tip',
+    cfhOk:           'OK, begrepen',
+    cfhBody:         'Gebruik het <strong>filterpictogram</strong> rechtsboven om afzonderlijke camera\'s <strong>te tonen of te verbergen</strong>.<br>Een blauwe stip geeft aan dat er camera\'s verborgen zijn.',
   },
   pl: {
     navLive:         'Na żywo',
@@ -8434,6 +8477,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Nagrania – Wskazówka',
     rhmOk:           'OK, rozumiem',
     rhmBody:         '<strong>Przytrzymaj</strong> nagranie, aby otworzyć menu edycji.<br><strong>Usuń</strong> nagrania lub użyj <strong>⚙ koła zębatego</strong>, aby dostosować widok (rozmiar siatki, maks. nagrania, odznaki).',
+    camFilterTip:    'Pokaż/ukryj kamery',
+    cfhTitle:        'Widok na żywo – Wskazówka',
+    cfhOk:           'OK, rozumiem',
+    cfhBody:         'Użyj <strong>ikony filtru</strong> w prawym górnym rogu, aby <strong>pokazać lub ukryć</strong> poszczególne kamery.<br>Niebieski punkt oznacza, że kamery są ukryte.',
   },
   pt: {
     navLive:         'Ao vivo',
@@ -8491,6 +8538,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Gravações – Dica',
     rhmOk:           'OK, entendi',
     rhmBody:         '<strong>Pressione e segure</strong> uma gravação para abrir o menu de edição.<br><strong>Exclua</strong> gravações ou use a <strong>⚙ engrenagem</strong> para ajustar a exibição (tamanho da grade, máx. gravações, emblemas).',
+    camFilterTip:    'Mostrar/ocultar câmeras',
+    cfhTitle:        'Vista ao vivo – Dica',
+    cfhOk:           'OK, entendi',
+    cfhBody:         'Use o <strong>ícone de filtro</strong> no canto superior direito para <strong>mostrar ou ocultar</strong> câmeras individuais.<br>Um ponto azul indica que há câmeras ocultas.',
   },
   ru: {
     navLive:         'В эфире',
@@ -8548,6 +8599,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Записи – Подсказка',
     rhmOk:           'ОК, понятно',
     rhmBody:         '<strong>Удерживайте</strong> запись, чтобы открыть меню редактирования.<br><strong>Удаляйте</strong> записи или используйте <strong>⚙ шестерёнку</strong> для настройки отображения (размер сетки, макс. записей, метки).',
+    camFilterTip:    'Показать/скрыть камеры',
+    cfhTitle:        'Прямой эфир – Подсказка',
+    cfhOk:           'ОК, понятно',
+    cfhBody:         'Используйте <strong>значок фильтра</strong> в правом верхнем углу, чтобы <strong>показать или скрыть</strong> отдельные камеры.<br>Синяя точка означает, что камеры скрыты.',
   },
   uk: {
     navLive:         'Наживо',
@@ -8605,6 +8660,10 @@ const TRANSLATIONS = {
     rhmTitle:        'Записи – Підказка',
     rhmOk:           'ОК, зрозуміло',
     rhmBody:         '<strong>Утримуйте</strong> запис, щоб відкрити меню редагування.<br><strong>Видаляйте</strong> записи або використовуйте <strong>⚙ шестерінку</strong> для налаштування відображення (розмір сітки, макс. записів, мітки).',
+    camFilterTip:    'Показати/приховати камери',
+    cfhTitle:        'Живий перегляд – Підказка',
+    cfhOk:           'ОК, зрозуміло',
+    cfhBody:         'Використовуйте <strong>значок фільтра</strong> у правому верхньому куті, щоб <strong>показати або приховати</strong> окремі камери.<br>Синя точка означає, що камери приховані.',
   },
   'zh-cn': {
     navLive:         '实时',
@@ -8662,6 +8721,10 @@ const TRANSLATIONS = {
     rhmTitle:        '录像 – 提示',
     rhmOk:           '好的，明白了',
     rhmBody:         '<strong>长按</strong>录像可打开编辑菜单。<br><strong>删除</strong>录像，或通过 <strong>⚙ 齿轮</strong>调整显示设置（网格大小、最大录像数、标签）。',
+    camFilterTip:    '显示/隐藏摄像头',
+    cfhTitle:        '实时视图 – 提示',
+    cfhOk:           '好的，明白了',
+    cfhBody:         '点击右上角的<strong>过滤器图标</strong>可<strong>显示或隐藏</strong>单个摄像头。<br>蓝色圆点表示有摄像头被隐藏。',
   },
 };
 
@@ -8863,7 +8926,7 @@ async function loadData() {
       buildRecCamSel();
       trySocket();
     }
-    syncChips();
+    syncCamFilter();
     syncGrid();
     if (!refreshTimer) showView(CFG.dashDefaultView || 'live'); // only on first load
     // Periodic refresh
@@ -8961,32 +9024,76 @@ function showView(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
   [...document.querySelectorAll('.nav-btn')].find(b => b.textContent.trim().toLowerCase().includes(name === 'live' ? 'live' : 'aufn'))?.classList.add('active');
-  if (name === 'live') { updateLayout(); sbarLive(); }
+  const filterWrap = document.getElementById('cam-filter-wrap');
+  if (filterWrap) filterWrap.style.display = name === 'live' ? '' : 'none';
+  if (name === 'live') { updateLayout(); sbarLive(); showCamFilterHintIfNeeded(); }
   else if (name === 'rec') {
     if (_lastRecSbar) sbar(_lastRecSbar);
     showRecHintIfNeeded();
   }
 }
 
-/* ─────────────────────────── Chips ─────────────────────────── */
-function syncChips() {
-  const bar = document.getElementById('chip-bar');
-  bar.innerHTML = '';
-  if (!Object.keys(cameras).length) return;
-  addChip(bar, t('tagAll'), hidden.size === 0, () => { hidden.clear(); save(); syncChips(); syncGrid(); });
-  Object.entries(cameras).forEach(([k, cam]) => {
-    addChip(bar, cam.name, !hidden.has(k), () => {
-      hidden.has(k) ? hidden.delete(k) : hidden.add(k);
-      save(); syncChips(); syncGrid();
-    });
+/* ─────────────────────────── Camera filter ─────────────────── */
+function syncCamFilter() {
+  const panel = document.getElementById('cam-filter-panel');
+  if (!panel) return;
+  panel.innerHTML = '';
+  const camKeys = Object.keys(cameras);
+  if (!camKeys.length) return;
+
+  const makeRow = (label, checked, onChange) => {
+    const row = document.createElement('div');
+    row.className = 'cfp-row';
+    const chk = document.createElement('input');
+    chk.type = 'checkbox'; chk.className = 'cfp-chk'; chk.checked = checked;
+    chk.onchange = onChange;
+    row.onclick = e => { if (e.target !== chk) { chk.checked = !chk.checked; onChange.call(chk); } };
+    const lbl = document.createElement('span');
+    lbl.textContent = label;
+    row.appendChild(chk); row.appendChild(lbl);
+    return row;
+  };
+
+  panel.appendChild(makeRow(t('tagAll'), hidden.size === 0, function() {
+    if (this.checked) hidden.clear();
+    else camKeys.forEach(k => hidden.add(k));
+    save(); syncCamFilter(); syncGrid();
+  }));
+
+  const sep = document.createElement('div');
+  sep.className = 'cfp-sep';
+  panel.appendChild(sep);
+
+  camKeys.forEach(k => {
+    panel.appendChild(makeRow(cameras[k].name, !hidden.has(k), function() {
+      this.checked ? hidden.delete(k) : hidden.add(k);
+      save(); syncCamFilter(); syncGrid();
+    }));
   });
+
+  const badge = document.getElementById('cam-filter-badge');
+  if (badge) {
+    badge.textContent = hidden.size;
+    badge.style.display = hidden.size > 0 ? '' : 'none';
+  }
+  const btn = document.getElementById('cam-filter-btn');
+  if (btn) btn.classList.toggle('active', hidden.size > 0);
 }
-function addChip(p, label, on, fn) {
-  const c = document.createElement('span');
-  c.className = 'chip' + (on ? ' on' : '');
-  c.textContent = label; c.onclick = fn;
-  p.appendChild(c);
+
+function toggleCamFilter(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('cam-filter-panel');
+  const isOpen = panel.classList.toggle('open');
+  if (isOpen) syncCamFilter();
 }
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('cam-filter-panel');
+  if (panel && panel.classList.contains('open') &&
+      !document.getElementById('cam-filter-wrap').contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
 function save() { localStorage.setItem('advr_hidden', JSON.stringify([...hidden])); }
 
 /* ─────────────────────────── Camera grid (smart update) ────── */
@@ -10410,6 +10517,19 @@ function setRecBadges(visible) {
   document.getElementById('rec-scroll').classList.toggle('rec-hide-badges', !visible);
 }
 
+function showCamFilterHintIfNeeded() {
+  if (localStorage.getItem('advr_cam_filter_hint_seen')) return;
+  const bodyEl = document.getElementById('cfh-body');
+  if (bodyEl) bodyEl.innerHTML = t('cfhBody');
+  const m = document.getElementById('cam-filter-hint-modal');
+  if (m) { m.style.display = 'flex'; }
+}
+function dismissCamFilterHint() {
+  localStorage.setItem('advr_cam_filter_hint_seen', '1');
+  const m = document.getElementById('cam-filter-hint-modal');
+  if (m) m.style.display = 'none';
+}
+
 function showRecHintIfNeeded() {
   if (localStorage.getItem('advr_rec_hint_seen')) return;
   const bodyEl = document.getElementById('rhm-body');
@@ -10441,6 +10561,13 @@ loadConfig().then(() => loadData()).then(() => {
 });
 </script>
 <script src="/socket.io/socket.io.js"></script>
+<div id="cam-filter-hint-modal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.55);align-items:center;justify-content:center">
+  <div class="rhm-box">
+    <div class="rhm-title" data-i18n="cfhTitle">Live-Ansicht – Hinweis</div>
+    <div class="rhm-body" id="cfh-body"></div>
+    <button class="rhm-ok" onclick="dismissCamFilterHint()" data-i18n="cfhOk">OK, verstanden</button>
+  </div>
+</div>
 <div id="rec-hint-modal">
   <div class="rhm-box">
     <div class="rhm-title" data-i18n="rhmTitle">Aufnahmen – Hinweis</div>
