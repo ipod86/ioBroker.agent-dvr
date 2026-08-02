@@ -170,6 +170,23 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   justify-content:center;transition:all .15s;flex-shrink:0}
 .rec-view-btn:hover{color:var(--text);border-color:var(--border)}
 .rec-view-btn.active{color:var(--accent-l);background:rgba(37,99,235,.12);border-color:var(--accent)}
+#rec-toolbar{position:relative}
+#rec-settings-panel{display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:300;
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.55);min-width:220px}
+#rec-settings-panel.open{display:block}
+.rsp-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:10px}
+.rsp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-size:12px;margin-bottom:10px}
+.rsp-row:last-child{margin-bottom:0}
+.rsp-row label{color:var(--muted);white-space:nowrap;cursor:default}
+.rsp-slider-wrap{display:flex;align-items:center;gap:7px}
+.rsp-slider-wrap input[type=range]{width:90px;accent-color:var(--accent);cursor:pointer}
+.rsp-grid-lbl{font-size:11px;color:var(--muted);min-width:36px;text-align:right}
+.rsp-chk{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+#rec-scroll.rec-hide-badges .rec-badges,
+#rec-scroll.rec-hide-badges .rec-badges-l{display:none!important}
 
 /* ── Timeline ── */
 .tl-wrap{display:flex;flex-direction:column;gap:0;padding-bottom:4px}
@@ -213,7 +230,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #rec-scroll::-webkit-scrollbar{width:5px}
 #rec-scroll::-webkit-scrollbar-track{background:transparent}
 #rec-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:8px}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--rec-grid-min,175px),1fr));gap:8px}
 .rec-tile{background:var(--s2);border:1px solid var(--border);border-radius:var(--radius);
   overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
 .rec-tile:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.45);border-color:var(--border2)}
@@ -7913,6 +7930,25 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
             <circle cx="7" cy="7" r="6"/><line x1="7" y1="4" x2="7" y2="7"/><line x1="7" y1="7" x2="9.5" y2="9.5"/>
           </svg>
         </button>
+        <button id="rec-settings-btn" class="rec-view-btn" title="Anzeigeeinstellungen" onclick="toggleRecSettings(event)">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 0 1-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 0 1 .947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 0 1 2.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 0 1 2.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 0 1 .947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 0 1-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 0 1-2.287-.947zM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+        <div id="rec-settings-panel">
+          <div class="rsp-title">Anzeigeeinstellungen</div>
+          <div class="rsp-row">
+            <label for="rsp-grid-size">Rastergröße</label>
+            <div class="rsp-slider-wrap">
+              <input type="range" id="rsp-grid-size" min="100" max="350" step="25" oninput="setRecGridSize(this.value)">
+              <span class="rsp-grid-lbl" id="rsp-grid-lbl">175px</span>
+            </div>
+          </div>
+          <div class="rsp-row">
+            <label for="rsp-badges-chk">Badges anzeigen</label>
+            <input type="checkbox" class="rsp-chk" id="rsp-badges-chk" onchange="setRecBadges(this.checked)">
+          </div>
+        </div>
         </div>
       </div>
       <div id="rec-filter-tags" class="collapsed">
@@ -8581,6 +8617,8 @@ let _lastFilteredFns = [];
 const TL_ZOOMS  = [1, 2, 4, 8, 24, 48];
 let tlZoomLevel = parseInt(localStorage.getItem('advr_tl_zoom') || '1', 10);
 if (!TL_ZOOMS.includes(tlZoomLevel)) tlZoomLevel = 1;
+let recGridSize      = Math.max(100, Math.min(350, parseInt(localStorage.getItem('advr_rec_grid_size') || '175', 10)));
+let recBadgesVisible = localStorage.getItem('advr_rec_badges') !== '0';
 let ptzHeld      = null;
 let refreshTimer = null;
 let go2rtcMap    = {}; // populated from CFG.go2rtcMapping after loadConfig()
@@ -10209,8 +10247,52 @@ function disconnectWebRTC(vid) {
 
 /* ─────────────────────────── Boot ──────────────────────────── */
 applyDashTranslations();
+/* ─────────────────────────── Rec display settings ──────── */
+function applyRecSettings() {
+  document.documentElement.style.setProperty('--rec-grid-min', recGridSize + 'px');
+  document.getElementById('rec-scroll').classList.toggle('rec-hide-badges', !recBadgesVisible);
+  const sl  = document.getElementById('rsp-grid-size');
+  const lbl = document.getElementById('rsp-grid-lbl');
+  if (sl)  sl.value = recGridSize;
+  if (lbl) lbl.textContent = recGridSize + 'px';
+  const chk = document.getElementById('rsp-badges-chk');
+  if (chk) chk.checked = recBadgesVisible;
+}
+
+function toggleRecSettings(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('rec-settings-panel');
+  const isOpen = panel.classList.toggle('open');
+  document.getElementById('rec-settings-btn').classList.toggle('active', isOpen);
+  if (isOpen) applyRecSettings();
+}
+
+function setRecGridSize(val) {
+  recGridSize = parseInt(val, 10);
+  localStorage.setItem('advr_rec_grid_size', recGridSize);
+  document.documentElement.style.setProperty('--rec-grid-min', recGridSize + 'px');
+  document.getElementById('rsp-grid-lbl').textContent = recGridSize + 'px';
+}
+
+function setRecBadges(visible) {
+  recBadgesVisible = visible;
+  localStorage.setItem('advr_rec_badges', visible ? '1' : '0');
+  document.getElementById('rec-scroll').classList.toggle('rec-hide-badges', !visible);
+}
+
+document.addEventListener('click', e => {
+  const panel = document.getElementById('rec-settings-panel');
+  if (panel && panel.classList.contains('open') &&
+      !panel.contains(e.target) &&
+      !document.getElementById('rec-settings-btn').contains(e.target)) {
+    panel.classList.remove('open');
+    document.getElementById('rec-settings-btn').classList.remove('active');
+  }
+});
+
 loadConfig().then(() => loadData()).then(() => {
   ensureLayoutObserver();
+  applyRecSettings();
   loadSysStats();
   setInterval(loadSysStats, 60000);
 });
