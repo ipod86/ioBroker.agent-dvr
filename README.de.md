@@ -222,6 +222,7 @@ Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/
 - Tag-Filter splittet AgentDVRs kommagetrennte Tags in einzelne Chips — jeder Tag einzeln filterbar
 - Aufnahme löschen aus dem Video-Player-Modal oder per Mehrfachauswahl (Langer Druck → Checkbox-Modus, Sammel-Löschen, ab AgentDVR v7.7.8.0+)
 - Aufnahmen-Anzeigeeinstellungen — ⚙ Zahnrad im Auswahl-/Löschen-Balken; Schieberegler für Rasterspaltengröße, Override für maximale Aufnahmen und Badge-Toggle — alles im localStorage gespeichert
+- „Neue Aufnahmen"-Badge am Aufnahmen-Tab — zeigt an, wie viele Aufnahmen seit dem letzten Tab-Besuch hinzugekommen sind; der Ausgangswert wird im localStorage des Browsers gespeichert und ist gerätebezogen (nicht geräte- oder browserübergreifend synchronisiert)
 - Kamerafarben werden aus AgentDVR gelesen und für Timeline-Balken und Aufnahme-Punkte verwendet
 - PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; ein Selektor-Datenpunkt pro Kamera (ab AgentDVR v7.7.8.0+)
 - Statuszeile zeigt Kameraanzahl, CPU-/RAM-Auslastung und freien Festplattenspeicher

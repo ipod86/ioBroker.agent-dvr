@@ -227,6 +227,7 @@ The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agen
 - Tag filter splits AgentDVR's comma-separated tags into individual chips for per-tag filtering
 - Delete recording from the video player modal or select multiple with a long-press and bulk-delete (requires AgentDVR v7.7.8.0+)
 - Recording display settings — ⚙ gear button in the select/delete bar; slider for grid column width, max recordings override, and badge toggle — all saved in localStorage
+- New-recordings badge on the Recordings tab — shows how many recordings arrived since you last visited that tab; the baseline is stored in the browser's localStorage and is per-browser/per-device (not shared across different browsers or devices)
 - Camera colors are read from AgentDVR and applied to timeline bars and recording dots
 - PTZ presets — navigate to saved presets from the PTZ overlay; single selector data point per camera (requires AgentDVR v7.7.8.0+)
 - Status bar shows camera count, CPU/RAM usage and disk free space
