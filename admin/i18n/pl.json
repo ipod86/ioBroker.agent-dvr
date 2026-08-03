@@ -21,7 +21,7 @@
   "cfgDashEnableRecordings": "Pokaż zakładkę nagrań",
   "cfgDashEnableRecordings_tt": "Wyświetla zakładkę nagrań w nawigacji panelu. Wyłącz aby całkowicie ukryć zakładkę.",
   "cfgDashMaxRec": "Max. recordings total",
-  "cfgDashMaxRec_tt": "Maximum total number of recordings shown in the dashboard across all cameras (newest first).",
+  "cfgDashMaxRec_tt": "Maksymalna łączna liczba nagrań wyświetlanych na pulpicie nawigacyjnym dla wszystkich kamer (najnowsze pierwsze).",
   "cfgDashGridCols": "Liczba kolumn (0 = automatycznie)",
   "cfgDashGridCols_tt": "Wymusza stałą liczbę kolumn kamer. 0 = optymalna liczba jest obliczana automatycznie.",
   "cfgDashRefreshSec": "Odświeżaj listę kamer co (sekundy)",
