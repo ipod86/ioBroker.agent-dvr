@@ -185,7 +185,6 @@
     "enableUrls": true,
     "enableSnapshotB64": false,
     "enableEventDps": true,
-    "enablePush": true,
     "enableOverview": true,
     "storeRawJson": false,
     "enableWidget": true,

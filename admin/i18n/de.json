@@ -1,5 +1,4 @@
 {
-  "agent-dvr adapter settings": "Agent DVR Adapter-Einstellungen",
   "cfgCameraColumn": "AgentDVR Kamera",
   "cfgDashBtnsVisible": "Buttons immer sichtbar",
   "cfgDashBtnsVisible_tt": "Aufnahme- und PTZ-Button immer anzeigen (sonst nur bei Hover)",

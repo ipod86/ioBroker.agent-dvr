@@ -1,5 +1,4 @@
 {
-  "agent-dvr adapter settings": "Paramètres de l'adaptateur Agent DVR",
   "cfgCameraColumn": "Caméra AgentDVR",
   "cfgDashBtnsVisible": "Boutons toujours visibles",
   "cfgDashBtnsVisible_tt": "Toujours afficher les boutons d'enregistrement et PTZ (sinon visible au survol seulement)",

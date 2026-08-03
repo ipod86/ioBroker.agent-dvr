@@ -1,5 +1,4 @@
 {
-  "agent-dvr adapter settings": "Configuración del adaptador Agent DVR",
   "cfgCameraColumn": "Cámara AgentDVR",
   "cfgDashBtnsVisible": "Botones siempre visibles",
   "cfgDashBtnsVisible_tt": "Mostrar siempre los botones de grabación y PTZ (de lo contrario, solo al pasar el cursor)",
