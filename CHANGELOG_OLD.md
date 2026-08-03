@@ -1,6 +1,11 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.2.1 (2026-07-04)
+* (ipod86) fix: translate all German user-facing strings and error messages to English
+* (ipod86) fix: DashboardPanel shows i18n-aware messages for missing IP and empty camera list
+* (ipod86) chore: add .npmignore to exclude src/ and src-admin/ from npm package
+
 ## 0.2.2 (2026-07-04)
 * (ipod86) fix: translate remaining German strings in DashboardPanel to English via I18n.t()
 * (ipod86) fix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages

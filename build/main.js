@@ -1334,7 +1334,7 @@ class AgentDvr extends utils.Adapter {
           const allObjs = await this.getAdapterObjectsAsync();
           for (const fullId of Object.keys(allObjs)) {
             const rel = fullId.slice(this.namespace.length + 1);
-            const m = rel.match(/^system\.drives\.([^.]+)$/);
+            const m = rel.match(/^system\.hardware\.drives\.([^.]+)$/);
             if (m && !activeKeys.has(m[1])) {
               await this.delObjectAsync(rel, { recursive: true });
             }

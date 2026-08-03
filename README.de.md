@@ -402,9 +402,12 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.5.0 (2026-08-03)
+* (ipod86) feat: Kamera-Chip-Leiste durch kompakten Header-Filter-Button ersetzt — Trichter-Icon öffnet Popover mit Checkboxen und Drag-to-Reorder; Reihenfolge im localStorage gespeichert
+* (ipod86) feat: Neue-Aufnahmen-Badge am Aufnahmen-Tab — zeigt Anzahl neuer Aufnahmen seit letztem Besuch; browser- und gerätebezogen im localStorage gespeichert
+* (ipod86) feat: Aufnahmen-Anzeigeeinstellungen — ⚙ Zahnrad im Auswahl-/Löschen-Balken; Schieberegler für Rasterspaltengröße, maximale Aufnahmen und Badge-Toggle (alles im localStorage)
+* (ipod86) feat: Erstbesuchs-Hinweis-Modals für Live-Ansicht (Filter & Sortierung) und Aufnahmen-Tab (Gesten, Zahnrad, Badge)
 * (ipod86) feat: Webhook-Endpunkt `/agent-dvr/webhook` löst sofortigen vollständigen Poll aus — als AgentDVR-Action konfigurierbar für Echtzeit-Updates
-* (ipod86) refactor: pro-Kamera pushTrigger-Datenpunkte durch globalen Webhook ersetzt
 * (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; Selektor-Datenpunkt `<cam>.control.ptz.preset` pro Kamera (ab AgentDVR v7.7.8.0+)
 * (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
 * (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)
@@ -413,13 +416,18 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 * (ipod86) feat: Tag-Filter splittet kommagetrennte Tags in einzelne Chips für kameraübergreifende Filterung pro Tag
 * (ipod86) feat: Kamerafarbe aus AgentDVR lesen und für Timeline-Balken und Aufnahme-Punkte verwenden
 * (ipod86) feat: Statuszeile zeigt CPU-Auslastung, RAM-% und freien Speicher sowie freien Festplattenspeicher
-* (ipod86) feat: Videofehler-Hinweis um AgentDVR-Auto-Konvertierungs-Hinweis in allen 11 Sprachen erweitert
-* (ipod86) fix: gelöschte Aufnahmen erscheinen nach dem nächsten Adapter-Poll nicht mehr erneut (events.json wird sofort aktualisiert)
-* (ipod86) fix: Statuszeile im Live-Bereich wird nicht mehr überschrieben, wenn Aufnahmen im Hintergrund geladen werden
+* (ipod86) feat: Farben-auf-Werkseinstellung-Schaltfläche im Tab „Live-Dashboard" der Adapter-Einstellungen
+* (ipod86) refactor: pro-Kamera pushTrigger-Datenpunkte durch globalen Webhook ersetzt
+* (ipod86) fix: Neue-Aufnahmen-Badge jetzt korrekt sichtbar (display:none CSS-Fallback behoben)
+* (ipod86) fix: Aufnahme-Schaltfläche an die rechteste Position in Raster-Kacheln und Vollbild-Panel verschoben
+* (ipod86) fix: Kamera-Filter-Button ändert sein Aussehen nicht mehr wenn Kameras ausgeblendet sind
+* (ipod86) fix: Header-Z-Index angehoben, damit das Filter-Popover über dem Hauptinhalt gerendert wird
+* (ipod86) fix: Pruning-Regex für Drive-Objekte korrigiert; veraltete Drive-Einträge werden jetzt korrekt entfernt
+* (ipod86) fix: gelöschte Aufnahmen erscheinen nach dem nächsten Adapter-Poll nicht mehr erneut
+* (ipod86) fix: Videofehler-Hinweis um AgentDVR-Auto-Konvertierungs-Hinweis in allen 11 Sprachen erweitert
 * (ipod86) fix: FLV-Stream- und Raster-Kachel-Skalierung korrigiert
 * (ipod86) fix: Apostroph im italienischen i18n-String hat die gesamte Seiten-JS gebrochen
 * (ipod86) fix: AgentDVR-Antwort „Command not found" beim Löschen wird jetzt erkannt und als Fehler angezeigt
-* (ipod86) fix: fn-Feld fehlte im events.json-State — Dateiname beim Löschen konnte nicht aufgelöst werden
 
 ### 0.4.3 (2026-07-19)
 * (ipod86) fix: Poll-Schleife von setInterval auf setTimeout umgestellt (verhindert parallele Polls)

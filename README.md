@@ -402,28 +402,32 @@ Returns `{"ok":true}` on success.
 | `overview` | string | R | HTML tile grid of all cameras |
 
 ## Changelog
-### **WORK IN PROGRESS**
-* (ipod86) feat: replace live-view camera chip-bar with compact header filter button — funnel icon opens a popover with per-camera checkboxes and an "All" toggle; hidden-camera count shown as badge on the button
-* (ipod86) feat: recording display settings panel — ⚙ gear button in the select/delete bar opens a panel with grid-size slider, max-recordings override and badge toggle (all persisted in localStorage)
-* (ipod86) feat: first-visit onboarding modals for both live view (camera filter) and recordings tab (long-press gesture + gear panel), dismissed with OK and suppressed in localStorage on subsequent visits
-* (ipod86) fix: header z-index lifted so the camera filter popover renders above the main content area
+### 0.5.0 (2026-08-03)
+* (ipod86) feat: replace live-view camera chip-bar with compact header filter button — funnel icon opens a popover with per-camera checkboxes and drag-to-reorder; order persisted in localStorage
+* (ipod86) feat: new-recordings badge on the Recordings tab — shows count of recordings since last visit; persisted per browser/device in localStorage
+* (ipod86) feat: recording display settings panel — ⚙ gear button in the select/delete bar; grid column width slider, max-recordings override, badge toggle (all persisted in localStorage)
+* (ipod86) feat: first-visit onboarding modals for live view (camera filter & sort) and recordings tab (gestures, gear panel, badge)
 * (ipod86) feat: webhook endpoint `/agent-dvr/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
-* (ipod86) refactor: remove per-camera pushTrigger data points in favour of the global webhook
 * (ipod86) feat: PTZ presets — navigate to saved presets from PTZ overlay; single selector DP `<cam>.control.ptz.preset` per camera (requires AgentDVR v7.7.8.0+)
 * (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
 * (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)
-* (ipod86) feat: bulk-delete recordings — long-press a tile to enter select mode, checkbox each recording, delete all at once; includes select-all button
+* (ipod86) feat: bulk-delete recordings — long-press a tile to enter select mode, checkbox each recording, delete all at once
 * (ipod86) feat: new `dashMaxRec` config setting — limits total recordings shown across all cameras in the dashboard (independent of widget limit, default 200)
 * (ipod86) feat: tag filter splits AgentDVR's comma-separated tags into individual chips for per-tag filtering
 * (ipod86) feat: read camera color from AgentDVR and use it for timeline bars and recording dots
 * (ipod86) feat: status bar shows CPU usage, RAM % and free, disk usage % and free alongside camera/recording counts
-* (ipod86) feat: extend video format error message with AgentDVR auto-convert hint in all 11 languages
-* (ipod86) fix: deleted recordings no longer reappear after the next adapter poll (events.json updated immediately on delete)
-* (ipod86) fix: footer text no longer overwritten when recordings load in the background on the live view
+* (ipod86) feat: reset colors to defaults button in Live Dashboard settings tab
+* (ipod86) refactor: remove per-camera pushTrigger data points in favour of the global webhook
+* (ipod86) fix: new-recordings badge now correctly visible (display:none CSS fallback fixed)
+* (ipod86) fix: record button moved to rightmost position in grid tiles and fullscreen panel
+* (ipod86) fix: camera filter button no longer changes appearance when cameras are hidden
+* (ipod86) fix: header z-index lifted so the camera filter popover renders above the main content area
+* (ipod86) fix: drive object pruning regex corrected; stale drive entries are now properly removed
+* (ipod86) fix: deleted recordings no longer reappear after the next adapter poll
+* (ipod86) fix: extend video format error message with AgentDVR auto-convert hint in all 11 languages
 * (ipod86) fix: FLV stream and grid tile layout scaling corrections
 * (ipod86) fix: Italian i18n string with apostrophe broke page JS (changed to escaped variant)
 * (ipod86) fix: detect AgentDVR "Command not found" response on delete and show proper error message
-* (ipod86) fix: fn field was missing from events.json state — delete could not resolve the filename
 
 ### 0.4.3 (2026-07-19)
 * (ipod86) fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs
