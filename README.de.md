@@ -25,7 +25,7 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 - PTZ-Steuerung mit Halte-Schaltern (links, rechts, oben, unten, diagonal, Zoom, Stopp, Mitte)
 - Stream-URLs pro Kamera (Snapshot, Foto, MJPEG, MP4)
 - Webhook-Endpunkt für Echtzeit-Updates — per AgentDVR-Action aufrufbar, löst sofortigen vollständigen Poll aus
-- HTML-Galerie-Widget pro Kamera (reines HTML/CSS oder JS-Modus mit Suche und Tag-Filter)
+- HTML-Aufnahme-Widget pro Kamera (`widget_recordings`) und Live-Einzelkachelansicht (`widget_live`) — reines HTML/CSS oder JS-Modus mit Suche und Tag-Filter
 - Übersichts-Widget, das alle Kameras in einem HTML-Zustand kombiniert
 - **Eingebautes Live-Dashboard** unter `http://<iobroker>:<webport>/agent-dvr.0/` — keine zusätzliche App nötig:
   - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC/MSE
@@ -377,7 +377,8 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
 | `<cam>.events.*` | verschieden | R | Metadaten der letzten Aufnahme — erfordert „Ereignis-Datenpunkte" |
-| `<cam>.gallery` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
+| `<cam>.widget_recordings` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
+| `<cam>.widget_live` | string | R | HTML-Live-Einzelkachel der Kamera — erfordert „Galerie-Widget" |
 
 ## Webhook
 
@@ -405,6 +406,10 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.5.1 (2026-08-05)
+* (ipod86) feat: Instanz-eigenes URL-Routing — jede Adapter-Instanz erhält einen eigenen URL-Namespace (`agent-dvr.0/`, `agent-dvr.1/`, …)
+* (ipod86) feat: Aufnahme-Widget-Datenpunkt pro Kamera von `widget` zu `widget_recordings` umbenannt; neuer Datenpunkt `widget_live` mit Live-Einzelkachel der Kamera
+
 ### 0.5.0 (2026-08-03)
 * (ipod86) feat: Kamera-Chip-Leiste durch kompakten Header-Filter-Button ersetzt — Trichter-Icon öffnet Popover mit Checkboxen und Drag-to-Reorder; Reihenfolge im localStorage gespeichert
 * (ipod86) feat: Neue-Aufnahmen-Badge am Aufnahmen-Tab — zeigt Anzahl neuer Aufnahmen seit letztem Besuch; browser- und gerätebezogen im localStorage gespeichert

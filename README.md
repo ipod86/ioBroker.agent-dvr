@@ -30,7 +30,7 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - PTZ control with hold-to-move switches
 - Stream URLs per camera (snapshot, photo, MJPEG, MP4)
 - Webhook endpoint for real-time updates — call it from an AgentDVR action to trigger an immediate full poll
-- HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
+- HTML recording gallery widget per camera (`widget_recordings`) and single-camera live tile (`widget_live`) — pure HTML/CSS or full JS mode with search and tag filter
 - Overview widget combining all cameras in one HTML state
 - **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr.0/` — no additional app needed:
   - Per-camera stream selection: MJPEG, MP4/FLV with audio, or go2rtc WebRTC/MSE
@@ -382,7 +382,8 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
 | `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
-| `<cam>.gallery` | string | R | HTML recording gallery — requires "Gallery widget" |
+| `<cam>.widget_recordings` | string | R | HTML recording gallery — requires "Gallery widget" |
+| `<cam>.widget_live` | string | R | HTML single-camera live tile — requires "Gallery widget" |
 
 ## Webhook
 
@@ -405,6 +406,10 @@ Returns `{"ok":true}` on success.
 | `overview` | string | R | HTML tile grid of all cameras |
 
 ## Changelog
+### 0.5.1 (2026-08-05)
+* (ipod86) feat: per-instance URL routing — each adapter instance uses its own URL namespace (`agent-dvr.0/`, `agent-dvr.1/`, …)
+* (ipod86) feat: rename per-camera recording widget DP from `widget` to `widget_recordings`; add new `widget_live` DP with a single-camera live tile
+
 ### 0.5.0 (2026-08-03)
 * (ipod86) feat: replace live-view camera chip-bar with compact header filter button — funnel icon opens a popover with per-camera checkboxes and drag-to-reorder; order persisted in localStorage
 * (ipod86) feat: new-recordings badge on the Recordings tab — shows count of recordings since last visit; persisted per browser/device in localStorage

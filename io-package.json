@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "agent-dvr",
-        "version": "0.5.0",
+        "version": "0.5.1",
         "news": {
+            "0.5.1": {
+                "en": "feat: per-instance URL routing (agent-dvr.0/, agent-dvr.1/, …); rename per-camera widget DP to widget_recordings; add widget_live DP with single-camera live tile",
+                "de": "feat: instanzeigenes URL-Routing (agent-dvr.0/, agent-dvr.1/, …); Aufnahme-Widget-Datenpunkt pro Kamera in widget_recordings umbenannt; neuer widget_live-Datenpunkt mit Live-Einzelkachel der Kamera",
+                "ru": "feat: маршрутизация URL для каждого экземпляра (agent-dvr.0/, agent-dvr.1/, …); переименование DP виджета записей камеры в widget_recordings; добавление DP widget_live с живой плиткой одной камеры",
+                "pt": "feat: roteamento de URL por instância (agent-dvr.0/, agent-dvr.1/, …); renomear DP do widget de gravações por câmera para widget_recordings; adicionar DP widget_live com tile ao vivo de câmera única",
+                "nl": "feat: URL-routing per instantie (agent-dvr.0/, agent-dvr.1/, …); hernoem per-camera opname-widget-DP naar widget_recordings; voeg widget_live-DP toe met live-tegel voor één camera",
+                "fr": "feat: routage d'URL par instance (agent-dvr.0/, agent-dvr.1/, …); renommage du DP widget d'enregistrement par caméra en widget_recordings; ajout du DP widget_live avec vignette en direct d'une seule caméra",
+                "it": "feat: routing URL per istanza (agent-dvr.0/, agent-dvr.1/, …); rinominare DP widget registrazioni per telecamera in widget_recordings; aggiunto DP widget_live con tile live a singola telecamera",
+                "es": "feat: enrutamiento de URL por instancia (agent-dvr.0/, agent-dvr.1/, …); renombrar DP de widget de grabaciones por cámara a widget_recordings; agregar DP widget_live con tile en vivo de cámara única",
+                "pl": "feat: routing URL dla każdej instancji (agent-dvr.0/, agent-dvr.1/, …); zmiana nazwy DP widgetu nagrań kamery na widget_recordings; dodanie DP widget_live z kafelkiem podglądu na żywo pojedynczej kamery",
+                "uk": "feat: маршрутизація URL для кожного екземпляра (agent-dvr.0/, agent-dvr.1/, …); перейменування DP віджета записів камери на widget_recordings; додано DP widget_live з живою плиткою однієї камери",
+                "zh-cn": "feat: 每实例URL路由 (agent-dvr.0/, agent-dvr.1/, …)；将每摄像头录像小部件DP重命名为widget_recordings；新增widget_live DP，显示单摄像头直播磁贴"
+            },
             "0.5.0": {
                 "en": "feat: camera filter popover with sort order drag & drop, new-recordings badge, recording display settings, webhook trigger, PTZ presets, event log, bulk-delete, camera color, status bar extensions, reset-colors button; multiple dashboard fixes",
                 "de": "feat: Kamera-Filter-Popover mit Sortierfunktion, Neue-Aufnahmen-Badge, Aufnahmen-Anzeigeeinstellungen, Webhook-Trigger, PTZ-Presets, Ereignisprotokoll, Mehrfach-Löschen, Kamerafarbe, Statuszeilen-Erweiterungen, Farben-Reset-Schaltfläche; diverse Dashboard-Korrekturen",
@@ -80,19 +93,6 @@
                 "pl": "Nowe przyciski sterowania (harmonogram, detektor, czułość), stany URL audio dla mikrofonów, natywny pełny ekran, zwijany filtr etykiet",
                 "zh-cn": "新增控制按钮（计划、检测器、灵敏度），麦克风音频URL状态，本地浏览器全屏，可折叠标签过滤器",
                 "uk": "Нові кнопки керування (розклад, детектор, чутливість), стани URL аудіо для мікрофонів, нативний повноекранний режим, згортуваний фільтр міток"
-            },
-            "0.2.2": {
-                "en": "fix: translate remaining German strings in DashboardPanel to English via I18n.t()\nfix: add i18n keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in all 11 languages\nchore: replace POSIX mv with cross-platform node rename in src-admin build script",
-                "de": "Behebung: Die verbleibenden deutschen Zeichenketten im DashboardPanel werden mithilfe von I18n.t() ins Englische übersetzt.\nBehebung: Hinzufügen der i18n-Schlüssel loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn und reload in allen 11 Sprachen\nAufgabe: Ersetzen Sie POSIX mv durch plattformübergreifendes Node-Rename im src-admin-Build-Skript.",
-                "ru": "Исправление: перевести оставшиеся немецкие строки в DashboardPanel на английский язык с помощью I18n.t()\nИсправление: добавлены ключи интернационализации loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload для всех 11 языков.\nЗадача: заменить POSIX mv на кроссплатформенное переименование узла в скрипте сборки src-admin.",
-                "pt": "Correção: traduzir as strings alemãs restantes no DashboardPanel para inglês usando I18n.t().\nCorreção: adicionar as chaves i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn e reload em todos os 11 idiomas.\nTarefa: substituir POSIX mv por renomear nó multiplataforma no script de compilação do src-admin",
-                "nl": "fix: vertaal de resterende Duitse strings in DashboardPanel naar het Engels via I18n.t()\nOplossing: voeg i18n-sleutels toe voor loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn en reload in alle 11 talen.\nTaak: vervang POSIX mv door platformonafhankelijke node rename in het src-admin buildscript",
-                "fr": "Correction : traduire les chaînes de caractères allemandes restantes dans DashboardPanel en anglais via I18n.t()\nCorrection : ajout des clés i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn et reload dans les 11 langues.\nTâche : remplacer la commande POSIX mv par une commande de renommage de nœud multiplateforme dans le script de compilation src-admin",
-                "it": "correzione: tradurre le stringhe tedesche rimanenti in DashboardPanel in inglese tramite I18n.t()\nCorrezione: aggiungi le chiavi i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, ricarica in tutte le 11 lingue\ncompito: sostituire POSIX mv con rename multipiattaforma node nello script di build src-admin",
-                "es": "Corrección: traducir las cadenas de texto alemanas restantes en DashboardPanel al inglés mediante I18n.t().\nCorrección: agregar las claves i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload en los 11 idiomas.\nTarea: reemplazar POSIX mv con node rename multiplataforma en el script de compilación de src-admin",
-                "pl": "naprawiono: przetłumacz pozostałe niemieckie ciągi znaków w DashboardPanel na angielski za pomocą I18n.t()\npoprawka: dodaj klucze i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, przeładuj we wszystkich 11 językach\nzadanie: zastąp POSIX mv zmianą nazwy węzła międzyplatformowego w skrypcie kompilacji src-admin",
-                "uk": "виправлення: перекладіть решту німецьких рядків у DashboardPanel на англійську мову через I18n.t()\nвиправлення: додано ключі i18n loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, перезавантаження всіма 11 мовами\nзавдання: замінити POSIX mv на кросплатформне перейменування вузлів у скрипті збірки src-admin",
-                "zh-cn": "修复：使用 I18n.t() 将 DashboardPanel 中剩余的德语字符串翻译成英语\n修复：在所有 11 种语言中添加 i18n 键 loadingCamerasAndStreams、cfgCameraColumn、cfgStreamSourceColumn 和 reload\n任务：在 src-admin 构建脚本中，将 POSIX mv 替换为跨平台的节点重命名。"
             }
         },
         "titleLang": {
