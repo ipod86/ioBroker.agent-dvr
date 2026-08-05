@@ -143,7 +143,7 @@
         "mode": "daemon",
         "type": "alarm",
         "localLinks": {
-            "_default": "%web_protocol%://%ip%:%web_port%/agent-dvr/"
+            "_default": "%web_protocol%://%ip%:%web_port%/agent-dvr.%instance%/"
         },
         "messagebox": true,
         "compact": true,

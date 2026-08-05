@@ -8781,6 +8781,7 @@ function applyDashTranslations() {
 }
 
 /* ─────────────────────────── State ─────────────────────────── */
+const _API = '/' + (location.pathname.split('/').filter(Boolean)[0] || 'agent-dvr');
 let INST = 'agent-dvr.0', BASE = '', cameras = {}, hasPtz = false;
 let hidden = new Set(JSON.parse(localStorage.getItem('advr_hidden') || '[]'));
 let recAllItems = [];
@@ -8824,7 +8825,7 @@ function camStype(key) {
 function flvStreamUrl(oid, aspect) {
   const p = (aspect || '').split('/').map(Number);
   const size = (p.length === 2 && p[0] >= 100 && p[1] >= 100) ? '&size=' + p[0] + 'x' + p[1] : '';
-  return '/agent-dvr/api/stream?oid=' + oid + size;
+  return _API+'/api/stream?oid=' + oid + size;
 }
 function flvShowStatus(vid, msg) {
   const p = vid.parentElement; if (!p) return;
@@ -8896,7 +8897,7 @@ const DASH_CSS_VARS = {
 };
 async function loadConfig() {
   try {
-    const r = await fetch('/agent-dvr/api/config', { signal: AbortSignal.timeout(5000) });
+    const r = await fetch(_API+'/api/config', { signal: AbortSignal.timeout(5000) });
     if (r.ok) Object.assign(CFG, await r.json());
   } catch (_) {}
   const recEnabled = CFG.dashEnableRecordings !== false;
@@ -8931,7 +8932,7 @@ async function loadData() {
   if (!Object.keys(cameras).length) sbar(t('loadingCameras'));
   // Fetch AgentDVR cameras and go2rtc streams in parallel
   const [camRes] = await Promise.allSettled([
-    fetch('/agent-dvr/api/cameras', { signal: AbortSignal.timeout(8000) }),
+    fetch(_API+'/api/cameras', { signal: AbortSignal.timeout(8000) }),
     loadGo2rtcStreams(),  // populates go2rtcStreams, calls syncGrid when done
   ]);
 
@@ -9020,7 +9021,7 @@ function trySocket() {
 let _sysStats = {};
 async function loadSysStats() {
   try {
-    const r = await fetch('/agent-dvr/api/systemstats', { signal: AbortSignal.timeout(5000) });
+    const r = await fetch(_API+'/api/systemstats', { signal: AbortSignal.timeout(5000) });
     const d = await r.json().catch(() => ({}));
     if (d && !d.error) _sysStats = d;
   } catch (_) {}
@@ -9255,7 +9256,7 @@ function syncGrid() {
 /* ─────────────────────────── go2rtc streams laden ──────────── */
 async function loadGo2rtcStreams() {
   try {
-    const r = await fetch('/agent-dvr/api/go2rtc/streams', { signal: AbortSignal.timeout(5000) });
+    const r = await fetch(_API+'/api/go2rtc/streams', { signal: AbortSignal.timeout(5000) });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
     go2rtcStreams = (d.streams || []).sort();
@@ -9356,7 +9357,7 @@ function makeTile(key, cam) {
   tile.append(mediaEl, bottom);
   if (stype === 'mp4' && cam.oid) {
     const _el = mediaEl, _oid = cam.oid, _key = key, _size = sizeParam;
-    setTimeout(() => createFlvPlayer(_el, '/agent-dvr/api/stream?oid=' + _oid + _size, _key), 0);
+    setTimeout(() => createFlvPlayer(_el, _API+'/api/stream?oid=' + _oid + _size, _key), 0);
   }
 
   return tile;
@@ -9455,7 +9456,7 @@ function togglePtz(tile, camKey) {
 
 async function ptzSend(camKey, dir, val) {
   try {
-    await fetch(`/agent-dvr/api/ptz?camKey=${encodeURIComponent(camKey)}&dir=${dir}&val=${val?1:0}`);
+    await fetch(`${_API}/api/ptz?camKey=${encodeURIComponent(camKey)}&dir=${dir}&val=${val?1:0}`);
   } catch (_) {}
 }
 
@@ -9465,7 +9466,7 @@ async function ptzLoadPresets(camKey, container) {
   if (!oid) return;
   container.dataset.loaded = '1';
   try {
-    const r = await fetch('/agent-dvr/api/ptzpresets?oid=' + encodeURIComponent(oid),
+    const r = await fetch(_API+'/api/ptzpresets?oid=' + encodeURIComponent(oid),
                           { signal: AbortSignal.timeout(5000) });
     const data = await r.json().catch(() => ({}));
     const presets = Array.isArray(data.presets) ? data.presets : [];
@@ -9490,7 +9491,7 @@ async function ptzGoPreset(camKey, name, btn, container) {
   const oid = cam?.oid != null ? String(cam.oid) : '';
   if (!oid) return;
   try {
-    const r = await fetch('/agent-dvr/api/ptzpreset?oid=' + encodeURIComponent(oid) +
+    const r = await fetch(_API+'/api/ptzpreset?oid=' + encodeURIComponent(oid) +
                           '&preset=' + encodeURIComponent(name),
                           { signal: AbortSignal.timeout(5000) });
     const data = await r.json().catch(() => ({}));
@@ -9610,7 +9611,7 @@ function toggleMute(video, btn, key) {
 }
 function toggleRec(key, btn, tile) {
   const isRec = btn.classList.contains('active');
-  fetch('/agent-dvr/api/record?camKey=' + encodeURIComponent(key) + '&action=' + (isRec ? 'stop' : 'start'))
+  fetch(_API+'/api/record?camKey=' + encodeURIComponent(key) + '&action=' + (isRec ? 'stop' : 'start'))
     .then(r => { if (r.ok) setTileRecording(tile, btn, !isRec); })
     .catch(() => {});
 }
@@ -9866,7 +9867,7 @@ async function loadAndFilterRec(silent = false) {
 
   try {
     const results = await Promise.all(keys.map(async key => {
-      const r = await fetch('/agent-dvr/api/recordings?camKey=' + encodeURIComponent(key),
+      const r = await fetch(_API+'/api/recordings?camKey=' + encodeURIComponent(key),
                             { signal: AbortSignal.timeout(8000) });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
@@ -10310,7 +10311,7 @@ async function confirmDelete() {
   closeVideo();
   renderRec();
   resetDelBtn();
-  fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn) + '&camKey=' + encodeURIComponent(rec._camKey || ''),
+  fetch(_API+'/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn) + '&camKey=' + encodeURIComponent(rec._camKey || ''),
         { signal: AbortSignal.timeout(10000) })
     .then(r => r.json().catch(() => ({})).then(data => {
       if (!r.ok || (data.status && data.status !== 'ok') || data.error) {
@@ -10373,7 +10374,7 @@ async function deleteSelectedRecs() {
     const fn  = rec.fn ? String(rec.fn) : '';
     if (!oid || !fn) return;
     try {
-      const r = await fetch('/agent-dvr/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn) + '&camKey=' + encodeURIComponent(rec._camKey || ''),
+      const r = await fetch(_API+'/api/deleterecording?oid=' + encodeURIComponent(oid) + '&fn=' + encodeURIComponent(fn) + '&camKey=' + encodeURIComponent(rec._camKey || ''),
                             { signal: AbortSignal.timeout(10000) });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || (data.status && data.status !== 'ok') || data.error) failedRecs.push(rec);
@@ -10489,7 +10490,7 @@ function connectWebRTC(vid, baseUrl, streamName) {
   const codecReq = 'video/mp4; codecs="' + supported.join(',') + '"';
 
   const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsUrl = wsProto + '//' + location.host + '/agent-dvr/api/ws?src=' + encodeURIComponent(streamName);
+  const wsUrl = wsProto + '//' + location.host + _API+'/api/ws?src=' + encodeURIComponent(streamName);
   const ws = new WebSocket(wsUrl);
   ws.binaryType = 'arraybuffer';
   vid._rtcWs = ws;
