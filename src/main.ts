@@ -1051,7 +1051,14 @@ class AgentDvr extends utils.Adapter {
 			}
 		}
 
+		if (!this.ensuredFolders.has(`${fid}._widgetMigrated`)) {
+			this.ensuredFolders.add(`${fid}._widgetMigrated`);
+			await this.delObjectAsync(`${fid}.widget`).catch(() => undefined);
+		}
 		await this.updateCameraEvents(d, fid);
+		if (this.config.enableWidget && d.ot === 2) {
+			await this.updateLiveWidget(d, fid);
+		}
 	}
 
 	// ---- PTZ presets ----
@@ -1313,6 +1320,58 @@ class AgentDvr extends utils.Adapter {
 		return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
 	}
 
+	private buildSingleCamLiveHtml(d: Device): string {
+		const minCol = this.config.widgetMinCol || 150;
+		const maxW = this.config.widgetMaxModalWidth || 900;
+		const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
+		const oid = d.oid;
+		const id = `advlive${sanitize(oid)}`;
+		const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1`;
+		const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
+		const name = escHtml(d.name || `Camera ${oid}`);
+		const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || '';
+		const ar = arRaw ? String(arRaw).replace('/', ' / ') : '';
+		const fix = ar ? ' advimgfix' : '';
+		const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
+		const inner =
+			`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
+			`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
+			`<span class="advcap">${name}</span>`;
+		const tile =
+			`<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}>` +
+			`<label class="advcell advthumb" for="${id}">${inner}</label>` +
+			`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
+			`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
+			`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
+			`<div class="advinfo">${name} &middot; Live</div></div></div>`;
+		return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
+	}
+
+	private async updateLiveWidget(d: Device, fid: string): Promise<void> {
+		const wId = `${fid}.widget_live`;
+		if (!this.ensuredFolders.has(wId)) {
+			await this.ensurePath(wId);
+			await this.setObjectNotExistsAsync(wId, {
+				type: 'state',
+				common: {
+					name: 'HTML live widget',
+					type: 'string',
+					role: 'html',
+					read: true,
+					write: false,
+					def: '',
+				},
+				native: {},
+			});
+			this.ensuredFolders.add(wId);
+		}
+		const sig = `${d.name}|${this.camAspect[d.oid] || ''}`;
+		if (this.widgetSig[wId] !== sig) {
+			await this.setStateAsync(wId, { val: this.buildSingleCamLiveHtml(d), ack: true });
+			this.widgetSig[wId] = sig;
+		}
+	}
+
 	// ---- event data points ----
 
 	private async writeEventDps(d: Device, fid: string, events: Record<string, unknown>[]): Promise<void> {
@@ -1459,13 +1518,13 @@ class AgentDvr extends utils.Adapter {
 			}
 
 			if (this.config.enableWidget) {
-				const wId = `${fid}.widget`;
+				const wId = `${fid}.widget_recordings`;
 				if (!this.ensuredFolders.has(wId)) {
 					await this.ensurePath(wId);
 					await this.setObjectNotExistsAsync(wId, {
 						type: 'state',
 						common: {
-							name: 'HTML gallery widget',
+							name: 'HTML recordings widget',
 							type: 'string',
 							role: 'html',
 							read: true,
