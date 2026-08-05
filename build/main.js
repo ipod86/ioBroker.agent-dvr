@@ -1423,12 +1423,16 @@ class AgentDvr extends utils.Adapter {
       }
       if (this.config.enableOverview) {
         const cams = devices.filter((d) => d.ot === 2);
-        const ovId = "overview";
+        const ovId = "widget_live_overview";
         if (!this.ensuredFolders.has(ovId)) {
+          if (!this.ensuredFolders.has("_overviewMigrated")) {
+            this.ensuredFolders.add("_overviewMigrated");
+            await this.delObjectAsync("overview").catch(() => void 0);
+          }
           await this.setObjectNotExistsAsync(ovId, {
             type: "state",
             common: {
-              name: "Overview (all cameras)",
+              name: "Live overview widget (all cameras)",
               type: "string",
               role: "html",
               read: true,

@@ -398,7 +398,7 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
-| `overview` | string | R | HTML-Kachelraster aller Kameras |
+| `widget_live_overview` | string | R | HTML-Kachelraster aller Kameras — Standbilder werden bei jedem Adapter-Poll aktualisiert |
 
 ## Changelog
 
@@ -406,6 +406,9 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.5.2 (2026-08-05)
+* (ipod86) feat: `overview`-Datenpunkt in `widget_live_overview` umbenannt für konsistentes Namensschema
+
 ### 0.5.1 (2026-08-05)
 * (ipod86) feat: Instanz-eigenes URL-Routing — jede Adapter-Instanz erhält einen eigenen URL-Namespace (`agent-dvr.0/`, `agent-dvr.1/`, …)
 * (ipod86) feat: Aufnahme-Widget-Datenpunkt pro Kamera von `widget` zu `widget_recordings` umbenannt; neuer Datenpunkt `widget_live` mit Live-Einzelkachel der Kamera

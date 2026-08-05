@@ -403,9 +403,12 @@ Returns `{"ok":true}` on success.
 
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
-| `overview` | string | R | HTML tile grid of all cameras |
+| `widget_live_overview` | string | R | HTML tile grid of all cameras — snapshot refreshes on each adapter poll |
 
 ## Changelog
+### 0.5.2 (2026-08-05)
+* (ipod86) feat: rename `overview` DP to `widget_live_overview` for consistent naming
+
 ### 0.5.1 (2026-08-05)
 * (ipod86) feat: per-instance URL routing — each adapter instance uses its own URL namespace (`agent-dvr.0/`, `agent-dvr.1/`, …)
 * (ipod86) feat: rename per-camera recording widget DP from `widget` to `widget_recordings`; add new `widget_live` DP with a single-camera live tile

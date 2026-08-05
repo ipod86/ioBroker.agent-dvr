@@ -1,8 +1,21 @@
 {
     "common": {
         "name": "agent-dvr",
-        "version": "0.5.1",
+        "version": "0.5.2",
         "news": {
+            "0.5.2": {
+                "en": "feat: rename overview DP to widget_live_overview for consistent widget naming",
+                "de": "feat: overview-Datenpunkt in widget_live_overview umbenannt für konsistentes Widget-Namensschema",
+                "ru": "feat: переименование DP overview в widget_live_overview для единообразного именования виджетов",
+                "pt": "feat: renomear DP overview para widget_live_overview para nomenclatura consistente de widgets",
+                "nl": "feat: overview-DP hernoemd naar widget_live_overview voor consistente widgetnaamgeving",
+                "fr": "feat: renommage du DP overview en widget_live_overview pour une nomenclature cohérente des widgets",
+                "it": "feat: rinominare DP overview in widget_live_overview per nomenclatura widget coerente",
+                "es": "feat: renombrar DP overview a widget_live_overview para nomenclatura consistente de widgets",
+                "pl": "feat: zmiana nazwy DP overview na widget_live_overview dla spójnego nazewnictwa widżetów",
+                "uk": "feat: перейменування DP overview на widget_live_overview для узгодженого іменування віджетів",
+                "zh-cn": "feat: 将overview数据点重命名为widget_live_overview以保持一致的小部件命名"
+            },
             "0.5.1": {
                 "en": "feat: per-instance URL routing (agent-dvr.0/, agent-dvr.1/, …); rename per-camera widget DP to widget_recordings; add widget_live DP with single-camera live tile",
                 "de": "feat: instanzeigenes URL-Routing (agent-dvr.0/, agent-dvr.1/, …); Aufnahme-Widget-Datenpunkt pro Kamera in widget_recordings umbenannt; neuer widget_live-Datenpunkt mit Live-Einzelkachel der Kamera",
@@ -80,19 +93,6 @@
                 "pl": "Opcjonalny proxy strumieni MJPEG i migawek przez ioBroker",
                 "zh-cn": "可选的 MJPEG 和快照流代理（通过 ioBroker）",
                 "uk": "Опціональний проксі потоків MJPEG і знімків через ioBroker"
-            },
-            "0.3.0": {
-                "en": "New control buttons (scheduleOn/Off, detectorOn/Off, sensitivityMin/Max/Gain), audio URL states for microphones, native browser fullscreen in dashboard, collapsible tag filter, auto-hide header",
-                "de": "Neue Steuertasten (scheduleOn/Off, detectorOn/Off, Empfindlichkeit), Audio-URL-Zustände für Mikrofone, nativer Browser-Vollbild im Dashboard, ausklappbarer Tag-Filter, Auto-Hide-Header",
-                "ru": "Новые кнопки управления (расписание, детектор, чувствительность), URL-состояния для микрофонов, нативный полноэкранный режим, сворачиваемый фильтр меток",
-                "pt": "Novos botões de controlo (schedule, detector, sensibilidade), URLs de áudio para microfones, tela cheia nativa, filtro de etiquetas recolhível",
-                "nl": "Nieuwe besturingsknoppen (schema, detector, gevoeligheid), audio-URL-staten voor microfoons, native browserfullscreen, inklapbaar labelfilter",
-                "fr": "Nouveaux boutons de commande (planification, détecteur, sensibilité), états URL audio pour microphones, plein écran natif, filtre d'étiquettes rétractable",
-                "it": "Nuovi pulsanti di controllo (pianificazione, rilevatore, sensibilità), stati URL audio per microfoni, schermo intero nativo, filtro etichette comprimibile",
-                "es": "Nuevos botones de control (programación, detector, sensibilidad), estados de URL de audio para micrófonos, pantalla completa nativa, filtro de etiquetas plegable",
-                "pl": "Nowe przyciski sterowania (harmonogram, detektor, czułość), stany URL audio dla mikrofonów, natywny pełny ekran, zwijany filtr etykiet",
-                "zh-cn": "新增控制按钮（计划、检测器、灵敏度），麦克风音频URL状态，本地浏览器全屏，可折叠标签过滤器",
-                "uk": "Нові кнопки керування (розклад, детектор, чутливість), стани URL аудіо для мікрофонів, нативний повноекранний режим, згортуваний фільтр міток"
             }
         },
         "titleLang": {
