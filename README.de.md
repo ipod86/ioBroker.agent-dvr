@@ -27,7 +27,7 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 - Webhook-Endpunkt für Echtzeit-Updates — per AgentDVR-Action aufrufbar, löst sofortigen vollständigen Poll aus
 - HTML-Galerie-Widget pro Kamera (reines HTML/CSS oder JS-Modus mit Suche und Tag-Filter)
 - Übersichts-Widget, das alle Kameras in einem HTML-Zustand kombiniert
-- **Eingebautes Live-Dashboard** unter `http://<iobroker>:<webport>/agent-dvr/` — keine zusätzliche App nötig:
+- **Eingebautes Live-Dashboard** unter `http://<iobroker>:<webport>/agent-dvr.0/` — keine zusätzliche App nötig:
   - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC/MSE
   - Kamera-Filter-Schaltfläche im Header (Trichter-Symbol) — öffnet ein Popover mit Checkboxen pro Kamera und einem „Alle"-Toggle; Badge zeigt Anzahl verborgen Kameras; Zustand im localStorage gespeichert
   - Echtzeit-Bewegungs- und Alarm-Indikatoren (gelber / oranger Kachelrahmen) via Socket.io
@@ -210,7 +210,8 @@ Die go2rtc-Streamnamen werden automatisch vom go2rtc-Server abgerufen, wenn das 
 
 ## Live-Dashboard
 
-Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/agent-dvr/`.
+Das eingebaute Live-Dashboard ist erreichbar unter `http://<iobroker>:<webport>/agent-dvr.0/`.
+Eine zweite Instanz ist unter `/agent-dvr.1/` erreichbar, eine dritte unter `/agent-dvr.2/` usw.
 
 **Funktionen:**
 - Kameraindividuelle Stream-Auswahl: MJPEG, MP4/FLV mit Ton (via flv.js) oder go2rtc WebRTC/MSE
@@ -244,10 +245,10 @@ Der Adapter kann alle Medien über ioBroker leiten, sodass der Browser keine dir
 
 | Was wird geleitet | Proxy aus | Proxy an |
 |-------------------|-----------|----------|
-| MJPEG-Livestream | direkte AgentDVR-URL | `/agent-dvr/api/mjpeg?oid=…` |
-| Snapshot | direkte AgentDVR-URL | `/agent-dvr/api/snap?oid=…` |
-| Aufnahmen-Vorschaubilder | direkte AgentDVR-URL | `/agent-dvr/api/thumb?oid=…` |
-| Aufnahmen-Videos | direkte AgentDVR-URL | `/agent-dvr/api/media?oid=…` |
+| MJPEG-Livestream | direkte AgentDVR-URL | `/agent-dvr.0/api/mjpeg?oid=…` |
+| Snapshot | direkte AgentDVR-URL | `/agent-dvr.0/api/snap?oid=…` |
+| Aufnahmen-Vorschaubilder | direkte AgentDVR-URL | `/agent-dvr.0/api/thumb?oid=…` |
+| Aufnahmen-Videos | direkte AgentDVR-URL | `/agent-dvr.0/api/media?oid=…` |
 | FLV-Livestream | **immer über ioBroker** | **immer über ioBroker** |
 | go2rtc-WebSocket | **immer über ioBroker** | **immer über ioBroker** |
 
@@ -383,8 +384,10 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 Der Adapter stellt einen Webhook-Endpunkt bereit, der einen sofortigen vollständigen Poll auslöst:
 
 ```
-GET http://<iobroker>:<webport>/agent-dvr/webhook
+GET http://<iobroker>:<webport>/agent-dvr.0/webhook
 ```
+
+`agent-dvr.0` durch die tatsächliche Instanznummer ersetzen (`agent-dvr.1` usw.) wenn mehrere Instanzen laufen.
 
 Diese URL als **Action** in AgentDVR eintragen (Kamera → Bearbeiten → Alarme → Actions → URL), um bei abgeschlossenen Aufnahmen oder Alarmen sofortige Aktualisierungen zu erhalten. Der Adapter holt dann sofort alle Kameradaten, Aufnahmen und Systemstats neu — ohne auf den nächsten Poll-Zyklus warten zu müssen.
 
@@ -407,7 +410,7 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 * (ipod86) feat: Neue-Aufnahmen-Badge am Aufnahmen-Tab — zeigt Anzahl neuer Aufnahmen seit letztem Besuch; browser- und gerätebezogen im localStorage gespeichert
 * (ipod86) feat: Aufnahmen-Anzeigeeinstellungen — ⚙ Zahnrad im Auswahl-/Löschen-Balken; Schieberegler für Rasterspaltengröße, maximale Aufnahmen und Badge-Toggle (alles im localStorage)
 * (ipod86) feat: Erstbesuchs-Hinweis-Modals für Live-Ansicht (Filter & Sortierung) und Aufnahmen-Tab (Gesten, Zahnrad, Badge)
-* (ipod86) feat: Webhook-Endpunkt `/agent-dvr/webhook` löst sofortigen vollständigen Poll aus — als AgentDVR-Action konfigurierbar für Echtzeit-Updates
+* (ipod86) feat: Webhook-Endpunkt `/agent-dvr.0/webhook` löst sofortigen vollständigen Poll aus — als AgentDVR-Action konfigurierbar für Echtzeit-Updates
 * (ipod86) feat: PTZ-Presets — gespeicherte Positionen im PTZ-Overlay anzeigen und anfahren; Selektor-Datenpunkt `<cam>.control.ptz.preset` pro Kamera (ab AgentDVR v7.7.8.0+)
 * (ipod86) feat: Ereignisprotokoll-Ansicht im Aufnahmen-Bereich (Uhr-Icon neben Raster und Timeline)
 * (ipod86) feat: Aufnahme löschen direkt aus dem Video-Player-Modal (Papierkorb, 2-Klick-Bestätigung, ab AgentDVR v7.7.8.0+)

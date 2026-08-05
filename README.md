@@ -32,7 +32,7 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - Webhook endpoint for real-time updates — call it from an AgentDVR action to trigger an immediate full poll
 - HTML gallery widget per camera (pure HTML/CSS or full JS mode with search and tag filter)
 - Overview widget combining all cameras in one HTML state
-- **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr/` — no additional app needed:
+- **Built-in live dashboard** at `http://<iobroker>:<webport>/agent-dvr.0/` — no additional app needed:
   - Per-camera stream selection: MJPEG, MP4/FLV with audio, or go2rtc WebRTC/MSE
   - Camera filter button in the header (funnel icon) — opens a per-camera checkbox popover; badge shows how many cameras are hidden; state saved in localStorage
   - Real-time motion and alert indicators (yellow / orange tile border) via Socket.io
@@ -215,7 +215,8 @@ The go2rtc stream names are fetched automatically from the go2rtc server when th
 
 ## Live Dashboard
 
-The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agent-dvr/`.
+The adapter ships a built-in live dashboard at `http://<iobroker>:<webport>/agent-dvr.0/`.
+A second instance is reachable at `/agent-dvr.1/`, a third at `/agent-dvr.2/`, and so on.
 
 **Features:**
 - Per-camera stream selection: MJPEG, MP4/FLV with audio (via flv.js), or go2rtc WebRTC/MSE
@@ -249,10 +250,10 @@ The adapter can route all media through ioBroker so the browser never needs a di
 
 | What is proxied | Proxy off | Proxy on |
 |-----------------|-----------|----------|
-| MJPEG live stream | direct AgentDVR URL | `/agent-dvr/api/mjpeg?oid=…` |
-| Snapshot | direct AgentDVR URL | `/agent-dvr/api/snap?oid=…` |
-| Recording thumbnails | direct AgentDVR URL | `/agent-dvr/api/thumb?oid=…` |
-| Recording videos | direct AgentDVR URL | `/agent-dvr/api/media?oid=…` |
+| MJPEG live stream | direct AgentDVR URL | `/agent-dvr.0/api/mjpeg?oid=…` |
+| Snapshot | direct AgentDVR URL | `/agent-dvr.0/api/snap?oid=…` |
+| Recording thumbnails | direct AgentDVR URL | `/agent-dvr.0/api/thumb?oid=…` |
+| Recording videos | direct AgentDVR URL | `/agent-dvr.0/api/media?oid=…` |
 | FLV live stream | **always via ioBroker** | **always via ioBroker** |
 | go2rtc WebSocket | **always via ioBroker** | **always via ioBroker** |
 
@@ -388,8 +389,10 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 The adapter exposes a webhook endpoint that triggers an immediate full poll of AgentDVR:
 
 ```
-GET http://<iobroker>:<webport>/agent-dvr/webhook
+GET http://<iobroker>:<webport>/agent-dvr.0/webhook
 ```
+
+Replace `agent-dvr.0` with the actual instance number (`agent-dvr.1`, etc.) if you run multiple instances.
 
 Configure this URL as an **Action** in AgentDVR (Camera → Edit → Alerts → Actions → URL) to get real-time updates whenever a recording finishes or an alert fires. The adapter will immediately re-fetch all camera data, recordings, and system stats — no need to wait for the next poll cycle.
 
@@ -407,7 +410,7 @@ Returns `{"ok":true}` on success.
 * (ipod86) feat: new-recordings badge on the Recordings tab — shows count of recordings since last visit; persisted per browser/device in localStorage
 * (ipod86) feat: recording display settings panel — ⚙ gear button in the select/delete bar; grid column width slider, max-recordings override, badge toggle (all persisted in localStorage)
 * (ipod86) feat: first-visit onboarding modals for live view (camera filter & sort) and recordings tab (gestures, gear panel, badge)
-* (ipod86) feat: webhook endpoint `/agent-dvr/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
+* (ipod86) feat: webhook endpoint `/agent-dvr.0/webhook` triggers immediate full poll — configure as AgentDVR action for real-time updates
 * (ipod86) feat: PTZ presets — navigate to saved presets from PTZ overlay; single selector DP `<cam>.control.ptz.preset` per camera (requires AgentDVR v7.7.8.0+)
 * (ipod86) feat: add event log view to recordings panel (clock icon toggle) alongside grid and timeline
 * (ipod86) feat: delete recording from video modal (trash icon, two-click confirm, requires AgentDVR v7.7.8.0+)
