@@ -1051,10 +1051,6 @@ class AgentDvr extends utils.Adapter {
 			}
 		}
 
-		if (!this.ensuredFolders.has(`${fid}._widgetMigrated`)) {
-			this.ensuredFolders.add(`${fid}._widgetMigrated`);
-			await this.delObjectAsync(`${fid}.widget`).catch(() => undefined);
-		}
 		await this.updateCameraEvents(d, fid);
 		if (this.config.enableWidget && d.ot === 2) {
 			await this.updateLiveWidget(d, fid);
@@ -1731,10 +1727,6 @@ class AgentDvr extends utils.Adapter {
 				const cams = devices.filter(d => d.ot === 2);
 				const ovId = 'widget_live_overview';
 				if (!this.ensuredFolders.has(ovId)) {
-					if (!this.ensuredFolders.has('_overviewMigrated')) {
-						this.ensuredFolders.add('_overviewMigrated');
-						await this.delObjectAsync('overview').catch(() => undefined);
-					}
 					await this.setObjectNotExistsAsync(ovId, {
 						type: 'state',
 						common: {
