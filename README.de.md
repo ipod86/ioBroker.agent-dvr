@@ -378,7 +378,7 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 |-----------|-----|-----|-------------|
 | `<cam>.events.*` | verschieden | R | Metadaten der letzten Aufnahme — erfordert „Ereignis-Datenpunkte" |
 | `<cam>.widget_recordings` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
-| `<cam>.widget_live` | string | R | HTML-Live-Einzelkachel der Kamera — erfordert „Galerie-Widget" |
+| `<cam>.widget_live` | string | R | HTML-Live-Einzelkachel der Kamera — erfordert „Galerie-Widget"; Standbild wird bei jedem Adapter-Poll aktualisiert |
 
 ## Webhook
 

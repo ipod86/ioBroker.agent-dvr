@@ -383,7 +383,7 @@ FLV and go2rtc always run through ioBroker regardless of the setting — the bro
 |-----------|------|-----|-------------|
 | `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
 | `<cam>.widget_recordings` | string | R | HTML recording gallery — requires "Gallery widget" |
-| `<cam>.widget_live` | string | R | HTML single-camera live tile — requires "Gallery widget" |
+| `<cam>.widget_live` | string | R | HTML single-camera live tile — requires "Gallery widget"; snapshot refreshes on each adapter poll |
 
 ## Webhook
 
