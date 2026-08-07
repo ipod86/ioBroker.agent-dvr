@@ -474,6 +474,8 @@ Returns `{"ok":true}` on success.
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 MIT License
 
