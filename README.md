@@ -406,6 +406,10 @@ Returns `{"ok":true}` on success.
 | `widget_live_overview` | string | R | HTML tile grid of all cameras — snapshot refreshes on each adapter poll |
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires admin >= 7.8.23 now.
+
 ### 0.5.2 (2026-08-05)
 * (ipod86) feat: rename `overview` DP to `widget_live_overview` for consistent naming
 

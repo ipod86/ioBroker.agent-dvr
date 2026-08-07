@@ -1,263 +1,263 @@
 {
-    "common": {
-        "name": "agent-dvr",
-        "version": "0.5.2",
-        "news": {
-            "0.5.2": {
-                "en": "feat: rename overview DP to widget_live_overview for consistent widget naming",
-                "de": "feat: overview-Datenpunkt in widget_live_overview umbenannt für konsistentes Widget-Namensschema",
-                "ru": "feat: переименование DP overview в widget_live_overview для единообразного именования виджетов",
-                "pt": "feat: renomear DP overview para widget_live_overview para nomenclatura consistente de widgets",
-                "nl": "feat: overview-DP hernoemd naar widget_live_overview voor consistente widgetnaamgeving",
-                "fr": "feat: renommage du DP overview en widget_live_overview pour une nomenclature cohérente des widgets",
-                "it": "feat: rinominare DP overview in widget_live_overview per nomenclatura widget coerente",
-                "es": "feat: renombrar DP overview a widget_live_overview para nomenclatura consistente de widgets",
-                "pl": "feat: zmiana nazwy DP overview na widget_live_overview dla spójnego nazewnictwa widżetów",
-                "uk": "feat: перейменування DP overview на widget_live_overview для узгодженого іменування віджетів",
-                "zh-cn": "feat: 将overview数据点重命名为widget_live_overview以保持一致的小部件命名"
-            },
-            "0.5.1": {
-                "en": "feat: per-instance URL routing (agent-dvr.0/, agent-dvr.1/, …); rename per-camera widget DP to widget_recordings; add widget_live DP with single-camera live tile",
-                "de": "feat: instanzeigenes URL-Routing (agent-dvr.0/, agent-dvr.1/, …); Aufnahme-Widget-Datenpunkt pro Kamera in widget_recordings umbenannt; neuer widget_live-Datenpunkt mit Live-Einzelkachel der Kamera",
-                "ru": "feat: маршрутизация URL для каждого экземпляра (agent-dvr.0/, agent-dvr.1/, …); переименование DP виджета записей камеры в widget_recordings; добавление DP widget_live с живой плиткой одной камеры",
-                "pt": "feat: roteamento de URL por instância (agent-dvr.0/, agent-dvr.1/, …); renomear DP do widget de gravações por câmera para widget_recordings; adicionar DP widget_live com tile ao vivo de câmera única",
-                "nl": "feat: URL-routing per instantie (agent-dvr.0/, agent-dvr.1/, …); hernoem per-camera opname-widget-DP naar widget_recordings; voeg widget_live-DP toe met live-tegel voor één camera",
-                "fr": "feat: routage d'URL par instance (agent-dvr.0/, agent-dvr.1/, …); renommage du DP widget d'enregistrement par caméra en widget_recordings; ajout du DP widget_live avec vignette en direct d'une seule caméra",
-                "it": "feat: routing URL per istanza (agent-dvr.0/, agent-dvr.1/, …); rinominare DP widget registrazioni per telecamera in widget_recordings; aggiunto DP widget_live con tile live a singola telecamera",
-                "es": "feat: enrutamiento de URL por instancia (agent-dvr.0/, agent-dvr.1/, …); renombrar DP de widget de grabaciones por cámara a widget_recordings; agregar DP widget_live con tile en vivo de cámara única",
-                "pl": "feat: routing URL dla każdej instancji (agent-dvr.0/, agent-dvr.1/, …); zmiana nazwy DP widgetu nagrań kamery na widget_recordings; dodanie DP widget_live z kafelkiem podglądu na żywo pojedynczej kamery",
-                "uk": "feat: маршрутизація URL для кожного екземпляра (agent-dvr.0/, agent-dvr.1/, …); перейменування DP віджета записів камери на widget_recordings; додано DP widget_live з живою плиткою однієї камери",
-                "zh-cn": "feat: 每实例URL路由 (agent-dvr.0/, agent-dvr.1/, …)；将每摄像头录像小部件DP重命名为widget_recordings；新增widget_live DP，显示单摄像头直播磁贴"
-            },
-            "0.5.0": {
-                "en": "feat: camera filter popover with sort order drag & drop, new-recordings badge, recording display settings, webhook trigger, PTZ presets, event log, bulk-delete, camera color, status bar extensions, reset-colors button; multiple dashboard fixes",
-                "de": "feat: Kamera-Filter-Popover mit Sortierfunktion, Neue-Aufnahmen-Badge, Aufnahmen-Anzeigeeinstellungen, Webhook-Trigger, PTZ-Presets, Ereignisprotokoll, Mehrfach-Löschen, Kamerafarbe, Statuszeilen-Erweiterungen, Farben-Reset-Schaltfläche; diverse Dashboard-Korrekturen",
-                "ru": "feat: всплывающий фильтр камер с сортировкой, значок новых записей, настройки отображения записей, вебхук, PTZ-пресеты, журнал событий, массовое удаление, цвет камеры, расширения строки состояния, кнопка сброса цветов; исправления дашборда",
-                "pt": "feat: popover de filtro de câmera com arrastar para ordenar, distintivo de novas gravações, configurações de exibição de gravações, gatilho webhook, predefinições PTZ, registo de eventos, exclusão em massa, cor de câmera, extensões da barra de status, botão de redefinição de cores; várias correções do painel",
-                "nl": "feat: camera-filterpopup met slepen om te sorteren, badge voor nieuwe opnames, weergave-instellingen voor opnames, webhook-trigger, PTZ-presets, gebeurtenislogboek, bulkverwijdering, camerakleur, statusbalkuitbreidingen, knop voor het herstellen van kleuren; diverse dashboardcorrecties",
-                "fr": "feat: popover de filtre caméra avec tri par glisser-déposer, badge nouvelles enregistrements, paramètres d affichage des enregistrements, déclencheur webhook, préréglages PTZ, journal d événements, suppression en masse, couleur caméra, extensions de la barre d état, bouton de réinitialisation des couleurs; diverses corrections du tableau de bord",
-                "it": "feat: popover filtro telecamera con ordinamento drag & drop, badge nuove registrazioni, impostazioni visualizzazione registrazioni, trigger webhook, preset PTZ, registro eventi, eliminazione in blocco, colore telecamera, estensioni barra di stato, pulsante ripristino colori; varie correzioni della dashboard",
-                "es": "feat: popover de filtro de cámara con arrastrar para ordenar, insignia de nuevas grabaciones, configuración de visualización de grabaciones, disparador webhook, preajustes PTZ, registro de eventos, eliminación masiva, color de cámara, extensiones de barra de estado, botón de restablecimiento de colores; varias correcciones del panel",
-                "pl": "feat: wyskakujące okienko filtrowania kamer z przeciąganiem, odznaka nowych nagrań, ustawienia wyświetlania nagrań, wyzwalacz webhook, presety PTZ, dziennik zdarzeń, usuwanie zbiorcze, kolor kamery, rozszerzenia paska stanu, przycisk resetowania kolorów; różne poprawki pulpitu nawigacyjnego",
-                "uk": "feat: спливаюче вікно фільтра камер із сортуванням перетягуванням, значок нових записів, налаштування відображення записів, вебхук-тригер, пресети PTZ, журнал подій, масове видалення, колір камери, розширення рядка стану, кнопка скидання кольорів; різні виправлення панелі",
-                "zh-cn": "feat: 相机过滤弹出框支持拖拽排序、新录像徽章、录像显示设置、Webhook触发器、PTZ预设、事件日志、批量删除、相机颜色、状态栏扩展、颜色重置按钮；多项仪表板修复"
-            },
-            "0.4.3": {
-                "en": "fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs\nfix: httpTimeoutMs=0 now correctly clamps to 1000ms instead of falling back to default\nfix: go2rtcEnabled config flag is now honored in fetchGo2rtcStreams\nfix: remove unused isSupportedLang export from widget-i18n",
-                "de": "Behebung: Umstellung der Abfrageschleife von setInterval auf setTimeout, um gleichzeitige Abfrageläufe zu verhindern.\nBehoben: httpTimeoutMs=0 begrenzt das Timeout nun korrekt auf 1000 ms, anstatt auf den Standardwert zurückzugreifen.\nBehoben: Das Konfigurationsflag go2rtcEnabled wird nun in fetchGo2rtcStreams berücksichtigt.\nBehebung: Entfernen des nicht verwendeten isSupportedLang-Exports aus widget-i18n",
-                "ru": "Исправление: переключите цикл опроса с setInterval на setTimeout, чтобы предотвратить одновременный запуск опроса.\nИсправлено: httpTimeoutMs=0 теперь корректно ограничивает значение до 1000 мс, вместо того чтобы возвращаться к значению по умолчанию.\nИсправление: флаг конфигурации go2rtcEnabled теперь учитывается в fetchGo2rtcStreams\nИсправление: удален неиспользуемый экспорт isSupportedLang из widget-i18n",
-                "pt": "Correção: altere o loop de polling de setInterval para setTimeout para evitar execuções de polling simultâneas.\nCorreção: httpTimeoutMs=0 agora limita corretamente o valor a 1000ms em vez de retornar ao valor padrão.\nCorreção: a flag de configuração go2rtcEnabled agora é respeitada em fetchGo2rtcStreams.\nCorreção: remover a exportação isSupportedLang não utilizada do widget-i18n.",
-                "nl": "Oplossing: wijzig de polling-loop van `setInterval` naar `setTimeout` om gelijktijdige polling-runs te voorkomen.\nOpgelost: httpTimeoutMs=0 zorgt er nu voor dat de waarde correct wordt beperkt tot 1000 ms in plaats van terug te vallen op de standaardwaarde.\nOpgelost: de configuratievlag go2rtcEnabled wordt nu correct gebruikt in fetchGo2rtcStreams.\nOplossing: verwijder de ongebruikte export van isSupportedLang uit widget-i18n.",
-                "fr": "Correction : remplacer la boucle d'interrogation setInterval par setTimeout pour éviter les interrogations simultanées.\nCorrection : httpTimeoutMs=0 limite désormais correctement le délai à 1000 ms au lieu de revenir à la valeur par défaut.\nCorrection : l'option de configuration go2rtcEnabled est désormais prise en compte dans fetchGo2rtcStreams\nCorrection : suppression de l’exportation inutilisée isSupportedLang de widget-i18n",
-                "it": "Correzione: passare dal ciclo di polling setInterval a setTimeout per evitare esecuzioni simultanee del polling.\nCorrezione: httpTimeoutMs=0 ora limita correttamente a 1000 ms invece di tornare al valore predefinito\nCorrezione: il flag di configurazione go2rtcEnabled ora viene rispettato in fetchGo2rtcStreams\ncorrezione: rimuovere l'esportazione inutilizzata di isSupportedLang dal widget-i18n",
-                "es": "Solución: cambiar el bucle de sondeo de setInterval a setTimeout para evitar ejecuciones de sondeo simultáneas.\nCorrección: httpTimeoutMs=0 ahora se ajusta correctamente a 1000 ms en lugar de recurrir al valor predeterminado.\nCorrección: el indicador de configuración go2rtcEnabled ahora se respeta en fetchGo2rtcStreams.\nCorrección: eliminar la exportación no utilizada de isSupportedLang de widget-i18n",
-                "pl": "naprawiono: przełącz pętlę sondowania z setInterval na setTimeout, aby zapobiec równoczesnym uruchomieniom sondowania\nnaprawiono: httpTimeoutMs=0 teraz poprawnie ogranicza się do 1000 ms zamiast powracać do wartości domyślnej\nnaprawiono: flaga konfiguracji go2rtcEnabled jest teraz uwzględniana w pobieraniu strumieni Go2rtcStreams\nnaprawiono: usunięto nieużywany eksport isSupportedLang z widget-i18n",
-                "uk": "виправлення: перемикання циклу опитування з setInterval на setTimeout для запобігання одночасним запускам опитувань\nвиправлення: httpTimeoutMs=0 тепер коректно обмежується значенням 1000 мс, а не повертається до значення за замовчуванням.\nвиправлення: прапор конфігурації go2rtcEnabled тепер враховується у fetchGo2rtcStreams.\nвиправлення: видалено невикористаний експорт isSupportedLang з widget-i18n",
-                "zh-cn": "修复方案：将轮询循环的 setInterval 改为 setTimeout，以防止并发轮询。\n修复：现在 httpTimeoutMs=0 会正确地将超时时间限制为 1000 毫秒，而不是回退到默认值。\n修复：fetchGo2rtcStreams 现在会识别 go2rtcEnabled 配置标志。\n修复：从 widget-i18n 中移除未使用的 isSupportedLang 导出"
-            },
-            "0.4.2": {
-                "en": "fix: FLV proxy now sends auth headers; dashboard online status corrected; admin UI default mismatches resolved; MP4/FLV label i18n",
-                "de": "fix: FLV-Proxy sendet jetzt Auth-Header; Online-Status im Dashboard korrigiert; Admin-UI-Default-Abweichungen behoben; MP4/FLV-Label i18n",
-                "ru": "fix: FLV-прокси теперь отправляет заголовок авторизации; исправлен статус онлайн в панели; исправлены значения по умолчанию в UI; i18n метки MP4/FLV",
-                "pt": "fix: proxy FLV agora envia cabeçalhos de autenticação; status online no painel corrigido; padrões da UI do admin corrigidos; i18n do rótulo MP4/FLV",
-                "nl": "fix: FLV-proxy verstuurt nu auth-headers; online-status in dashboard gecorrigeerd; standaardwaarden in admin-UI gecorrigeerd; MP4/FLV-label i18n",
-                "fr": "fix: le proxy FLV envoie désormais les en-têtes d auth; statut en ligne du tableau de bord corrigé; valeurs par défaut de l UI admin corrigées; i18n du libellé MP4/FLV",
-                "it": "fix: il proxy FLV ora invia intestazioni di autenticazione; stato online nella dashboard corretto; valori predefiniti UI admin corretti; i18n etichetta MP4/FLV",
-                "es": "fix: el proxy FLV ahora envía cabeceras de autenticación; estado en línea del panel corregido; valores predeterminados de la UI de administración corregidos; i18n de la etiqueta MP4/FLV",
-                "pl": "fix: proxy FLV wysyła teraz nagłówki autoryzacji; poprawiono status online w panelu; poprawiono wartości domyślne w UI admina; i18n etykiety MP4/FLV",
-                "uk": "fix: FLV-проксі тепер надсилає заголовки авторизації; виправлено онлайн-статус у панелі; виправлено значення за замовчуванням в UI; i18n мітки MP4/FLV",
-                "zh-cn": "fix: FLV 代理现在发送授权标头；修正面板在线状态；修正管理界面默认值；MP4/FLV 标签 i18n"
-            },
-            "0.4.1": {
-                "en": "fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled",
-                "de": "fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar",
-                "ru": "fix: плитка обзора ссылается на хост ioBroker; URL go2rtc отображается только при включении",
-                "pt": "fix: tile de visão geral aponta para o host ioBroker; URL go2rtc exibida apenas quando habilitado",
-                "nl": "fix: overzichtstegel verwijst naar ioBroker-host; go2rtc-URL alleen zichtbaar als ingeschakeld",
-                "fr": "fix: la tuile d aperçu pointe vers l hôte ioBroker; URL go2rtc visible uniquement si activé",
-                "it": "fix: il riquadro panoramica punta all host ioBroker; URL go2rtc visibile solo se abilitato",
-                "es": "fix: el tile de vista general apunta al host ioBroker; URL go2rtc visible solo cuando está activado",
-                "pl": "fix: kafelek przeglądu wskazuje na host ioBroker; URL go2rtc widoczny tylko po włączeniu",
-                "uk": "fix: плитка огляду вказує на хост ioBroker; URL go2rtc відображається лише при увімкненні",
-                "zh-cn": "fix: 概览磁贴指向 ioBroker 主机；go2rtc URL 仅在启用时显示"
-            },
-            "0.4.0": {
-                "en": "Optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection)",
-                "de": "Optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung)",
-                "ru": "Опциональный прокси потоков MJPEG и снимков через ioBroker",
-                "pt": "Proxy opcional de streams MJPEG e snapshots pelo ioBroker",
-                "nl": "Optionele MJPEG- en snapshot-proxy via ioBroker",
-                "fr": "Proxy optionnel pour les flux MJPEG et snapshots via ioBroker",
-                "it": "Proxy opzionale per stream MJPEG e snapshot tramite ioBroker",
-                "es": "Proxy opcional de flujos MJPEG e instantáneas a través de ioBroker",
-                "pl": "Opcjonalny proxy strumieni MJPEG i migawek przez ioBroker",
-                "zh-cn": "可选的 MJPEG 和快照流代理（通过 ioBroker）",
-                "uk": "Опціональний проксі потоків MJPEG і знімків через ioBroker"
-            }
-        },
-        "titleLang": {
-            "en": "Agent DVR",
-            "de": "Agent DVR",
-            "ru": "Агент DVR",
-            "pt": "Agente DVR",
-            "nl": "Agent DVR",
-            "fr": "Agent DVR",
-            "it": "DVR dell'agente",
-            "es": "DVR del agente",
-            "pl": "Agent DVR",
-            "uk": "Агентський відеореєстратор",
-            "zh-cn": "代理 DVR"
-        },
-        "desc": {
-            "en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
-            "de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
-            "ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
-            "pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
-            "nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
-            "fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
-            "it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
-            "es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
-            "pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
-            "uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
-            "zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
-        },
-        "authors": [
-            "ipod86 <david@graef.email>"
-        ],
-        "keywords": [
-            "Agentdvr",
-            "ispy",
-            "ptz"
-        ],
-        "licenseInformation": {
-            "type": "free",
-            "license": "MIT"
-        },
-        "platform": "Javascript/Node.js",
-        "icon": "agent-dvr.png",
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.agent-dvr/main/admin/agent-dvr.png",
-        "readme": "https://github.com/ipod86/ioBroker.agent-dvr/blob/main/README.md",
-        "loglevel": "info",
-        "tier": 3,
-        "mode": "daemon",
-        "type": "alarm",
-        "localLinks": {
-            "_default": "%web_protocol%://%ip%:%web_port%/agent-dvr.%instance%/"
-        },
-        "messagebox": true,
-        "compact": true,
-        "connectionType": "local",
-        "dataSource": "poll",
-        "adminUI": {
-            "config": "materialize"
-        },
-        "dependencies": [
-            {
-                "js-controller": ">=6.0.11"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=7.6.20"
-            },
-            {
-                "web": ">=3.0.0"
-            }
-        ],
-        "webExtension": "lib/web.js"
+  "common": {
+    "name": "agent-dvr",
+    "version": "0.5.2",
+    "news": {
+      "0.5.2": {
+        "en": "feat: rename overview DP to widget_live_overview for consistent widget naming",
+        "de": "feat: overview-Datenpunkt in widget_live_overview umbenannt für konsistentes Widget-Namensschema",
+        "ru": "feat: переименование DP overview в widget_live_overview для единообразного именования виджетов",
+        "pt": "feat: renomear DP overview para widget_live_overview para nomenclatura consistente de widgets",
+        "nl": "feat: overview-DP hernoemd naar widget_live_overview voor consistente widgetnaamgeving",
+        "fr": "feat: renommage du DP overview en widget_live_overview pour une nomenclature cohérente des widgets",
+        "it": "feat: rinominare DP overview in widget_live_overview per nomenclatura widget coerente",
+        "es": "feat: renombrar DP overview a widget_live_overview para nomenclatura consistente de widgets",
+        "pl": "feat: zmiana nazwy DP overview na widget_live_overview dla spójnego nazewnictwa widżetów",
+        "uk": "feat: перейменування DP overview на widget_live_overview для узгодженого іменування віджетів",
+        "zh-cn": "feat: 将overview数据点重命名为widget_live_overview以保持一致的小部件命名"
+      },
+      "0.5.1": {
+        "en": "feat: per-instance URL routing (agent-dvr.0/, agent-dvr.1/, …); rename per-camera widget DP to widget_recordings; add widget_live DP with single-camera live tile",
+        "de": "feat: instanzeigenes URL-Routing (agent-dvr.0/, agent-dvr.1/, …); Aufnahme-Widget-Datenpunkt pro Kamera in widget_recordings umbenannt; neuer widget_live-Datenpunkt mit Live-Einzelkachel der Kamera",
+        "ru": "feat: маршрутизация URL для каждого экземпляра (agent-dvr.0/, agent-dvr.1/, …); переименование DP виджета записей камеры в widget_recordings; добавление DP widget_live с живой плиткой одной камеры",
+        "pt": "feat: roteamento de URL por instância (agent-dvr.0/, agent-dvr.1/, …); renomear DP do widget de gravações por câmera para widget_recordings; adicionar DP widget_live com tile ao vivo de câmera única",
+        "nl": "feat: URL-routing per instantie (agent-dvr.0/, agent-dvr.1/, …); hernoem per-camera opname-widget-DP naar widget_recordings; voeg widget_live-DP toe met live-tegel voor één camera",
+        "fr": "feat: routage d'URL par instance (agent-dvr.0/, agent-dvr.1/, …); renommage du DP widget d'enregistrement par caméra en widget_recordings; ajout du DP widget_live avec vignette en direct d'une seule caméra",
+        "it": "feat: routing URL per istanza (agent-dvr.0/, agent-dvr.1/, …); rinominare DP widget registrazioni per telecamera in widget_recordings; aggiunto DP widget_live con tile live a singola telecamera",
+        "es": "feat: enrutamiento de URL por instancia (agent-dvr.0/, agent-dvr.1/, …); renombrar DP de widget de grabaciones por cámara a widget_recordings; agregar DP widget_live con tile en vivo de cámara única",
+        "pl": "feat: routing URL dla każdej instancji (agent-dvr.0/, agent-dvr.1/, …); zmiana nazwy DP widgetu nagrań kamery na widget_recordings; dodanie DP widget_live z kafelkiem podglądu na żywo pojedynczej kamery",
+        "uk": "feat: маршрутизація URL для кожного екземпляра (agent-dvr.0/, agent-dvr.1/, …); перейменування DP віджета записів камери на widget_recordings; додано DP widget_live з живою плиткою однієї камери",
+        "zh-cn": "feat: 每实例URL路由 (agent-dvr.0/, agent-dvr.1/, …)；将每摄像头录像小部件DP重命名为widget_recordings；新增widget_live DP，显示单摄像头直播磁贴"
+      },
+      "0.5.0": {
+        "en": "feat: camera filter popover with sort order drag & drop, new-recordings badge, recording display settings, webhook trigger, PTZ presets, event log, bulk-delete, camera color, status bar extensions, reset-colors button; multiple dashboard fixes",
+        "de": "feat: Kamera-Filter-Popover mit Sortierfunktion, Neue-Aufnahmen-Badge, Aufnahmen-Anzeigeeinstellungen, Webhook-Trigger, PTZ-Presets, Ereignisprotokoll, Mehrfach-Löschen, Kamerafarbe, Statuszeilen-Erweiterungen, Farben-Reset-Schaltfläche; diverse Dashboard-Korrekturen",
+        "ru": "feat: всплывающий фильтр камер с сортировкой, значок новых записей, настройки отображения записей, вебхук, PTZ-пресеты, журнал событий, массовое удаление, цвет камеры, расширения строки состояния, кнопка сброса цветов; исправления дашборда",
+        "pt": "feat: popover de filtro de câmera com arrastar para ordenar, distintivo de novas gravações, configurações de exibição de gravações, gatilho webhook, predefinições PTZ, registo de eventos, exclusão em massa, cor de câmera, extensões da barra de status, botão de redefinição de cores; várias correções do painel",
+        "nl": "feat: camera-filterpopup met slepen om te sorteren, badge voor nieuwe opnames, weergave-instellingen voor opnames, webhook-trigger, PTZ-presets, gebeurtenislogboek, bulkverwijdering, camerakleur, statusbalkuitbreidingen, knop voor het herstellen van kleuren; diverse dashboardcorrecties",
+        "fr": "feat: popover de filtre caméra avec tri par glisser-déposer, badge nouvelles enregistrements, paramètres d affichage des enregistrements, déclencheur webhook, préréglages PTZ, journal d événements, suppression en masse, couleur caméra, extensions de la barre d état, bouton de réinitialisation des couleurs; diverses corrections du tableau de bord",
+        "it": "feat: popover filtro telecamera con ordinamento drag & drop, badge nuove registrazioni, impostazioni visualizzazione registrazioni, trigger webhook, preset PTZ, registro eventi, eliminazione in blocco, colore telecamera, estensioni barra di stato, pulsante ripristino colori; varie correzioni della dashboard",
+        "es": "feat: popover de filtro de cámara con arrastrar para ordenar, insignia de nuevas grabaciones, configuración de visualización de grabaciones, disparador webhook, preajustes PTZ, registro de eventos, eliminación masiva, color de cámara, extensiones de barra de estado, botón de restablecimiento de colores; varias correcciones del panel",
+        "pl": "feat: wyskakujące okienko filtrowania kamer z przeciąganiem, odznaka nowych nagrań, ustawienia wyświetlania nagrań, wyzwalacz webhook, presety PTZ, dziennik zdarzeń, usuwanie zbiorcze, kolor kamery, rozszerzenia paska stanu, przycisk resetowania kolorów; różne poprawki pulpitu nawigacyjnego",
+        "uk": "feat: спливаюче вікно фільтра камер із сортуванням перетягуванням, значок нових записів, налаштування відображення записів, вебхук-тригер, пресети PTZ, журнал подій, масове видалення, колір камери, розширення рядка стану, кнопка скидання кольорів; різні виправлення панелі",
+        "zh-cn": "feat: 相机过滤弹出框支持拖拽排序、新录像徽章、录像显示设置、Webhook触发器、PTZ预设、事件日志、批量删除、相机颜色、状态栏扩展、颜色重置按钮；多项仪表板修复"
+      },
+      "0.4.3": {
+        "en": "fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs\nfix: httpTimeoutMs=0 now correctly clamps to 1000ms instead of falling back to default\nfix: go2rtcEnabled config flag is now honored in fetchGo2rtcStreams\nfix: remove unused isSupportedLang export from widget-i18n",
+        "de": "Behebung: Umstellung der Abfrageschleife von setInterval auf setTimeout, um gleichzeitige Abfrageläufe zu verhindern.\nBehoben: httpTimeoutMs=0 begrenzt das Timeout nun korrekt auf 1000 ms, anstatt auf den Standardwert zurückzugreifen.\nBehoben: Das Konfigurationsflag go2rtcEnabled wird nun in fetchGo2rtcStreams berücksichtigt.\nBehebung: Entfernen des nicht verwendeten isSupportedLang-Exports aus widget-i18n",
+        "ru": "Исправление: переключите цикл опроса с setInterval на setTimeout, чтобы предотвратить одновременный запуск опроса.\nИсправлено: httpTimeoutMs=0 теперь корректно ограничивает значение до 1000 мс, вместо того чтобы возвращаться к значению по умолчанию.\nИсправление: флаг конфигурации go2rtcEnabled теперь учитывается в fetchGo2rtcStreams\nИсправление: удален неиспользуемый экспорт isSupportedLang из widget-i18n",
+        "pt": "Correção: altere o loop de polling de setInterval para setTimeout para evitar execuções de polling simultâneas.\nCorreção: httpTimeoutMs=0 agora limita corretamente o valor a 1000ms em vez de retornar ao valor padrão.\nCorreção: a flag de configuração go2rtcEnabled agora é respeitada em fetchGo2rtcStreams.\nCorreção: remover a exportação isSupportedLang não utilizada do widget-i18n.",
+        "nl": "Oplossing: wijzig de polling-loop van `setInterval` naar `setTimeout` om gelijktijdige polling-runs te voorkomen.\nOpgelost: httpTimeoutMs=0 zorgt er nu voor dat de waarde correct wordt beperkt tot 1000 ms in plaats van terug te vallen op de standaardwaarde.\nOpgelost: de configuratievlag go2rtcEnabled wordt nu correct gebruikt in fetchGo2rtcStreams.\nOplossing: verwijder de ongebruikte export van isSupportedLang uit widget-i18n.",
+        "fr": "Correction : remplacer la boucle d'interrogation setInterval par setTimeout pour éviter les interrogations simultanées.\nCorrection : httpTimeoutMs=0 limite désormais correctement le délai à 1000 ms au lieu de revenir à la valeur par défaut.\nCorrection : l'option de configuration go2rtcEnabled est désormais prise en compte dans fetchGo2rtcStreams\nCorrection : suppression de l’exportation inutilisée isSupportedLang de widget-i18n",
+        "it": "Correzione: passare dal ciclo di polling setInterval a setTimeout per evitare esecuzioni simultanee del polling.\nCorrezione: httpTimeoutMs=0 ora limita correttamente a 1000 ms invece di tornare al valore predefinito\nCorrezione: il flag di configurazione go2rtcEnabled ora viene rispettato in fetchGo2rtcStreams\ncorrezione: rimuovere l'esportazione inutilizzata di isSupportedLang dal widget-i18n",
+        "es": "Solución: cambiar el bucle de sondeo de setInterval a setTimeout para evitar ejecuciones de sondeo simultáneas.\nCorrección: httpTimeoutMs=0 ahora se ajusta correctamente a 1000 ms en lugar de recurrir al valor predeterminado.\nCorrección: el indicador de configuración go2rtcEnabled ahora se respeta en fetchGo2rtcStreams.\nCorrección: eliminar la exportación no utilizada de isSupportedLang de widget-i18n",
+        "pl": "naprawiono: przełącz pętlę sondowania z setInterval na setTimeout, aby zapobiec równoczesnym uruchomieniom sondowania\nnaprawiono: httpTimeoutMs=0 teraz poprawnie ogranicza się do 1000 ms zamiast powracać do wartości domyślnej\nnaprawiono: flaga konfiguracji go2rtcEnabled jest teraz uwzględniana w pobieraniu strumieni Go2rtcStreams\nnaprawiono: usunięto nieużywany eksport isSupportedLang z widget-i18n",
+        "uk": "виправлення: перемикання циклу опитування з setInterval на setTimeout для запобігання одночасним запускам опитувань\nвиправлення: httpTimeoutMs=0 тепер коректно обмежується значенням 1000 мс, а не повертається до значення за замовчуванням.\nвиправлення: прапор конфігурації go2rtcEnabled тепер враховується у fetchGo2rtcStreams.\nвиправлення: видалено невикористаний експорт isSupportedLang з widget-i18n",
+        "zh-cn": "修复方案：将轮询循环的 setInterval 改为 setTimeout，以防止并发轮询。\n修复：现在 httpTimeoutMs=0 会正确地将超时时间限制为 1000 毫秒，而不是回退到默认值。\n修复：fetchGo2rtcStreams 现在会识别 go2rtcEnabled 配置标志。\n修复：从 widget-i18n 中移除未使用的 isSupportedLang 导出"
+      },
+      "0.4.2": {
+        "en": "fix: FLV proxy now sends auth headers; dashboard online status corrected; admin UI default mismatches resolved; MP4/FLV label i18n",
+        "de": "fix: FLV-Proxy sendet jetzt Auth-Header; Online-Status im Dashboard korrigiert; Admin-UI-Default-Abweichungen behoben; MP4/FLV-Label i18n",
+        "ru": "fix: FLV-прокси теперь отправляет заголовок авторизации; исправлен статус онлайн в панели; исправлены значения по умолчанию в UI; i18n метки MP4/FLV",
+        "pt": "fix: proxy FLV agora envia cabeçalhos de autenticação; status online no painel corrigido; padrões da UI do admin corrigidos; i18n do rótulo MP4/FLV",
+        "nl": "fix: FLV-proxy verstuurt nu auth-headers; online-status in dashboard gecorrigeerd; standaardwaarden in admin-UI gecorrigeerd; MP4/FLV-label i18n",
+        "fr": "fix: le proxy FLV envoie désormais les en-têtes d auth; statut en ligne du tableau de bord corrigé; valeurs par défaut de l UI admin corrigées; i18n du libellé MP4/FLV",
+        "it": "fix: il proxy FLV ora invia intestazioni di autenticazione; stato online nella dashboard corretto; valori predefiniti UI admin corretti; i18n etichetta MP4/FLV",
+        "es": "fix: el proxy FLV ahora envía cabeceras de autenticación; estado en línea del panel corregido; valores predeterminados de la UI de administración corregidos; i18n de la etiqueta MP4/FLV",
+        "pl": "fix: proxy FLV wysyła teraz nagłówki autoryzacji; poprawiono status online w panelu; poprawiono wartości domyślne w UI admina; i18n etykiety MP4/FLV",
+        "uk": "fix: FLV-проксі тепер надсилає заголовки авторизації; виправлено онлайн-статус у панелі; виправлено значення за замовчуванням в UI; i18n мітки MP4/FLV",
+        "zh-cn": "fix: FLV 代理现在发送授权标头；修正面板在线状态；修正管理界面默认值；MP4/FLV 标签 i18n"
+      },
+      "0.4.1": {
+        "en": "fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled",
+        "de": "fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar",
+        "ru": "fix: плитка обзора ссылается на хост ioBroker; URL go2rtc отображается только при включении",
+        "pt": "fix: tile de visão geral aponta para o host ioBroker; URL go2rtc exibida apenas quando habilitado",
+        "nl": "fix: overzichtstegel verwijst naar ioBroker-host; go2rtc-URL alleen zichtbaar als ingeschakeld",
+        "fr": "fix: la tuile d aperçu pointe vers l hôte ioBroker; URL go2rtc visible uniquement si activé",
+        "it": "fix: il riquadro panoramica punta all host ioBroker; URL go2rtc visibile solo se abilitato",
+        "es": "fix: el tile de vista general apunta al host ioBroker; URL go2rtc visible solo cuando está activado",
+        "pl": "fix: kafelek przeglądu wskazuje na host ioBroker; URL go2rtc widoczny tylko po włączeniu",
+        "uk": "fix: плитка огляду вказує на хост ioBroker; URL go2rtc відображається лише при увімкненні",
+        "zh-cn": "fix: 概览磁贴指向 ioBroker 主机；go2rtc URL 仅在启用时显示"
+      },
+      "0.4.0": {
+        "en": "Optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection)",
+        "de": "Optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung)",
+        "ru": "Опциональный прокси потоков MJPEG и снимков через ioBroker",
+        "pt": "Proxy opcional de streams MJPEG e snapshots pelo ioBroker",
+        "nl": "Optionele MJPEG- en snapshot-proxy via ioBroker",
+        "fr": "Proxy optionnel pour les flux MJPEG et snapshots via ioBroker",
+        "it": "Proxy opzionale per stream MJPEG e snapshot tramite ioBroker",
+        "es": "Proxy opcional de flujos MJPEG e instantáneas a través de ioBroker",
+        "pl": "Opcjonalny proxy strumieni MJPEG i migawek przez ioBroker",
+        "zh-cn": "可选的 MJPEG 和快照流代理（通过 ioBroker）",
+        "uk": "Опціональний проксі потоків MJPEG і знімків через ioBroker"
+      }
     },
-    "protectedNative": [
-        "pass"
-    ],
-    "encryptedNative": [
-        "pass"
-    ],
-    "native": {
-        "serverIp": "192.168.1.100",
-        "port": 8090,
-        "user": "",
-        "pass": "",
-        "pollSeconds": 30,
-        "httpTimeoutMs": 8000,
-        "enableSystemControls": true,
-        "enablePtz": true,
-        "enableUrls": true,
-        "enableSnapshotB64": false,
-        "enableEventDps": true,
-        "enableOverview": true,
-        "storeRawJson": false,
-        "enableWidget": true,
-        "widgetMode": "nojs",
-        "widgetAnzahl": 50,
-        "widgetMinCol": 150,
-        "widgetShowTags": true,
-        "widgetLiveAspect": "",
-        "widgetTagPosition": "bottom-left",
-        "widgetMaxModalWidth": 900,
-        "widgetPlayerUrl": "",
-        "maxDepth": 6,
-        "maxArray": 30,
-        "eventTagsDynamic": true,
-        "eventTagsIgnore": "detected",
-        "eventTags": "",
-        "webInstance": "*",
-        "widgetShowSearch": true,
-        "widgetSortNewest": true,
-        "widgetDefaultTag": "",
-        "widgetThumbSize": "medium",
-        "widgetCompact": false,
-        "dashMaxRec": 200,
-        "dashDefaultView": "live",
-        "dashEnableRecordings": true,
-        "dashShowOffline": true,
-        "dashGridCols": 0,
-        "dashTileAspect": "16/9",
-        "dashBtnsVisible": false,
-        "dashTagPosition": "top-right",
-        "dashRefreshSec": 60,
-        "dashStreamReconnect": true,
-        "widgetColorCardBg": "rgba(127,127,127,0.15)",
-        "widgetColorTagBg": "rgba(0,0,0,0.55)",
-        "widgetColorTagText": "#ffffff",
-        "widgetColorAccent": "#8ab4f8",
-        "widgetColorModalBg": "#1c1c1e",
-        "widgetBorderRadius": 8,
-        "enableStreamProxy": false,
-        "go2rtcEnabled": false,
-        "go2rtcUrl": "",
-        "cameraStreams": {},
-        "dashColorBg": "#080b0f",
-        "dashColorSurface": "#0d1117",
-        "dashColorAccent": "#2563eb",
-        "dashColorText": "#dde4ef",
-        "dashColorBorder": "#1e2a38",
-        "dashColorOnline": "#22c55e",
-        "dashColorOffline": "#ef4444",
-        "go2rtcMapping": []
+    "titleLang": {
+      "en": "Agent DVR",
+      "de": "Agent DVR",
+      "ru": "Агент DVR",
+      "pt": "Agente DVR",
+      "nl": "Agent DVR",
+      "fr": "Agent DVR",
+      "it": "DVR dell'agente",
+      "es": "DVR del agente",
+      "pl": "Agent DVR",
+      "uk": "Агентський відеореєстратор",
+      "zh-cn": "代理 DVR"
     },
-    "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
-    ]
+    "desc": {
+      "en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
+      "de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
+      "ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
+      "pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
+      "nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
+      "fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
+      "it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
+      "es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
+      "pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
+      "uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
+      "zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
+    },
+    "authors": [
+      "ipod86 <david@graef.email>"
+    ],
+    "keywords": [
+      "Agentdvr",
+      "ispy",
+      "ptz"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "agent-dvr.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.agent-dvr/main/admin/agent-dvr.png",
+    "readme": "https://github.com/ipod86/ioBroker.agent-dvr/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "alarm",
+    "localLinks": {
+      "_default": "%web_protocol%://%ip%:%web_port%/agent-dvr.%instance%/"
+    },
+    "messagebox": true,
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "materialize"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.8.23"
+      },
+      {
+        "web": ">=3.0.0"
+      }
+    ],
+    "webExtension": "lib/web.js"
+  },
+  "protectedNative": [
+    "pass"
+  ],
+  "encryptedNative": [
+    "pass"
+  ],
+  "native": {
+    "serverIp": "192.168.1.100",
+    "port": 8090,
+    "user": "",
+    "pass": "",
+    "pollSeconds": 30,
+    "httpTimeoutMs": 8000,
+    "enableSystemControls": true,
+    "enablePtz": true,
+    "enableUrls": true,
+    "enableSnapshotB64": false,
+    "enableEventDps": true,
+    "enableOverview": true,
+    "storeRawJson": false,
+    "enableWidget": true,
+    "widgetMode": "nojs",
+    "widgetAnzahl": 50,
+    "widgetMinCol": 150,
+    "widgetShowTags": true,
+    "widgetLiveAspect": "",
+    "widgetTagPosition": "bottom-left",
+    "widgetMaxModalWidth": 900,
+    "widgetPlayerUrl": "",
+    "maxDepth": 6,
+    "maxArray": 30,
+    "eventTagsDynamic": true,
+    "eventTagsIgnore": "detected",
+    "eventTags": "",
+    "webInstance": "*",
+    "widgetShowSearch": true,
+    "widgetSortNewest": true,
+    "widgetDefaultTag": "",
+    "widgetThumbSize": "medium",
+    "widgetCompact": false,
+    "dashMaxRec": 200,
+    "dashDefaultView": "live",
+    "dashEnableRecordings": true,
+    "dashShowOffline": true,
+    "dashGridCols": 0,
+    "dashTileAspect": "16/9",
+    "dashBtnsVisible": false,
+    "dashTagPosition": "top-right",
+    "dashRefreshSec": 60,
+    "dashStreamReconnect": true,
+    "widgetColorCardBg": "rgba(127,127,127,0.15)",
+    "widgetColorTagBg": "rgba(0,0,0,0.55)",
+    "widgetColorTagText": "#ffffff",
+    "widgetColorAccent": "#8ab4f8",
+    "widgetColorModalBg": "#1c1c1e",
+    "widgetBorderRadius": 8,
+    "enableStreamProxy": false,
+    "go2rtcEnabled": false,
+    "go2rtcUrl": "",
+    "cameraStreams": {},
+    "dashColorBg": "#080b0f",
+    "dashColorSurface": "#0d1117",
+    "dashColorAccent": "#2563eb",
+    "dashColorText": "#dde4ef",
+    "dashColorBorder": "#1e2a38",
+    "dashColorOnline": "#22c55e",
+    "dashColorOffline": "#ef4444",
+    "go2rtcMapping": []
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ]
 }
