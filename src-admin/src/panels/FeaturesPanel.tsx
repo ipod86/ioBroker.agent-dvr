@@ -90,20 +90,6 @@ const FeaturesPanel: React.FC<Props> = ({ native, onChange }) => (
 					onChange={v => onChange('enableEventDps', v)}
 				/>
 			</Grid>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-			>
-				<FormField
-					type="checkbox"
-					labelKey="cfgEnablePush"
-					helpKey="cfgEnablePush_tt"
-					value={native.enablePush}
-					onChange={v => onChange('enablePush', v)}
-				/>
-			</Grid>
 		</Grid>
 		<SectionHeader textKey="hdrDisplay" />
 		<Grid

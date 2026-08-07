@@ -43,8 +43,6 @@
   "cfgEnableOverview_tt": "所有摄像头的 HTML 瓦片网格状态（用于可视化、仪表盘等）",
   "cfgEnablePtz": "PTZ 控制按钮",
   "cfgEnablePtz_tt": "每个摄像头的 PTZ 保持开关（左/右/上/下/变焦）",
-  "cfgEnablePush": "实时推送触发器",
-  "cfgEnablePush_tt": "当 AgentDVR 报告新录像时，push 触发状态立即更新",
   "cfgEnableSnapshotB64": "快照为 Base64",
   "cfgEnableSnapshotB64_tt": "每次轮询时将摄像头图像保存为 Base64（photo.jpg，全分辨率）。刷新按钮始终存在。",
   "cfgEnableStreamProxy": "媒体代理",

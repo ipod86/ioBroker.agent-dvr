@@ -233,7 +233,8 @@
         "dashColorText": "#dde4ef",
         "dashColorBorder": "#1e2a38",
         "dashColorOnline": "#22c55e",
-        "dashColorOffline": "#ef4444"
+        "dashColorOffline": "#ef4444",
+        "go2rtcMapping": []
     },
     "objects": [],
     "instanceObjects": [

@@ -43,8 +43,6 @@
   "cfgEnableOverview_tt": "État HTML avec toutes les caméras en grille (pour visualisations, tableaux de bord, etc.)",
   "cfgEnablePtz": "Boutons de contrôle PTZ",
   "cfgEnablePtz_tt": "Interrupteurs de maintien pour PTZ (gauche/droite/haut/bas/zoom) par caméra",
-  "cfgEnablePush": "Déclencheur push en temps réel",
-  "cfgEnablePush_tt": "L'état de déclenchement push est mis à jour immédiatement lorsqu'AgentDVR signale un nouvel enregistrement",
   "cfgEnableSnapshotB64": "Instantané en Base64",
   "cfgEnableSnapshotB64_tt": "Enregistrer l'image de la caméra en Base64 à chaque sondage (photo.jpg, pleine résolution). Bouton de rafraîchissement toujours présent.",
   "cfgEnableStreamProxy": "Proxy média",

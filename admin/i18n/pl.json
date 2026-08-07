@@ -43,8 +43,6 @@
   "cfgEnableOverview_tt": "Stan HTML ze wszystkimi kamerami jako siatka kafelków (do wizualizacji, pulpitów itp.)",
   "cfgEnablePtz": "Przyciski sterowania PTZ",
   "cfgEnablePtz_tt": "Przełączniki PTZ (lewo/prawo/góra/dół/zoom) z możliwością przytrzymania per kamera",
-  "cfgEnablePush": "Wyzwalacz push w czasie rzeczywistym",
-  "cfgEnablePush_tt": "Stan wyzwalacza push jest aktualizowany natychmiast, gdy AgentDVR zgłosi nowe nagranie",
   "cfgEnableSnapshotB64": "Migawka jako Base64",
   "cfgEnableSnapshotB64_tt": "Zapisuj obraz kamery jako Base64 przy każdym odpytaniu (photo.jpg, pełna rozdzielczość). Przycisk odświeżania zawsze obecny.",
   "cfgEnableStreamProxy": "Proxy mediów",

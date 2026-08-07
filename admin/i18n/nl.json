@@ -43,8 +43,6 @@
   "cfgEnableOverview_tt": "HTML-status met alle camera's als tegelraster (voor visualisaties, dashboards, enz.)",
   "cfgEnablePtz": "PTZ-bedieningsknoppen",
   "cfgEnablePtz_tt": "Houdschakelaaars voor PTZ (links/rechts/omhoog/omlaag/zoom) per camera",
-  "cfgEnablePush": "Realtime push-trigger",
-  "cfgEnablePush_tt": "Push-triggerstatus wordt direct bijgewerkt wanneer AgentDVR een nieuwe opname meldt",
   "cfgEnableSnapshotB64": "Snapshot als Base64",
   "cfgEnableSnapshotB64_tt": "Camerabeeld opslaan als Base64 bij elke poll (photo.jpg, volledige resolutie). Vernieuwknop altijd aanwezig.",
   "cfgEnableStreamProxy": "Media-proxy",

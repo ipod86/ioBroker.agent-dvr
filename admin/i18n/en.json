@@ -43,8 +43,6 @@
   "cfgEnableOverview_tt": "HTML state with all cameras as tile grid (for visualizations, dashboards etc.)",
   "cfgEnablePtz": "PTZ control buttons",
   "cfgEnablePtz_tt": "Hold switches for PTZ (left/right/up/down/zoom) per camera",
-  "cfgEnablePush": "Real-time push trigger",
-  "cfgEnablePush_tt": "Push trigger state is updated immediately when AgentDVR reports a new recording",
   "cfgEnableSnapshotB64": "Snapshot as Base64",
   "cfgEnableSnapshotB64_tt": "Save camera image as Base64 on every poll (photo.jpg, full resolution). Refresh button always present.",
   "cfgEnableStreamProxy": "Media proxy",
