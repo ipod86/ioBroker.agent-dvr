@@ -319,11 +319,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-el{width:100%;max-height:74dvh;background:#000;display:block;outline:none}
 #vid-ctrls{display:flex;align-items:center;gap:6px;padding:5px 8px;
   background:var(--s3);border:1px solid var(--border2);border-top:none;
-  border-radius:0 0 6px 6px}
+  border-radius:0 0 6px 6px;transition:opacity .3s}
 .vc-btn{background:none;border:none;color:var(--text);cursor:pointer;font-size:14px;
   width:28px;height:28px;display:flex;align-items:center;justify-content:center;
   border-radius:4px;padding:0;flex-shrink:0;line-height:1}
 .vc-btn:hover{background:rgba(37,99,235,.2);color:var(--accent-l)}
+.vc-btn.active{color:var(--accent-l);background:rgba(37,99,235,.18)}
 #vc-seek{flex:1;height:4px;-webkit-appearance:none;appearance:none;cursor:pointer;
   background:var(--border2);border-radius:2px;outline:none;accent-color:var(--accent-l)}
 #vc-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
@@ -332,6 +333,40 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   background:var(--accent-l);cursor:pointer}
 #vc-time{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;
   font-variant-numeric:tabular-nums;min-width:72px;text-align:center}
+/* Fullscreen overrides */
+#vid-panel:-webkit-full-screen,#vid-panel:fullscreen{background:#000;align-items:stretch;justify-content:stretch}
+#vid-panel:-webkit-full-screen #vid-box,#vid-panel:fullscreen #vid-box{
+  width:100%;height:100%;padding:0;border:none;border-radius:0;
+  background:#000;box-shadow:none;display:flex;flex-direction:column;max-width:none}
+#vid-panel:-webkit-full-screen #vid-hdr,#vid-panel:fullscreen #vid-hdr,
+#vid-panel:-webkit-full-screen #vid-close,#vid-panel:fullscreen #vid-close,
+#vid-panel:-webkit-full-screen #vid-nav,#vid-panel:fullscreen #vid-nav,
+#vid-panel:-webkit-full-screen #vid-meta,#vid-panel:fullscreen #vid-meta{display:none}
+#vid-panel:-webkit-full-screen #vid-video-area,#vid-panel:fullscreen #vid-video-area{
+  flex:1;min-height:0;display:flex;flex-direction:column}
+#vid-panel:-webkit-full-screen #vid-zoom-wrap,#vid-panel:fullscreen #vid-zoom-wrap{
+  flex:1;min-height:0;border-radius:0}
+#vid-panel:-webkit-full-screen #vid-el,#vid-panel:fullscreen #vid-el{
+  max-height:none;height:100%;object-fit:contain}
+#vid-panel:-webkit-full-screen #vid-ctrls,#vid-panel:fullscreen #vid-ctrls{
+  border-radius:0;border-left:none;border-right:none;border-bottom:none}
+#vid-panel:-webkit-full-screen #vid-err,#vid-panel:fullscreen #vid-err{
+  position:absolute;bottom:60px;left:50%;transform:translateX(-50%);white-space:nowrap}
+/* Auto-hide in fullscreen */
+#vid-panel:-webkit-full-screen.ctrls-hidden #vid-ctrls,
+#vid-panel:fullscreen.ctrls-hidden #vid-ctrls,
+#vid-panel:-webkit-full-screen.ctrls-hidden .vid-side-btn,
+#vid-panel:fullscreen.ctrls-hidden .vid-side-btn{opacity:0;pointer-events:none}
+/* Side navigation buttons (fullscreen only) */
+.vid-side-btn{display:none;position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.45);border:none;color:#fff;cursor:pointer;
+  width:44px;height:72px;border-radius:8px;font-size:26px;
+  align-items:center;justify-content:center;transition:opacity .3s,background .15s;z-index:5}
+.vid-side-btn:hover{background:rgba(37,99,235,.55)}
+.vid-side-btn:disabled{opacity:.25;cursor:default;pointer-events:none}
+#vid-panel:-webkit-full-screen .vid-side-btn,#vid-panel:fullscreen .vid-side-btn{display:flex}
+#vid-side-prev{left:12px}
+#vid-side-next{right:12px}
 #vid-err{display:none;margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;font-size:12px}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
 #vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
@@ -8051,8 +8086,12 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
         <span id="vc-time">0:00 / 0:00</span>
         <input id="vc-seek" type="range" min="0" max="1000" value="0" step="1">
         <button class="vc-btn" id="vc-mute" title="Ton"></button>
+        <button class="vc-btn" id="vc-zoom" title="Zoom"></button>
+        <button class="vc-btn" id="vc-fs" title="Vollbild"></button>
       </div>
     </div>
+    <button class="vid-side-btn" id="vid-side-prev">&#8249;</button>
+    <button class="vid-side-btn" id="vid-side-next">&#8250;</button>
     <div id="vid-err"></div>
     <div id="vid-nav">
       <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Previous</button>
@@ -9668,6 +9707,7 @@ function makeZoomable(el, allowDbl, transformEl) {
   }
 
   el.addEventListener('touchstart', e => {
+    if (el.dataset.zoomOff === '1') return;
     if (e.touches.length >= 2) {
       px = true; pan = false;
       pd = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
@@ -9717,6 +9757,7 @@ function makeZoomable(el, allowDbl, transformEl) {
   });
 
   el.addEventListener('wheel', e => {
+    if (el.dataset.zoomOff === '1') return;
     e.preventDefault(); e.stopPropagation();
     const r = el.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
@@ -10360,10 +10401,15 @@ function renderTimeline(items, multiCam) {
 }
 
 function updateNavBtns() {
-  document.getElementById('vid-prev').disabled = recPlayIdx <= 0;
-  document.getElementById('vid-next').disabled = recPlayIdx >= recPlayList.length - 1;
+  const atStart = recPlayIdx <= 0, atEnd = recPlayIdx >= recPlayList.length - 1;
+  document.getElementById('vid-prev').disabled = atStart;
+  document.getElementById('vid-next').disabled = atEnd;
   document.getElementById('vid-pos').textContent =
     recPlayList.length ? (recPlayIdx + 1) + ' / ' + recPlayList.length : '';
+  const sp = document.getElementById('vid-side-prev');
+  const sn = document.getElementById('vid-side-next');
+  if (sp) sp.disabled = atStart;
+  if (sn) sn.disabled = atEnd;
 }
 function playRecIdx(idx) {
   if (idx < 0 || idx >= recPlayList.length) return;
@@ -10394,6 +10440,7 @@ function playRec(rec, cam, idx) {
   el.play().catch(() => {});
 }
 function closeVideo() {
+  if (document.fullscreenElement) document.exitFullscreen();
   _resetVidZoom();
   const el = document.getElementById('vid-el');
   el.pause(); el.removeAttribute('src'); el.load();
@@ -10904,6 +10951,71 @@ loadConfig().then(() => loadData()).then(() => {
   const vw = document.getElementById('vid-zoom-wrap');
   const ve = document.getElementById('vid-el');
   if (vw && ve) _resetVidZoom = makeZoomable(vw, false, ve);
+
+  // Zoom toggle
+  const IC_ZOOM = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><line x1="8.5" y1="8.5" x2="13" y2="13"/><line x1="3.5" y1="5.5" x2="7.5" y2="5.5"/><line x1="5.5" y1="3.5" x2="5.5" y2="7.5"/></svg>`;
+  const IC_FS_ENTER = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9"/></svg>`;
+  const IC_FS_EXIT  = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1v4H1M9 5V1h4M9 13v-4h4M1 9h4v4"/></svg>`;
+
+  let _vidZoomEnabled = localStorage.getItem('advr_vid_zoom') === '1';
+  const zBtn = document.getElementById('vc-zoom');
+  const fsBtn = document.getElementById('vc-fs');
+  if (zBtn) {
+    zBtn.innerHTML = IC_ZOOM;
+    function applyVidZoom() {
+      if (!vw) return;
+      vw.dataset.zoomOff = _vidZoomEnabled ? '' : '1';
+      vw.style.touchAction = _vidZoomEnabled ? 'none' : '';
+      zBtn.classList.toggle('active', _vidZoomEnabled);
+      if (!_vidZoomEnabled) _resetVidZoom();
+    }
+    applyVidZoom();
+    zBtn.addEventListener('click', () => {
+      _vidZoomEnabled = !_vidZoomEnabled;
+      localStorage.setItem('advr_vid_zoom', _vidZoomEnabled ? '1' : '0');
+      applyVidZoom();
+    });
+  }
+
+  // Fullscreen + auto-hide
+  const vidPanel = document.getElementById('vid-panel');
+  if (fsBtn && vidPanel) {
+    fsBtn.innerHTML = IC_FS_ENTER;
+
+    let _fsHideTimer = null;
+    function _vidActivity() {
+      if (!document.fullscreenElement) return;
+      vidPanel.classList.remove('ctrls-hidden');
+      if (_fsHideTimer) clearTimeout(_fsHideTimer);
+      const el2 = document.getElementById('vid-el');
+      if (el2 && !el2.paused) _fsHideTimer = setTimeout(() => vidPanel.classList.add('ctrls-hidden'), 3000);
+    }
+    vidPanel.addEventListener('mousemove', _vidActivity);
+    vidPanel.addEventListener('touchstart', _vidActivity, { passive: true });
+
+    document.addEventListener('fullscreenchange', () => {
+      const inFs = !!document.fullscreenElement;
+      fsBtn.innerHTML = inFs ? IC_FS_EXIT : IC_FS_ENTER;
+      if (!inFs) { vidPanel.classList.remove('ctrls-hidden'); if (_fsHideTimer) { clearTimeout(_fsHideTimer); _fsHideTimer = null; } }
+      else _vidActivity();
+    });
+
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) vidPanel.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    });
+
+    const el2 = document.getElementById('vid-el');
+    if (el2) {
+      el2.addEventListener('play',  _vidActivity);
+      el2.addEventListener('pause', () => { vidPanel.classList.remove('ctrls-hidden'); if (_fsHideTimer) { clearTimeout(_fsHideTimer); _fsHideTimer = null; } });
+    }
+  }
+
+  const sp = document.getElementById('vid-side-prev');
+  const sn = document.getElementById('vid-side-next');
+  if (sp) sp.addEventListener('click', () => playRecIdx(recPlayIdx - 1));
+  if (sn) sn.addEventListener('click', () => playRecIdx(recPlayIdx + 1));
 
   // Grid tiles: pinch + scroll-wheel only (no double-tap, single-tap opens fullscreen)
   const grid = document.getElementById('cam-grid');
