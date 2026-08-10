@@ -314,6 +314,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   background:var(--s3);border:1px solid var(--border2);
   color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
+#vid-zoom-wrap{overflow:hidden;border-radius:6px;transform-origin:0 0}
 #vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
 #vid-err{display:none;margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;font-size:12px}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
@@ -8027,7 +8028,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       <div id="vid-title"></div>
       <div id="vid-cam"></div>
     </div>
-    <video id="vid-el" controls playsinline preload="auto" onerror="showVidErr()"></video>
+    <div id="vid-zoom-wrap"><video id="vid-el" controls playsinline preload="auto" onerror="showVidErr()"></video></div>
     <div id="vid-err"></div>
     <div id="vid-nav">
       <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Previous</button>
@@ -9619,6 +9620,7 @@ function toggleRec(key, btn, tile) {
 
 /* ─────────────────────────── Zoom ──────────────────────────── */
 let _resetFsZoom = () => {};
+let _resetVidZoom = () => {};
 
 function makeZoomable(el, allowDbl) {
   let sc = 1, tx = 0, ty = 0;
@@ -10348,6 +10350,7 @@ function showVidErr() {
   el.textContent = t('vidFmtErr');
 }
 function playRec(rec, cam, idx) {
+  _resetVidZoom();
   const url = rec.video || rec.url || '';
   if (!url) return;
   const src = url.startsWith('/') ? url : (url.startsWith('http') ? url : BASE + url);
@@ -10365,6 +10368,7 @@ function playRec(rec, cam, idx) {
   el.play().catch(() => {});
 }
 function closeVideo() {
+  _resetVidZoom();
   const el = document.getElementById('vid-el');
   el.pause(); el.removeAttribute('src'); el.load();
   document.getElementById('vid-err').style.display = 'none';
@@ -10832,6 +10836,10 @@ loadConfig().then(() => loadData()).then(() => {
   const r1 = makeZoomable(fi, true);
   const r2 = makeZoomable(fv, true);
   _resetFsZoom = () => { r1(); r2(); };
+
+  // Recordings player zoom (pinch + scroll-wheel; no double-tap to avoid play/pause conflicts)
+  const vw = document.getElementById('vid-zoom-wrap');
+  if (vw) _resetVidZoom = makeZoomable(vw, false);
 
   // Grid tiles: pinch + scroll-wheel only (no double-tap, single-tap opens fullscreen)
   const grid = document.getElementById('cam-grid');
