@@ -9979,8 +9979,9 @@ function buildRecCamSel() {
   loadAndFilterRec(true);
 }
 
-let _recPrevNewest = '';
+let _recPrevNewest = '', _recNeedsReload = false;
 async function loadAndFilterRec(silent = false) {
+  if (document.hidden) { _recNeedsReload = true; return; }
   const camKeys = Object.keys(cameras);
   if (!camKeys.length) return;
   const keys = selectedCameras.size ? [...selectedCameras].filter(k => cameras[k]) : camKeys;
@@ -10598,6 +10599,8 @@ document.addEventListener('visibilitychange', () => {
       else if (fsStype === 'mp4')
         createFlvPlayer(fv, flvStreamUrl(cameras[fsCam].oid, cameras[fsCam].aspect), 'fs_' + fsCam);
     }
+    // Reload recordings if a fetch was skipped while hidden
+    if (_recNeedsReload) { _recNeedsReload = false; loadAndFilterRec(true); }
   }
 });
 
