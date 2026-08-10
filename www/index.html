@@ -315,23 +315,26 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
 #vid-video-area{position:relative}
-#vid-zoom-wrap{overflow:hidden;border-radius:6px 6px 0 0}
+#vid-zoom-wrap{overflow:hidden;border-radius:6px}
 #vid-el{width:100%;max-height:74dvh;background:#000;display:block;outline:none}
-#vid-ctrls{display:flex;align-items:center;gap:6px;padding:5px 8px;
-  background:var(--s3);border:1px solid var(--border2);border-top:none;
-  border-radius:0 0 6px 6px;transition:opacity .3s}
-.vc-btn{background:none;border:none;color:var(--text);cursor:pointer;font-size:14px;
+#vid-ctrls{display:flex;align-items:center;gap:6px;padding:28px 8px 8px;
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));
+  border:none;border-radius:0 0 6px 6px;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+#vid-video-area.ctrls-visible #vid-ctrls{opacity:1;pointer-events:auto}
+.vc-btn{background:none;border:none;color:rgba(255,255,255,.9);cursor:pointer;font-size:14px;
   width:28px;height:28px;display:flex;align-items:center;justify-content:center;
   border-radius:4px;padding:0;flex-shrink:0;line-height:1}
-.vc-btn:hover{background:rgba(37,99,235,.2);color:var(--accent-l)}
-.vc-btn.active{color:var(--accent-l);background:rgba(37,99,235,.18)}
+.vc-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.vc-btn.active{color:#fff;background:rgba(255,255,255,.22)}
 #vc-seek{flex:1;height:4px;-webkit-appearance:none;appearance:none;cursor:pointer;
-  background:var(--border2);border-radius:2px;outline:none;accent-color:var(--accent-l)}
+  background:rgba(255,255,255,.3);border-radius:2px;outline:none;accent-color:var(--accent-l)}
 #vc-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
   border-radius:50%;background:var(--accent-l);cursor:pointer}
 #vc-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:none;
   background:var(--accent-l);cursor:pointer}
-#vc-time{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;
+#vc-time{font-size:11px;color:rgba(255,255,255,.75);white-space:nowrap;flex-shrink:0;
   font-variant-numeric:tabular-nums;min-width:72px;text-align:center}
 /* Fullscreen overrides */
 #vid-panel:-webkit-full-screen,#vid-panel:fullscreen{background:#000;align-items:stretch;justify-content:stretch}
@@ -349,13 +352,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-panel:-webkit-full-screen #vid-el,#vid-panel:fullscreen #vid-el{
   max-height:none;width:100%;height:100%;object-fit:contain}
 #vid-panel:-webkit-full-screen #vid-ctrls,#vid-panel:fullscreen #vid-ctrls{
-  position:absolute;bottom:0;left:0;right:0;
-  border:none;border-radius:0;
-  background:linear-gradient(transparent,rgba(0,0,0,.75));
-  padding-top:28px;transition:opacity .3s}
-#vid-panel:-webkit-full-screen #vid-ctrls .vc-btn,#vid-panel:fullscreen #vid-ctrls .vc-btn{color:#fff}
-#vid-panel:-webkit-full-screen #vid-ctrls #vc-time,#vid-panel:fullscreen #vid-ctrls #vc-time{color:rgba(255,255,255,.8)}
-#vid-panel:-webkit-full-screen #vid-ctrls #vc-seek,#vid-panel:fullscreen #vid-ctrls #vc-seek{background:rgba(255,255,255,.3)}
+  opacity:1;pointer-events:auto;border-radius:0}
 #vid-panel:-webkit-full-screen #vid-err,#vid-panel:fullscreen #vid-err{
   position:absolute;bottom:60px;left:50%;transform:translateX(-50%);white-space:nowrap}
 /* Auto-hide in fullscreen */
@@ -9689,6 +9686,7 @@ function toggleRec(key, btn, tile) {
 /* ─────────────────────────── Zoom ──────────────────────────── */
 let _resetFsZoom = () => {};
 let _resetVidZoom = () => {};
+let _normalCtrlsTimer = null;
 
 function makeZoomable(el, allowDbl, transformEl) {
   const tgt = transformEl || el;
@@ -10442,6 +10440,12 @@ function playRec(rec, cam, idx) {
   updateNavBtns();
   document.getElementById('vid-panel').classList.add('open');
   el.play().catch(() => {});
+  const va = document.getElementById('vid-video-area');
+  if (va) {
+    va.classList.add('ctrls-visible');
+    clearTimeout(_normalCtrlsTimer);
+    _normalCtrlsTimer = setTimeout(() => { if (!document.fullscreenElement) va.classList.remove('ctrls-visible'); }, 2500);
+  }
 }
 function closeVideo() {
   if (document.fullscreenElement) document.exitFullscreen();
@@ -10450,6 +10454,8 @@ function closeVideo() {
   el.pause(); el.removeAttribute('src'); el.load();
   document.getElementById('vid-err').style.display = 'none';
   document.getElementById('vid-panel').classList.remove('open');
+  const va2 = document.getElementById('vid-video-area');
+  if (va2) { va2.classList.remove('ctrls-visible'); clearTimeout(_normalCtrlsTimer); }
   resetDelBtn();
 }
 
@@ -11000,6 +11006,20 @@ loadConfig().then(() => loadData()).then(() => {
   const sn = document.getElementById('vid-side-next');
   if (sp) sp.addEventListener('click', () => playRecIdx(recPlayIdx - 1));
   if (sn) sn.addEventListener('click', () => playRecIdx(recPlayIdx + 1));
+
+  // Normal-view controls: show on hover/touch, hide on leave
+  const vidArea = document.getElementById('vid-video-area');
+  if (vidArea) {
+    vidArea.addEventListener('mouseenter', () => { if (!document.fullscreenElement) vidArea.classList.add('ctrls-visible'); });
+    vidArea.addEventListener('mouseleave', () => { if (!document.fullscreenElement) vidArea.classList.remove('ctrls-visible'); });
+    vidArea.addEventListener('touchstart', () => {
+      if (!document.fullscreenElement) {
+        vidArea.classList.add('ctrls-visible');
+        clearTimeout(_normalCtrlsTimer);
+        _normalCtrlsTimer = setTimeout(() => vidArea.classList.remove('ctrls-visible'), 2500);
+      }
+    }, { passive: true });
+  }
 
   // Grid tiles: pinch + scroll-wheel only (no double-tap, single-tap opens fullscreen)
   const grid = document.getElementById('cam-grid');
