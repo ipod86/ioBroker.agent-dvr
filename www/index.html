@@ -10818,16 +10818,7 @@ loadConfig().then(() => loadData()).then(() => {
   setInterval(loadSysStats, 60000);
 });
 
-// Swipe left/right in video player for next/prev recording
-(function() {
-  let _sx = 0;
-  const box = document.getElementById('vid-box');
-  box.addEventListener('touchstart', e => { _sx = e.touches[0].clientX; }, { passive: true });
-  box.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - _sx;
-    if (Math.abs(dx) > 55) dx < 0 ? playRecIdx(recPlayIdx + 1) : playRecIdx(recPlayIdx - 1);
-  }, { passive: true });
-})();
+// Swipe navigation removed — conflicts with pinch-zoom pan gesture
 
 // Init fullscreen zoom (double-tap / double-click / pinch / scroll-wheel)
 (function() {
