@@ -314,7 +314,7 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   background:var(--s3);border:1px solid var(--border2);
   color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
-#vid-zoom-wrap{overflow:hidden;border-radius:6px;transform-origin:0 0}
+#vid-zoom-wrap{overflow:hidden;border-radius:6px}
 #vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
 #vid-err{display:none;margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;font-size:12px}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
@@ -9622,22 +9622,23 @@ function toggleRec(key, btn, tile) {
 let _resetFsZoom = () => {};
 let _resetVidZoom = () => {};
 
-function makeZoomable(el, allowDbl) {
+function makeZoomable(el, allowDbl, transformEl) {
+  const tgt = transformEl || el;
   let sc = 1, tx = 0, ty = 0;
   let px = false, pd = 0, ps = 1, ptx = 0, pty = 0, pmx = 0, pmy = 0;
   let pan = false, psx = 0, psy = 0, ptxs = 0, ptys = 0;
   let lastTap = 0;
 
   el.style.touchAction = 'none';
-  el.style.transformOrigin = '0 0';
+  tgt.style.transformOrigin = '0 0';
 
   function apply(anim) {
-    el.style.transition = anim ? 'transform 0.2s ease-out' : 'none';
-    el.style.transform = sc === 1 ? '' : `translate(${tx}px,${ty}px) scale(${sc})`;
+    tgt.style.transition = anim ? 'transform 0.2s ease-out' : 'none';
+    tgt.style.transform = sc === 1 ? '' : `translate(${tx}px,${ty}px) scale(${sc})`;
   }
   function clamp() {
     if (sc <= 1) { tx = 0; ty = 0; return; }
-    const pw = el.parentElement.clientWidth, ph = el.parentElement.clientHeight;
+    const pw = el.clientWidth, ph = el.clientHeight;
     tx = Math.max(pw * (1 - sc), Math.min(0, tx));
     ty = Math.max(ph * (1 - sc), Math.min(0, ty));
   }
@@ -9647,7 +9648,7 @@ function makeZoomable(el, allowDbl) {
       px = true; pan = false;
       pd = Math.hypot(e.touches[1].clientX - e.touches[0].clientX, e.touches[1].clientY - e.touches[0].clientY);
       ps = sc; ptx = tx; pty = ty;
-      const r = el.parentElement.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
       pmx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left;
       pmy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
       e.preventDefault();
@@ -9661,7 +9662,7 @@ function makeZoomable(el, allowDbl) {
       if (allowDbl) {
         const now = Date.now();
         if (now - lastTap < 300) {
-          const r = el.parentElement.getBoundingClientRect();
+          const r = el.getBoundingClientRect();
           const mx = e.touches[0].clientX - r.left, my = e.touches[0].clientY - r.top;
           if (sc > 1) { sc = 1; tx = 0; ty = 0; }
           else { sc = 2.5; tx = mx * (1 - sc); ty = my * (1 - sc); clamp(); }
@@ -9693,7 +9694,7 @@ function makeZoomable(el, allowDbl) {
 
   el.addEventListener('wheel', e => {
     e.preventDefault(); e.stopPropagation();
-    const r = el.parentElement.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
     const ns = Math.max(1, Math.min(8, sc * (e.deltaY < 0 ? 1.2 : 1 / 1.2)));
     if (ns === sc) return;
@@ -9706,7 +9707,7 @@ function makeZoomable(el, allowDbl) {
 
   if (allowDbl) {
     el.addEventListener('dblclick', e => {
-      const r = el.parentElement.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
       const mx = e.clientX - r.left, my = e.clientY - r.top;
       if (sc > 1) { sc = 1; tx = 0; ty = 0; }
       else { sc = 2.5; tx = mx * (1 - sc); ty = my * (1 - sc); clamp(); }
@@ -10828,9 +10829,10 @@ loadConfig().then(() => loadData()).then(() => {
   const r2 = makeZoomable(fv, true);
   _resetFsZoom = () => { r1(); r2(); };
 
-  // Recordings player zoom (pinch + scroll-wheel; no double-tap to avoid play/pause conflicts)
+  // Recordings player: events on wrapper (overflow:hidden clips), transform on video element
   const vw = document.getElementById('vid-zoom-wrap');
-  if (vw) _resetVidZoom = makeZoomable(vw, false);
+  const ve = document.getElementById('vid-el');
+  if (vw && ve) _resetVidZoom = makeZoomable(vw, false, ve);
 
   // Grid tiles: pinch + scroll-wheel only (no double-tap, single-tap opens fullscreen)
   const grid = document.getElementById('cam-grid');
