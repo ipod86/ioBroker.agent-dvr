@@ -343,13 +343,19 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
 #vid-panel:-webkit-full-screen #vid-nav,#vid-panel:fullscreen #vid-nav,
 #vid-panel:-webkit-full-screen #vid-meta,#vid-panel:fullscreen #vid-meta{display:none}
 #vid-panel:-webkit-full-screen #vid-video-area,#vid-panel:fullscreen #vid-video-area{
-  flex:1;min-height:0;display:flex;flex-direction:column}
+  flex:1;min-height:0;position:relative}
 #vid-panel:-webkit-full-screen #vid-zoom-wrap,#vid-panel:fullscreen #vid-zoom-wrap{
-  flex:1;min-height:0;border-radius:0}
+  position:absolute;inset:0;border-radius:0}
 #vid-panel:-webkit-full-screen #vid-el,#vid-panel:fullscreen #vid-el{
-  max-height:none;height:100%;object-fit:contain}
+  max-height:none;width:100%;height:100%;object-fit:contain}
 #vid-panel:-webkit-full-screen #vid-ctrls,#vid-panel:fullscreen #vid-ctrls{
-  border-radius:0;border-left:none;border-right:none;border-bottom:none}
+  position:absolute;bottom:0;left:0;right:0;
+  border:none;border-radius:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.75));
+  padding-top:28px;transition:opacity .3s}
+#vid-panel:-webkit-full-screen #vid-ctrls .vc-btn,#vid-panel:fullscreen #vid-ctrls .vc-btn{color:#fff}
+#vid-panel:-webkit-full-screen #vid-ctrls #vc-time,#vid-panel:fullscreen #vid-ctrls #vc-time{color:rgba(255,255,255,.8)}
+#vid-panel:-webkit-full-screen #vid-ctrls #vc-seek,#vid-panel:fullscreen #vid-ctrls #vc-seek{background:rgba(255,255,255,.3)}
 #vid-panel:-webkit-full-screen #vid-err,#vid-panel:fullscreen #vid-err{
   position:absolute;bottom:60px;left:50%;transform:translateX(-50%);white-space:nowrap}
 /* Auto-hide in fullscreen */
