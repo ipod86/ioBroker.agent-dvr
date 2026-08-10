@@ -314,8 +314,24 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
   background:var(--s3);border:1px solid var(--border2);
   color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
 #vid-close:hover{background:var(--red);border-color:var(--red)}
-#vid-zoom-wrap{overflow:hidden;border-radius:6px}
-#vid-el{width:100%;max-height:74dvh;background:#000;border-radius:6px;display:block;outline:none}
+#vid-video-area{position:relative}
+#vid-zoom-wrap{overflow:hidden;border-radius:6px 6px 0 0}
+#vid-el{width:100%;max-height:74dvh;background:#000;display:block;outline:none}
+#vid-ctrls{display:flex;align-items:center;gap:6px;padding:5px 8px;
+  background:var(--s3);border:1px solid var(--border2);border-top:none;
+  border-radius:0 0 6px 6px}
+.vc-btn{background:none;border:none;color:var(--text);cursor:pointer;font-size:14px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:4px;padding:0;flex-shrink:0;line-height:1}
+.vc-btn:hover{background:rgba(37,99,235,.2);color:var(--accent-l)}
+#vc-seek{flex:1;height:4px;-webkit-appearance:none;appearance:none;cursor:pointer;
+  background:var(--border2);border-radius:2px;outline:none;accent-color:var(--accent-l)}
+#vc-seek::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--accent-l);cursor:pointer}
+#vc-seek::-moz-range-thumb{width:13px;height:13px;border-radius:50%;border:none;
+  background:var(--accent-l);cursor:pointer}
+#vc-time{font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;
+  font-variant-numeric:tabular-nums;min-width:72px;text-align:center}
 #vid-err{display:none;margin-top:8px;padding:8px 12px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#ef4444;font-size:12px}
 #vid-meta{margin-top:8px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:12px}
 #vid-dl{margin-left:auto;color:var(--accent-l);text-decoration:none;display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;border:1px solid rgba(37,99,235,.35);transition:background .15s}
@@ -8028,7 +8044,15 @@ main{flex:1;overflow:hidden;min-height:0;position:relative}
       <div id="vid-title"></div>
       <div id="vid-cam"></div>
     </div>
-    <div id="vid-zoom-wrap"><video id="vid-el" controls playsinline preload="auto" onerror="showVidErr()"></video></div>
+    <div id="vid-video-area">
+      <div id="vid-zoom-wrap"><video id="vid-el" playsinline preload="auto" onerror="showVidErr()"></video></div>
+      <div id="vid-ctrls">
+        <button class="vc-btn" id="vc-play" title="Play/Pause">▶</button>
+        <span id="vc-time">0:00 / 0:00</span>
+        <input id="vc-seek" type="range" min="0" max="1000" value="0" step="1">
+        <button class="vc-btn" id="vc-mute" title="Ton">🔊</button>
+      </div>
+    </div>
     <div id="vid-err"></div>
     <div id="vid-nav">
       <button id="vid-prev" onclick="playRecIdx(recPlayIdx - 1)" data-i18n="vidPrev">&#8249; Previous</button>
@@ -10820,6 +10844,42 @@ loadConfig().then(() => loadData()).then(() => {
 });
 
 // Swipe navigation removed — conflicts with pinch-zoom pan gesture
+
+// Custom controls for recordings player
+(function() {
+  const el   = document.getElementById('vid-el');
+  const play = document.getElementById('vc-play');
+  const mute = document.getElementById('vc-mute');
+  const seek = document.getElementById('vc-seek');
+  const time = document.getElementById('vc-time');
+  if (!el || !play) return;
+
+  function fmt(s) {
+    if (!isFinite(s) || s < 0) return '0:00';
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return m + ':' + String(sec).padStart(2, '0');
+  }
+  function syncTime() {
+    time.textContent = fmt(el.currentTime) + ' / ' + fmt(el.duration);
+  }
+
+  let isSeeking = false;
+  el.addEventListener('play',  () => { play.textContent = '⏸'; });
+  el.addEventListener('pause', () => { play.textContent = '▶'; });
+  el.addEventListener('ended', () => { play.textContent = '▶'; });
+  el.addEventListener('loadedmetadata', () => { seek.value = 0; syncTime(); });
+  el.addEventListener('timeupdate', () => { if (!isSeeking) { seek.value = el.duration ? (el.currentTime / el.duration) * 1000 : 0; syncTime(); } });
+  el.addEventListener('volumechange', () => { mute.textContent = el.muted ? '🔇' : '🔊'; });
+
+  play.addEventListener('click', () => { el.paused ? el.play().catch(() => {}) : el.pause(); });
+  mute.addEventListener('click', () => { el.muted = !el.muted; });
+
+  seek.addEventListener('mousedown',  () => { isSeeking = true; });
+  seek.addEventListener('touchstart', () => { isSeeking = true; }, { passive: true });
+  seek.addEventListener('input', () => { if (el.duration) { el.currentTime = (seek.value / 1000) * el.duration; syncTime(); } });
+  seek.addEventListener('mouseup',  () => { isSeeking = false; });
+  seek.addEventListener('touchend', () => { isSeeking = false; });
+})();
 
 // Init fullscreen zoom (double-tap / double-click / pinch / scroll-wheel)
 (function() {
