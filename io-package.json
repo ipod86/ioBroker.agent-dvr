@@ -165,7 +165,7 @@
         "web": ">=3.0.0"
       }
     ],
-    "webExtension": "lib/web.js"
+    "webExtension": "build/web.js"
   },
   "protectedNative": [
     "pass"
