@@ -9,6 +9,8 @@
 
 Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automatisch alle Kameras, spiegelt jede Geräteeigenschaft als Datenpunkt, stellt Schaltflächen für alle gängigen Befehle bereit (Aufnahme, Scharf, PTZ, …), liefert Push-getriggerte Galerie-Updates bei neuen Aufnahmen, erzeugt ein responsives HTML-Galerie-Widget pro Kamera und enthält ein eingebautes Live-Dashboard mit kameraindividueller Stream-Auswahl (MJPEG, MP4/FLV mit Ton oder go2rtc WebRTC).
 
+> Dies ist eine Community-Integration, nicht mit iSpyConnect verbunden oder von iSpyConnect unterstützt. Bitte Probleme über den [GitHub-Issue-Tracker dieses Repositories](https://github.com/ipod86/ioBroker.agent-dvr/issues) melden, nicht über iSpyConnect-Support-Kanäle.
+
 ## Voraussetzungen
 
 - ioBroker mit `iobroker.web` Adapter
@@ -264,6 +266,10 @@ FLV und go2rtc laufen unabhängig von der Einstellung immer über ioBroker — d
 - Browser und AgentDVR sind im gleichen Netzwerk (lokaler Zugriff)
 - Direktverbindung ist schneller — kein Umweg, geringere Latenz
 - Weniger Last auf dem ioBroker-Server — Streams müssen nicht durch Node.js laufen
+
+### Sicherheit
+
+Dieser Adapter speichert deine AgentDVR-Admin-Zugangsdaten und stellt `system.control.purge`, `system.control.restart` und `system.control.unblockExternal` als per Knopfdruck schreibbare Zustände bereit — wer den ioBroker-Web-Port erreichen kann, kann damit Aufnahmen löschen, AgentDVR neu starten oder dessen externe Zugriffssperre deaktivieren. **Stelle sicher, dass `iobroker.web` eine Authentifizierung aktiviert hat, bevor ioBroker außerhalb deines LANs erreichbar gemacht wird** (direkt oder über einen Reverse-Proxy) — das ist bei vielen ioBroker-Installationen nicht der Standard.
 
 > Die Einstellung wird sofort nach dem Speichern wirksam — kein Neustart erforderlich.
 
