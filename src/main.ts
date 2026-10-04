@@ -707,7 +707,7 @@ class AgentDvr extends utils.Adapter {
 	 * but the cache still claims it was already created - and setState would then hit a
 	 * state with no object, surfacing as a controller "no existing object" warning.
 	 *
-	 * @param id
+	 * @param id the object id (or deleted folder/channel id) to forget
 	 */
 	private forgetEnsured(id: string): void {
 		const prefix = `${id}.`;

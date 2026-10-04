@@ -412,6 +412,9 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.5.3 (2026-10-04)
+* (ipod86) fix: ensuredFolders-Cache wird beim Löschen von Objekten mitbereinigt, verhindert veraltete "no existing object"-Warnungen bei wiederentdeckten Laufwerken/Kameras
+
 ### 0.5.2 (2026-08-05)
 * (ipod86) feat: `overview`-Datenpunkt in `widget_live_overview` umbenannt für konsistentes Namensschema
 
