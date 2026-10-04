@@ -414,6 +414,7 @@ Returns `{"ok":true}` on success.
 ## Changelog
 <!-- markdownlint-disable-next-line MD024 -->
 ### **WORK IN PROGRESS**
+* (ipod86) fix: clear ensuredFolders cache on object deletion to prevent stale "no existing object" warnings for rediscovered drives/cameras
 
 ### 0.5.2 (2026-08-05)
 * (ipod86) feat: rename `overview` DP to `widget_live_overview` for consistent naming
