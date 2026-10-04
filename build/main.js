@@ -563,6 +563,24 @@ class AgentDvr extends utils.Adapter {
       }
     }
   }
+  /**
+   * Forgets `id` (and, for a deleted folder/channel, every cached child under it) from
+   * ensuredFolders. Without this, a dynamically re-discovered entity (a drive that
+   * briefly drops out of the API, a camera that reconnects) would skip
+   * setObjectNotExistsAsync on its next write - its object was deleted by a prune pass,
+   * but the cache still claims it was already created - and setState would then hit a
+   * state with no object, surfacing as a controller "no existing object" warning.
+   *
+   * @param id
+   */
+  forgetEnsured(id) {
+    const prefix = `${id}.`;
+    for (const cached of this.ensuredFolders) {
+      if (cached === id || cached.startsWith(prefix)) {
+        this.ensuredFolders.delete(cached);
+      }
+    }
+  }
   async writeLeaf(id, val, unit) {
     const t = typeof val;
     let common;
@@ -955,6 +973,7 @@ class AgentDvr extends utils.Adapter {
     for (const rel of stale) {
       this.log.info(`[agent-dvr] removing stale device: ${rel}`);
       await this.delObjectAsync(rel, { recursive: true });
+      this.forgetEnsured(rel);
       for (const [oid, d] of this.devById) {
         if (this.deviceFolder(d) === rel) {
           this.devById.delete(oid);
@@ -1311,6 +1330,7 @@ class AgentDvr extends utils.Adapter {
         }
         await this.delObjectAsync("system.hardware.cpu.used").catch(() => {
         });
+        this.forgetEnsured("system.hardware.cpu.used");
         if (ramp !== void 0) {
           await this.writeLeaf("system.hardware.ram.percent", ramp, "%");
         }
@@ -1342,10 +1362,12 @@ class AgentDvr extends utils.Adapter {
         ]) {
           await this.delObjectAsync(`system.stats.${old}`).catch(() => {
           });
+          this.forgetEnsured(`system.stats.${old}`);
         }
         for (const old of ["system.cpu", "system.ram", "system.drives", "system.disk_free_gb"]) {
           await this.delObjectAsync(old, { recursive: true }).catch(() => {
           });
+          this.forgetEnsured(old);
         }
         const gb = parseSizeGb(stats.disk_free);
         if (gb !== null) {
@@ -1381,6 +1403,7 @@ class AgentDvr extends utils.Adapter {
             const m = rel.match(/^system\.hardware\.drives\.([^.]+)$/);
             if (m && !activeKeys.has(m[1])) {
               await this.delObjectAsync(rel, { recursive: true });
+              this.forgetEnsured(rel);
             }
           }
         }
