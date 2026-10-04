@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "news": {
+      "0.5.3": {
+        "en": "fix: clear ensuredFolders cache on object deletion to prevent stale \"no existing object\" warnings for rediscovered drives/cameras",
+        "de": "Fix: Leert den EnsuredFolders-Cache beim Löschen von Objekten vor alten Laufwerken/Kameras",
+        "ru": "исправление: очищайте кэш EnsuredFolders при удалении объекта, чтобы предотвратить появление устаревших предупреждений «нет существующего объекта» для повторно обнаруженных дисков/камер",
+        "pt": "correção: limpe o cache do EnsuredFolders ao excluir o objeto para evitar avisos obsoletos em unidades/câmeras redescobertas",
+        "nl": "oplossing: maak het cachegeheugen van EnsuredFolders leeg wanneer u een object verwijdert om te voorkomen dat er verouderde waarschuwingen „geen bestaand object” zijn voor herontdekte schijven/camera's",
+        "fr": "correctif : vider le cache d'EnsuredFolders lors de la suppression d'un objet pour éviter que des lecteurs/caméras soient redécouverts",
+        "it": "fix: svuota la cache di EnsuredFolders per evitare avvisi obsoleti di unità/fotocamere ritrovate",
+        "es": "solución: borrar la caché de EnsuredFolders al eliminar objetos para evitar que las unidades o cámaras redescubiertas avisen de «no existe ningún objeto»",
+        "pl": "poprawka: wyczyść pamięć podręczną EnsuredFolders podczas usuwania obiektów, aby zapobiec nieaktualnym ostrzeżeniom „brak istniejącego obiektu” dla ponownie odkrytych dysków/kamer",
+        "uk": "виправлення: очистіть кеш EnsuredFolders при видаленні об'єкта, щоб запобігти застарілим попередженням «немає існуючого об'єкта» для повторно виявлених дисків/камер",
+        "zh-cn": "修复：删除对象时清除 EnsuredFolders 缓存，以防止对重新发现的驱动器/相机发出过时的 “无现有对象” 警告"
+      },
       "0.5.2": {
         "en": "feat: rename overview DP to widget_live_overview for consistent widget naming",
         "de": "feat: overview-Datenpunkt in widget_live_overview umbenannt für konsistentes Widget-Namensschema",
@@ -80,19 +93,6 @@
         "pl": "fix: kafelek przeglądu wskazuje na host ioBroker; URL go2rtc widoczny tylko po włączeniu",
         "uk": "fix: плитка огляду вказує на хост ioBroker; URL go2rtc відображається лише при увімкненні",
         "zh-cn": "fix: 概览磁贴指向 ioBroker 主机；go2rtc URL 仅在启用时显示"
-      },
-      "0.4.0": {
-        "en": "Optional MJPEG and snapshot stream proxy through ioBroker (browser needs only one connection)",
-        "de": "Optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung)",
-        "ru": "Опциональный прокси потоков MJPEG и снимков через ioBroker",
-        "pt": "Proxy opcional de streams MJPEG e snapshots pelo ioBroker",
-        "nl": "Optionele MJPEG- en snapshot-proxy via ioBroker",
-        "fr": "Proxy optionnel pour les flux MJPEG et snapshots via ioBroker",
-        "it": "Proxy opzionale per stream MJPEG e snapshot tramite ioBroker",
-        "es": "Proxy opcional de flujos MJPEG e instantáneas a través de ioBroker",
-        "pl": "Opcjonalny proxy strumieni MJPEG i migawek przez ioBroker",
-        "zh-cn": "可选的 MJPEG 和快照流代理（通过 ioBroker）",
-        "uk": "Опціональний проксі потоків MJPEG і знімків через ioBroker"
       }
     },
     "titleLang": {

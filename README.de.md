@@ -455,58 +455,6 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 * (ipod86) fix: go2rtcEnabled-Flag wird in fetchGo2rtcStreams jetzt berücksichtigt
 * (ipod86) fix: nicht verwendeter isSupportedLang-Export aus widget-i18n entfernt
 
-### 0.4.2 (2026-07-12)
-* (ipod86) fix: FLV-Stream-Proxy sendet jetzt Authorization-Header (HTTP 401 bei AgentDVR-Auth)
-* (ipod86) fix: Online-Status der Kameras wurde aus falschem State-Pfad gelesen (data.online → status.online)
-* (ipod86) fix: MP4/FLV-Stream-Label war auf Deutsch hardcodiert — jetzt in allen 11 Sprachen übersetzt
-* (ipod86) fix: Admin-UI-Standardwerte stimmen jetzt mit io-package.json überein (dashTagPosition, widgetAnzahl, widgetBorderRadius)
-* (ipod86) fix: go2rtcEnabled-Flag wird beim Laden der Streams im Admin-UI jetzt berücksichtigt
-* (ipod86) fix: enableStreamProxy fehlte in den native-Defaults der io-package.json
-
-### 0.4.1 (2026-07-12)
-* (ipod86) fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar
-
-### 0.4.0 (2026-07-12)
-* (ipod86) feat: optionaler MJPEG- und Snapshot-Stream-Proxy über ioBroker (Browser benötigt nur eine Verbindung zu ioBroker, nicht direkt zu AgentDVR)
-
-### 0.3.0 (2026-07-06)
-* (ipod86) feat: Steuerbuttons scheduleOn/Off und detectorOn/Off für Kameras und Mikrofone
-* (ipod86) feat: Empfindlichkeitszustände sensitivityMin, sensitivityMax, sensitivityGain für Kameras (0–100)
-* (ipod86) feat: URL-Zustände audio_mp3 und audio_ogg für Mikrofone
-* (ipod86) fix: objectDetectOn/Off und Snapshot-Schaltfläche auf Kameras (ot=2) beschränkt
-* (ipod86) feat: flv.js in Dashboard-HTML eingebettet — keine externe Datei mehr nötig
-* (ipod86) fix: FLV-Stream-Seitenverhältnis nach Tab-Wechsel korrekt beibehalten
-* (ipod86) feat: ausklappbarer Tag-Filter in Aufnahmen- und Timeline-Ansicht
-* (ipod86) feat: nativer Browser-Vollbild-Button im Live-View-Modal mit korrektem Seitenverhältnis
-* (ipod86) feat: Header im Live-View-Modal blendet sich nach 3 s Inaktivität aus, erscheint bei Maus/Touch wieder
-* (ipod86) fix: i18n-Keys fsEnter, fsExit, filterByLabel, timelineView, closePanel in allen 10 Sprachen
-
-### 0.2.2 (2026-07-04)
-* (ipod86) fix: verbleibende deutsche Strings im DashboardPanel via I18n.t() übersetzt
-* (ipod86) fix: i18n-Keys loadingCamerasAndStreams, cfgCameraColumn, cfgStreamSourceColumn, reload in allen 11 Sprachen ergänzt
-* (ipod86) chore: POSIX mv durch plattformübergreifendes node rename im src-admin Build-Script ersetzt
-
-### 0.2.1 (2026-07-04)
-* (ipod86) fix: alle deutschen Benutzer-Strings und Fehlermeldungen auf Englisch übersetzt
-* (ipod86) fix: DashboardPanel zeigt i18n-fähige Meldungen bei fehlender IP und leerer Kameraliste
-* (ipod86) chore: .npmignore entfernt — files-Feld in package.json steuert npm-Paketinhalt korrekt
-
-### 0.2.0 (2026-07-04)
-* (ipod86) feat: Kamera-Filter-Badges im Dashboard mit localStorage-Persistenz
-* (ipod86) feat: FLV/MP4-Stream automatischer Reconnect nach Netzwerkfehler (5 s Verzögerung)
-* (ipod86) feat: go2rtc WebSocket automatischer Reconnect nach unerwartetem Verbindungsabbruch (5 s)
-* (ipod86) feat: go2rtc Stall-Erkennung — Retry wenn Stream nach 10 s schwarz bleibt
-* (ipod86) fix: cameraStreams fehlte in io-package.json native-Defaults (Einstellungen wurden nicht gespeichert)
-* (ipod86) fix: adminUI.config „custom" → „materialize" (404 auf der Adapter-Einstellungsseite)
-* (ipod86) fix: Auflösungsanzeige beim FLV-Stream-Laden entfernt
-* (ipod86) fix: CDN-Fallback für flv.js entfernt — nur lokale Kopie
-* (ipod86) fix: AgentDVR/go2rtc-Sektionsüberschriften aus dem Dashboard-Raster entfernt
-* (ipod86) fix: cfgGo2rtcMapping_tt Tooltip in allen 11 Sprachen korrigiert
-* (ipod86) fix: setTimeout() durch this.setTimeout() ersetzt (E5005)
-* (ipod86) fix: veraltete jsonConfig.json entfernt — Einstellungen werden durch React-Admin verwaltet (W5046)
-* (ipod86) chore: admin/-Verzeichnis aus ESLint ausgeschlossen (OOM im CI verhindert)
-* (ipod86) docs: README und README.de vollständig neu geschrieben mit allen Tabs und Einstellungen
-
 [Ältere Changelog-Einträge in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
 ## Lizenz
