@@ -412,6 +412,8 @@ Returns `{"ok":true}` on success.
 | `widget_live_overview` | string | R | HTML tile grid of all cameras — snapshot refreshes on each adapter poll |
 
 ## Changelog
+<!-- markdownlint-disable-next-line MD024 -->
+### **WORK IN PROGRESS**
 
 ### 0.5.2 (2026-08-05)
 * (ipod86) feat: rename `overview` DP to `widget_live_overview` for consistent naming
