@@ -262,10 +262,65 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			</Grid>
 		</Grid>
 
-		<SectionHeader
-			textKey="hdrWidgetTheme"
-			level="sub"
-		/>
+		<SectionHeader textKey="hdrWidgetLive" />
+		<Grid
+			container
+			spacing={2}
+		>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={6}
+				lg={5}
+			>
+				<FormField
+					type="select"
+					labelKey="cfgWidgetLiveMode"
+					helpKey="cfgWidgetLiveMode_tt"
+					value={native.widgetLiveMode ?? 'nojs'}
+					onChange={v => onChange('widgetLiveMode', v)}
+					options={[
+						{ value: 'nojs', labelKey: 'cfgWidgetLiveModeNojs' },
+						{ value: 'js', labelKey: 'cfgWidgetLiveModeJs' },
+					]}
+				/>
+			</Grid>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="text"
+					labelKey="cfgWidgetLiveAspect"
+					helpKey="cfgWidgetLiveAspect_tt"
+					value={native.widgetLiveAspect ?? ''}
+					onChange={v => onChange('widgetLiveAspect', v)}
+				/>
+			</Grid>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="number"
+					labelKey="cfgWidgetLiveRefreshSec"
+					helpKey="cfgWidgetLiveRefreshSec_tt"
+					value={native.widgetLiveRefreshSec ?? 0}
+					min={0}
+					max={3600}
+					onChange={v => onChange('widgetLiveRefreshSec', v)}
+				/>
+			</Grid>
+		</Grid>
+
+		<SectionHeader textKey="hdrWidgetTheme" />
 		<Grid
 			container
 			spacing={2}
@@ -355,64 +410,6 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					min={0}
 					max={32}
 					onChange={v => onChange('widgetBorderRadius', v)}
-				/>
-			</Grid>
-		</Grid>
-
-		<SectionHeader textKey="hdrWidgetLive" />
-		<Grid
-			container
-			spacing={2}
-		>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={6}
-				lg={5}
-			>
-				<FormField
-					type="select"
-					labelKey="cfgWidgetLiveMode"
-					helpKey="cfgWidgetLiveMode_tt"
-					value={native.widgetLiveMode ?? 'nojs'}
-					onChange={v => onChange('widgetLiveMode', v)}
-					options={[
-						{ value: 'nojs', labelKey: 'cfgWidgetLiveModeNojs' },
-						{ value: 'js', labelKey: 'cfgWidgetLiveModeJs' },
-					]}
-				/>
-			</Grid>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-				lg={3}
-			>
-				<FormField
-					type="text"
-					labelKey="cfgWidgetLiveAspect"
-					helpKey="cfgWidgetLiveAspect_tt"
-					value={native.widgetLiveAspect ?? ''}
-					onChange={v => onChange('widgetLiveAspect', v)}
-				/>
-			</Grid>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-				lg={3}
-			>
-				<FormField
-					type="number"
-					labelKey="cfgWidgetLiveRefreshSec"
-					helpKey="cfgWidgetLiveRefreshSec_tt"
-					value={native.widgetLiveRefreshSec ?? 0}
-					min={0}
-					max={3600}
-					onChange={v => onChange('widgetLiveRefreshSec', v)}
 				/>
 			</Grid>
 		</Grid>
