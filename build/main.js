@@ -284,6 +284,30 @@ function scan(){var roots=document.querySelectorAll('.advroot');for(var i=0;i<ro
 window.ADVscan=scan;scan();
 })();
 `.trim();
+const ADV_BOOT_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+function advScriptBootstrap(scriptClass, scanFnName) {
+  return `<img alt="" src="${ADV_BOOT_IMG}" style="display:none" onload="(function(){if(window.${scanFnName}){window.${scanFnName}();return;}var c=document.querySelector('script.${scriptClass}');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
+}
+const ADV_LIVE_REFRESH_CODE = `
+(function(){
+function initRoot(root){
+  if(root.__advLive)return;
+  root.__advLive=1;
+  var imgs=root.querySelectorAll('.advlivethumb');
+  for(var i=0;i<imgs.length;i++)(function(img){
+    var base=img.getAttribute('data-base');
+    var sec=parseInt(img.getAttribute('data-refresh'),10)||0;
+    if(!base||sec<=0)return;
+    setInterval(function(){img.src=base+'&ts='+Date.now();},sec*1000);
+  })(imgs[i]);
+}
+function scan(){var roots=document.querySelectorAll('.advgrid');for(var i=0;i<roots.length;i++)initRoot(roots[i]);}
+window.ADVLiveScan=scan;scan();
+})();
+`.trim();
+function advLiveRefreshScript() {
+  return `<script type="text/plain" class="advlivecode">${ADV_LIVE_REFRESH_CODE}</script>${advScriptBootstrap("advlivecode", "ADVLiveScan")}`;
+}
 class AgentDvr extends utils.Adapter {
   pollTimer = void 0;
   pollBusy = false;
@@ -1069,11 +1093,14 @@ class AgentDvr extends utils.Adapter {
   buildOverviewHtml(cams) {
     const minCol = this.config.widgetMinCol || 150;
     const maxW = this.config.widgetMaxModalWidth || 900;
+    const jsMode = this.config.widgetLiveMode === "js";
+    const refreshSec = Number(this.config.widgetLiveRefreshSec) || 0;
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
     const tiles = cams.map((d) => {
       const oid = d.oid;
       const id = `advlive${sanitize(oid)}`;
-      const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${Date.now()}`;
+      const grabBase = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1`;
+      const grab = `${grabBase}&ts=${Date.now()}`;
       const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
       const name = escHtml(d.name || `Camera ${oid}`);
       const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || "";
@@ -1081,19 +1108,24 @@ class AgentDvr extends utils.Adapter {
       const fix = ar ? " advimgfix" : "";
       const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
       const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : "";
-      const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
+      const imgAttrs = jsMode ? ` class="advlivethumb" data-base="${grabBase}" data-refresh="${refreshSec}"` : "";
+      const inner = `<span class="advimg${fix}"${arStyle}><img${imgAttrs} src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
       return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     }).join("");
     const grid = tiles ? `<div class="advgrid">${tiles}</div>` : `<div class="advempty">No cameras</div>`;
-    return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
+    const script = jsMode && tiles ? advLiveRefreshScript() : "";
+    return `<style>${galleryCss(minCol, maxW)}</style>${grid}${script}`;
   }
   buildSingleCamLiveHtml(d) {
     const minCol = this.config.widgetMinCol || 150;
     const maxW = this.config.widgetMaxModalWidth || 900;
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
+    const jsMode = this.config.widgetLiveMode === "js";
+    const refreshSec = Number(this.config.widgetLiveRefreshSec) || 0;
     const oid = d.oid;
     const id = `advlive${sanitize(oid)}`;
-    const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${Date.now()}`;
+    const grabBase = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1`;
+    const grab = `${grabBase}&ts=${Date.now()}`;
     const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
     const name = escHtml(d.name || `Camera ${oid}`);
     const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || "";
@@ -1101,9 +1133,11 @@ class AgentDvr extends utils.Adapter {
     const fix = ar ? " advimgfix" : "";
     const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
     const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : "";
-    const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
+    const imgAttrs = jsMode ? ` class="advlivethumb" data-base="${grabBase}" data-refresh="${refreshSec}"` : "";
+    const inner = `<span class="advimg${fix}"${arStyle}><img${imgAttrs} src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
     const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
-    return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
+    const script = jsMode ? advLiveRefreshScript() : "";
+    return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>${script}`;
   }
   async updateLiveWidget(d, fid) {
     const wId = `${fid}.widget_live`;
@@ -1136,12 +1170,15 @@ class AgentDvr extends utils.Adapter {
   // schliesst sich dadurch nie von selbst; >0 = alle N Sekunden aktualisieren,
   // Vorschaubild bleibt aktueller, ein offenes Modal kann aber dabei schliessen).
   shouldRefreshLiveWidget(wId) {
-    const intervalSec = Number(this.config.widgetLiveRefreshSec) || 0;
     const last = this.widgetLastWrite[wId];
     if (last === void 0) {
       this.widgetLastWrite[wId] = Date.now();
       return true;
     }
+    if (this.config.widgetLiveMode === "js") {
+      return false;
+    }
+    const intervalSec = Number(this.config.widgetLiveRefreshSec) || 0;
     if (intervalSec <= 0) {
       return false;
     }

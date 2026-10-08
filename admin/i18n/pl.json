@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Widżet nagrań",
   "hdrWidgetLive": "Widżet na żywo",
   "cfgWidgetLiveRefreshSec": "Interwał odświeżania podglądu na żywo (sekundy, 0 = nigdy po utworzeniu)",
-  "cfgWidgetLiveRefreshSec_tt": "Jak często stan HTML kafelka na żywo jest zapisywany ponownie (odświeża migawkę). 0 = tylko raz przy tworzeniu - otwarte okno wideo nigdy się samo nie zamyka, ale migawka się starzeje. Wyższa wartość odświeża częściej, ale może zamknąć otwarte okno."
+  "cfgWidgetLiveRefreshSec_tt": "Tryb \"Tylko HTML\": jak często stan HTML kafelka na żywo jest zapisywany ponownie (odświeża migawkę). 0 = tylko raz przy tworzeniu - otwarte okno wideo nigdy się samo nie zamyka, ale migawka się starzeje. Wyższa wartość odświeża częściej, ale może zamknąć otwarte okno. Tryb \"Pełny JS\": jak często odświeża się obraz w przeglądarce; 0 wyłącza automatyczne odświeżanie.",
+  "cfgWidgetLiveMode": "Tryb widżetu na żywo",
+  "cfgWidgetLiveMode_tt": "\"Tylko HTML\" odświeża migawkę, zapisując cały stan widżetu ponownie w podanym poniżej interwale (0 = tylko raz - otwarte okno wideo nigdy się samo nie zamyka, ale migawka się starzeje). \"Pełny JS\" odświeża tylko obraz w przeglądarce za pomocą małego skryptu; stan jest zapisywany tylko raz, a otwarte okno nigdy się nie zamyka, niezależnie od interwału - wymaga wykonywania skryptów, na co niektóre hosty osadzające ten widżet nie pozwalają.",
+  "cfgWidgetLiveModeNojs": "Tylko HTML (poniższy interwał kontroluje pełne odświeżanie)",
+  "cfgWidgetLiveModeJs": "Pełny JS (odświeża tylko obraz, okno nigdy się nie zamyka, wymaga skryptów)"
 }

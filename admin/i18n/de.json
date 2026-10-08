@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Aufnahmen-Widget",
   "hdrWidgetLive": "Live-Widget",
   "cfgWidgetLiveRefreshSec": "Aktualisierungsintervall Live-Kachel (Sekunden, 0 = nie nach Erstellung)",
-  "cfgWidgetLiveRefreshSec_tt": "Wie oft der HTML-State der Live-Kachel neu geschrieben wird (aktualisiert den Schnappschuss). 0 = nur einmal bei Erstellung - ein offenes Video-Modal schließt sich dann nie von selbst, das Vorschaubild bleibt aber unveraendert. Ein hoeherer Wert aktualisiert haeufiger, kann aber ein offenes Modal schliessen."
+  "cfgWidgetLiveRefreshSec_tt": "Modus \"Nur HTML\": wie oft der HTML-State der Live-Kachel neu geschrieben wird (aktualisiert den Schnappschuss). 0 = nur einmal bei Erstellung - ein offenes Video-Modal schließt sich dann nie von selbst, das Vorschaubild bleibt aber unverändert. Ein höherer Wert aktualisiert häufiger, kann aber ein offenes Modal schließen. Modus \"Vollständiges JS\": wie oft sich das Bild im Browser aktualisiert; 0 deaktiviert die automatische Aktualisierung.",
+  "cfgWidgetLiveMode": "Live-Widget-Modus",
+  "cfgWidgetLiveMode_tt": "\"Nur HTML\" aktualisiert den Schnappschuss, indem der komplette Widget-State im unten eingestellten Intervall neu geschrieben wird (0 = nur einmal - ein offenes Video-Modal schließt sich dann nie von selbst, das Vorschaubild bleibt aber unverändert). \"Vollständiges JS\" aktualisiert nur das Bild im Browser per kleinem Skript, der State wird nur einmal geschrieben und ein offenes Modal schließt sich nie, unabhängig vom Intervall - erfordert Skriptausführung, die manche Einbindungen dieses Widgets nicht erlauben.",
+  "cfgWidgetLiveModeNojs": "Nur HTML (Intervall unten steuert kompletten Widget-Refresh)",
+  "cfgWidgetLiveModeJs": "Vollständiges JS (aktualisiert nur das Bild, Modal schließt nie, erfordert Skriptausführung)"
 }

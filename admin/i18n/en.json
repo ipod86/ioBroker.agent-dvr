@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Recordings Widget",
   "hdrWidgetLive": "Live Widget",
   "cfgWidgetLiveRefreshSec": "Live tile refresh interval (seconds, 0 = never after creation)",
-  "cfgWidgetLiveRefreshSec_tt": "How often the live tile's HTML state is rewritten (refreshing its snapshot). 0 = only once when created - an open video modal then never closes on its own, but the snapshot goes stale. A higher value refreshes more often, but rewriting the state can close an open video modal."
+  "cfgWidgetLiveRefreshSec_tt": "HTML only mode: how often the live tile's HTML state is rewritten (refreshing its snapshot). 0 = only once when created - an open video modal then never closes on its own, but the snapshot goes stale. A higher value refreshes more often, but rewriting the state can close an open video modal. Full JS mode: how often the image refreshes in the browser; 0 disables the automatic refresh.",
+  "cfgWidgetLiveMode": "Live widget mode",
+  "cfgWidgetLiveMode_tt": "'HTML only' refreshes the snapshot by rewriting the whole widget state at the interval below (0 = only once - an open video modal then never closes on its own, but the snapshot goes stale). 'Full JS' refreshes only the image in the browser via a small script, so the state is written once and an open modal never closes, regardless of the interval - requires script execution, which some hosts embedding this widget do not allow.",
+  "cfgWidgetLiveModeNojs": "HTML only (interval below controls full widget refresh)",
+  "cfgWidgetLiveModeJs": "Full JS (refreshes only the image, modal never closes, requires script execution)"
 }

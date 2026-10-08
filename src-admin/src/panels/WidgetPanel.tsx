@@ -127,7 +127,10 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			</Grid>
 		</Grid>
 
-		<SectionHeader textKey="hdrWidgetTags" />
+		<SectionHeader
+			textKey="hdrWidgetTags"
+			level="sub"
+		/>
 		<Grid
 			container
 			spacing={2}
@@ -168,7 +171,10 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			</Grid>
 		</Grid>
 
-		<SectionHeader textKey="hdrWidgetFilter" />
+		<SectionHeader
+			textKey="hdrWidgetFilter"
+			level="sub"
+		/>
 		<Grid
 			container
 			spacing={2}
@@ -232,7 +238,10 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			</Grid>
 		</Grid>
 
-		<SectionHeader textKey="hdrWidgetPlayer" />
+		<SectionHeader
+			textKey="hdrWidgetPlayer"
+			level="sub"
+		/>
 		<Grid
 			container
 			spacing={2}
@@ -253,7 +262,10 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			</Grid>
 		</Grid>
 
-		<SectionHeader textKey="hdrWidgetTheme" />
+		<SectionHeader
+			textKey="hdrWidgetTheme"
+			level="sub"
+		/>
 		<Grid
 			container
 			spacing={2}
@@ -352,6 +364,25 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			container
 			spacing={2}
 		>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={6}
+				lg={5}
+			>
+				<FormField
+					type="select"
+					labelKey="cfgWidgetLiveMode"
+					helpKey="cfgWidgetLiveMode_tt"
+					value={native.widgetLiveMode ?? 'nojs'}
+					onChange={v => onChange('widgetLiveMode', v)}
+					options={[
+						{ value: 'nojs', labelKey: 'cfgWidgetLiveModeNojs' },
+						{ value: 'js', labelKey: 'cfgWidgetLiveModeJs' },
+					]}
+				/>
+			</Grid>
 			<Grid
 				item
 				xs={12}

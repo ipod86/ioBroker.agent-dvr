@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Widget de grabaciones",
   "hdrWidgetLive": "Widget en vivo",
   "cfgWidgetLiveRefreshSec": "Intervalo de actualización de la miniatura en vivo (segundos, 0 = nunca tras la creación)",
-  "cfgWidgetLiveRefreshSec_tt": "Con qué frecuencia se reescribe el estado HTML de la miniatura en vivo (actualiza la instantánea). 0 = solo una vez al crearse - un modal de vídeo abierto nunca se cierra solo, pero la instantánea queda desactualizada. Un valor mayor actualiza con más frecuencia, pero puede cerrar un modal abierto."
+  "cfgWidgetLiveRefreshSec_tt": "Modo \"Solo HTML\": con qué frecuencia se reescribe el estado HTML de la miniatura en vivo (actualiza la instantánea). 0 = solo una vez al crearse - un modal de vídeo abierto nunca se cierra solo, pero la instantánea queda desactualizada. Un valor mayor actualiza con más frecuencia, pero puede cerrar un modal abierto. Modo \"JS completo\": con qué frecuencia se actualiza la imagen en el navegador; 0 desactiva la actualización automática.",
+  "cfgWidgetLiveMode": "Modo del widget en vivo",
+  "cfgWidgetLiveMode_tt": "\"Solo HTML\" actualiza la instantánea reescribiendo todo el estado del widget en el intervalo de abajo (0 = solo una vez - un modal de vídeo abierto nunca se cierra solo, pero la instantánea queda desactualizada). \"JS completo\" actualiza solo la imagen en el navegador mediante un pequeño script; el estado se escribe una sola vez y un modal abierto nunca se cierra, independientemente del intervalo - requiere ejecución de scripts, que algunos anfitriones que incrustan este widget no permiten.",
+  "cfgWidgetLiveModeNojs": "Solo HTML (el intervalo de abajo controla la actualización completa)",
+  "cfgWidgetLiveModeJs": "JS completo (solo actualiza la imagen, el modal nunca se cierra, requiere scripts)"
 }

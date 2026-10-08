@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Widget registrazioni",
   "hdrWidgetLive": "Widget live",
   "cfgWidgetLiveRefreshSec": "Intervallo di aggiornamento anteprima live (secondi, 0 = mai dopo la creazione)",
-  "cfgWidgetLiveRefreshSec_tt": "Con quale frequenza viene riscritto lo stato HTML dell'anteprima live (aggiorna lo snapshot). 0 = solo una volta alla creazione - una finestra video aperta non si chiude mai da sola, ma lo snapshot resta non aggiornato. Un valore piu alto aggiorna piu spesso, ma puo chiudere una finestra aperta."
+  "cfgWidgetLiveRefreshSec_tt": "Modalita \"Solo HTML\": con quale frequenza viene riscritto lo stato HTML dell'anteprima live (aggiorna lo snapshot). 0 = solo una volta alla creazione - una finestra video aperta non si chiude mai da sola, ma lo snapshot resta non aggiornato. Un valore piu alto aggiorna piu spesso, ma puo chiudere una finestra aperta. Modalita \"JS completo\": con quale frequenza si aggiorna l'immagine nel browser; 0 disabilita l'aggiornamento automatico.",
+  "cfgWidgetLiveMode": "Modalità widget live",
+  "cfgWidgetLiveMode_tt": "\"Solo HTML\" aggiorna lo snapshot riscrivendo l'intero stato del widget all'intervallo sottostante (0 = solo una volta - una finestra video aperta non si chiude mai da sola, ma lo snapshot resta non aggiornato). \"JS completo\" aggiorna solo l'immagine nel browser tramite un piccolo script; lo stato viene scritto una sola volta e una finestra aperta non si chiude mai, indipendentemente dall'intervallo - richiede l'esecuzione di script, che alcuni host che incorporano questo widget non consentono.",
+  "cfgWidgetLiveModeNojs": "Solo HTML (l'intervallo sottostante controlla l'aggiornamento completo)",
+  "cfgWidgetLiveModeJs": "JS completo (aggiorna solo l'immagine, la finestra non si chiude mai, richiede script)"
 }

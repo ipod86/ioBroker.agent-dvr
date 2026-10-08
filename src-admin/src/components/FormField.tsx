@@ -132,14 +132,28 @@ const FormField: React.FC<FieldProps> = props => {
 
 export const SectionHeader: React.FC<{
 	textKey: string;
-}> = ({ textKey }) => (
-	<Typography
-		variant="h6"
-		sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5 }}
-	>
-		{I18n.t(textKey)}
-	</Typography>
-);
+	// 'category' (default): a real top-level group - bold, bordered, more spacing.
+	// 'sub': a lighter subsection nested inside the category above it - smaller,
+	// muted, no border, so it reads as "part of the previous heading" instead of
+	// a new peer section. Use 'sub' for panels with several real subsections per
+	// category to avoid every heading looking like its own category.
+	level?: 'category' | 'sub';
+}> = ({ textKey, level = 'category' }) =>
+	level === 'sub' ? (
+		<Typography
+			variant="subtitle2"
+			sx={{ mt: 1.5, mb: 0.5, ml: 0.5, color: 'text.secondary', fontWeight: 600 }}
+		>
+			{I18n.t(textKey)}
+		</Typography>
+	) : (
+		<Typography
+			variant="h6"
+			sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5 }}
+		>
+			{I18n.t(textKey)}
+		</Typography>
+	);
 
 export const ColorField: React.FC<{
 	labelKey: string;

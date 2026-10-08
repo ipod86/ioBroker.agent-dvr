@@ -193,6 +193,7 @@
     "widgetMinCol": 150,
     "widgetShowTags": true,
     "widgetLiveAspect": "",
+    "widgetLiveMode": "nojs",
     "widgetLiveRefreshSec": 0,
     "widgetTagPosition": "bottom-left",
     "widgetMaxModalWidth": 900,

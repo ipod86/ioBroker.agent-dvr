@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Opnamewidget",
   "hdrWidgetLive": "Live-widget",
   "cfgWidgetLiveRefreshSec": "Vernieuwingsinterval live-thumbnail (seconden, 0 = nooit na aanmaken)",
-  "cfgWidgetLiveRefreshSec_tt": "Hoe vaak de HTML-status van de live-thumbnail opnieuw wordt geschreven (ververst de momentopname). 0 = slechts een keer bij aanmaken - een geopende videomodal sluit dan nooit vanzelf, maar de momentopname veroudert. Een hogere waarde ververst vaker, maar kan een geopende modal sluiten."
+  "cfgWidgetLiveRefreshSec_tt": "Modus \"Alleen HTML\": hoe vaak de HTML-status van de live-thumbnail opnieuw wordt geschreven (ververst de momentopname). 0 = slechts een keer bij aanmaken - een geopende videomodal sluit dan nooit vanzelf, maar de momentopname veroudert. Een hogere waarde ververst vaker, maar kan een geopende modal sluiten. Modus \"Volledig JS\": hoe vaak de afbeelding in de browser ververst; 0 schakelt automatisch verversen uit.",
+  "cfgWidgetLiveMode": "Live-widgetmodus",
+  "cfgWidgetLiveMode_tt": "\"Alleen HTML\" ververst de momentopname door de volledige widgetstatus te herschrijven op het onderstaande interval (0 = slechts een keer - een geopende videomodal sluit dan nooit vanzelf, maar de momentopname veroudert). \"Volledig JS\" ververst alleen de afbeelding in de browser via een klein script; de status wordt eenmalig geschreven en een geopende modal sluit nooit, ongeacht het interval - vereist scriptuitvoering, wat sommige hosts die dit widget insluiten niet toestaan.",
+  "cfgWidgetLiveModeNojs": "Alleen HTML (onderstaand interval bepaalt volledige ververing)",
+  "cfgWidgetLiveModeJs": "Volledig JS (ververst alleen de afbeelding, modal sluit nooit, vereist scripts)"
 }

@@ -152,5 +152,9 @@
   "hdrWidgetRecordings": "Widget enregistrements",
   "hdrWidgetLive": "Widget en direct",
   "cfgWidgetLiveRefreshSec": "Intervalle de rafraîchissement de la vignette en direct (secondes, 0 = jamais après création)",
-  "cfgWidgetLiveRefreshSec_tt": "Fréquence de réécriture de l'état HTML de la vignette en direct (rafraîchit l'instantané). 0 = une seule fois à la création - une fenêtre vidéo ouverte ne se ferme alors jamais toute seule, mais l'instantané devient obsolète. Une valeur plus élevée rafraîchit plus souvent, mais peut fermer une fenêtre ouverte."
+  "cfgWidgetLiveRefreshSec_tt": "Mode \"HTML seul\": fréquence de réécriture de l'état HTML de la vignette en direct (rafraîchit l'instantané). 0 = une seule fois à la création - une fenêtre vidéo ouverte ne se ferme alors jamais toute seule, mais l'instantané devient obsolète. Une valeur plus élevée rafraîchit plus souvent, mais peut fermer une fenêtre ouverte. Mode \"JS complet\": fréquence d'actualisation de l'image dans le navigateur; 0 désactive l'actualisation automatique.",
+  "cfgWidgetLiveMode": "Mode du widget en direct",
+  "cfgWidgetLiveMode_tt": "\"HTML seul\" actualise l'instantané en réécrivant tout l'état du widget selon l'intervalle ci-dessous (0 = une seule fois - une fenêtre vidéo ouverte ne se ferme alors jamais toute seule, mais l'instantané devient obsolète). \"JS complet\" n'actualise que l'image dans le navigateur via un petit script ; l'état n'est écrit qu'une fois et une fenêtre ouverte ne se ferme jamais, quel que soit l'intervalle - nécessite l'exécution de scripts, que certains hébergeurs de ce widget n'autorisent pas.",
+  "cfgWidgetLiveModeNojs": "HTML seul (l'intervalle ci-dessous contrôle l'actualisation complète)",
+  "cfgWidgetLiveModeJs": "JS complet (actualise seulement l'image, la fenêtre ne se ferme jamais, nécessite des scripts)"
 }
