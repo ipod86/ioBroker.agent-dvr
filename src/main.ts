@@ -1318,13 +1318,6 @@ class AgentDvr extends utils.Adapter {
 				const ar = arRaw ? String(arRaw).replace('/', ' / ') : '';
 				const fix = ar ? ' advimgfix' : '';
 				const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
-				// AgentDVR liefert die Live-Vorschau (video.webm) offenbar immer in
-				// einem festen Containerformat (z.B. 4:3), unabhaengig von der
-				// echten Kameraaufloesung - der eigentliche Bildinhalt ist darin
-				// vermutlich zentriert/letterboxed. object-fit:cover zoomt/schneidet
-				// das auf das korrekte (erkannte/konfigurierte) Seitenverhaeltnis
-				// zu, statt den falschen Container unveraendert zu zeigen.
-				const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:cover"` : '';
 				const inner =
 					`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
 					`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
@@ -1334,7 +1327,12 @@ class AgentDvr extends utils.Adapter {
 					`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 					`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 					`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-					`<video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video>` +
+					// Kein arStyle hier: AgentDVR liefert die Live-Vorschau (video.webm)
+					// offenbar immer in einem festen Format, unabhaengig von der echten
+					// Kameraaufloesung (die arStyle/camAspect korrekt wiedergibt) - das
+					// erzwungene Seitenverhaeltnis fuehrte nur zu falsch proportionierten
+					// Boxen. Groesse stattdessen dem tatsaechlichen Stream ueberlassen.
+					`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
 					`<div class="advinfo">${name} &middot; Live</div></div></div>`
 				);
 			})
@@ -1356,10 +1354,6 @@ class AgentDvr extends utils.Adapter {
 		const ar = arRaw ? String(arRaw).replace('/', ' / ') : '';
 		const fix = ar ? ' advimgfix' : '';
 		const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
-		// Siehe Kommentar in buildOverviewHtml: AgentDVRs Live-Container hat
-		// offenbar ein festes Seitenverhaeltnis mit Letterboxing - object-fit:cover
-		// schneidet das auf das korrekte Verhaeltnis zu statt es unveraendert zu zeigen.
-		const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:cover"` : '';
 		const inner =
 			`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
 			`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
@@ -1369,7 +1363,8 @@ class AgentDvr extends utils.Adapter {
 			`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 			`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 			`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-			`<video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video>` +
+			// Kein arStyle hier - siehe Kommentar in buildOverviewHtml.
+			`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
 			`<div class="advinfo">${name} &middot; Live</div></div></div>`;
 		return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
 	}
