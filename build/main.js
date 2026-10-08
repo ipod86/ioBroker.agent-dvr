@@ -1080,8 +1080,9 @@ class AgentDvr extends utils.Adapter {
       const ar = arRaw ? String(arRaw).replace("/", " / ") : "";
       const fix = ar ? " advimgfix" : "";
       const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
+      const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:cover"` : "";
       const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
-      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
+      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     }).join("");
     const grid = tiles ? `<div class="advgrid">${tiles}</div>` : `<div class="advempty">No cameras</div>`;
     return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
@@ -1099,8 +1100,9 @@ class AgentDvr extends utils.Adapter {
     const ar = arRaw ? String(arRaw).replace("/", " / ") : "";
     const fix = ar ? " advimgfix" : "";
     const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
+    const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:cover"` : "";
     const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
-    const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
+    const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
   }
   async updateLiveWidget(d, fid) {
