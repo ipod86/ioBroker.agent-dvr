@@ -412,6 +412,18 @@ Gibt `{"ok":true}` bei Erfolg zurück.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.5.5 (2026-10-08)
+* (ipod86) fix: Live-Vorschau-Video wird nicht mehr gestreckt/verzerrt angezeigt — AgentDVRs Live-Stream presst das komplette Bild in ein festes Containerformat, unabhängig vom echten Seitenverhältnis der Kamera; jetzt korrigiert (`object-fit:fill`) statt verzerrt gezeigt
+* (ipod86) feat: Einstellbares Aktualisierungsintervall für die Live-Kachel (`widgetLiveRefreshSec`) — Abwägung zwischen aktuellem Vorschaubild und einem dauerhaft offenen Video-Modal, da das Neuschreiben des Widget-States das Modal zurücksetzt
+* (ipod86) feat: Optionaler Live-Kachel-Modus mit vollständigem JS (`widgetLiveMode`) — aktualisiert nur das Vorschaubild per kleinem eingebettetem Skript, ein offenes Video-Modal schließt sich dann nie, unabhängig vom Aktualisierungsintervall (erfordert Skriptausführung, gleicher Kompromiss wie beim bestehenden JS-Modus der Galerie)
+* (ipod86) feat: Live-Widgets nutzen jetzt dieselben Theme-Farben, Thumbnail-Größe und Kompakt-Einstellung wie das Aufnahmen-Widget, vorher nur dort wirksam
+* (ipod86) refactor: Widget-Einstellungen neu strukturiert in klar abgegrenzte Abschnitte Allgemein / Aufnahmen-Widget / Live-Widget / Farben mit echter zweistufiger Überschriften-Hierarchie statt eines langen Abschnitts, dessen Unterpunkte wie eigene Kategorien wirkten
+
+### 0.5.4 (2026-10-08)
+* (ipod86) fix: Live-Widget-Schnappschuss bei Einzelkamera wurde nie aktualisiert (fehlender Cache-Busting-Zeitstempel + signaturbasierte Dedup übersprang das Neuschreiben des States)
+* (ipod86) fix: Live-Video-Element erhält jetzt vor Wiedergabebeginn das korrekte Seitenverhältnis statt der Standard-Platzhaltergröße des Browsers
+* (ipod86) fix: Live-/Aufnahmevideo wird nicht mehr verzerrt in eine falsch proportionierte Box gestreckt — stattdessen Letterboxing (`object-fit:contain`)
+
 ### 0.5.3 (2026-10-04)
 * (ipod86) fix: ensuredFolders-Cache wird beim Löschen von Objekten mitbereinigt, verhindert veraltete "no existing object"-Warnungen bei wiederentdeckten Laufwerken/Kameras
 
