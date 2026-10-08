@@ -1092,7 +1092,7 @@ class AgentDvr extends utils.Adapter {
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
     const oid = d.oid;
     const id = `advlive${sanitize(oid)}`;
-    const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1`;
+    const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${Date.now()}`;
     const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
     const name = escHtml(d.name || `Camera ${oid}`);
     const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || "";
@@ -1121,11 +1121,7 @@ class AgentDvr extends utils.Adapter {
       });
       this.ensuredFolders.add(wId);
     }
-    const sig = `${d.name}|${this.camAspect[d.oid] || ""}`;
-    if (this.widgetSig[wId] !== sig) {
-      await this.setStateAsync(wId, { val: this.buildSingleCamLiveHtml(d), ack: true });
-      this.widgetSig[wId] = sig;
-    }
+    await this.setStateAsync(wId, { val: this.buildSingleCamLiveHtml(d), ack: true });
   }
   // ---- event data points ----
   async writeEventDps(d, fid, events) {
