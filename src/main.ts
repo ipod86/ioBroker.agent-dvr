@@ -1327,7 +1327,12 @@ class AgentDvr extends utils.Adapter {
 					`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 					`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 					`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-					`<video class="advvideo" controls preload="none" playsinline${arStyle} src="${webm}"></video>` +
+					// Kein arStyle hier: AgentDVR liefert die Live-Vorschau (video.webm)
+					// offenbar immer in einem festen Format, unabhaengig von der echten
+					// Kameraaufloesung (die arStyle/camAspect korrekt wiedergibt) - das
+					// erzwungene Seitenverhaeltnis fuehrte nur zu falsch proportionierten
+					// Boxen. Groesse stattdessen dem tatsaechlichen Stream ueberlassen.
+					`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
 					`<div class="advinfo">${name} &middot; Live</div></div></div>`
 				);
 			})
@@ -1358,7 +1363,8 @@ class AgentDvr extends utils.Adapter {
 			`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 			`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 			`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-			`<video class="advvideo" controls preload="none" playsinline${arStyle} src="${webm}"></video>` +
+			// Kein arStyle hier - siehe Kommentar in buildOverviewHtml.
+			`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
 			`<div class="advinfo">${name} &middot; Live</div></div></div>`;
 		return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
 	}
