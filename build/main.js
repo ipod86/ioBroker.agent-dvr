@@ -982,6 +982,19 @@ class AgentDvr extends utils.Adapter {
     const ts = this.config.widgetThumbSize;
     return ts && sizeMap[ts] ? sizeMap[ts] : this.config.widgetMinCol || 150;
   }
+  // Theme-Farben gelten gleichermassen fuer Aufnahmen- und Live-Widget (rein
+  // optisch, nichts Aufnahmen-Spezifisches) - ein Helper statt die sechs Felder
+  // an jeder Stelle zu wiederholen.
+  widgetColors() {
+    return {
+      cardBg: this.config.widgetColorCardBg || void 0,
+      tagBg: this.config.widgetColorTagBg || void 0,
+      tagText: this.config.widgetColorTagText || void 0,
+      accent: this.config.widgetColorAccent || void 0,
+      modalBg: this.config.widgetColorModalBg || void 0,
+      radius: this.config.widgetBorderRadius
+    };
+  }
   async pruneStaleDevices(activeFolders) {
     const allObjs = await this.getAdapterObjectsAsync();
     const stale = [];
@@ -1036,14 +1049,7 @@ class AgentDvr extends utils.Adapter {
     }).join("");
     const gridClass = compact ? "advgrid advcompact" : "advgrid";
     const grid = items ? `<div class="${gridClass}">${items}</div>` : `<div class="advempty">${this.wt.noRecordings}</div>`;
-    const colors = {
-      cardBg: this.config.widgetColorCardBg || void 0,
-      tagBg: this.config.widgetColorTagBg || void 0,
-      tagText: this.config.widgetColorTagText || void 0,
-      accent: this.config.widgetColorAccent || void 0,
-      modalBg: this.config.widgetColorModalBg || void 0,
-      radius: this.config.widgetBorderRadius
-    };
+    const colors = this.widgetColors();
     return `<style>${galleryCss(minCol, maxW, compact, colors)}</style>${grid}`;
   }
   buildGalleryHtmlJs(d, events) {
@@ -1080,19 +1086,14 @@ class AgentDvr extends utils.Adapter {
     const data = JSON.stringify({ items, live: null, cfg }).replace(/</g, "\\u003c");
     const boot = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
     const searchHtml = showSearch ? `<input class="advsearchjs" type="text" placeholder="${escHtml(this.wt.search)}">` : "";
-    const colors = {
-      cardBg: this.config.widgetColorCardBg || void 0,
-      tagBg: this.config.widgetColorTagBg || void 0,
-      tagText: this.config.widgetColorTagText || void 0,
-      accent: this.config.widgetColorAccent || void 0,
-      modalBg: this.config.widgetColorModalBg || void 0,
-      radius: this.config.widgetBorderRadius
-    };
+    const colors = this.widgetColors();
     return `<style>${galleryCssJs(minCol, compact, colors)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar">${searchHtml}<div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
   }
   buildOverviewHtml(cams) {
-    const minCol = this.config.widgetMinCol || 150;
+    const minCol = this.effectiveMinCol();
     const maxW = this.config.widgetMaxModalWidth || 900;
+    const compact = !!this.config.widgetCompact;
+    const colors = this.widgetColors();
     const jsMode = this.config.widgetLiveMode === "js";
     const refreshSec = Number(this.config.widgetLiveRefreshSec) || 0;
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
@@ -1114,11 +1115,13 @@ class AgentDvr extends utils.Adapter {
     }).join("");
     const grid = tiles ? `<div class="advgrid">${tiles}</div>` : `<div class="advempty">No cameras</div>`;
     const script = jsMode && tiles ? advLiveRefreshScript() : "";
-    return `<style>${galleryCss(minCol, maxW)}</style>${grid}${script}`;
+    return `<style>${galleryCss(minCol, maxW, compact, colors)}</style>${grid}${script}`;
   }
   buildSingleCamLiveHtml(d) {
-    const minCol = this.config.widgetMinCol || 150;
+    const minCol = this.effectiveMinCol();
     const maxW = this.config.widgetMaxModalWidth || 900;
+    const compact = !!this.config.widgetCompact;
+    const colors = this.widgetColors();
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
     const jsMode = this.config.widgetLiveMode === "js";
     const refreshSec = Number(this.config.widgetLiveRefreshSec) || 0;
@@ -1137,7 +1140,7 @@ class AgentDvr extends utils.Adapter {
     const inner = `<span class="advimg${fix}"${arStyle}><img${imgAttrs} src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
     const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     const script = jsMode ? advLiveRefreshScript() : "";
-    return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>${script}`;
+    return `<style>${galleryCss(minCol, maxW, compact, colors)}</style><div class="advgrid">${tile}</div>${script}`;
   }
   async updateLiveWidget(d, fid) {
     const wId = `${fid}.widget_live`;
