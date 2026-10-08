@@ -278,7 +278,7 @@ function galleryCss(minCol: number, maxW: number, compact = false, colors?: Widg
 		`.advgrid .advlb:checked + .advthumb + .advmodal{display:flex}` +
 		`.advbackdrop{position:absolute;inset:0;background:transparent;cursor:pointer}` +
 		`.advbox{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;max-width:min(92vw,${maxW}px);background:var(--adv-modal-bg);padding:12px;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}` +
-		`.advvideo{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block}` +
+		`.advvideo{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block;object-fit:contain}` +
 		`.advclose{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:2;border:2px solid rgba(255,255,255,.35)}` +
 		`.advinfo{color:#fff;font-size:.8rem;text-align:center}` +
 		`.advinfo a{color:var(--adv-accent)}` +
@@ -314,7 +314,7 @@ function galleryCssJs(minCol: number, compact = false, colors?: WidgetColors): s
 const ADV_CLIENT_CODE = `
 (function(){
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-var MODAL_CSS='.advmodaljs{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center}.advbackdropjs{position:absolute;inset:0;background:transparent;cursor:pointer}.advboxjs{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;max-width:min(92vw,900px);background:#1c1c1e;padding:12px;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}.advvideojs{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block}.advclosejs{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:2;border:2px solid rgba(255,255,255,.35)}.advinfojs{color:#fff;font-size:.8rem;text-align:center}';
+var MODAL_CSS='.advmodaljs{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center}.advbackdropjs{position:absolute;inset:0;background:transparent;cursor:pointer}.advboxjs{position:relative;z-index:1;display:flex;flex-direction:column;gap:8px;max-width:min(92vw,900px);background:#1c1c1e;padding:12px;border-radius:14px;box-shadow:0 16px 48px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08)}.advvideojs{width:100%;max-height:80vh;border-radius:8px;background:#000;display:block;object-fit:contain}.advclosejs{position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;z-index:2;border:2px solid rgba(255,255,255,.35)}.advinfojs{color:#fff;font-size:.8rem;text-align:center}';
 var modalEl=null,modalVideo=null,modalInfo=null,modalBox=null;
 function getModal(){
   if(modalEl&&document.body.contains(modalEl))return modalEl;
