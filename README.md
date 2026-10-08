@@ -413,6 +413,13 @@ Returns `{"ok":true}` on success.
 
 ## Changelog
 <!-- markdownlint-disable-next-line MD024 -->
+### 0.5.4 (2026-10-08)
+* (ipod86) fix: single-camera live widget snapshot never refreshed (missing cache-busting timestamp + signature-based dedup skipped rewriting the state)
+* (ipod86) fix: live video element now receives the correct aspect ratio instead of the browser's default placeholder box before playback starts
+* (ipod86) fix: live/recording video no longer gets stretched to fill a mismatched aspect-ratio box — degrades to letterboxing (`object-fit:contain`) instead
+
+<!-- markdownlint-disable-next-line MD024 -->
+
 ### 0.5.3 (2026-10-04)
 * (ipod86) fix: clear ensuredFolders cache on object deletion to prevent stale "no existing object" warnings for rediscovered drives/cameras
 
@@ -449,12 +456,6 @@ Returns `{"ok":true}` on success.
 * (ipod86) fix: FLV stream and grid tile layout scaling corrections
 * (ipod86) fix: Italian i18n string with apostrophe broke page JS (changed to escaped variant)
 * (ipod86) fix: detect AgentDVR "Command not found" response on delete and show proper error message
-
-### 0.4.3 (2026-07-19)
-* (ipod86) fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs
-* (ipod86) fix: httpTimeoutMs=0 now correctly clamps to 1000ms instead of falling back to default
-* (ipod86) fix: go2rtcEnabled config flag is now honored in fetchGo2rtcStreams
-* (ipod86) fix: remove unused isSupportedLang export from widget-i18n
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

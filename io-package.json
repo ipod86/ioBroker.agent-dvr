@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "news": {
+      "0.5.4": {
+        "en": "* fix: single-camera live widget snapshot never refreshed (missing cache-busting timestamp + signature-based dedup skipped rewriting the state)\n* fix: live video element now receives the correct aspect ratio instead of the browser's default placeholder box before playback starts\n* fix: live/recording video no longer gets stretched to fill a mismatched aspect-ratio box — degrades to letterboxing (`object-fit:contain`) instead\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "de": "* Fix: Live-Widget-Snapshot mit einer Kamera wurde nie aktualisiert (kein Cache-Busting-Zeitstempel und signaturbasiertes Deduplizieren übersprungen)\n* Fix: Live-Video erhält jetzt vor Wiedergabebeginn das richtige Seitenverhältnis statt wie im Browser\n* Fix: Live-/Aufnahmevideo füllt nicht mehr ein falsches Seitenverhältnis aus — stattdessen wird Letterboxing (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "ru": "* исправлено: снимок виджета в реальном времени с одной камеры никогда не обновлялся (отсутствовала временная метка, разрушающая кэш, и дедуп на основе подписей пропустил перезапись состояния)\n* исправлено: элемент живого видео теперь получает правильное соотношение сторон вместо стандартного заполнителя браузера перед началом воспроизведения\n* исправлено: видео в реальном времени и при записи больше не растягивается на поле с несовпадающим соотношением сторон — вместо этого оно переходит в формат почтовой рассылки (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "pt": "* correção: foto de widget ao vivo de câmera única nunca atualizada (falta de timestamp de cache e desduplicação de assinatura ignorou a reescrita do estado)\n* correção: o elemento de vídeo ao vivo agora recebe a proporção correta em vez da caixa padrão do navegador antes da reprodução\n* correção: vídeo ao vivo/gravado não é mais esticado para preencher uma caixa de proporção incompatível — passa para letterbox (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "nl": "* Oplossing: momentopname van een live widget met één camera is nooit vernieuwd (er ontbreekt een tijdstempel voor cache-busting + dedup op basis van handtekeningen heeft het herschrijven van de status overgeslagen)\n* opgelost: het live video-element krijgt nu de juiste hoogte-breedteverhouding in plaats van de standaard tijdelijke aanduiding van de browser voordat het afspelen wordt gestart\n* Oplossing: live video of opname wordt niet langer uitgerekt om een vak met een beeldverhouding te vullen dat niet bij elkaar past — wordt in plaats daarvan gedegradeerd naar letterboxing (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "fr": "* Correction : la capture d'écran d'un widget en direct n'a jamais été actualisée (horodatage manquant et déduplication basée sur les signatures, réécriture de l'état)\n* Correction : la vidéo en direct reçoit désormais le bon format au lieu de la zone réservée par défaut du navigateur avant le début de la lecture\n* Correction : les vidéos en direct ne sont plus étirées pour remplir un format d'image inégal, mais plutôt en boîte aux lettres (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "it": "* fix: istantanea del widget live a telecamera singola mai aggiornata (timestamp di cache-busting mancante + dedup su firma saltato la riscrittura)\n* fix: l'elemento video live ora riceve le proporzioni corrette anziché il segnaposto predefinito del browser\n* correzione: il video in diretta non viene più allungato per riempire un riquadro con proporzioni non corrispondenti, ma in letterboxing\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "es": "* solución: la instantánea del widget en vivo con una sola cámara nunca se actualizó (falta la marca horaria y la deduplicación basada en firmas se saltó la reescritura del estado)\n* solución: el elemento de vídeo en directo recibe ahora la relación de aspecto correcta en lugar del marcador de posición por defecto del navegador\n* solución: el vídeo en directo/grabación ya no se estira para llenar una caja con una relación de aspecto que no coincide, sino que pasa a ser letterbox (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "pl": "* poprawka: migawka widżetu na żywo z pojedynczą kamerą nigdy nie została odświeżona (brak znacznika czasowego niszczenia pamięci podręcznej+dedup oparty na podpisach pominięty przepisywanie stanu)\n* poprawka: element wideo na żywo otrzymuje teraz prawidłowy współczynnik proporcji zamiast domyślnego pola zastępczego przeglądarki przed rozpoczęciem odtwarzania\n* poprawka: wideo na żywo/nagrywanie nie jest już rozciągane, aby wypełnić niedopasowane pole proporcji - zamiast tego degraduje się do boksingu letterboxu („object-fit: container”)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "uk": "* виправлено: знімок віджета з однією камерою ніколи не оновлювався (відсутня мітка часу для зриву кеш-пам'яті + дедап на основі підпису пропустив переписування стану)\n* Виправлено: елемент живого відео тепер отримує правильне співвідношення сторін замість поля заповнювача за замовчуванням браузера перед початком відтворення\n* виправлено: відео в прямому/записі більше не розтягується, щоб заповнити невідповідне поле співвідношення сторін - замість цього переходить до літерного коробка (`object-fit:contain`)\n\n<!-- markdownlint-disable-next-line MD024 -->",
+        "zh-cn": "* 修复：单机实时小部件快照从未刷新过（缺少缓存破坏时间戳 + 基于签名的重复数据删除跳过了重写状态）\n* 修复：直播视频元素现在在开始播放之前会收到正确的纵横比，而不是浏览器的默认占位符框\n* 修复：直播/录制的视频不再被拉伸以填充不匹配的长宽比框——而是降级为信箱（`object-fit: contain`）\n\n<!--markdownlint-disable-next-line MD024-->"
+      },
       "0.5.3": {
         "en": "fix: clear ensuredFolders cache on object deletion to prevent stale \"no existing object\" warnings for rediscovered drives/cameras",
         "de": "Fix: Leert den EnsuredFolders-Cache beim Löschen von Objekten vor alten Laufwerken/Kameras",
@@ -80,19 +93,6 @@
         "pl": "fix: proxy FLV wysyła teraz nagłówki autoryzacji; poprawiono status online w panelu; poprawiono wartości domyślne w UI admina; i18n etykiety MP4/FLV",
         "uk": "fix: FLV-проксі тепер надсилає заголовки авторизації; виправлено онлайн-статус у панелі; виправлено значення за замовчуванням в UI; i18n мітки MP4/FLV",
         "zh-cn": "fix: FLV 代理现在发送授权标头；修正面板在线状态；修正管理界面默认值；MP4/FLV 标签 i18n"
-      },
-      "0.4.1": {
-        "en": "fix: overview tile links to ioBroker host; go2rtc URL shown only when enabled",
-        "de": "fix: Übersichtskachel zeigt ioBroker-Host-IP; go2rtc-URL nur bei aktivierter Option sichtbar",
-        "ru": "fix: плитка обзора ссылается на хост ioBroker; URL go2rtc отображается только при включении",
-        "pt": "fix: tile de visão geral aponta para o host ioBroker; URL go2rtc exibida apenas quando habilitado",
-        "nl": "fix: overzichtstegel verwijst naar ioBroker-host; go2rtc-URL alleen zichtbaar als ingeschakeld",
-        "fr": "fix: la tuile d aperçu pointe vers l hôte ioBroker; URL go2rtc visible uniquement si activé",
-        "it": "fix: il riquadro panoramica punta all host ioBroker; URL go2rtc visibile solo se abilitato",
-        "es": "fix: el tile de vista general apunta al host ioBroker; URL go2rtc visible solo cuando está activado",
-        "pl": "fix: kafelek przeglądu wskazuje na host ioBroker; URL go2rtc widoczny tylko po włączeniu",
-        "uk": "fix: плитка огляду вказує на хост ioBroker; URL go2rtc відображається лише при увімкненні",
-        "zh-cn": "fix: 概览磁贴指向 ioBroker 主机；go2rtc URL 仅在启用时显示"
       }
     },
     "titleLang": {

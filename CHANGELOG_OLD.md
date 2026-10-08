@@ -1,6 +1,12 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.4.3 (2026-07-19)
+* (ipod86) fix: switch polling loop from setInterval to setTimeout to prevent concurrent poll runs
+* (ipod86) fix: httpTimeoutMs=0 now correctly clamps to 1000ms instead of falling back to default
+* (ipod86) fix: go2rtcEnabled config flag is now honored in fetchGo2rtcStreams
+* (ipod86) fix: remove unused isSupportedLang export from widget-i18n
+
 ## 0.4.2 (2026-07-12)
 * (ipod86) fix: FLV stream proxy now sends Authorization header (HTTP 401 with AgentDVR auth)
 * (ipod86) fix: dashboard camera online status was read from wrong state path (data.online → status.online)
