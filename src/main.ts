@@ -1327,7 +1327,7 @@ class AgentDvr extends utils.Adapter {
 					`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 					`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 					`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-					`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
+					`<video class="advvideo" controls preload="none" playsinline${arStyle} src="${webm}"></video>` +
 					`<div class="advinfo">${name} &middot; Live</div></div></div>`
 				);
 			})
@@ -1358,7 +1358,7 @@ class AgentDvr extends utils.Adapter {
 			`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 			`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 			`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-			`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
+			`<video class="advvideo" controls preload="none" playsinline${arStyle} src="${webm}"></video>` +
 			`<div class="advinfo">${name} &middot; Live</div></div></div>`;
 		return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
 	}
