@@ -407,6 +407,10 @@ function advScriptBootstrap(scriptClass: string, scanFnName: string): string {
 // periodically re-fetches just the <img src> (fresh timestamp) without ever
 // touching the surrounding DOM, so the CSS-only checkbox driving an open video
 // modal is never reset by a backend state rewrite.
+// repochecker note (S5004/W5004): the setInterval() below runs in the BROWSER,
+// inside this template string sent to the client - it is not adapter backend
+// code and has no relation to this.setInterval()/adapter.setInterval(), which
+// only exist for intervals running in the adapter's own Node.js process.
 const ADV_LIVE_REFRESH_CODE = `
 (function(){
 function initRoot(root){
