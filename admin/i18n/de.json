@@ -135,9 +135,9 @@
   "hdrGo2rtc": "go2rtc WebRTC-Streams",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filter & Sortierung",
-  "hdrWidgetGeneral": "Galerie-Widget",
+  "hdrWidgetGeneral": "Allgemein",
   "hdrWidgetLayout": "Layout",
-  "hdrWidgetPlayer": "Livestream & Player",
+  "hdrWidgetPlayer": "Player",
   "hdrWidgetTags": "Tags",
   "hdrWidgetTheme": "Farben & Design",
   "loadingCamerasAndStreams": "Lade Kameras und Streams…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Funktionen",
   "tabWidget": "Widget",
   "cfgResetColors": "Farben auf Werkseinstellung",
-  "cfgResetColors_tt": "Setzt alle Dashboard-Farben auf die eingebauten Standardwerte zurück"
+  "cfgResetColors_tt": "Setzt alle Dashboard-Farben auf die eingebauten Standardwerte zurück",
+  "hdrWidgetRecordings": "Aufnahmen-Widget",
+  "hdrWidgetLive": "Live-Widget",
+  "cfgWidgetLiveRefreshSec": "Aktualisierungsintervall Live-Kachel (Sekunden, 0 = nie nach Erstellung)",
+  "cfgWidgetLiveRefreshSec_tt": "Wie oft der HTML-State der Live-Kachel neu geschrieben wird (aktualisiert den Schnappschuss). 0 = nur einmal bei Erstellung - ein offenes Video-Modal schließt sich dann nie von selbst, das Vorschaubild bleibt aber unveraendert. Ein hoeherer Wert aktualisiert haeufiger, kann aber ein offenes Modal schliessen."
 }

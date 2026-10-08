@@ -135,9 +135,9 @@
   "hdrGo2rtc": "Strumienie WebRTC go2rtc",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filtr i sortowanie",
-  "hdrWidgetGeneral": "Widget galerii",
+  "hdrWidgetGeneral": "Ogólne",
   "hdrWidgetLayout": "Układ",
-  "hdrWidgetPlayer": "Livestream i odtwarzacz",
+  "hdrWidgetPlayer": "Odtwarzacz",
   "hdrWidgetTags": "Tagi",
   "hdrWidgetTheme": "Kolory i design",
   "loadingCamerasAndStreams": "Ładowanie kamer i strumieni…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Funkcje",
   "tabWidget": "Widget",
   "cfgResetColors": "Przywróć domyślne kolory",
-  "cfgResetColors_tt": "Przywraca wszystkie kolory pulpitu do domyślnych wartości ciemnego motywu"
+  "cfgResetColors_tt": "Przywraca wszystkie kolory pulpitu do domyślnych wartości ciemnego motywu",
+  "hdrWidgetRecordings": "Widżet nagrań",
+  "hdrWidgetLive": "Widżet na żywo",
+  "cfgWidgetLiveRefreshSec": "Interwał odświeżania podglądu na żywo (sekundy, 0 = nigdy po utworzeniu)",
+  "cfgWidgetLiveRefreshSec_tt": "Jak często stan HTML kafelka na żywo jest zapisywany ponownie (odświeża migawkę). 0 = tylko raz przy tworzeniu - otwarte okno wideo nigdy się samo nie zamyka, ale migawka się starzeje. Wyższa wartość odświeża częściej, ale może zamknąć otwarte okno."
 }

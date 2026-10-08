@@ -135,9 +135,9 @@
   "hdrGo2rtc": "Stream WebRTC go2rtc",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filtro e ordinamento",
-  "hdrWidgetGeneral": "Widget galleria",
+  "hdrWidgetGeneral": "Generale",
   "hdrWidgetLayout": "Layout",
-  "hdrWidgetPlayer": "Livestream e lettore",
+  "hdrWidgetPlayer": "Player",
   "hdrWidgetTags": "Etichette",
   "hdrWidgetTheme": "Colori e design",
   "loadingCamerasAndStreams": "Caricamento telecamere e stream…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Funzionalità",
   "tabWidget": "Widget",
   "cfgResetColors": "Ripristina colori predefiniti",
-  "cfgResetColors_tt": "Ripristina tutti i colori della dashboard ai valori predefiniti del tema scuro"
+  "cfgResetColors_tt": "Ripristina tutti i colori della dashboard ai valori predefiniti del tema scuro",
+  "hdrWidgetRecordings": "Widget registrazioni",
+  "hdrWidgetLive": "Widget live",
+  "cfgWidgetLiveRefreshSec": "Intervallo di aggiornamento anteprima live (secondi, 0 = mai dopo la creazione)",
+  "cfgWidgetLiveRefreshSec_tt": "Con quale frequenza viene riscritto lo stato HTML dell'anteprima live (aggiorna lo snapshot). 0 = solo una volta alla creazione - una finestra video aperta non si chiude mai da sola, ma lo snapshot resta non aggiornato. Un valore piu alto aggiorna piu spesso, ma puo chiudere una finestra aperta."
 }

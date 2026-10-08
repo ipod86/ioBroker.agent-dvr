@@ -193,6 +193,7 @@
     "widgetMinCol": 150,
     "widgetShowTags": true,
     "widgetLiveAspect": "",
+    "widgetLiveRefreshSec": 0,
     "widgetTagPosition": "bottom-left",
     "widgetMaxModalWidth": 900,
     "widgetPlayerUrl": "",

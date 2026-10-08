@@ -135,9 +135,9 @@
   "hdrGo2rtc": "go2rtc WebRTC-streams",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filter en sortering",
-  "hdrWidgetGeneral": "Galerie-widget",
+  "hdrWidgetGeneral": "Algemeen",
   "hdrWidgetLayout": "Indeling",
-  "hdrWidgetPlayer": "Livestream en speler",
+  "hdrWidgetPlayer": "Speler",
   "hdrWidgetTags": "Tags",
   "hdrWidgetTheme": "Kleuren en ontwerp",
   "loadingCamerasAndStreams": "Camera's en streams laden…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Functies",
   "tabWidget": "Widget",
   "cfgResetColors": "Kleuren herstellen",
-  "cfgResetColors_tt": "Zet alle dashboardkleuren terug naar de standaard donkere themawaarden"
+  "cfgResetColors_tt": "Zet alle dashboardkleuren terug naar de standaard donkere themawaarden",
+  "hdrWidgetRecordings": "Opnamewidget",
+  "hdrWidgetLive": "Live-widget",
+  "cfgWidgetLiveRefreshSec": "Vernieuwingsinterval live-thumbnail (seconden, 0 = nooit na aanmaken)",
+  "cfgWidgetLiveRefreshSec_tt": "Hoe vaak de HTML-status van de live-thumbnail opnieuw wordt geschreven (ververst de momentopname). 0 = slechts een keer bij aanmaken - een geopende videomodal sluit dan nooit vanzelf, maar de momentopname veroudert. Een hogere waarde ververst vaker, maar kan een geopende modal sluiten."
 }

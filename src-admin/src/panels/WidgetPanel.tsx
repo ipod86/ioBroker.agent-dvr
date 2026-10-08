@@ -32,49 +32,6 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 				item
 				xs={12}
 				sm={6}
-				md={6}
-				lg={5}
-			>
-				<FormField
-					type="select"
-					labelKey="cfgWidgetMode"
-					helpKey="cfgWidgetMode_tt"
-					value={native.widgetMode ?? 'nojs'}
-					onChange={v => onChange('widgetMode', v)}
-					options={[
-						{ value: 'nojs', labelKey: 'cfgWidgetModeNojs' },
-						{ value: 'js', labelKey: 'cfgWidgetModeJs' },
-					]}
-				/>
-			</Grid>
-		</Grid>
-
-		<SectionHeader textKey="hdrWidgetLayout" />
-		<Grid
-			container
-			spacing={2}
-		>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-				lg={3}
-			>
-				<FormField
-					type="number"
-					labelKey="cfgWidgetAnzahl"
-					helpKey="cfgWidgetAnzahl_tt"
-					value={native.widgetAnzahl ?? 50}
-					min={1}
-					max={500}
-					onChange={v => onChange('widgetAnzahl', v)}
-				/>
-			</Grid>
-			<Grid
-				item
-				xs={12}
-				sm={6}
 				md={4}
 				lg={3}
 			>
@@ -103,6 +60,69 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					min={300}
 					max={2000}
 					onChange={v => onChange('widgetMaxModalWidth', v)}
+				/>
+			</Grid>
+		</Grid>
+
+		<SectionHeader textKey="hdrWidgetRecordings" />
+		<Grid
+			container
+			spacing={2}
+		>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={6}
+				lg={5}
+			>
+				<FormField
+					type="select"
+					labelKey="cfgWidgetMode"
+					helpKey="cfgWidgetMode_tt"
+					value={native.widgetMode ?? 'nojs'}
+					onChange={v => onChange('widgetMode', v)}
+					options={[
+						{ value: 'nojs', labelKey: 'cfgWidgetModeNojs' },
+						{ value: 'js', labelKey: 'cfgWidgetModeJs' },
+					]}
+				/>
+			</Grid>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="number"
+					labelKey="cfgWidgetAnzahl"
+					helpKey="cfgWidgetAnzahl_tt"
+					value={native.widgetAnzahl ?? 50}
+					min={1}
+					max={500}
+					onChange={v => onChange('widgetAnzahl', v)}
+				/>
+			</Grid>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="select"
+					labelKey="cfgWidgetThumbSize"
+					helpKey="cfgWidgetThumbSize_tt"
+					value={native.widgetThumbSize ?? 'medium'}
+					onChange={v => onChange('widgetThumbSize', v)}
+					options={[
+						{ value: 'small', labelKey: 'cfgWidgetThumbSmall' },
+						{ value: 'medium', labelKey: 'cfgWidgetThumbMedium' },
+						{ value: 'large', labelKey: 'cfgWidgetThumbLarge' },
+					]}
 				/>
 			</Grid>
 		</Grid>
@@ -210,26 +230,6 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					onChange={v => onChange('widgetDefaultTag', v)}
 				/>
 			</Grid>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-				lg={3}
-			>
-				<FormField
-					type="select"
-					labelKey="cfgWidgetThumbSize"
-					helpKey="cfgWidgetThumbSize_tt"
-					value={native.widgetThumbSize ?? 'medium'}
-					onChange={v => onChange('widgetThumbSize', v)}
-					options={[
-						{ value: 'small', labelKey: 'cfgWidgetThumbSmall' },
-						{ value: 'medium', labelKey: 'cfgWidgetThumbMedium' },
-						{ value: 'large', labelKey: 'cfgWidgetThumbLarge' },
-					]}
-				/>
-			</Grid>
 		</Grid>
 
 		<SectionHeader textKey="hdrWidgetPlayer" />
@@ -237,21 +237,6 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 			container
 			spacing={2}
 		>
-			<Grid
-				item
-				xs={12}
-				sm={6}
-				md={4}
-				lg={3}
-			>
-				<FormField
-					type="text"
-					labelKey="cfgWidgetLiveAspect"
-					helpKey="cfgWidgetLiveAspect_tt"
-					value={native.widgetLiveAspect ?? ''}
-					onChange={v => onChange('widgetLiveAspect', v)}
-				/>
-			</Grid>
 			<Grid
 				item
 				xs={12}
@@ -358,6 +343,45 @@ const WidgetPanel: React.FC<Props> = ({ native, onChange }) => (
 					min={0}
 					max={32}
 					onChange={v => onChange('widgetBorderRadius', v)}
+				/>
+			</Grid>
+		</Grid>
+
+		<SectionHeader textKey="hdrWidgetLive" />
+		<Grid
+			container
+			spacing={2}
+		>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="text"
+					labelKey="cfgWidgetLiveAspect"
+					helpKey="cfgWidgetLiveAspect_tt"
+					value={native.widgetLiveAspect ?? ''}
+					onChange={v => onChange('widgetLiveAspect', v)}
+				/>
+			</Grid>
+			<Grid
+				item
+				xs={12}
+				sm={6}
+				md={4}
+				lg={3}
+			>
+				<FormField
+					type="number"
+					labelKey="cfgWidgetLiveRefreshSec"
+					helpKey="cfgWidgetLiveRefreshSec_tt"
+					value={native.widgetLiveRefreshSec ?? 0}
+					min={0}
+					max={3600}
+					onChange={v => onChange('widgetLiveRefreshSec', v)}
 				/>
 			</Grid>
 		</Grid>

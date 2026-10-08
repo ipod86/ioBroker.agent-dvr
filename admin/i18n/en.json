@@ -135,9 +135,9 @@
   "hdrGo2rtc": "go2rtc WebRTC Streams",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filter & Sort",
-  "hdrWidgetGeneral": "Gallery Widget",
+  "hdrWidgetGeneral": "General",
   "hdrWidgetLayout": "Layout",
-  "hdrWidgetPlayer": "Livestream & Player",
+  "hdrWidgetPlayer": "Player",
   "hdrWidgetTags": "Tags",
   "hdrWidgetTheme": "Colors & Design",
   "loadingCamerasAndStreams": "Loading cameras and streams…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Features",
   "tabWidget": "Widget",
   "cfgResetColors": "Reset colors to defaults",
-  "cfgResetColors_tt": "Resets all dashboard colors to the built-in dark theme defaults"
+  "cfgResetColors_tt": "Resets all dashboard colors to the built-in dark theme defaults",
+  "hdrWidgetRecordings": "Recordings Widget",
+  "hdrWidgetLive": "Live Widget",
+  "cfgWidgetLiveRefreshSec": "Live tile refresh interval (seconds, 0 = never after creation)",
+  "cfgWidgetLiveRefreshSec_tt": "How often the live tile's HTML state is rewritten (refreshing its snapshot). 0 = only once when created - an open video modal then never closes on its own, but the snapshot goes stale. A higher value refreshes more often, but rewriting the state can close an open video modal."
 }

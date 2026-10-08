@@ -135,9 +135,9 @@
   "hdrGo2rtc": "Flux WebRTC go2rtc",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filtre et tri",
-  "hdrWidgetGeneral": "Widget galerie",
+  "hdrWidgetGeneral": "Général",
   "hdrWidgetLayout": "Disposition",
-  "hdrWidgetPlayer": "Livestream et lecteur",
+  "hdrWidgetPlayer": "Lecteur",
   "hdrWidgetTags": "Étiquettes",
   "hdrWidgetTheme": "Couleurs et design",
   "loadingCamerasAndStreams": "Chargement des caméras et des flux…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Fonctionnalités",
   "tabWidget": "Widget",
   "cfgResetColors": "Réinitialiser les couleurs",
-  "cfgResetColors_tt": "Réinitialise toutes les couleurs du tableau de bord aux valeurs par défaut du thème sombre"
+  "cfgResetColors_tt": "Réinitialise toutes les couleurs du tableau de bord aux valeurs par défaut du thème sombre",
+  "hdrWidgetRecordings": "Widget enregistrements",
+  "hdrWidgetLive": "Widget en direct",
+  "cfgWidgetLiveRefreshSec": "Intervalle de rafraîchissement de la vignette en direct (secondes, 0 = jamais après création)",
+  "cfgWidgetLiveRefreshSec_tt": "Fréquence de réécriture de l'état HTML de la vignette en direct (rafraîchit l'instantané). 0 = une seule fois à la création - une fenêtre vidéo ouverte ne se ferme alors jamais toute seule, mais l'instantané devient obsolète. Une valeur plus élevée rafraîchit plus souvent, mais peut fermer une fenêtre ouverte."
 }

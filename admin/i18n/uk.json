@@ -135,9 +135,9 @@
   "hdrGo2rtc": "WebRTC-потоки go2rtc",
   "hdrProxy": "Проксі",
   "hdrWidgetFilter": "Фільтр і сортування",
-  "hdrWidgetGeneral": "Віджет галереї",
+  "hdrWidgetGeneral": "Загальне",
   "hdrWidgetLayout": "Макет",
-  "hdrWidgetPlayer": "Пряма трансляція & Програвач",
+  "hdrWidgetPlayer": "Плеєр",
   "hdrWidgetTags": "Теги",
   "hdrWidgetTheme": "Кольори та дизайн",
   "loadingCamerasAndStreams": "Завантаження камер і потоків…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Функції",
   "tabWidget": "Віджет",
   "cfgResetColors": "Скинути кольори",
-  "cfgResetColors_tt": "Скидає всі кольори панелі до стандартних значень темної теми"
+  "cfgResetColors_tt": "Скидає всі кольори панелі до стандартних значень темної теми",
+  "hdrWidgetRecordings": "Віджет записів",
+  "hdrWidgetLive": "Віджет прямої трансляції",
+  "cfgWidgetLiveRefreshSec": "Інтервал оновлення плитки прямої трансляції (секунди, 0 = ніколи після створення)",
+  "cfgWidgetLiveRefreshSec_tt": "Як часто перезаписується HTML-стан плитки прямої трансляції (оновлює знімок). 0 = лише один раз при створенні - відкрите вікно відео тоді ніколи не закриється саме, але знімок застаріє. Більше значення оновлює частіше, але може закрити відкрите вікно."
 }

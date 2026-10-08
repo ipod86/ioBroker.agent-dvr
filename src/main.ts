@@ -409,6 +409,7 @@ class AgentDvr extends utils.Adapter {
 	private readonly ptzActive = new Map<string | number, string>();
 	private readonly ptzPresetNames = new Map<string | number, string[]>();
 	private readonly widgetSig: Record<string, string> = {};
+	private readonly widgetLastWrite: Record<string, number> = {};
 	private profileSig = '';
 	private lastCamNames: { key: string; name: string }[] = [];
 	private readonly lastEventFn: Record<string | number, string> = {};
@@ -1303,7 +1304,6 @@ class AgentDvr extends utils.Adapter {
 	}
 
 	private buildOverviewHtml(cams: Device[]): string {
-		const ts = Date.now();
 		const minCol = this.config.widgetMinCol || 150;
 		const maxW = this.config.widgetMaxModalWidth || 900;
 		const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
@@ -1311,13 +1311,19 @@ class AgentDvr extends utils.Adapter {
 			.map(d => {
 				const oid = d.oid;
 				const id = `advlive${sanitize(oid)}`;
-				const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${ts}`;
+				const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${Date.now()}`;
 				const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
 				const name = escHtml(d.name || `Camera ${oid}`);
 				const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || '';
 				const ar = arRaw ? String(arRaw).replace('/', ' / ') : '';
 				const fix = ar ? ' advimgfix' : '';
 				const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
+				// AgentDVRs Live-Vorschau liefert die volle Szene, aber nicht-gleichmaessig
+				// in ein festes (z.B. 4:3) Containerformat gestaucht - object-fit:fill
+				// (Stauchen auf die Box) hebt genau diese Stauchung wieder auf, sobald die
+				// Box das echte Seitenverhaeltnis hat. Kein Bildverlust, da nichts
+				// beschnitten wird, nur ent-zerrt.
+				const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : '';
 				const inner =
 					`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
 					`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
@@ -1327,12 +1333,7 @@ class AgentDvr extends utils.Adapter {
 					`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 					`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 					`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-					// Kein arStyle hier: AgentDVR liefert die Live-Vorschau (video.webm)
-					// offenbar immer in einem festen Format, unabhaengig von der echten
-					// Kameraaufloesung (die arStyle/camAspect korrekt wiedergibt) - das
-					// erzwungene Seitenverhaeltnis fuehrte nur zu falsch proportionierten
-					// Boxen. Groesse stattdessen dem tatsaechlichen Stream ueberlassen.
-					`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
+					`<video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video>` +
 					`<div class="advinfo">${name} &middot; Live</div></div></div>`
 				);
 			})
@@ -1354,6 +1355,10 @@ class AgentDvr extends utils.Adapter {
 		const ar = arRaw ? String(arRaw).replace('/', ' / ') : '';
 		const fix = ar ? ' advimgfix' : '';
 		const arStyle = ar ? ` style="aspect-ratio:${ar}"` : '';
+		// Siehe Kommentar in buildOverviewHtml: AgentDVR staucht die volle Szene
+		// nicht-gleichmaessig in ein festes Containerformat - object-fit:fill
+		// hebt das wieder auf, sobald die Box das echte Seitenverhaeltnis hat.
+		const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : '';
 		const inner =
 			`<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt="">` +
 			`<span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span>` +
@@ -1363,8 +1368,7 @@ class AgentDvr extends utils.Adapter {
 			`<label class="advcell advthumb" for="${id}">${inner}</label>` +
 			`<div class="advmodal"><label class="advbackdrop" for="${id}"></label>` +
 			`<div class="advbox"><label class="advclose" for="${id}">&#10005;</label>` +
-			// Kein arStyle hier - siehe Kommentar in buildOverviewHtml.
-			`<video class="advvideo" controls preload="none" playsinline src="${webm}"></video>` +
+			`<video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video>` +
 			`<div class="advinfo">${name} &middot; Live</div></div></div>`;
 		return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
 	}
@@ -1387,12 +1391,34 @@ class AgentDvr extends utils.Adapter {
 			});
 			this.ensuredFolders.add(wId);
 		}
-		// Immer neu schreiben (wie beim Overview-Widget) statt per Signatur zu
-		// deduplizieren - sonst bleibt der eingebettete Snapshot (jetzt mit
-		// Cache-Busting-Timestamp in buildSingleCamLiveHtml) dauerhaft auf dem
-		// allerersten Bild eingefroren, da Name/Aspect-Ratio sich normalerweise
-		// nie aendern.
+		if (!this.shouldRefreshLiveWidget(wId)) {
+			return;
+		}
 		await this.setStateAsync(wId, { val: this.buildSingleCamLiveHtml(d), ack: true });
+	}
+
+	// Steuert, wie oft widget_live/widget_live_overview tatsaechlich neu
+	// geschrieben werden. Jedes Neuschreiben ersetzt das komplette HTML und
+	// setzt damit eine evtl. offene Video-Modal-Checkbox zurueck (schliesst
+	// das Modal) - widgetLiveRefreshSec gibt Nutzern die Kontrolle ueber
+	// diesen Zielkonflikt (0 = nur beim allerersten Mal schreiben, Modal
+	// schliesst sich dadurch nie von selbst; >0 = alle N Sekunden aktualisieren,
+	// Vorschaubild bleibt aktueller, ein offenes Modal kann aber dabei schliessen).
+	private shouldRefreshLiveWidget(wId: string): boolean {
+		const intervalSec = Number(this.config.widgetLiveRefreshSec) || 0;
+		const last = this.widgetLastWrite[wId];
+		if (last === undefined) {
+			this.widgetLastWrite[wId] = Date.now();
+			return true;
+		}
+		if (intervalSec <= 0) {
+			return false;
+		}
+		if (Date.now() - last >= intervalSec * 1000) {
+			this.widgetLastWrite[wId] = Date.now();
+			return true;
+		}
+		return false;
 	}
 
 	// ---- event data points ----
@@ -1772,7 +1798,9 @@ class AgentDvr extends utils.Adapter {
 					});
 					this.ensuredFolders.add(ovId);
 				}
-				await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
+				if (this.shouldRefreshLiveWidget(ovId)) {
+					await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
+				}
 			}
 
 			await this.setStateAsync('system.lastUpdate', { val: new Date().toISOString(), ack: true });

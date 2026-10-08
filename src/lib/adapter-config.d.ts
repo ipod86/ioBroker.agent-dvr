@@ -24,6 +24,7 @@ declare global {
             widgetMinCol: number;
             widgetShowTags: boolean;
             widgetLiveAspect: string;
+            widgetLiveRefreshSec: number;
             widgetTagPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
             widgetMaxModalWidth: number;
             widgetPlayerUrl: string;

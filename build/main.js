@@ -297,6 +297,7 @@ class AgentDvr extends utils.Adapter {
   ptzActive = /* @__PURE__ */ new Map();
   ptzPresetNames = /* @__PURE__ */ new Map();
   widgetSig = {};
+  widgetLastWrite = {};
   profileSig = "";
   lastCamNames = [];
   lastEventFn = {};
@@ -1066,22 +1067,22 @@ class AgentDvr extends utils.Adapter {
     return `<style>${galleryCssJs(minCol, compact, colors)}</style><div class="advroot"><script type="application/json" class="advdata">${data}</script><div class="advbar">${searchHtml}<div class="advtagsjs"></div></div><div class="advgridjs"></div></div><script type="text/plain" class="advcode">${ADV_CLIENT_CODE}</script><img alt="" src="${boot}" style="display:none" onload="(function(){if(window.ADVscan){window.ADVscan();return;}var c=document.querySelector('script.advcode');if(!c)return;var s=document.createElement('script');s.textContent=c.textContent;document.body.appendChild(s);})()">`;
   }
   buildOverviewHtml(cams) {
-    const ts = Date.now();
     const minCol = this.config.widgetMinCol || 150;
     const maxW = this.config.widgetMaxModalWidth || 900;
     const PAUSE_ATTR = ` onchange="if(!this.checked){var m=this.nextElementSibling.nextElementSibling,v=m&&m.querySelector('video');if(v){v.pause();}}"`;
     const tiles = cams.map((d) => {
       const oid = d.oid;
       const id = `advlive${sanitize(oid)}`;
-      const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${ts}`;
+      const grab = `${this.baseUrl}/grab.jpg?oid=${oid}&ot=2&maintainAR=1&ts=${Date.now()}`;
       const webm = `${this.baseUrl}/video.webm?oid=${oid}&ot=2`;
       const name = escHtml(d.name || `Camera ${oid}`);
       const arRaw = this.camAspect[oid] || this.config.widgetLiveAspect || "";
       const ar = arRaw ? String(arRaw).replace("/", " / ") : "";
       const fix = ar ? " advimgfix" : "";
       const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
+      const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : "";
       const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
-      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
+      return `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     }).join("");
     const grid = tiles ? `<div class="advgrid">${tiles}</div>` : `<div class="advempty">No cameras</div>`;
     return `<style>${galleryCss(minCol, maxW)}</style>${grid}`;
@@ -1099,8 +1100,9 @@ class AgentDvr extends utils.Adapter {
     const ar = arRaw ? String(arRaw).replace("/", " / ") : "";
     const fix = ar ? " advimgfix" : "";
     const arStyle = ar ? ` style="aspect-ratio:${ar}"` : "";
+    const videoArStyle = ar ? ` style="aspect-ratio:${ar};object-fit:fill"` : "";
     const inner = `<span class="advimg${fix}"${arStyle}><img src="${grab}" loading="lazy" alt=""><span class="advtag" style="top:5px;left:5px">&#9679; ${escHtml(this.wt.live)}</span><span class="advplay"></span></span><span class="advcap">${name}</span>`;
-    const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
+    const tile = `<input class="advlb" type="checkbox" id="${id}"${PAUSE_ATTR}><label class="advcell advthumb" for="${id}">${inner}</label><div class="advmodal"><label class="advbackdrop" for="${id}"></label><div class="advbox"><label class="advclose" for="${id}">&#10005;</label><video class="advvideo" controls preload="none" playsinline${videoArStyle} src="${webm}"></video><div class="advinfo">${name} &middot; Live</div></div></div>`;
     return `<style>${galleryCss(minCol, maxW)}</style><div class="advgrid">${tile}</div>`;
   }
   async updateLiveWidget(d, fid) {
@@ -1121,7 +1123,33 @@ class AgentDvr extends utils.Adapter {
       });
       this.ensuredFolders.add(wId);
     }
+    if (!this.shouldRefreshLiveWidget(wId)) {
+      return;
+    }
     await this.setStateAsync(wId, { val: this.buildSingleCamLiveHtml(d), ack: true });
+  }
+  // Steuert, wie oft widget_live/widget_live_overview tatsaechlich neu
+  // geschrieben werden. Jedes Neuschreiben ersetzt das komplette HTML und
+  // setzt damit eine evtl. offene Video-Modal-Checkbox zurueck (schliesst
+  // das Modal) - widgetLiveRefreshSec gibt Nutzern die Kontrolle ueber
+  // diesen Zielkonflikt (0 = nur beim allerersten Mal schreiben, Modal
+  // schliesst sich dadurch nie von selbst; >0 = alle N Sekunden aktualisieren,
+  // Vorschaubild bleibt aktueller, ein offenes Modal kann aber dabei schliessen).
+  shouldRefreshLiveWidget(wId) {
+    const intervalSec = Number(this.config.widgetLiveRefreshSec) || 0;
+    const last = this.widgetLastWrite[wId];
+    if (last === void 0) {
+      this.widgetLastWrite[wId] = Date.now();
+      return true;
+    }
+    if (intervalSec <= 0) {
+      return false;
+    }
+    if (Date.now() - last >= intervalSec * 1e3) {
+      this.widgetLastWrite[wId] = Date.now();
+      return true;
+    }
+    return false;
   }
   // ---- event data points ----
   async writeEventDps(d, fid, events) {
@@ -1454,7 +1482,9 @@ class AgentDvr extends utils.Adapter {
           });
           this.ensuredFolders.add(ovId);
         }
-        await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
+        if (this.shouldRefreshLiveWidget(ovId)) {
+          await this.setStateAsync(ovId, { val: this.buildOverviewHtml(cams), ack: true });
+        }
       }
       await this.setStateAsync("system.lastUpdate", { val: (/* @__PURE__ */ new Date()).toISOString(), ack: true });
       await this.setStateAsync("system.lastPoll", { val: Date.now(), ack: true });

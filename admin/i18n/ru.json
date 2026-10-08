@@ -135,9 +135,9 @@
   "hdrGo2rtc": "go2rtc WebRTC-потоки",
   "hdrProxy": "Прокси",
   "hdrWidgetFilter": "Фильтр и сортировка",
-  "hdrWidgetGeneral": "Виджет галереи",
+  "hdrWidgetGeneral": "Общие",
   "hdrWidgetLayout": "Макет",
-  "hdrWidgetPlayer": "Прямая трансляция & Плеер",
+  "hdrWidgetPlayer": "Плеер",
   "hdrWidgetTags": "Теги",
   "hdrWidgetTheme": "Цвета и дизайн",
   "loadingCamerasAndStreams": "Загрузка камер и потоков…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Функции",
   "tabWidget": "Виджет",
   "cfgResetColors": "Сбросить цвета",
-  "cfgResetColors_tt": "Сбрасывает все цвета панели к значениям тёмной темы по умолчанию"
+  "cfgResetColors_tt": "Сбрасывает все цвета панели к значениям тёмной темы по умолчанию",
+  "hdrWidgetRecordings": "Виджет записей",
+  "hdrWidgetLive": "Виджет прямого эфира",
+  "cfgWidgetLiveRefreshSec": "Интервал обновления плитки прямого эфира (секунды, 0 = никогда после создания)",
+  "cfgWidgetLiveRefreshSec_tt": "Как часто перезаписывается HTML-состояние плитки прямого эфира (обновляет снимок). 0 = только один раз при создании - открытое окно видео тогда никогда не закроется само, но снимок устареет. Большее значение обновляет чаще, но может закрыть открытое окно."
 }

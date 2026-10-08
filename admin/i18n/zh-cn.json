@@ -135,9 +135,9 @@
   "hdrGo2rtc": "go2rtc WebRTC 流",
   "hdrProxy": "代理",
   "hdrWidgetFilter": "过滤与排序",
-  "hdrWidgetGeneral": "图库小部件",
+  "hdrWidgetGeneral": "常规",
   "hdrWidgetLayout": "布局",
-  "hdrWidgetPlayer": "直播流与播放器",
+  "hdrWidgetPlayer": "播放器",
   "hdrWidgetTags": "标签",
   "hdrWidgetTheme": "颜色与设计",
   "loadingCamerasAndStreams": "正在加载摄像头和流…",
@@ -148,5 +148,9 @@
   "tabFeatures": "功能",
   "tabWidget": "小部件",
   "cfgResetColors": "重置颜色",
-  "cfgResetColors_tt": "将所有仪表板颜色重置为内置深色主题的默认值"
+  "cfgResetColors_tt": "将所有仪表板颜色重置为内置深色主题的默认值",
+  "hdrWidgetRecordings": "录像小部件",
+  "hdrWidgetLive": "直播小部件",
+  "cfgWidgetLiveRefreshSec": "直播缩略图刷新间隔（秒，0 = 创建后从不刷新）",
+  "cfgWidgetLiveRefreshSec_tt": "直播缩略图的 HTML 状态多久重写一次（刷新快照）。0 = 仅在创建时写入一次——已打开的视频弹窗永远不会自动关闭，但快照会过时。数值越大刷新越频繁，但可能会关闭已打开的弹窗。"
 }

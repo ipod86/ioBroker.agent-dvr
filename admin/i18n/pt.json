@@ -135,9 +135,9 @@
   "hdrGo2rtc": "Streams WebRTC go2rtc",
   "hdrProxy": "Proxy",
   "hdrWidgetFilter": "Filtro e ordenação",
-  "hdrWidgetGeneral": "Widget de galeria",
+  "hdrWidgetGeneral": "Geral",
   "hdrWidgetLayout": "Layout",
-  "hdrWidgetPlayer": "Livestream e reprodutor",
+  "hdrWidgetPlayer": "Player",
   "hdrWidgetTags": "Etiquetas",
   "hdrWidgetTheme": "Cores e design",
   "loadingCamerasAndStreams": "Carregando câmeras e streams…",
@@ -148,5 +148,9 @@
   "tabFeatures": "Funcionalidades",
   "tabWidget": "Widget",
   "cfgResetColors": "Redefinir cores padrão",
-  "cfgResetColors_tt": "Redefine todas as cores do painel para os valores padrão do tema escuro"
+  "cfgResetColors_tt": "Redefine todas as cores do painel para os valores padrão do tema escuro",
+  "hdrWidgetRecordings": "Widget de gravações",
+  "hdrWidgetLive": "Widget ao vivo",
+  "cfgWidgetLiveRefreshSec": "Intervalo de atualização da miniatura ao vivo (segundos, 0 = nunca após a criação)",
+  "cfgWidgetLiveRefreshSec_tt": "Com que frequência o estado HTML da miniatura ao vivo é reescrito (atualiza a captura). 0 = apenas uma vez na criação - um modal de vídeo aberto nunca se fecha sozinho, mas a captura fica desatualizada. Um valor maior atualiza com mais frequência, mas pode fechar um modal aberto."
 }
