@@ -457,6 +457,8 @@ Die URLs aus `urls.*` und `events.last.*` zeigen direkt auf AgentDVR. Sie funkti
 | `<cam>.events.new` | neue Aufnahme gelistet | Vorschaubild der Aufnahme |
 | `<cam>.events.detected_<tag>` | KI-Tag einer neuen Aufnahme, z. B. `detected_people` — auch wenn AgentDVR den Tag erst später ergänzt | nur bei Personen benachrichtigen |
 
+> **`events.webhook` nicht für das gespeicherte Alarmfoto verwenden.** Der Webhook-Puls kommt, *bevor* das neue Foto abgeholt und gespeichert ist. In diesem Moment zeigen `alertPhotos.grab1` / `uri1` / `url1` noch auf das Foto des **vorherigen** Alarms — ein Fernseher oder eine Telegram-Nachricht zeigt dann ein altes Bild (unter Umständen Stunden alt). Für alles, was `alertPhotos.*` nutzt, immer auf `alertPhotos.ts1` triggern. `events.webhook` ist nur für Skripte gedacht, die sich in diesem Moment selbst ein Bild holen (z. B. `urls.photo` oder einen eigenen Kamera-Snapshot).
+
 Als Bedingung **„größer als letzter“** (Blockly) bzw. `change: 'gt'` verwenden. Der Adapter schreibt seine Datenpunkte bei jedem Poll neu, „wurde aktualisiert“ löst deshalb bei jedem Poll aus. `status.alerted` ist meist zu kurz, um von einem Poll gesehen zu werden, und taugt nicht als Trigger.
 
 ### Telegram
@@ -486,7 +488,7 @@ Die Alarmfotos liefert die Web-Instanz aus — der fertige Link steht in `<cam>.
 http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 ```
 
-z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebenso `grab2.jpg`, `grab3.jpg`). In einem Bild-Widget verwenden und bei Änderung von `alertPhotos.ts1` neu laden. Für ein Livebild `urls.snapshot` oder `urls.photo` mit Aktualisierungsintervall nehmen.
+z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebenso `grab2.jpg`, `grab3.jpg`). In einem Bild-Widget verwenden und bei Änderung von `alertPhotos.ts1` neu laden. Das gilt auch, wenn der Link an einen Fernseher oder eine andere App geschickt wird: auf `alertPhotos.ts1` senden, nicht auf `events.webhook` — sonst lädt die App das vorherige Foto. Für ein Livebild `urls.snapshot` oder `urls.photo` mit Aktualisierungsintervall nehmen.
 
 ## Changelog
 

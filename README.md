@@ -462,6 +462,8 @@ The `urls.*` and `events.last.*` URLs point directly to AgentDVR. They work in t
 | `<cam>.events.new` | new recording listed | thumbnail of the recording |
 | `<cam>.events.detected_<tag>` | AI tag of a new recording, e.g. `detected_people` — also when AgentDVR adds the tag later | notify on persons only |
 
+> **Do not use `events.webhook` for the stored alert photo.** The webhook pulse comes *before* the new photo is fetched and saved. At that moment `alertPhotos.grab1` / `uri1` / `url1` still point to the photo of the **previous** alert — a TV or Telegram message then shows an old image (possibly hours old). For anything that uses `alertPhotos.*` always trigger on `alertPhotos.ts1`. `events.webhook` is only meant for scripts that fetch an image themselves at that moment (e.g. `urls.photo` or their own camera snapshot).
+
 Use **"greater than previous"** (Blockly) or `change: 'gt'` as condition. The adapter rewrites its states on every poll, so "was updated" fires every poll. `status.alerted` is usually too short to be seen by a poll and is not a reliable trigger.
 
 ### Telegram
@@ -491,7 +493,7 @@ The alert photos are served by the web instance — the ready-made link is in `<
 http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 ```
 
-e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
+e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
 ### 0.7.0 (2026-10-29)
