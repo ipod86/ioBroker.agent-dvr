@@ -35,7 +35,7 @@ import {
 
 describe('recording → ffmpeg detection', () => {
 	it('tries configured path, then PATH, then common locations (Linux/macOS)', () => {
-		expect(ffmpegCandidates('/opt/ff/ffmpeg', 'linux', {})).to.deep.equal([
+		expect(ffmpegCandidates('/opt/ff/ffmpeg', 'linux')).to.deep.equal([
 			'/opt/ff/ffmpeg',
 			'ffmpeg',
 			'/usr/bin/ffmpeg',
@@ -45,12 +45,12 @@ describe('recording → ffmpeg detection', () => {
 	});
 
 	it('skips an empty configured path and duplicates', () => {
-		expect(ffmpegCandidates('  ', 'darwin', {})[0]).to.equal('ffmpeg');
-		expect(ffmpegCandidates('/usr/bin/ffmpeg', 'linux', {}).filter(p => p === '/usr/bin/ffmpeg')).to.have.length(1);
+		expect(ffmpegCandidates('  ', 'darwin')[0]).to.equal('ffmpeg');
+		expect(ffmpegCandidates('/usr/bin/ffmpeg', 'linux').filter(p => p === '/usr/bin/ffmpeg')).to.have.length(1);
 	});
 
 	it('uses Windows locations on win32', () => {
-		expect(ffmpegCandidates('', 'win32', { ProgramFiles: 'C:\\Program Files' })).to.deep.equal([
+		expect(ffmpegCandidates('', 'win32')).to.deep.equal([
 			'ffmpeg',
 			'C:\\ffmpeg\\bin\\ffmpeg.exe',
 			'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
@@ -63,7 +63,7 @@ describe('recording → ffmpeg detection', () => {
 			asked.push(b);
 			return Promise.resolve(b === '/usr/local/bin/ffmpeg' || b === '/opt/homebrew/bin/ffmpeg' ? '6.1.1' : '');
 		};
-		const info = await detectFfmpeg(ffmpegCandidates('', 'linux', {}), probe);
+		const info = await detectFfmpeg(ffmpegCandidates('', 'linux'), probe);
 		expect(info).to.deep.equal({ found: true, version: '6.1.1', path: '/usr/local/bin/ffmpeg' });
 		expect(asked).to.deep.equal(['ffmpeg', '/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg']);
 		expect(ffmpegStatusText(info)).to.equal('6.1.1 (/usr/local/bin/ffmpeg)');
@@ -77,13 +77,11 @@ describe('recording → ffmpeg detection', () => {
 
 	it('shows the absolute path of a binary found via PATH', () => {
 		const exists = (p: string): boolean => p === '/usr/bin/ffmpeg';
-		expect(resolveOnPath('ffmpeg', { PATH: '/usr/local/bin:/usr/bin' }, 'linux', exists)).to.equal(
-			'/usr/bin/ffmpeg',
-		);
-		expect(resolveOnPath('ffmpeg', { PATH: '/nope' }, 'linux', exists)).to.equal('ffmpeg');
-		expect(resolveOnPath('/opt/x/ffmpeg', { PATH: '/usr/bin' }, 'linux', exists)).to.equal('/opt/x/ffmpeg');
-		expect(resolveOnPath('ffmpeg', { Path: 'C:\\tools' }, 'win32', p => p === 'C:\\tools\\ffmpeg.exe')).to.equal(
-			'C:\\tools\\ffmpeg.exe',
+		expect(resolveOnPath('ffmpeg', 'linux', exists)).to.equal('/usr/bin/ffmpeg');
+		expect(resolveOnPath('ffmpeg', 'linux', () => false)).to.equal('ffmpeg');
+		expect(resolveOnPath('/opt/x/ffmpeg', 'linux', exists)).to.equal('/opt/x/ffmpeg');
+		expect(resolveOnPath('ffmpeg', 'win32', p => p === 'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe')).to.equal(
+			'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
 		);
 	});
 

@@ -1335,12 +1335,10 @@ class AgentDvr extends utils.Adapter {
 			return this.ffmpegDetecting;
 		}
 		const cfg = configPath ?? this.config.ffmpegPath ?? '';
-		const run = detectFfmpeg(ffmpegCandidates(cfg, process.platform, process.env))
+		const run = detectFfmpeg(ffmpegCandidates(cfg, process.platform))
 			.catch(() => ({ found: false, version: '', path: '' }))
 			.then(async found => {
-				const info = found.found
-					? { ...found, path: resolveOnPath(found.path, process.env, process.platform) }
-					: found;
+				const info = found.found ? { ...found, path: resolveOnPath(found.path, process.platform) } : found;
 				this.ffmpeg = info;
 				this.noFfmpegLogged = false;
 				if (info.found) {

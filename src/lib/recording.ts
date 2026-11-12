@@ -207,13 +207,8 @@ export function isValidRecordingName(fn: string): boolean {
  *
  * @param configPath configured path (empty = auto)
  * @param platform process.platform
- * @param env process.env
  */
-export function ffmpegCandidates(
-	configPath: string,
-	platform: string,
-	env: Record<string, string | undefined>,
-): string[] {
+export function ffmpegCandidates(configPath: string, platform: string): string[] {
 	const out: string[] = [];
 	const add = (p: string | undefined): void => {
 		const v = (p || '').trim();
@@ -225,9 +220,7 @@ export function ffmpegCandidates(
 	add('ffmpeg');
 	if (platform === 'win32') {
 		add('C:\\ffmpeg\\bin\\ffmpeg.exe');
-		if (env.ProgramFiles) {
-			add(`${env.ProgramFiles}\\ffmpeg\\bin\\ffmpeg.exe`);
-		}
+		add('C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe');
 	} else {
 		add('/usr/bin/ffmpeg');
 		add('/usr/local/bin/ffmpeg');
@@ -237,16 +230,15 @@ export function ffmpegCandidates(
 }
 
 /**
- * Absolute path of a bare binary name found via PATH (for display), otherwise the name itself.
+ * Absolute path of a bare binary name (for display): looked up in the usual binary folders,
+ * otherwise the name itself (it was found via the search path of the system).
  *
  * @param bin binary name or path
- * @param env process.env
  * @param platform process.platform
  * @param exists file check (injectable for tests)
  */
 export function resolveOnPath(
 	bin: string,
-	env: Record<string, string | undefined>,
 	platform: string,
 	exists: (p: string) => boolean = p => fs.existsSync(p),
 ): string {
@@ -255,7 +247,9 @@ export function resolveOnPath(
 	}
 	const win = platform === 'win32';
 	const pathMod = win ? path.win32 : path.posix;
-	const dirs = (env.PATH ?? env.Path ?? '').split(win ? ';' : ':').filter(Boolean);
+	const dirs = win
+		? ['C:\\ffmpeg\\bin', 'C:\\Program Files\\ffmpeg\\bin']
+		: ['/usr/bin', '/usr/local/bin', '/opt/homebrew/bin', '/bin'];
 	const names = win && !/\.exe$/i.test(bin) ? [`${bin}.exe`, bin] : [bin];
 	for (const d of dirs) {
 		for (const n of names) {

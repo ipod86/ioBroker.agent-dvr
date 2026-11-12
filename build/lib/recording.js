@@ -133,7 +133,7 @@ function mimeOf(ext) {
 function isValidRecordingName(fn) {
   return /^[\w.-]{1,200}\.(mkv|mp4)$/i.test(fn) && !fn.includes("..");
 }
-function ffmpegCandidates(configPath, platform, env) {
+function ffmpegCandidates(configPath, platform) {
   const out = [];
   const add = (p) => {
     const v = (p || "").trim();
@@ -145,9 +145,7 @@ function ffmpegCandidates(configPath, platform, env) {
   add("ffmpeg");
   if (platform === "win32") {
     add("C:\\ffmpeg\\bin\\ffmpeg.exe");
-    if (env.ProgramFiles) {
-      add(`${env.ProgramFiles}\\ffmpeg\\bin\\ffmpeg.exe`);
-    }
+    add("C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe");
   } else {
     add("/usr/bin/ffmpeg");
     add("/usr/local/bin/ffmpeg");
@@ -155,14 +153,13 @@ function ffmpegCandidates(configPath, platform, env) {
   }
   return out;
 }
-function resolveOnPath(bin, env, platform, exists = (p) => fs.existsSync(p)) {
-  var _a, _b;
+function resolveOnPath(bin, platform, exists = (p) => fs.existsSync(p)) {
   if (/[\\/]/.test(bin)) {
     return bin;
   }
   const win = platform === "win32";
   const pathMod = win ? path.win32 : path.posix;
-  const dirs = ((_b = (_a = env.PATH) != null ? _a : env.Path) != null ? _b : "").split(win ? ";" : ":").filter(Boolean);
+  const dirs = win ? ["C:\\ffmpeg\\bin", "C:\\Program Files\\ffmpeg\\bin"] : ["/usr/bin", "/usr/local/bin", "/opt/homebrew/bin", "/bin"];
   const names = win && !/\.exe$/i.test(bin) ? [`${bin}.exe`, bin] : [bin];
   for (const d of dirs) {
     for (const n of names) {
