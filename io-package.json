@@ -109,17 +109,17 @@
       "zh-cn": "Agent DVR – 摄像头与录像"
     },
     "desc": {
-      "en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
-      "de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte wider, liefert Echtzeit-Trigger bei neuen Aufnahmen und generiert eine responsive HTML-Galerie mit optionaler Such- und Tag-Filterung.",
-      "ru": "Подключает ioBroker к AgentDVR: автоматически обнаруживает камеры, отображает все значения устройств в виде точек данных, обеспечивает срабатывание триггеров в реальном времени при появлении новых записей и генерирует адаптивную HTML-галерею с возможностью поиска и фильтрации по тегам.",
-      "pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia alertas em tempo real para novas gravações e gera uma galeria HTML responsiva com opções de pesquisa e filtragem por tags.",
-      "nl": "Verbindt ioBroker met AgentDVR: detecteert automatisch camera's, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers voor nieuwe opnames en genereert een responsieve HTML-galerij met optionele zoek- en tagfiltering.",
-      "fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils sous forme de points de données, envoie des déclencheurs en temps réel sur les nouveaux enregistrements et génère une galerie HTML réactive avec recherche et filtrage par étiquette optionnels.",
-      "it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce notifiche in tempo reale per le nuove registrazioni e genera una galleria HTML reattiva con funzionalità opzionali di ricerca e filtro per tag.",
-      "es": "Conecta ioBroker con AgentDVR: detecta automáticamente las cámaras, refleja todos los valores de los dispositivos como puntos de datos, proporciona notificaciones en tiempo real ante nuevas grabaciones y genera una galería HTML adaptable con opciones de búsqueda y filtrado por etiquetas.",
-      "pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, uruchamia wyzwalacze w czasie rzeczywistym dla nowych nagrań i generuje responsywną galerię HTML z opcjonalnym wyszukiwaniem i filtrowaniem tagów.",
-      "uk": "Підключає ioBroker до AgentDVR: автоматично виявляє камери, відображає всі значення пристроїв як точки даних, забезпечує тригери в режимі реального часу для нових записів та створює адаптивну HTML-галерею з додатковим пошуком та фільтрацією тегів.",
-      "zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并生成具有可选搜索和标签过滤功能的响应式 HTML 图库。"
+      "en": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings and brings gallery and live widgets for vis-2, AURA and other dashboards.",
+      "de": "Verbindet ioBroker mit AgentDVR: erkennt Kameras automatisch, spiegelt alle Gerätewerte als Datenpunkte, liefert Echtzeit-Trigger bei neuen Aufnahmen und bringt Galerie- und Live-Widgets für vis-2, AURA und andere Dashboards mit.",
+      "ru": "Подключает ioBroker к AgentDVR: автоматически находит камеры, отображает все значения устройств как точки данных, выдаёт триггеры в реальном времени при новых записях и предоставляет виджеты галереи и прямого эфира для vis-2, AURA и других дашбордов.",
+      "pt": "Conecta o ioBroker ao AgentDVR: descobre câmeras automaticamente, espelha todos os valores dos dispositivos como pontos de dados, envia gatilhos em tempo real para novas gravações e traz widgets de galeria e ao vivo para vis-2, AURA e outros dashboards.",
+      "nl": "Verbindt ioBroker met AgentDVR: detecteert camera's automatisch, spiegelt alle apparaatwaarden als datapunten, levert realtime triggers bij nieuwe opnames en biedt galerij- en livewidgets voor vis-2, AURA en andere dashboards.",
+      "fr": "Connecte ioBroker à AgentDVR : détecte automatiquement les caméras, reproduit toutes les valeurs des appareils en points de données, fournit des déclencheurs en temps réel pour les nouveaux enregistrements et propose des widgets galerie et direct pour vis-2, AURA et d'autres tableaux de bord.",
+      "it": "Collega ioBroker ad AgentDVR: rileva automaticamente le telecamere, replica tutti i valori dei dispositivi come punti dati, fornisce trigger in tempo reale per le nuove registrazioni e offre widget galleria e live per vis-2, AURA e altre dashboard.",
+      "es": "Conecta ioBroker con AgentDVR: detecta cámaras automáticamente, refleja todos los valores de los dispositivos como puntos de datos, ofrece disparadores en tiempo real con nuevas grabaciones e incluye widgets de galería y en directo para vis-2, AURA y otros paneles.",
+      "pl": "Łączy ioBroker z AgentDVR: automatycznie wykrywa kamery, odzwierciedla wszystkie wartości urządzeń jako punkty danych, dostarcza wyzwalacze w czasie rzeczywistym dla nowych nagrań i zapewnia widżety galerii i podglądu na żywo dla vis-2, AURA i innych dashboardów.",
+      "uk": "Підключає ioBroker до AgentDVR: автоматично знаходить камери, відображає всі значення пристроїв як точки даних, надає тригери в реальному часі для нових записів і містить віджети галереї та прямого ефіру для vis-2, AURA та інших дашбордів.",
+      "zh-cn": "将 ioBroker 连接到 AgentDVR：自动发现摄像头，将所有设备值镜像为数据点，在新录像时提供实时触发，并为 vis-2、AURA 及其他仪表板提供图库和实时小部件。"
     },
     "authors": [
       "ipod86 <david@graef.email>"
@@ -135,7 +135,13 @@
       "surveillance",
       "video",
       "recording",
-      "cctv"
+      "cctv",
+      "widget",
+      "gallery",
+      "vis-2",
+      "aura",
+      "web component",
+      "dashboard"
     ],
     "licenseInformation": {
       "type": "free",

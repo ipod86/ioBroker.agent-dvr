@@ -1,7 +1,7 @@
 {
   "name": "iobroker.agent-dvr",
   "version": "0.8.0",
-  "description": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings, and generates a responsive HTML gallery with optional search and tag filtering.",
+  "description": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings and brings gallery and live widgets for vis-2, AURA and other dashboards.",
   "author": {
     "name": "ipod86",
     "email": "david@graef.email"
@@ -21,7 +21,13 @@
     "surveillance",
     "video",
     "recording",
-    "cctv"
+    "cctv",
+    "widget",
+    "gallery",
+    "vis-2",
+    "aura",
+    "web component",
+    "dashboard"
   ],
   "repository": {
     "type": "git",
