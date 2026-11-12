@@ -35,7 +35,7 @@ The recordings gallery, the live tile and the live overview are also available a
 ### Recordings in the ioBroker file storage and as Telegram video
 - **Provide the last recordings in the ioBroker file storage** (off by default): every new recording of a camera is downloaded from AgentDVR and kept as `rec1` … `rec3` per camera — with file path, `iobfile://` URI and http URL in `<cam>.recordings.*`, just like the alert photos
 - optionally as **MP4** (lossless remux with ffmpeg, no re-encoding) — plays everywhere, also inline in Telegram
-- **`sendRecording`** sends the last, a stored or any recording straight to Telegram (or another instance) as video; **`getRecording`** returns it as data for your own scripts
+- **`sendRecording`** sends the last, a stored or any recording straight to Telegram (or another instance) as video; **`getRecording`** makes it available as a file for your own scripts
 - details: [Recordings in the file storage](#recordings-in-the-file-storage)
 
 ## Features
@@ -506,7 +506,7 @@ Run the command as administrator/root as usual on your system. Afterwards press 
 
 ### Sending recordings: `sendRecording` and `getRecording`
 
-`sendRecording` loads a recording (into memory), converts it to MP4 if wanted and sends it to a messenger instance as video:
+`sendRecording` makes a recording available in the adapter's file storage and sends it to a messenger instance as video. A recording that is already stored (`recordings.*`) is used directly; any other one is downloaded into memory, converted to MP4 if wanted and written to a fixed file per camera, `agent-dvr.0/<cam>/send.mp4` (or `.mkv`), which is overwritten each time — so the space stays fixed:
 
 ```js
 sendTo('agent-dvr.0', 'sendRecording', {
@@ -521,7 +521,9 @@ sendTo('agent-dvr.0', 'sendRecording', {
 });
 ```
 
-The message to the target is `{ text: <Buffer>, type: 'video', fileName: '<name>.mp4', caption, user, chatId }` — the format of Telegram 6 and newer. The answer is `{ ok, error?, size, format }`. **Telegram bots can only send files up to 50 MB**; larger recordings are rejected with a clear error before sending.
+The message to the target is `{ text: 'iobfile://agent-dvr.0/<cam>/<file>', type: 'video', fileName: '<name>.mp4', caption, user, chatId }` — Telegram 6 and newer reads the file itself from the file storage. Other targets get the absolute file path instead (or the URI if the file storage is not on the local disk). The answer is `{ ok, error?, fileName, format, mime, size, uri, url, file }`. **Telegram bots can only send files up to 50 MB**; larger recordings are rejected with a clear error — before downloading when AgentDVR already lists the size.
+
+> **No video data goes over the ioBroker message bus.** Large messages (tens of MB) can block the states DB and with it the whole ioBroker. That is why the adapter passes only the file reference and refuses to send or answer anything that contains binary data.
 
 Send every new recording to Telegram (no Blockly needed):
 
@@ -533,7 +535,15 @@ on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
 
 With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`) — or let Telegram 6+ read it itself: `sendTo('telegram.0', { text: getState('agent-dvr.0.cam_8_Reolink.recordings.uri1').val, type: 'video' })`.
 
-`getRecording` takes the same `camera`, `recording` and `mp4` and returns `{ ok, data, fileName, mime, format, size }` for your own scripts. `data` is a Buffer; after the trip through the message bus it may arrive as `{ type: 'Buffer', data: [...] }` — use `Buffer.from(res.data.data ?? res.data)`.
+`getRecording` takes the same `camera`, `recording` and `mp4`, makes the recording available the same way and returns only where it is: `{ ok, error?, fileName, mime, format, size, uri, url, file }`. Read the file in your script yourself, e.g.:
+
+```js
+sendTo('agent-dvr.0', 'getRecording', { camera: 'cam_8_Reolink', recording: 'last' }, res => {
+    if (!res.ok) return log(res.error, 'warn');
+    // res.uri = 'iobfile://agent-dvr.0/cam_8_Reolink/send.mp4', res.url = http link, res.file = local path
+    readFile('agent-dvr.0', res.uri.replace('iobfile://agent-dvr.0/', ''), (err, data) => { /* … */ });
+});
+```
 
 ## Getting images for VIS and scripts
 
@@ -595,7 +605,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 ## Changelog
 ### **WORK IN PROGRESS**
 * (ipod86) feat: keep the last 1–3 recordings per camera in the ioBroker file storage (`recordings.file/uri/url/name/ts`), optionally as MP4 via ffmpeg
-* (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or return it to scripts
+* (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or provide it as a file for scripts
 * (ipod86) feat: ffmpeg detection with status in the settings and `info.ffmpeg`
 * (ipod86) fix: the settings page uses all 11 languages
 

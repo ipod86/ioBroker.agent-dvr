@@ -25,6 +25,10 @@ import {
 	remuxArgs,
 	remuxToMp4,
 	resolveOnPath,
+	assertNoBinary,
+	containsBinary,
+	safeMessage,
+	sendFileStoragePath,
 } from './recording';
 
 describe('recording → ffmpeg detection', () => {
@@ -99,6 +103,7 @@ describe('recording → paths, URIs, URLs', () => {
 			'http://192.168.1.10:8082/agent-dvr.0/recordings/cam_8_Reolink/rec1.mp4',
 		);
 		expect(recordingUrl('', 'agent-dvr.0', 'cam_8_Reolink', 1, 'mp4')).to.equal('');
+		expect(sendFileStoragePath('cam_8_Reolink', 'mp4')).to.equal('cam_8_Reolink/send.mp4');
 	});
 
 	it('builds the absolute path inside <dataDir>/files/<metaId>', () => {
@@ -259,5 +264,43 @@ describe('recording → remux', () => {
 		await remuxToMp4('ffmpeg', Buffer.from('mkv'), 1000, 1000, undefined, run).catch(e => (err = e.message));
 		expect(err).to.contain('timeout');
 		expect(n).to.equal(1);
+	});
+});
+
+describe('recording → message bus guard', () => {
+	const meta = {
+		ok: true,
+		fileName: '8_2026-11-12_15-55-29_931.mp4',
+		format: 'mp4',
+		mime: 'video/mp4',
+		size: 48574441,
+		uri: 'iobfile://agent-dvr.0/cam_8_Reolink/send.mp4',
+		url: '',
+		file: '/opt/iobroker/iobroker-data/files/agent-dvr.0/cam_8_Reolink/send.mp4',
+	};
+
+	it('lets metadata through', () => {
+		expect(containsBinary(meta)).to.equal(false);
+		expect(() => assertNoBinary(meta)).to.not.throw();
+		expect(safeMessage(meta)).to.equal(meta);
+		expect(() => assertNoBinary({ text: meta.uri, type: 'video', caption: 'x', chatId: 1 })).to.not.throw();
+	});
+
+	it('finds Buffers, typed arrays and serialized Buffers, also nested', () => {
+		expect(containsBinary(Buffer.from('x'))).to.equal(true);
+		expect(containsBinary({ ...meta, data: Buffer.alloc(10) })).to.equal(true);
+		expect(containsBinary({ a: [{ b: new Uint8Array(3) }] })).to.equal(true);
+		expect(containsBinary({ a: new ArrayBuffer(3) })).to.equal(true);
+		expect(containsBinary({ text: { type: 'Buffer', data: [1, 2, 3] } })).to.equal(true);
+		expect(containsBinary(JSON.parse(JSON.stringify({ d: Buffer.from('abc') })))).to.equal(true);
+	});
+
+	it('refuses binary or oversized messages', () => {
+		expect(() => assertNoBinary({ text: Buffer.alloc(1), type: 'video' })).to.throw(/binary/);
+		expect(() => assertNoBinary({ text: 'x'.repeat(70 * 1024) })).to.throw(/bytes/);
+		const r = safeMessage({ ok: true, data: Buffer.alloc(46 * 1024 * 1024) }) as { ok: boolean; error: string };
+		expect(r.ok).to.equal(false);
+		expect(r.error).to.match(/binary/);
+		expect(r).to.not.have.property('data');
 	});
 });

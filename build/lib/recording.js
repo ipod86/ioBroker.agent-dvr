@@ -28,9 +28,12 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var recording_exports = {};
 __export(recording_exports, {
+  MAX_MESSAGE_BYTES: () => MAX_MESSAGE_BYTES,
   MB: () => MB,
   TELEGRAM_MAX_BYTES: () => TELEGRAM_MAX_BYTES,
+  assertNoBinary: () => assertNoBinary,
   clampNumber: () => clampNumber,
+  containsBinary: () => containsBinary,
   detectFfmpeg: () => detectFfmpeg,
   downloadToBuffer: () => downloadToBuffer,
   exceedsLimit: () => exceedsLimit,
@@ -54,7 +57,9 @@ __export(recording_exports, {
   remuxArgs: () => remuxArgs,
   remuxToMp4: () => remuxToMp4,
   resolveOnPath: () => resolveOnPath,
-  runFfmpeg: () => runFfmpeg
+  runFfmpeg: () => runFfmpeg,
+  safeMessage: () => safeMessage,
+  sendFileStoragePath: () => sendFileStoragePath
 });
 module.exports = __toCommonJS(recording_exports);
 var import_node_child_process = require("node:child_process");
@@ -87,6 +92,9 @@ function recordingFileName(slot, ext) {
 }
 function recordingStoragePath(fid, slot, ext) {
   return `${fid}/${recordingFileName(slot, ext)}`;
+}
+function sendFileStoragePath(fid, ext) {
+  return `${fid}/send.${ext}`;
 }
 function recordingUri(namespace, fid, slot, ext) {
   return `iobfile://${namespace}/${recordingStoragePath(fid, slot, ext)}`;
@@ -349,11 +357,49 @@ function findCamera(query, cams) {
   const ql = q.toLowerCase();
   return cams.find((c) => c.fid === q) || cams.find((c) => String(c.oid) === q) || cams.find((c) => c.name.toLowerCase() === ql) || cams.find((c) => q.endsWith(`.${c.fid}`));
 }
+const MAX_MESSAGE_BYTES = 64 * 1024;
+function containsBinary(value, depth = 0) {
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+  if (depth > 20) {
+    return true;
+  }
+  if (Buffer.isBuffer(value) || ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+    return true;
+  }
+  const o = value;
+  if (o.type === "Buffer" && Array.isArray(o.data)) {
+    return true;
+  }
+  const children = Array.isArray(value) ? value : Object.values(o);
+  return children.some((v) => containsBinary(v, depth + 1));
+}
+function assertNoBinary(value) {
+  if (containsBinary(value)) {
+    throw new Error("refusing to put binary data on the ioBroker message bus");
+  }
+  const len = Buffer.byteLength(JSON.stringify(value != null ? value : null));
+  if (len > MAX_MESSAGE_BYTES) {
+    throw new Error(`refusing to put ${len} bytes on the ioBroker message bus`);
+  }
+}
+function safeMessage(value) {
+  try {
+    assertNoBinary(value);
+    return value;
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  MAX_MESSAGE_BYTES,
   MB,
   TELEGRAM_MAX_BYTES,
+  assertNoBinary,
   clampNumber,
+  containsBinary,
   detectFfmpeg,
   downloadToBuffer,
   exceedsLimit,
@@ -377,6 +423,8 @@ function findCamera(query, cams) {
   remuxArgs,
   remuxToMp4,
   resolveOnPath,
-  runFfmpeg
+  runFfmpeg,
+  safeMessage,
+  sendFileStoragePath
 });
 //# sourceMappingURL=recording.js.map

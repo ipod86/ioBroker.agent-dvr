@@ -97,6 +97,16 @@ export function recordingStoragePath(fid: string, slot: number, ext: string): st
 }
 
 /**
+ * Fixed per-camera file used by sendRecording/getRecording for recordings that are not in a slot.
+ *
+ * @param fid camera folder id
+ * @param ext file extension
+ */
+export function sendFileStoragePath(fid: string, ext: string): string {
+	return `${fid}/send.${ext}`;
+}
+
+/**
  * ioBroker file URI resolved by telegram >= 6 (same format as the alert photos).
  *
  * @param namespace adapter namespace (meta object id), e.g. agent-dvr.0
@@ -559,4 +569,85 @@ export function findCamera(query: unknown, cams: CamRef[]): CamRef | undefined {
 		cams.find(c => c.name.toLowerCase() === ql) ||
 		cams.find(c => q.endsWith(`.${c.fid}`))
 	);
+}
+
+// ---- message bus guard ----
+
+/** Metadata answered by sendRecording / getRecording — never the video data itself */
+export interface ProvidedRecording {
+	/** recording is available */
+	ok: boolean;
+	/** error text */
+	error?: string;
+	/** file name for the receiver, e.g. 8_2026-11-12_15-55-29_931.mp4 */
+	fileName?: string;
+	/** 'mp4' or 'mkv' */
+	format?: string;
+	/** mime type */
+	mime?: string;
+	/** size in bytes */
+	size?: number;
+	/** iobfile:// URI of the file in the adapter's file storage */
+	uri?: string;
+	/** http(s) URL via the web instance ('' without one) */
+	url?: string;
+	/** absolute path on the ioBroker host ('' if the file storage is not on the local disk) */
+	file?: string;
+}
+
+/** Largest message the adapter puts on the message bus (sendTo answers and forwards) */
+export const MAX_MESSAGE_BYTES = 64 * 1024;
+
+/**
+ * True if the value contains binary data: a Buffer, a typed array / ArrayBuffer or a
+ * JSON-serialized Buffer ({ type: 'Buffer', data: [...] }).
+ *
+ * @param value value to check
+ * @param depth recursion depth
+ */
+export function containsBinary(value: unknown, depth = 0): boolean {
+	if (value === null || typeof value !== 'object') {
+		return false;
+	}
+	if (depth > 20) {
+		return true;
+	}
+	if (Buffer.isBuffer(value) || ArrayBuffer.isView(value) || value instanceof ArrayBuffer) {
+		return true;
+	}
+	const o = value as Record<string, unknown>;
+	if (o.type === 'Buffer' && Array.isArray(o.data)) {
+		return true;
+	}
+	const children = Array.isArray(value) ? (value as unknown[]) : Object.values(o);
+	return children.some(v => containsBinary(v, depth + 1));
+}
+
+/**
+ * Throws if a message for the message bus contains binary data or is too large.
+ *
+ * @param value message
+ */
+export function assertNoBinary(value: unknown): void {
+	if (containsBinary(value)) {
+		throw new Error('refusing to put binary data on the ioBroker message bus');
+	}
+	const len = Buffer.byteLength(JSON.stringify(value ?? null));
+	if (len > MAX_MESSAGE_BYTES) {
+		throw new Error(`refusing to put ${len} bytes on the ioBroker message bus`);
+	}
+}
+
+/**
+ * Returns the message if it is safe for the message bus, otherwise a small error answer.
+ *
+ * @param value message
+ */
+export function safeMessage<T>(value: T): T | { ok: false; error: string } {
+	try {
+		assertNoBinary(value);
+		return value;
+	} catch (e) {
+		return { ok: false, error: (e as Error).message };
+	}
 }

@@ -25,7 +25,11 @@ import {
 	recordingUrl,
 	remuxToMp4,
 	resolveOnPath,
+	assertNoBinary,
+	safeMessage,
+	sendFileStoragePath,
 	type DownloadResult,
+	type ProvidedRecording,
 	type FfmpegInfo,
 } from './lib/recording';
 
@@ -628,7 +632,8 @@ class AgentDvr extends utils.Adapter {
 						this.log.warn(`${obj.command}: ${result.error}`);
 					}
 					if (obj.callback) {
-						this.sendTo(obj.from, obj.command, result, obj.callback);
+						// metadata only — never video data over the message bus
+						this.sendTo(obj.from, obj.command, safeMessage(result), obj.callback);
 					}
 				});
 		}
@@ -1641,16 +1646,17 @@ class AgentDvr extends utils.Adapter {
 		}
 	}
 
-	// Loads a recording for sendRecording/getRecording: 'last' (newest in AgentDVR), slot 1..3
-	// (stored file) or an AgentDVR file name. Optional MP4 remux, all in memory.
-	private async loadRecording(msg: Record<string, unknown>): Promise<{
-		ok: boolean;
-		error?: string;
-		data?: Buffer;
-		fileName?: string;
-		format?: string;
-		size?: number;
-	}> {
+	// Makes a recording available in the adapter's file storage for sendRecording/getRecording and
+	// returns where it is. Never returns the data itself: video must not travel over the message bus
+	// (a 46 MB Buffer in a sendTo answer blocked the whole states DB).
+	// 'last' (newest in AgentDVR), slot 1..3 or an AgentDVR file name. A recording that is already in
+	// a stored slot is used directly; otherwise it is downloaded into memory, remuxed if wanted and
+	// written to the fixed per-camera file <cam>/send.mp4|mkv (overwritten each time).
+	private async provideRecording(
+		msg: Record<string, unknown>,
+		limitBytes: number,
+		limitName: string,
+	): Promise<ProvidedRecording> {
 		const cams = [...this.devById.values()]
 			.filter(d => d.ot === 2)
 			.map(d => ({ oid: d.oid, name: d.name, fid: this.deviceFolder(d) }));
@@ -1658,107 +1664,184 @@ class AgentDvr extends utils.Adapter {
 		if (!cam) {
 			return { ok: false, error: `Unknown camera "${JSON.stringify(msg.camera ?? '')}"` };
 		}
-		const maxBytes = maxRecordingBytes(this.config.recordingMaxSizeMb);
 		const wantMp4 = typeof msg.mp4 === 'boolean' ? msg.mp4 : this.config.recordingMp4 !== false;
 		const rawRec = msg.recording;
 		const rec: string =
 			typeof rawRec === 'number' ? String(rawRec) : typeof rawRec === 'string' && rawRec ? rawRec : 'last';
-		let data: Buffer;
-		let srcExt: string;
-		let base: string;
 
+		// a stored slot: explicitly by number, or the requested file name is already stored
+		let slot = 0;
+		let fn = '';
+		let listedSize = 0;
 		if (/^\d+$/.test(rec)) {
-			const slot = Number(rec);
+			slot = Number(rec);
 			if (slot < 1 || slot > 3) {
 				return { ok: false, error: `Invalid recording slot ${rec} (1-3)` };
 			}
+		} else {
+			if (rec !== 'last' && !isValidRecordingName(rec)) {
+				return { ok: false, error: `Invalid recording "${rec}" (use 'last', 1-3 or an AgentDVR file name)` };
+			}
+			const evRes = await this.apiGet(`/q/getEvents?oid=${encodeURIComponent(String(cam.oid))}&ot=2`);
+			const evJson = asJson(evRes.data);
+			const events = (
+				Array.isArray(evJson?.events) ? evJson.events : Array.isArray(evJson) ? evJson : []
+			) as AgentDvrEvent[];
+			const ev = rec === 'last' ? events[0] : events.find(e => e.fn === rec);
+			fn = rec === 'last' ? (ev?.fn ?? '') : rec;
+			if (!fn) {
+				return { ok: false, error: `No recording found for ${cam.fid}${evRes.ok ? '' : ` (${evRes.error})`}` };
+			}
+			listedSize = Number(ev?.sb ?? 0);
+			for (let i = 1; i <= 3; i++) {
+				const name = await this.getStateAsync(`${cam.fid}.recordings.name${i}`).catch(() => null);
+				if (name?.val === fn) {
+					slot = i;
+					break;
+				}
+			}
+		}
+
+		if (slot) {
 			const ext = await this.slotExt(cam.fid, slot);
-			if (!ext) {
+			if (ext) {
+				const storagePath = recordingStoragePath(cam.fid, slot, ext);
+				const size = await this.storedFileSize(storagePath);
+				const name = await this.getStateAsync(`${cam.fid}.recordings.name${slot}`).catch(() => null);
+				const base = String(name?.val || `${cam.fid}_rec${slot}`).replace(/\.[^.]+$/, '');
+				if (exceedsLimit(size, limitBytes)) {
+					return { ok: false, size, format: ext, error: `Recording is ${fmtMb(size)} — ${limitName}` };
+				}
+				return this.describeStored(storagePath, `${base}.${ext}`, ext, size);
+			}
+			if (!fn) {
 				return { ok: false, error: `No stored recording ${slot} for ${cam.fid}` };
 			}
-			const f = await this.readFileAsync(this.namespace, recordingStoragePath(cam.fid, slot, ext));
-			data = Buffer.isBuffer(f.file) ? f.file : Buffer.from(f.file);
-			srcExt = ext;
-			const name = await this.getStateAsync(`${cam.fid}.recordings.name${slot}`).catch(() => null);
-			base = String(name?.val || `${cam.fid}_rec${slot}`).replace(/\.[^.]+$/, '');
-		} else {
-			let fn = rec;
-			if (fn === 'last') {
-				const evRes = await this.apiGet(`/q/getEvents?oid=${encodeURIComponent(String(cam.oid))}&ot=2`);
-				const evJson = asJson(evRes.data);
-				const events = (
-					Array.isArray(evJson?.events) ? evJson.events : Array.isArray(evJson) ? evJson : []
-				) as AgentDvrEvent[];
-				fn = events[0]?.fn ?? '';
-				if (!fn) {
-					return {
-						ok: false,
-						error: `No recording found for ${cam.fid}${evRes.ok ? '' : ` (${evRes.error})`}`,
-					};
-				}
-			} else if (!isValidRecordingName(fn)) {
-				return { ok: false, error: `Invalid recording "${fn}" (use 'last', 1-3 or an AgentDVR file name)` };
-			}
-			const dl = await this.fetchRecording(cam.oid, fn, maxBytes);
-			if (!dl.ok || !dl.data) {
-				return {
-					ok: false,
-					size: dl.size,
-					error: dl.tooLarge
-						? `Recording ${fn} is larger than the configured limit: ${dl.error}`
-						: `Recording ${fn} not downloaded: ${dl.error ?? 'empty response'}`,
-				};
-			}
-			data = dl.data;
-			srcExt = extOf(fn);
-			base = fn.replace(/\.[^.]+$/, '');
 		}
-		const out = await this.toWantedFormat(data, srcExt, wantMp4, maxBytes);
-		return { ok: true, data: out.data, fileName: `${base}.${out.ext}`, format: out.ext, size: out.data.length };
+
+		// not stored: check the listed size before downloading anything
+		if (exceedsLimit(listedSize, limitBytes)) {
+			return { ok: false, size: listedSize, error: `Recording ${fn} is ${fmtMb(listedSize)} — ${limitName}` };
+		}
+		const dl = await this.fetchRecording(cam.oid, fn, limitBytes);
+		if (!dl.ok || !dl.data) {
+			return {
+				ok: false,
+				size: dl.size,
+				error: dl.tooLarge
+					? `Recording ${fn}: ${dl.error} — ${limitName}`
+					: `Recording ${fn} not downloaded: ${dl.error ?? 'empty response'}`,
+			};
+		}
+		const out = await this.toWantedFormat(dl.data, extOf(fn), wantMp4, limitBytes);
+		if (exceedsLimit(out.data.length, limitBytes)) {
+			return {
+				ok: false,
+				size: out.data.length,
+				format: out.ext,
+				error: `Recording is ${fmtMb(out.data.length)} — ${limitName}`,
+			};
+		}
+		await this.ensureFileMeta();
+		for (const ext of ['mp4', 'mkv']) {
+			const p = sendFileStoragePath(cam.fid, ext);
+			if (ext !== out.ext && (await this.fileExistsAsync(this.namespace, p).catch(() => false))) {
+				await this.delFileAsync(this.namespace, p).catch(() => {});
+			}
+		}
+		const storagePath = sendFileStoragePath(cam.fid, out.ext);
+		await this.writeFileAsync(this.namespace, storagePath, out.data);
+		return this.describeStored(storagePath, `${fn.replace(/\.[^.]+$/, '')}.${out.ext}`, out.ext, out.data.length);
 	}
 
-	private async getRecording(
-		msg: Record<string, unknown>,
-	): Promise<Record<string, unknown> & { ok: boolean; error?: string }> {
-		const r = await this.loadRecording(msg);
-		if (!r.ok || !r.data) {
-			return { ok: false, error: r.error, size: r.size };
+	private async storedFileSize(storagePath: string): Promise<number> {
+		const local = this.localFilePath(storagePath);
+		if (local) {
+			try {
+				return fs.statSync(local).size;
+			} catch {
+				// fall through
+			}
+		}
+		// non-file objects DB: read once to get the size (stays inside the adapter process)
+		const f = await this.readFileAsync(this.namespace, storagePath).catch(() => null);
+		const file = f?.file;
+		return file ? (Buffer.isBuffer(file) ? file.length : Buffer.byteLength(file)) : 0;
+	}
+
+	// Absolute path if the file storage is on this host's disk, else ''.
+	private localFilePath(storagePath: string): string {
+		const abs = path.join(utils.getAbsoluteDefaultDataDir(), 'files', this.namespace, ...storagePath.split('/'));
+		return fs.existsSync(abs) ? abs : '';
+	}
+
+	private async describeStored(
+		storagePath: string,
+		fileName: string,
+		format: string,
+		size: number,
+	): Promise<ProvidedRecording> {
+		if (this.webBaseUrl === undefined) {
+			this.webBaseUrl = await this.findWebBaseUrl();
 		}
 		return {
 			ok: true,
-			data: r.data,
-			fileName: r.fileName,
-			mime: mimeOf(r.format ?? ''),
-			format: r.format,
-			size: r.size,
+			fileName,
+			format,
+			mime: mimeOf(format),
+			size,
+			uri: `iobfile://${this.namespace}/${storagePath}`,
+			url: this.webBaseUrl ? `${this.webBaseUrl}/${this.namespace}/recordings/${storagePath}` : '',
+			file: this.localFilePath(storagePath),
 		};
 	}
 
-	private async sendRecording(
-		msg: Record<string, unknown>,
-	): Promise<{ ok: boolean; error?: string; size?: number; format?: string; result?: unknown }> {
+	private async getRecording(msg: Record<string, unknown>): Promise<ProvidedRecording> {
+		return this.provideRecording(
+			msg,
+			maxRecordingBytes(this.config.recordingMaxSizeMb),
+			'larger than the configured maximum size',
+		);
+	}
+
+	private async sendRecording(msg: Record<string, unknown>): Promise<ProvidedRecording & { result?: unknown }> {
 		const target = typeof msg.target === 'string' && msg.target ? msg.target : 'telegram.0';
 		if (!/^[a-z0-9_-]+\.\d+$/i.test(target)) {
 			return { ok: false, error: `Invalid target "${target}" (expected an instance like telegram.0)` };
 		}
-		const r = await this.loadRecording(msg);
-		if (!r.ok || !r.data) {
-			return { ok: false, error: r.error, size: r.size };
+		const telegram = target.startsWith('telegram.');
+		const maxBytes = maxRecordingBytes(this.config.recordingMaxSizeMb);
+		const tgLimit = telegram && TELEGRAM_MAX_BYTES <= maxBytes;
+		const r = await this.provideRecording(
+			msg,
+			tgLimit ? TELEGRAM_MAX_BYTES : maxBytes,
+			tgLimit ? 'Telegram bots can only send files up to 50 MB' : 'larger than the configured maximum size',
+		);
+		if (!r.ok || !r.uri) {
+			return r;
 		}
-		if (target.startsWith('telegram.') && r.data.length > TELEGRAM_MAX_BYTES) {
+		if (telegram && (r.size ?? 0) > TELEGRAM_MAX_BYTES) {
 			return {
+				...r,
 				ok: false,
-				size: r.data.length,
-				format: r.format,
-				error: `Recording is ${fmtMb(r.data.length)} — Telegram bots can only send files up to 50 MB`,
+				error: `Recording is ${fmtMb(r.size ?? 0)} — Telegram bots can only send files up to 50 MB`,
 			};
 		}
-		const payload: Record<string, unknown> = { text: r.data, type: 'video', fileName: r.fileName };
+		// telegram >= 6 reads iobfile:// itself; other targets get a local path if there is one
+		const payload: Record<string, unknown> = {
+			text: telegram ? r.uri : r.file || r.uri,
+			type: 'video',
+			fileName: r.fileName,
+		};
 		for (const k of ['caption', 'user', 'chatId']) {
-			if (msg[k] !== undefined && msg[k] !== null && msg[k] !== '') {
-				payload[k] = msg[k];
+			const v = msg[k];
+			if (typeof v === 'string' || typeof v === 'number') {
+				if (v !== '') {
+					payload[k] = v;
+				}
 			}
 		}
+		assertNoBinary(payload);
 		const result = await new Promise<{ timeout?: boolean; res?: unknown }>(resolve => {
 			const timer = this.setTimeout(() => resolve({ timeout: true }), 300000);
 			this.sendTo(target, 'send', payload, res => {
@@ -1769,10 +1852,14 @@ class AgentDvr extends utils.Adapter {
 			});
 		});
 		if (result.timeout) {
-			return { ok: false, size: r.size, format: r.format, error: `No answer from ${target} within 300 s` };
+			return { ...r, ok: false, error: `No answer from ${target} within 300 s` };
 		}
 		this.log.debug(`Recording ${r.fileName} (${fmtMb(r.size ?? 0)}) sent to ${target}`);
-		return { ok: true, size: r.size, format: r.format, result: result.res };
+		const res = result.res;
+		return {
+			...r,
+			result: typeof res === 'number' || typeof res === 'string' || typeof res === 'boolean' ? res : undefined,
+		};
 	}
 
 	// ---- device folder name ----
