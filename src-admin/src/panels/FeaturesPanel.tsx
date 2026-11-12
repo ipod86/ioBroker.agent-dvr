@@ -125,21 +125,23 @@ const FeaturesPanel: React.FC<Props> = ({ native, onChange, socket, instance }) 
 						onChange={v => onChange('enableAlertPhotos', v)}
 					/>
 				</Grid>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={4}
-				>
-					<FormField
-						type="select"
-						labelKey="cfgPhotoWebInstance"
-						helpKey="cfgPhotoWebInstance_tt"
-						value={native.photoWebInstance ?? ''}
-						onChange={v => onChange('photoWebInstance', v)}
-						options={[{ value: '', labelKey: 'cfgPhotoWebAuto' }, ...webs]}
-					/>
-				</Grid>
+				{(native.enableAlertPhotos ?? true) && (
+					<Grid
+						item
+						xs={12}
+						sm={6}
+						md={4}
+					>
+						<FormField
+							type="select"
+							labelKey="cfgPhotoWebInstance"
+							helpKey="cfgPhotoWebInstance_tt"
+							value={native.photoWebInstance ?? ''}
+							onChange={v => onChange('photoWebInstance', v)}
+							options={[{ value: '', labelKey: 'cfgPhotoWebAuto' }, ...webs]}
+						/>
+					</Grid>
+				)}
 			</Grid>
 			<RecordingFilesSection
 				native={native}

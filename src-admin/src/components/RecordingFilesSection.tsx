@@ -96,190 +96,201 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 						onChange={v => onChange('enableRecordingFiles', v)}
 					/>
 				</Grid>
-				{native.enableRecordingFiles && native.enableEventDps === false && (
-					<Grid
-						item
-						xs={12}
-					>
-						<Alert severity="warning">{I18n.t('cfgRecordingNeedsEventDps')}</Alert>
-					</Grid>
-				)}
 				{native.enableRecordingFiles && (
-					<Grid
-						item
-						xs={12}
-						sm={6}
-						md={3}
-					>
-						<FormField
-							type="select"
-							labelKey="cfgRecordingFileCount"
-							helpKey="cfgRecordingFileCount_tt"
-							value={String(native.recordingFileCount ?? 1)}
-							onChange={v => onChange('recordingFileCount', parseInt(v, 10) || 1)}
-							options={[
-								{ value: '1', labelKey: '1' },
-								{ value: '2', labelKey: '2' },
-								{ value: '3', labelKey: '3' },
-							]}
-						/>
-					</Grid>
-				)}
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={3}
-				>
-					<FormField
-						type="number"
-						labelKey="cfgRecordingMaxSizeMb"
-						helpKey="cfgRecordingMaxSizeMb_tt"
-						value={native.recordingMaxSizeMb ?? 50}
-						min={1}
-						max={2000}
-						onChange={v => onChange('recordingMaxSizeMb', Math.max(1, Math.min(2000, Math.round(v))))}
-					/>
-					{(native.recordingMaxSizeMb ?? 50) > 50 && (
-						<Typography
-							variant="caption"
-							color="warning.main"
-							display="block"
-							sx={{ mt: -1.5 }}
-						>
-							{I18n.t('cfgRecordingTelegramLimit')}
-						</Typography>
-					)}
-				</Grid>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={3}
-				>
-					<FormField
-						type="number"
-						labelKey="cfgRecordingTimeoutSec"
-						helpKey="cfgRecordingTimeoutSec_tt"
-						value={native.recordingTimeoutSec ?? 120}
-						min={10}
-						max={900}
-						onChange={v => onChange('recordingTimeoutSec', Math.max(10, Math.min(900, Math.round(v))))}
-					/>
-				</Grid>
-				{native.enableRecordingFiles && (
-					<Grid
-						item
-						xs={12}
-					>
-						<Typography
-							variant="subtitle2"
-							sx={{ mt: 1 }}
-						>
-							{I18n.t('cfgRecordingCams')}
-						</Typography>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={allCams}
-									onChange={e =>
-										onChange('recordingFileCams', e.target.checked ? [] : cams.map(c => c.key))
-									}
-									disabled={!allCams && !cams.length}
-								/>
-							}
-							label={I18n.t('cfgRecordingCamsAll')}
-						/>
-						{!allCams || cams.length ? (
-							<Box sx={{ display: 'flex', flexWrap: 'wrap', ml: 3 }}>
-								{listed.map(c => (
-									<FormControlLabel
-										key={c.key}
-										control={
-											<Checkbox
-												size="small"
-												disabled={allCams}
-												checked={allCams || sel.includes(c.key)}
-												onChange={e =>
-													onChange(
-														'recordingFileCams',
-														e.target.checked
-															? [...sel.filter(k => k !== c.key), c.key]
-															: sel.filter(k => k !== c.key),
-													)
-												}
-											/>
-										}
-										label={c.name}
-									/>
-								))}
-							</Box>
-						) : null}
-						{!cams.length && (
-							<Typography
-								variant="caption"
-								display="block"
-								color="text.secondary"
+					<>
+						{native.enableRecordingFiles && native.enableEventDps === false && (
+							<Grid
+								item
+								xs={12}
 							>
-								{I18n.t('cfgRecordingCamsNotRunning')}
-							</Typography>
+								<Alert severity="warning">{I18n.t('cfgRecordingNeedsEventDps')}</Alert>
+							</Grid>
 						)}
-					</Grid>
-				)}
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={4}
-				>
-					<FormField
-						type="checkbox"
-						labelKey="cfgRecordingMp4"
-						helpKey="cfgRecordingMp4_tt"
-						value={native.recordingMp4 !== false}
-						onChange={v => onChange('recordingMp4', v)}
-					/>
-				</Grid>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={4}
-				>
-					<FormField
-						type="text"
-						labelKey="cfgFfmpegPath"
-						helpKey="cfgFfmpegPath_tt"
-						value={native.ffmpegPath ?? ''}
-						onChange={v => onChange('ffmpegPath', v)}
-					/>
-				</Grid>
-				<Grid
-					item
-					xs={12}
-				>
-					<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-						<Box sx={{ flex: 1, minWidth: 240 }}>
-							{alive === false || !socket ? (
-								<Alert severity="info">{I18n.t('ffmpegNotRunning')}</Alert>
-							) : ff?.found ? (
-								<Alert severity="success">{I18n.t('ffmpegFound', ff.version, ff.path)}</Alert>
-							) : ff ? (
-								<Alert severity="warning">{I18n.t('ffmpegNotFound')}</Alert>
-							) : (
-								<Alert severity="info">{I18n.t('ffmpegChecking')}</Alert>
-							)}
-						</Box>
-						<Button
-							variant="outlined"
-							startIcon={busy ? <CircularProgress size={16} /> : <RefreshIcon />}
-							disabled={busy || !socket}
-							onClick={() => void detect(native.ffmpegPath ?? '')}
+						{native.enableRecordingFiles && (
+							<Grid
+								item
+								xs={12}
+								sm={6}
+								md={3}
+							>
+								<FormField
+									type="select"
+									labelKey="cfgRecordingFileCount"
+									helpKey="cfgRecordingFileCount_tt"
+									value={String(native.recordingFileCount ?? 1)}
+									onChange={v => onChange('recordingFileCount', parseInt(v, 10) || 1)}
+									options={[
+										{ value: '1', labelKey: '1' },
+										{ value: '2', labelKey: '2' },
+										{ value: '3', labelKey: '3' },
+									]}
+								/>
+							</Grid>
+						)}
+						<Grid
+							item
+							xs={12}
+							sm={6}
+							md={3}
 						>
-							{I18n.t('ffmpegSearchAgain')}
-						</Button>
-					</Box>
-				</Grid>
+							<FormField
+								type="number"
+								labelKey="cfgRecordingMaxSizeMb"
+								helpKey="cfgRecordingMaxSizeMb_tt"
+								value={native.recordingMaxSizeMb ?? 50}
+								min={1}
+								max={2000}
+								onChange={v =>
+									onChange('recordingMaxSizeMb', Math.max(1, Math.min(2000, Math.round(v))))
+								}
+							/>
+							{(native.recordingMaxSizeMb ?? 50) > 50 && (
+								<Typography
+									variant="caption"
+									color="warning.main"
+									display="block"
+									sx={{ mt: -1.5 }}
+								>
+									{I18n.t('cfgRecordingTelegramLimit')}
+								</Typography>
+							)}
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							sm={6}
+							md={3}
+						>
+							<FormField
+								type="number"
+								labelKey="cfgRecordingTimeoutSec"
+								helpKey="cfgRecordingTimeoutSec_tt"
+								value={native.recordingTimeoutSec ?? 120}
+								min={10}
+								max={900}
+								onChange={v =>
+									onChange('recordingTimeoutSec', Math.max(10, Math.min(900, Math.round(v))))
+								}
+							/>
+						</Grid>
+						{native.enableRecordingFiles && (
+							<Grid
+								item
+								xs={12}
+							>
+								<Typography
+									variant="subtitle2"
+									sx={{ mt: 1 }}
+								>
+									{I18n.t('cfgRecordingCams')}
+								</Typography>
+								<FormControlLabel
+									control={
+										<Checkbox
+											checked={allCams}
+											onChange={e =>
+												onChange(
+													'recordingFileCams',
+													e.target.checked ? [] : cams.map(c => c.key),
+												)
+											}
+											disabled={!allCams && !cams.length}
+										/>
+									}
+									label={I18n.t('cfgRecordingCamsAll')}
+								/>
+								{!allCams || cams.length ? (
+									<Box sx={{ display: 'flex', flexWrap: 'wrap', ml: 3 }}>
+										{listed.map(c => (
+											<FormControlLabel
+												key={c.key}
+												control={
+													<Checkbox
+														size="small"
+														disabled={allCams}
+														checked={allCams || sel.includes(c.key)}
+														onChange={e =>
+															onChange(
+																'recordingFileCams',
+																e.target.checked
+																	? [...sel.filter(k => k !== c.key), c.key]
+																	: sel.filter(k => k !== c.key),
+															)
+														}
+													/>
+												}
+												label={c.name}
+											/>
+										))}
+									</Box>
+								) : null}
+								{!cams.length && (
+									<Typography
+										variant="caption"
+										display="block"
+										color="text.secondary"
+									>
+										{I18n.t('cfgRecordingCamsNotRunning')}
+									</Typography>
+								)}
+							</Grid>
+						)}
+						<Grid
+							item
+							xs={12}
+							sm={6}
+							md={4}
+						>
+							<FormField
+								type="checkbox"
+								labelKey="cfgRecordingMp4"
+								helpKey="cfgRecordingMp4_tt"
+								value={native.recordingMp4 !== false}
+								onChange={v => onChange('recordingMp4', v)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+							sm={6}
+							md={4}
+						>
+							<FormField
+								type="text"
+								labelKey="cfgFfmpegPath"
+								helpKey="cfgFfmpegPath_tt"
+								value={native.ffmpegPath ?? ''}
+								onChange={v => onChange('ffmpegPath', v)}
+							/>
+						</Grid>
+						<Grid
+							item
+							xs={12}
+						>
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+								<Box sx={{ flex: 1, minWidth: 240 }}>
+									{alive === false || !socket ? (
+										<Alert severity="info">{I18n.t('ffmpegNotRunning')}</Alert>
+									) : ff?.found ? (
+										<Alert severity="success">{I18n.t('ffmpegFound', ff.version, ff.path)}</Alert>
+									) : ff ? (
+										<Alert severity="warning">{I18n.t('ffmpegNotFound')}</Alert>
+									) : (
+										<Alert severity="info">{I18n.t('ffmpegChecking')}</Alert>
+									)}
+								</Box>
+								<Button
+									variant="outlined"
+									startIcon={busy ? <CircularProgress size={16} /> : <RefreshIcon />}
+									disabled={busy || !socket}
+									onClick={() => void detect(native.ffmpegPath ?? '')}
+								>
+									{I18n.t('ffmpegSearchAgain')}
+								</Button>
+							</Box>
+						</Grid>
+					</>
+				)}
 			</Grid>
 		</div>
 	);
