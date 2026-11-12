@@ -183,5 +183,7 @@
   "ffmpegNotRunning": "实例未运行 – 启动后将显示 ffmpeg 状态",
   "ffmpegChecking": "正在检查 ffmpeg …",
   "ffmpegSearchAgain": "重新搜索",
-  "cfgRecordingCamGone": "%s（AgentDVR 中已不存在）"
+  "cfgRecordingCamGone": "%s（AgentDVR 中已不存在）",
+  "cfgRecordingNeedsEventDps": "需要“事件数据点”（功能）——目前已关闭，因此不会保存录像。",
+  "cfgRecordingTelegramLimit": "Telegram 最多接受 50 MB——更大的录像无法发送。"
 }

@@ -183,5 +183,7 @@
   "ffmpegNotRunning": "L'istanza non è in esecuzione – lo stato di ffmpeg viene mostrato dopo l'avvio",
   "ffmpegChecking": "Verifica di ffmpeg …",
   "ffmpegSearchAgain": "Cerca di nuovo",
-  "cfgRecordingCamGone": "%s (non più presente in AgentDVR)"
+  "cfgRecordingCamGone": "%s (non più presente in AgentDVR)",
+  "cfgRecordingNeedsEventDps": "Richiede \"Punti dati eventi\" (Funzioni) – disattivato, nessuna registrazione viene salvata.",
+  "cfgRecordingTelegramLimit": "Telegram accetta al massimo 50 MB – registrazioni più grandi non possono essere inviate."
 }

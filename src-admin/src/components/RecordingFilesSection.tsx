@@ -96,25 +96,35 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 						onChange={v => onChange('enableRecordingFiles', v)}
 					/>
 				</Grid>
-				<Grid
-					item
-					xs={12}
-					sm={6}
-					md={3}
-				>
-					<FormField
-						type="select"
-						labelKey="cfgRecordingFileCount"
-						helpKey="cfgRecordingFileCount_tt"
-						value={String(native.recordingFileCount ?? 1)}
-						onChange={v => onChange('recordingFileCount', parseInt(v, 10) || 1)}
-						options={[
-							{ value: '1', labelKey: '1' },
-							{ value: '2', labelKey: '2' },
-							{ value: '3', labelKey: '3' },
-						]}
-					/>
-				</Grid>
+				{native.enableRecordingFiles && native.enableEventDps === false && (
+					<Grid
+						item
+						xs={12}
+					>
+						<Alert severity="warning">{I18n.t('cfgRecordingNeedsEventDps')}</Alert>
+					</Grid>
+				)}
+				{native.enableRecordingFiles && (
+					<Grid
+						item
+						xs={12}
+						sm={6}
+						md={3}
+					>
+						<FormField
+							type="select"
+							labelKey="cfgRecordingFileCount"
+							helpKey="cfgRecordingFileCount_tt"
+							value={String(native.recordingFileCount ?? 1)}
+							onChange={v => onChange('recordingFileCount', parseInt(v, 10) || 1)}
+							options={[
+								{ value: '1', labelKey: '1' },
+								{ value: '2', labelKey: '2' },
+								{ value: '3', labelKey: '3' },
+							]}
+						/>
+					</Grid>
+				)}
 				<Grid
 					item
 					xs={12}
@@ -130,6 +140,16 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 						max={2000}
 						onChange={v => onChange('recordingMaxSizeMb', Math.max(1, Math.min(2000, Math.round(v))))}
 					/>
+					{(native.recordingMaxSizeMb ?? 50) > 50 && (
+						<Typography
+							variant="caption"
+							color="warning.main"
+							display="block"
+							sx={{ mt: -1.5 }}
+						>
+							{I18n.t('cfgRecordingTelegramLimit')}
+						</Typography>
+					)}
 				</Grid>
 				<Grid
 					item
@@ -147,63 +167,65 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 						onChange={v => onChange('recordingTimeoutSec', Math.max(10, Math.min(900, Math.round(v))))}
 					/>
 				</Grid>
-				<Grid
-					item
-					xs={12}
-				>
-					<Typography
-						variant="subtitle2"
-						sx={{ mt: 1 }}
+				{native.enableRecordingFiles && (
+					<Grid
+						item
+						xs={12}
 					>
-						{I18n.t('cfgRecordingCams')}
-					</Typography>
-					<FormControlLabel
-						control={
-							<Checkbox
-								checked={allCams}
-								onChange={e =>
-									onChange('recordingFileCams', e.target.checked ? [] : cams.map(c => c.key))
-								}
-								disabled={!allCams && !cams.length}
-							/>
-						}
-						label={I18n.t('cfgRecordingCamsAll')}
-					/>
-					{!allCams || cams.length ? (
-						<Box sx={{ display: 'flex', flexWrap: 'wrap', ml: 3 }}>
-							{listed.map(c => (
-								<FormControlLabel
-									key={c.key}
-									control={
-										<Checkbox
-											size="small"
-											disabled={allCams}
-											checked={allCams || sel.includes(c.key)}
-											onChange={e =>
-												onChange(
-													'recordingFileCams',
-													e.target.checked
-														? [...sel.filter(k => k !== c.key), c.key]
-														: sel.filter(k => k !== c.key),
-												)
-											}
-										/>
-									}
-									label={c.name}
-								/>
-							))}
-						</Box>
-					) : null}
-					{!cams.length && (
 						<Typography
-							variant="caption"
-							display="block"
-							color="text.secondary"
+							variant="subtitle2"
+							sx={{ mt: 1 }}
 						>
-							{I18n.t('cfgRecordingCamsNotRunning')}
+							{I18n.t('cfgRecordingCams')}
 						</Typography>
-					)}
-				</Grid>
+						<FormControlLabel
+							control={
+								<Checkbox
+									checked={allCams}
+									onChange={e =>
+										onChange('recordingFileCams', e.target.checked ? [] : cams.map(c => c.key))
+									}
+									disabled={!allCams && !cams.length}
+								/>
+							}
+							label={I18n.t('cfgRecordingCamsAll')}
+						/>
+						{!allCams || cams.length ? (
+							<Box sx={{ display: 'flex', flexWrap: 'wrap', ml: 3 }}>
+								{listed.map(c => (
+									<FormControlLabel
+										key={c.key}
+										control={
+											<Checkbox
+												size="small"
+												disabled={allCams}
+												checked={allCams || sel.includes(c.key)}
+												onChange={e =>
+													onChange(
+														'recordingFileCams',
+														e.target.checked
+															? [...sel.filter(k => k !== c.key), c.key]
+															: sel.filter(k => k !== c.key),
+													)
+												}
+											/>
+										}
+										label={c.name}
+									/>
+								))}
+							</Box>
+						) : null}
+						{!cams.length && (
+							<Typography
+								variant="caption"
+								display="block"
+								color="text.secondary"
+							>
+								{I18n.t('cfgRecordingCamsNotRunning')}
+							</Typography>
+						)}
+					</Grid>
+				)}
 				<Grid
 					item
 					xs={12}

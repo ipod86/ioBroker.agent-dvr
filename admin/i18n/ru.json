@@ -183,5 +183,7 @@
   "ffmpegNotRunning": "Экземпляр не запущен – статус ffmpeg появится после запуска",
   "ffmpegChecking": "Проверка ffmpeg …",
   "ffmpegSearchAgain": "Искать снова",
-  "cfgRecordingCamGone": "%s (больше нет в AgentDVR)"
+  "cfgRecordingCamGone": "%s (больше нет в AgentDVR)",
+  "cfgRecordingNeedsEventDps": "Требуются «точки данных событий» (Функции) – сейчас выключены, записи не сохраняются.",
+  "cfgRecordingTelegramLimit": "Telegram принимает не более 50 МБ – более крупные записи туда не отправить."
 }

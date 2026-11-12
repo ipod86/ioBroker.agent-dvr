@@ -183,5 +183,7 @@
   "ffmpegNotRunning": "De instantie draait niet – de ffmpeg-status verschijnt zodra ze gestart is",
   "ffmpegChecking": "ffmpeg wordt gecontroleerd …",
   "ffmpegSearchAgain": "Opnieuw zoeken",
-  "cfgRecordingCamGone": "%s (niet meer in AgentDVR)"
+  "cfgRecordingCamGone": "%s (niet meer in AgentDVR)",
+  "cfgRecordingNeedsEventDps": "Vereist \"Gebeurtenis-datapunten\" (Functies) – staat uit, dus worden geen opnames opgeslagen.",
+  "cfgRecordingTelegramLimit": "Telegram accepteert maximaal 50 MB – grotere opnames kunnen daar niet naartoe."
 }
