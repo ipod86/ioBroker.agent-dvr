@@ -1,0 +1,399 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ioBroker/web-components/main/schemas/manifest.json",
+  "manifestVersion": 1,
+  "tag": "iob-agent-dvr-recordings",
+  "name": {
+    "en": "Agent DVR recordings",
+    "de": "Agent DVR Aufnahmen"
+  },
+  "description": {
+    "en": "Recordings gallery of a camera: from the adapter settings or set up here",
+    "de": "Aufnahmen-Galerie einer Kamera: aus den Adapter-Einstellungen oder hier eingestellt"
+  },
+  "icon": "../agent-dvr.png",
+  "module": "agent-dvr-recordings.js",
+  "size": {
+    "width": 520,
+    "height": 420
+  },
+  "settings": {
+    "type": "panel",
+    "items": {
+      "mode": {
+        "type": "select",
+        "label": {
+          "en": "Source",
+          "de": "Quelle"
+        },
+        "default": "adapter",
+        "options": [
+          {
+            "value": "adapter",
+            "label": {
+              "en": "Widget from the adapter settings",
+              "de": "Widget aus den Adapter-Einstellungen"
+            }
+          },
+          {
+            "value": "custom",
+            "label": {
+              "en": "Own settings here",
+              "de": "Eigene Einstellungen hier"
+            }
+          }
+        ]
+      },
+      "widget": {
+        "type": "objectId",
+        "types": "state",
+        "root": "agent-dvr",
+        "label": {
+          "en": "Widget",
+          "de": "Widget"
+        },
+        "help": {
+          "en": "The recordings widget of a camera, e.g. agent-dvr.0.cam_8_Garden.widget_recordings",
+          "de": "Aufnahmen-Widget einer Kamera, z. B. agent-dvr.0.cam_8_Garten.widget_recordings"
+        },
+        "hidden": "data.mode === 'custom'"
+      },
+      "camera": {
+        "type": "objectId",
+        "types": "device",
+        "root": "agent-dvr",
+        "label": {
+          "en": "Camera",
+          "de": "Kamera"
+        },
+        "help": {
+          "en": "Choose the camera, e.g. agent-dvr.0.cam_8_Garden",
+          "de": "Kamera wählen, z. B. agent-dvr.0.cam_8_Garten"
+        },
+        "hidden": "data.mode !== 'custom'"
+      },
+      "follow": {
+        "type": "checkbox",
+        "label": {
+          "en": "Use the colors of the visualization",
+          "de": "Farben der Visualisierung übernehmen"
+        },
+        "default": false,
+        "help": {
+          "en": "Tiles, badges, player and accent in the colors of the theme instead of the widget colors",
+          "de": "Kacheln, Badges, Player und Akzent in den Farben des Themes statt der Widget-Farben"
+        }
+      },
+      "hRec": {
+        "type": "header",
+        "text": {
+          "en": "Recordings Widget",
+          "de": "Aufnahmen-Widget"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "widgetMode": {
+        "type": "select",
+        "label": {
+          "en": "Widget mode",
+          "de": "Widget-Modus"
+        },
+        "default": "nojs",
+        "hidden": "data.mode !== 'custom'",
+        "options": [
+          {
+            "value": "nojs",
+            "label": {
+              "en": "Gallery only (like 'Pure HTML/CSS')",
+              "de": "Nur Galerie (wie „Reines HTML/CSS“)"
+            }
+          },
+          {
+            "value": "js",
+            "label": {
+              "en": "With search and tag filter (like 'Full JS')",
+              "de": "Mit Suche und Tag-Filter (wie „Vollständiges JS“)"
+            }
+          }
+        ]
+      },
+      "count": {
+        "type": "number",
+        "label": {
+          "en": "Max. recordings in gallery",
+          "de": "Max. Aufnahmen in der Galerie"
+        },
+        "min": 1,
+        "max": 500,
+        "default": 50,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "thumbSize": {
+        "type": "select",
+        "label": {
+          "en": "Thumbnail size",
+          "de": "Thumbnail-Größe"
+        },
+        "default": "medium",
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Width of preview images (overrides min. column width)",
+          "de": "Breite der Vorschaubilder (überschreibt Min. Spaltenbreite)"
+        },
+        "options": [
+          {
+            "value": "small",
+            "label": {
+              "en": "Small (120 px)",
+              "de": "Klein (120 px)"
+            }
+          },
+          {
+            "value": "medium",
+            "label": {
+              "en": "Medium (180 px)",
+              "de": "Mittel (180 px)"
+            }
+          },
+          {
+            "value": "large",
+            "label": {
+              "en": "Large (240 px)",
+              "de": "Groß (240 px)"
+            }
+          },
+          {
+            "value": "custom",
+            "label": {
+              "en": "Min. column width below",
+              "de": "Min. Spaltenbreite unten"
+            }
+          }
+        ]
+      },
+      "minCol": {
+        "type": "number",
+        "label": {
+          "en": "Min. column width (px)",
+          "de": "Min. Spaltenbreite (px)"
+        },
+        "min": 80,
+        "max": 600,
+        "default": 150,
+        "hidden": "data.mode !== 'custom' || data.thumbSize !== 'custom'"
+      },
+      "compact": {
+        "type": "checkbox",
+        "label": {
+          "en": "Compact layout",
+          "de": "Kompaktes Layout"
+        },
+        "default": false,
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Smaller spacing and font – more entries at a glance",
+          "de": "Kleinere Abstände und Schrift – mehr Einträge auf einen Blick"
+        }
+      },
+      "maxModalWidth": {
+        "type": "number",
+        "label": {
+          "en": "Max. player width (px)",
+          "de": "Max. Player-Breite (px)"
+        },
+        "min": 300,
+        "max": 2000,
+        "default": 900,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "hTags": {
+        "type": "header",
+        "text": {
+          "en": "Tags",
+          "de": "Tags"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "showTags": {
+        "type": "checkbox",
+        "label": {
+          "en": "Show event tags",
+          "de": "Ereignis-Tags anzeigen"
+        },
+        "default": true,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "tagPosition": {
+        "type": "select",
+        "label": {
+          "en": "Tag badge position",
+          "de": "Tag-Badge-Position"
+        },
+        "default": "bottom-left",
+        "hidden": "data.mode !== 'custom' || !data.showTags",
+        "options": [
+          {
+            "value": "top-left",
+            "label": {
+              "en": "Top left",
+              "de": "Oben links"
+            }
+          },
+          {
+            "value": "top-right",
+            "label": {
+              "en": "Top right",
+              "de": "Oben rechts"
+            }
+          },
+          {
+            "value": "bottom-left",
+            "label": {
+              "en": "Bottom left",
+              "de": "Unten links"
+            }
+          },
+          {
+            "value": "bottom-right",
+            "label": {
+              "en": "Bottom right",
+              "de": "Unten rechts"
+            }
+          }
+        ]
+      },
+      "hFilter": {
+        "type": "header",
+        "text": {
+          "en": "Filter & Sort",
+          "de": "Filter & Sortierung"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "sortNewest": {
+        "type": "checkbox",
+        "label": {
+          "en": "Newest first",
+          "de": "Neueste zuerst"
+        },
+        "default": true,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "showSearch": {
+        "type": "checkbox",
+        "label": {
+          "en": "Show search field",
+          "de": "Suchfeld anzeigen"
+        },
+        "default": true,
+        "hidden": "data.mode !== 'custom' || data.widgetMode !== 'js'"
+      },
+      "defaultTag": {
+        "type": "text",
+        "label": {
+          "en": "Default tag filter (empty = all)",
+          "de": "Standard-Tag-Filter (leer = alle)"
+        },
+        "default": "",
+        "hidden": "data.mode !== 'custom' || data.widgetMode !== 'js'"
+      },
+      "hPlayer": {
+        "type": "header",
+        "text": {
+          "en": "Player",
+          "de": "Player"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "playerUrl": {
+        "type": "text",
+        "label": {
+          "en": "External player URL (empty = built-in player)",
+          "de": "Externer Player-URL (leer = eingebauter Player)"
+        },
+        "default": "",
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Placeholders: {video} {videoRaw} {fn} {date} {time} {duration} {size} {tags}",
+          "de": "Platzhalter: {video} {videoRaw} {fn} {date} {time} {duration} {size} {tags}"
+        }
+      },
+      "hColors": {
+        "type": "header",
+        "text": {
+          "en": "Colors & Design",
+          "de": "Farben & Design"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "colorCardBg": {
+        "type": "color",
+        "label": {
+          "en": "Tile background",
+          "de": "Kachel-Hintergrund"
+        },
+        "default": "rgba(127,127,127,0.15)",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorTagBg": {
+        "type": "color",
+        "label": {
+          "en": "Tag badge background",
+          "de": "Tag-Badge-Hintergrund"
+        },
+        "default": "rgba(0,0,0,0.55)",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorTagText": {
+        "type": "color",
+        "label": {
+          "en": "Tag badge text color",
+          "de": "Tag-Badge-Textfarbe"
+        },
+        "default": "#ffffff",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorAccent": {
+        "type": "color",
+        "label": {
+          "en": "Accent color",
+          "de": "Akzentfarbe"
+        },
+        "default": "#8ab4f8",
+        "hidden": "data.mode !== 'custom' || data.follow",
+        "help": {
+          "en": "Links and active tag filter",
+          "de": "Links und aktiver Tag-Filter"
+        }
+      },
+      "colorModalBg": {
+        "type": "color",
+        "label": {
+          "en": "Modal background",
+          "de": "Modal-Hintergrund"
+        },
+        "default": "#1c1c1e",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "borderRadius": {
+        "type": "number",
+        "label": {
+          "en": "Border radius (px)",
+          "de": "Eckenradius (px)"
+        },
+        "min": 0,
+        "max": 32,
+        "default": 8,
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Corner radius of the tiles (0 = square)",
+          "de": "Abrundungsradius der Kacheln (0 = eckig)"
+        }
+      }
+    }
+  }
+}

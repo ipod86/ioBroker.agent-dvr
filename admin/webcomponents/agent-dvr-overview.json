@@ -1,0 +1,244 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ioBroker/web-components/main/schemas/manifest.json",
+  "manifestVersion": 1,
+  "tag": "iob-agent-dvr-overview",
+  "name": {
+    "en": "Agent DVR live overview",
+    "de": "Agent DVR Live-Übersicht"
+  },
+  "description": {
+    "en": "Live tiles of all cameras of an instance: with the adapter settings or set up here",
+    "de": "Live-Kacheln aller Kameras einer Instanz: mit den Adapter-Einstellungen oder hier eingestellt"
+  },
+  "icon": "../agent-dvr.png",
+  "module": "agent-dvr-overview.js",
+  "size": {
+    "width": 640,
+    "height": 420
+  },
+  "settings": {
+    "type": "panel",
+    "items": {
+      "mode": {
+        "type": "select",
+        "label": {
+          "en": "Source",
+          "de": "Quelle"
+        },
+        "default": "adapter",
+        "options": [
+          {
+            "value": "adapter",
+            "label": {
+              "en": "Widget from the adapter settings",
+              "de": "Widget aus den Adapter-Einstellungen"
+            }
+          },
+          {
+            "value": "custom",
+            "label": {
+              "en": "Own settings here",
+              "de": "Eigene Einstellungen hier"
+            }
+          }
+        ]
+      },
+      "instance": {
+        "type": "instance",
+        "adapter": "agent-dvr",
+        "label": {
+          "en": "Instance",
+          "de": "Instanz"
+        },
+        "default": "agent-dvr.0"
+      },
+      "follow": {
+        "type": "checkbox",
+        "label": {
+          "en": "Use the colors of the visualization",
+          "de": "Farben der Visualisierung übernehmen"
+        },
+        "default": false,
+        "help": {
+          "en": "Tiles, badges, player and accent in the colors of the theme instead of the widget colors",
+          "de": "Kacheln, Badges, Player und Akzent in den Farben des Themes statt der Widget-Farben"
+        }
+      },
+      "hLive": {
+        "type": "header",
+        "text": {
+          "en": "Live Widget",
+          "de": "Live-Widget"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "liveAspect": {
+        "type": "text",
+        "label": {
+          "en": "Live tile aspect ratio (e.g. 16/9)",
+          "de": "Seitenverhältnis Live-Kachel (z. B. 16/9)"
+        },
+        "default": "",
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Used when the adapter could not detect the resolution of the camera. Empty = automatic",
+          "de": "Gilt, wenn der Adapter die Auflösung der Kamera nicht erkennen konnte. Leer = automatisch"
+        }
+      },
+      "liveRefreshSec": {
+        "type": "number",
+        "label": {
+          "en": "Snapshot refresh interval (s, 0 = never)",
+          "de": "Aktualisierung Vorschaubild (s, 0 = nie)"
+        },
+        "min": 0,
+        "max": 3600,
+        "default": 0,
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Only the image is refreshed in the browser – an open player never closes",
+          "de": "Nur das Bild wird im Browser erneuert – ein offener Player schließt sich nie"
+        }
+      },
+      "thumbSize": {
+        "type": "select",
+        "label": {
+          "en": "Thumbnail size",
+          "de": "Thumbnail-Größe"
+        },
+        "default": "medium",
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Width of preview images (overrides min. column width)",
+          "de": "Breite der Vorschaubilder (überschreibt Min. Spaltenbreite)"
+        },
+        "options": [
+          {
+            "value": "small",
+            "label": {
+              "en": "Small (120 px)",
+              "de": "Klein (120 px)"
+            }
+          },
+          {
+            "value": "medium",
+            "label": {
+              "en": "Medium (180 px)",
+              "de": "Mittel (180 px)"
+            }
+          },
+          {
+            "value": "large",
+            "label": {
+              "en": "Large (240 px)",
+              "de": "Groß (240 px)"
+            }
+          },
+          {
+            "value": "custom",
+            "label": {
+              "en": "Min. column width below",
+              "de": "Min. Spaltenbreite unten"
+            }
+          }
+        ]
+      },
+      "minCol": {
+        "type": "number",
+        "label": {
+          "en": "Min. column width (px)",
+          "de": "Min. Spaltenbreite (px)"
+        },
+        "min": 80,
+        "max": 600,
+        "default": 150,
+        "hidden": "data.mode !== 'custom' || data.thumbSize !== 'custom'"
+      },
+      "compact": {
+        "type": "checkbox",
+        "label": {
+          "en": "Compact layout",
+          "de": "Kompaktes Layout"
+        },
+        "default": false,
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Smaller spacing and font – more entries at a glance",
+          "de": "Kleinere Abstände und Schrift – mehr Einträge auf einen Blick"
+        }
+      },
+      "maxModalWidth": {
+        "type": "number",
+        "label": {
+          "en": "Max. player width (px)",
+          "de": "Max. Player-Breite (px)"
+        },
+        "min": 300,
+        "max": 2000,
+        "default": 900,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "hColors": {
+        "type": "header",
+        "text": {
+          "en": "Colors & Design",
+          "de": "Farben & Design"
+        },
+        "size": 5,
+        "hidden": "data.mode !== 'custom'"
+      },
+      "colorCardBg": {
+        "type": "color",
+        "label": {
+          "en": "Tile background",
+          "de": "Kachel-Hintergrund"
+        },
+        "default": "rgba(127,127,127,0.15)",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorTagBg": {
+        "type": "color",
+        "label": {
+          "en": "Tag badge background",
+          "de": "Tag-Badge-Hintergrund"
+        },
+        "default": "rgba(0,0,0,0.55)",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorTagText": {
+        "type": "color",
+        "label": {
+          "en": "Tag badge text color",
+          "de": "Tag-Badge-Textfarbe"
+        },
+        "default": "#ffffff",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "colorModalBg": {
+        "type": "color",
+        "label": {
+          "en": "Modal background",
+          "de": "Modal-Hintergrund"
+        },
+        "default": "#1c1c1e",
+        "hidden": "data.mode !== 'custom' || data.follow"
+      },
+      "borderRadius": {
+        "type": "number",
+        "label": {
+          "en": "Border radius (px)",
+          "de": "Eckenradius (px)"
+        },
+        "min": 0,
+        "max": 32,
+        "default": 8,
+        "hidden": "data.mode !== 'custom'",
+        "help": {
+          "en": "Corner radius of the tiles (0 = square)",
+          "de": "Abrundungsradius der Kacheln (0 = eckig)"
+        }
+      }
+    }
+  }
+}

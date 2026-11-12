@@ -323,6 +323,8 @@ class AgentDvr extends utils.Adapter {
   ptzPresetNames = /* @__PURE__ */ new Map();
   widgetSig = {};
   widgetLastWrite = {};
+  // last JSON written to the data states of the web components, to skip unchanged writes
+  jsonLastWrite = {};
   profileSig = "";
   lastCamNames = [];
   lastEventFn = {};
@@ -1290,6 +1292,69 @@ class AgentDvr extends utils.Adapter {
       }
     }
   }
+  // ---- web components (admin/webcomponents) ----
+  // Die Widget-Einstellungen der Instanz, so wie sie die HTML-Widgets anwenden - die
+  // Web-Komponenten lesen sie aus widget_config (Modus "aus den Adapter-Einstellungen").
+  // Die Schluessel heissen wie die Einstellungen im Manifest der Komponenten.
+  widgetComponentSettings() {
+    var _a;
+    const c = this.config;
+    return {
+      widgetMode: c.widgetMode === "js" ? "js" : "nojs",
+      count: Math.max(1, Number(c.widgetAnzahl) || 50),
+      minCol: this.effectiveMinCol(),
+      maxModalWidth: c.widgetMaxModalWidth || 900,
+      showTags: !!c.widgetShowTags,
+      tagPosition: c.widgetTagPosition || "bottom-left",
+      sortNewest: c.widgetSortNewest !== false,
+      showSearch: c.widgetShowSearch !== false,
+      defaultTag: (c.widgetDefaultTag || "").trim(),
+      compact: !!c.widgetCompact,
+      playerUrl: (c.widgetPlayerUrl || "").trim(),
+      liveAspect: c.widgetLiveAspect || "",
+      liveRefreshSec: Math.max(0, Number(c.widgetLiveRefreshSec) || 0),
+      colorCardBg: c.widgetColorCardBg || "",
+      colorTagBg: c.widgetColorTagBg || "",
+      colorTagText: c.widgetColorTagText || "",
+      colorAccent: c.widgetColorAccent || "",
+      colorModalBg: c.widgetColorModalBg || "",
+      borderRadius: (_a = c.widgetBorderRadius) != null ? _a : 8
+    };
+  }
+  // Writes a JSON data state for the web components - only when its content changed.
+  async writeJsonState(id, name, data) {
+    const val = JSON.stringify(data);
+    if (!this.ensuredFolders.has(id)) {
+      await this.setObjectNotExistsAsync(id, {
+        type: "state",
+        common: { name, type: "string", role: "json", read: true, write: false, def: "" },
+        native: {}
+      });
+      this.ensuredFolders.add(id);
+      delete this.jsonLastWrite[id];
+    }
+    if (this.jsonLastWrite[id] === val) {
+      return;
+    }
+    await this.setStateAsync(id, { val, ack: true });
+    this.jsonLastWrite[id] = val;
+  }
+  // widget_config: settings, cameras and labels for the web components. No credentials:
+  // the links are the same AgentDVR links the HTML widgets put into the page.
+  async writeWidgetConfig(cams) {
+    await this.writeJsonState("widget_config", "Widget settings and cameras (for the web components)", {
+      settings: this.widgetComponentSettings(),
+      labels: this.wt,
+      cameras: cams.map((d) => ({
+        id: this.deviceFolder(d),
+        oid: d.oid,
+        name: d.name || `Camera ${d.oid}`,
+        aspect: this.camAspect[d.oid] || "",
+        snapshot: `${this.baseUrl}/grab.jpg?oid=${d.oid}&ot=2&maintainAR=1`,
+        live: `${this.baseUrl}/video.webm?oid=${d.oid}&ot=2`
+      }))
+    });
+  }
   sortedEvents(events) {
     return this.config.widgetSortNewest === false ? [...events].reverse() : events;
   }
@@ -1601,6 +1666,22 @@ class AgentDvr extends utils.Adapter {
       if (this.config.enableEventDps) {
         await this.writeEventDps(d, fid, events);
       }
+      await this.writeJsonState(`${fid}.widget_data`, "Recordings (for the web components)", {
+        recordings: events.slice(0, 500).map((ev) => {
+          const p = this.fmtEvent(ev, d.oid);
+          return {
+            fn: p.fn,
+            date: p.date,
+            time: p.time,
+            dur: p.dur,
+            size: p.sizeMB,
+            tag: p.tag,
+            thumb: p.thumb,
+            video: p.video,
+            ts: p.ts
+          };
+        })
+      });
       if (this.config.enableWidget) {
         const wId = `${fid}.widget_recordings`;
         if (!this.ensuredFolders.has(wId)) {
@@ -1795,6 +1876,7 @@ class AgentDvr extends utils.Adapter {
           }
         }
       }
+      await this.writeWidgetConfig(devices.filter((d) => d.ot === 2));
       if (this.config.enableOverview) {
         const cams = devices.filter((d) => d.ot === 2);
         const ovId = "widget_live_overview";

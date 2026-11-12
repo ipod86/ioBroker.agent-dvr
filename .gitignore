@@ -19,3 +19,6 @@ admin/i18n/*/flat.txt
 
 # vite build artifact (gets renamed to index_m.html by build script)
 admin/index.html
+
+# web components: dependencies of the build
+src-webcomponents/node_modules

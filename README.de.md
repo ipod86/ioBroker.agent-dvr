@@ -16,6 +16,17 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 - ioBroker mit `iobroker.web` Adapter
 - **AgentDVR ≥ 7.8.0.0** — ältere Versionen haben eine Regression im `streamFile.cgi`-Endpunkt (fehlerhafte Chunked-Kodierung, falscher MIME-Typ), die die Wiedergabe von Aufzeichnungen im integrierten Dashboard verhindert. Der Entwickler hat bestätigt, dass der Fix in Version 7.8.0.0 enthalten ist.
 
+## Highlights
+
+### Web-Komponenten für AURA, vis-2 und devices
+Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponenten (`@iobroker/web-components`). AURA (ab 0.106.0, empfohlen ab 0.112.0), vis-2 (ab 2.20.7) und der Geräte-Adapter devices (ab 4.3.0) bieten sie in ihrer Widget-Auswahl an – ohne HTML-Bindung. Sie zeichnen direkt im Browser statt die HTML-Datenpunkte anzuzeigen, ein Aktualisieren schließt daher nie einen offenen Player.
+- **Agent DVR Aufnahmen** – die Aufnahmen-Galerie einer Kamera, mit Suche und Tag-Filter, eingebautem Player oder externer Player-URL
+- **Agent DVR Live-Kamera** – die Live-Kachel einer Kamera; das Vorschaubild erneuert sich im Browser, ein Klick öffnet den Livestream
+- **Agent DVR Live-Übersicht** – die Live-Kacheln aller Kameras einer Instanz
+- **Quelle**: entweder *Widget aus den Adapter-Einstellungen* (alle Einstellungen des Widget-Tabs der Instanz) oder *Eigene Einstellungen hier* – jede Widget-Einstellung der Instanz (Modus, Anzahl, Thumbnail-Größe, Tags, Sortierung, Suche, Standard-Tag, kompaktes Layout, Player, Seitenverhältnis, Aktualisierungsintervall, Farben, Eckenradius) pro Widget
+- übernimmt auf Wunsch die Farben aus dem Theme der Visualisierung
+- braucht keine Zugangsdaten: Bilder und Videos nutzen dieselben AgentDVR-Links wie die HTML-Widgets; die Daten kommen aus `widget_config` und `<cam>.widget_data`
+
 ## Funktionen
 
 - Automatische Erkennung aller AgentDVR-Kameras beim Start (Mikrofone ausgenommen)
@@ -385,6 +396,7 @@ Dieser Adapter speichert deine AgentDVR-Admin-Zugangsdaten und stellt `system.co
 | `<cam>.events.*` | verschieden | R | Metadaten der letzten Aufnahme — erfordert „Ereignis-Datenpunkte" |
 | `<cam>.widget_recordings` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
 | `<cam>.widget_live` | string | R | HTML-Live-Einzelkachel der Kamera — erfordert „Galerie-Widget"; Standbild wird bei jedem Adapter-Poll aktualisiert |
+| `<cam>.widget_data` | string | R | Aufnahmen als JSON für die Web-Komponenten (die letzten 500) — erfordert „Galerie-Widget" oder „Ereignis-Datenpunkte" |
 
 ## Webhook
 
@@ -432,6 +444,7 @@ Dateien: `<namespace>/<cam>/grab1.jpg` … `grab3.jpg` (z. B. `agent-dvr.0/cam_8
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
 | `widget_live_overview` | string | R | HTML-Kachelraster aller Kameras — Standbilder werden bei jedem Adapter-Poll aktualisiert |
+| `widget_config` | string | R | Widget-Einstellungen, Kameras und Texte als JSON für die Web-Komponenten (immer geschrieben, ohne Zugangsdaten) |
 
 ## Bilder für VIS und Skripte
 
@@ -496,6 +509,9 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) feat: Web-Komponenten für AURA (ab 0.106.0), vis-2 (ab 2.20.7) und devices (ab 4.3.0) – Aufnahmen-Galerie, Live-Kachel und Live-Übersicht, mit den Widget-Einstellungen des Adapters oder eigenen
+
 ### 0.7.0 (2026-10-29)
 * (ipod86) feat: `alertPhotos.url1–3` mit festem http(s)-Link zu jedem Foto, für TV-/Kiosk-Apps, die nur Web-Links annehmen; Web-Instanz wählbar, Links folgen Änderungen an den Web-Instanzen
 * (ipod86) feat: `<cam>.events.webhookParams` mit allen Parametern des letzten Webhook-Aufrufs als JSON

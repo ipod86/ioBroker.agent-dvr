@@ -173,7 +173,12 @@
         "web": ">=3.0.0"
       }
     ],
-    "webExtension": "lib/web.js"
+    "webExtension": "lib/web.js",
+    "webComponents": [
+      "webcomponents/agent-dvr-recordings.json",
+      "webcomponents/agent-dvr-live.json",
+      "webcomponents/agent-dvr-overview.json"
+    ]
   },
   "protectedNative": [
     "pass"

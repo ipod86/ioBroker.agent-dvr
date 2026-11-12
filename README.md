@@ -21,6 +21,17 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 - ioBroker with `iobroker.web` adapter
 - **AgentDVR ≥ 7.8.0.0** — earlier versions have a regression in the `streamFile.cgi` endpoint (malformed chunked encoding, wrong MIME type) that prevents recording playback in the built-in dashboard. The developer has confirmed the fix is included in 7.8.0.0.
 
+## Highlights
+
+### Web components for AURA, vis-2 and devices
+The recordings gallery, the live tile and the live overview are also available as web components (`@iobroker/web-components`). AURA (0.106.0+, 0.112.0+ recommended), vis-2 (2.20.7+) and the devices adapter (4.3.0+) list them in their widget palette — no HTML binding needed. They draw natively in the browser instead of showing the HTML data points, so a refresh never closes an open player.
+- **Agent DVR recordings** — the recordings gallery of a camera, with search and tag filter, built-in player or external player URL
+- **Agent DVR live camera** — the live tile of one camera; the snapshot refreshes in the browser, a click opens the live stream
+- **Agent DVR live overview** — the live tiles of all cameras of an instance
+- **Source**: either *Widget from the adapter settings* (all settings of the Widget tab of the instance) or *Own settings here* — every widget setting of the instance (mode, count, thumbnail size, tags, sort, search, default tag, compact layout, player, aspect ratio, refresh interval, colors, border radius) per widget
+- optionally takes the colors of the visualization's theme
+- needs no credentials: the images and videos use the same AgentDVR links as the HTML widgets; data comes from `widget_config` and `<cam>.widget_data`
+
 ## Features
 
 - Auto-discovery of all AgentDVR cameras on startup (microphones excluded)
@@ -390,6 +401,7 @@ This adapter stores your AgentDVR admin credentials and exposes `system.control.
 | `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
 | `<cam>.widget_recordings` | string | R | HTML recording gallery — requires "Gallery widget" |
 | `<cam>.widget_live` | string | R | HTML single-camera live tile — requires "Gallery widget"; snapshot refreshes on each adapter poll |
+| `<cam>.widget_data` | string | R | Recordings as JSON for the web components (latest 500) — requires "Gallery widget" or "Event data points" |
 
 ## Webhook
 
@@ -437,6 +449,7 @@ Files: `<namespace>/<cam>/grab1.jpg` … `grab3.jpg` (e.g. `agent-dvr.0/cam_8_Re
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
 | `widget_live_overview` | string | R | HTML tile grid of all cameras — snapshot refreshes on each adapter poll |
+| `widget_config` | string | R | Widget settings, cameras and texts as JSON for the web components (always written, no credentials) |
 
 ## Getting images for VIS and scripts
 
@@ -496,6 +509,9 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (ipod86) feat: web components for AURA (0.106.0+), vis-2 (2.20.7+) and devices (4.3.0+) – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones
+
 ### 0.7.0 (2026-10-29)
 * (ipod86) feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV/kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances
 * (ipod86) feat: `<cam>.events.webhookParams` with all parameters of the latest webhook call as JSON
