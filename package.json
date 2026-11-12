@@ -73,7 +73,7 @@
     "build:ts": "build-adapter ts",
     "watch:ts": "build-adapter ts --watch",
     "build:wc": "cd src-webcomponents && npm ci --no-audit --no-fund && npm run build",
-    "test:ts": "mocha --config test/mocharc.custom.json src/**/*.test.ts",
+    "test:ts": "mocha --config test/mocharc.custom.json \"src/**/*.test.ts\"",
     "test:package": "mocha test/package --exit",
     "test:integration": "mocha test/integration --exit",
     "test": "npm run test:ts && npm run test:package",

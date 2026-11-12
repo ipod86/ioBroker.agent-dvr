@@ -27,6 +27,12 @@ Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponen
 - übernimmt auf Wunsch die Farben aus dem Theme der Visualisierung
 - braucht keine Zugangsdaten: Bilder und Videos nutzen dieselben AgentDVR-Links wie die HTML-Widgets; die Daten kommen aus `widget_config` und `<cam>.widget_data`
 
+### Aufnahmen im ioBroker-Dateispeicher und als Telegram-Video
+- **Letzte Aufnahmen im ioBroker-Dateispeicher bereitstellen** (standardmäßig aus): jede neue Aufnahme einer Kamera wird von AgentDVR geladen und pro Kamera als `rec1` … `rec3` abgelegt – mit Dateipfad, `iobfile://`-URI und http-URL in `<cam>.recordings.*`, genau wie die Alarmfotos
+- auf Wunsch als **MP4** (verlustfreies Umpacken mit ffmpeg, keine Neukodierung) – spielt überall, auch direkt in Telegram
+- **`sendRecording`** schickt die letzte, eine gespeicherte oder eine beliebige Aufnahme direkt als Video an Telegram (oder eine andere Instanz); **`getRecording`** liefert sie als Daten an eigene Skripte
+- Details: [Aufnahmen im Dateispeicher](#aufnahmen-im-dateispeicher)
+
 ## Funktionen
 
 - Automatische Erkennung aller AgentDVR-Kameras beim Start (Mikrofone ausgenommen)
@@ -83,6 +89,20 @@ Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponen
 | Einstellung | Beschreibung | Standard |
 |-------------|-------------|---------|
 | Ereignis-Datenpunkte | Aufnahme-Metadaten (neuestes Ereignis, Anzahl, Tags, …) pro Kamera spiegeln | `ja` |
+| Alarmfotos speichern | Das Foto jedes Webhook-Alarms im Dateispeicher ablegen (siehe [Alarmfotos](#alarmfotos)) | `ja` |
+| Web-Instanz für Foto-Links | Web-Instanz für die `url*`-Links von Alarmfotos und Aufnahmen | automatisch |
+
+**Aufnahmen im Dateispeicher** — siehe [Aufnahmen im Dateispeicher](#aufnahmen-im-dateispeicher)
+
+| Einstellung | Beschreibung | Standard |
+|-------------|-------------|---------|
+| Letzte Aufnahmen im ioBroker-Dateispeicher bereitstellen | Jede neue Aufnahme laden und pro Kamera vorhalten | `nein` |
+| Kameras | Alle Kameras oder eine Auswahl (die Liste braucht eine laufende Instanz) | alle |
+| Anzahl gespeicherter Aufnahmen pro Kamera | 1, 2 oder 3 (`rec1` = neueste) | `1` |
+| Maximalgröße (MB) | Größere Aufnahmen werden mit Info-Log übersprungen; gilt auch für `sendRecording`/`getRecording` | `50` |
+| Download-Timeout (s) | Download und Umwandlung einer Aufnahme (10–900) | `120` |
+| Als MP4 bereitstellen | MKV mit ffmpeg in MP4 umpacken (ohne Neukodierung); ohne ffmpeg bleibt es MKV | `ja` |
+| ffmpeg-Pfad | Leer = automatische Suche | — |
 
 **Anzeige**
 
@@ -394,6 +414,7 @@ Dieser Adapter speichert deine AgentDVR-Admin-Zugangsdaten und stellt `system.co
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
 | `<cam>.events.*` | verschieden | R | Metadaten der letzten Aufnahme — erfordert „Ereignis-Datenpunkte" |
+| `<cam>.recordings.*` | verschieden | R | Gespeicherte Aufnahmen (`file1`, `uri1`, `url1`, `name1`, `ts1`, …) — erfordert „Letzte Aufnahmen im ioBroker-Dateispeicher bereitstellen" |
 | `<cam>.widget_recordings` | string | R | HTML-Aufnahmegalerie — erfordert „Galerie-Widget" |
 | `<cam>.widget_live` | string | R | HTML-Live-Einzelkachel der Kamera — erfordert „Galerie-Widget"; Standbild wird bei jedem Adapter-Poll aktualisiert |
 | `<cam>.widget_data` | string | R | Aufnahmen als JSON für die Web-Komponenten (die letzten 500) — erfordert „Galerie-Widget" oder „Ereignis-Datenpunkte" |
@@ -445,6 +466,69 @@ Dateien: `<namespace>/<cam>/grab1.jpg` … `grab3.jpg` (z. B. `agent-dvr.0/cam_8
 |-----------|-----|-----|-------------|
 | `widget_live_overview` | string | R | HTML-Kachelraster aller Kameras — Standbilder werden bei jedem Adapter-Poll aktualisiert |
 | `widget_config` | string | R | Widget-Einstellungen, Kameras und Texte als JSON für die Web-Komponenten (immer geschrieben, ohne Zugangsdaten) |
+
+## Aufnahmen im Dateispeicher
+
+Mit **Letzte Aufnahmen im ioBroker-Dateispeicher bereitstellen** (Tab *Funktionen*, standardmäßig aus) lädt der Adapter jede neue Aufnahme einer Kamera von AgentDVR, sobald sie in der Aufnahmeliste erscheint (in dem Moment, in dem `<cam>.events.new` pulst — *Ereignis-Datenpunkte* müssen also an sein), und legt sie im ioBroker-Dateispeicher ab. Der Download landet im Arbeitsspeicher, nie in einer temporären Datei. Wie bei den Alarmfotos bleiben pro Kamera die letzten 1, 2 oder 3 Aufnahmen erhalten (Einstellung *Anzahl gespeicherter Aufnahmen pro Kamera*, Standard 1):
+
+| Datenpunkt | Inhalt |
+|---|---|
+| `<cam>.recordings.file1` … `file3` | Absoluter Dateipfad, z. B. `/opt/iobroker/iobroker-data/files/agent-dvr.0/cam_8_Reolink/rec1.mp4` (`1` = neueste) |
+| `<cam>.recordings.uri1` … `uri3` | ioBroker-Datei-URI, z. B. `iobfile://agent-dvr.0/cam_8_Reolink/rec1.mp4` |
+| `<cam>.recordings.url1` … `url3` | http(s)-URL über die Web-Instanz, z. B. `http://192.168.1.10:8082/agent-dvr.0/recordings/cam_8_Reolink/rec1.mp4` (Spulen möglich) |
+| `<cam>.recordings.name1` … `name3` | Ursprünglicher AgentDVR-Dateiname, z. B. `8_2026-11-12_15-55-29_931.mkv` |
+| `<cam>.recordings.ts1` … `ts3` | Zeitpunkt der Aufnahme |
+
+Dateien: `<namespace>/<cam>/rec1.mp4` (bzw. `.mkv`) … `rec3`. Bei jeder neuen Aufnahme rücken sie nach (rec1 → rec2 → rec3), die älteste wird gelöscht. Wird die Anzahl verringert, werden die überzähligen Dateien und Datenpunkte beim nächsten Start entfernt. Der Speicherplatz bleibt fest: Anzahl × Maximalgröße pro Kamera. Aufnahmen über der *Maximalgröße* (Standard 50 MB) werden mit einem Info-Log übersprungen. `ts1` wird **zuletzt** geschrieben, wenn die Datei vollständig ist — als Trigger verwenden.
+
+**Einschränkung Dateispeicher:** `file1`–`file3` enthalten nur dann einen Pfad, wenn der ioBroker-Dateispeicher auf der lokalen Platte liegt (Standard: Datei-/jsonl-Objekt-DB). Mit Redis oder einer anderen nicht dateibasierten Objekt-DB bleiben sie leer — dann `uri*` (Telegram ab 6, Skripte) oder `url*` verwenden, die mit jedem Speicher funktionieren.
+
+### MP4 und ffmpeg
+
+AgentDVR nimmt als MKV auf. Mit **Als MP4 bereitstellen** (Standard: an) packt der Adapter die MKV mit ffmpeg in MP4 um — nur der Container ändert sich, Video und Ton werden kopiert, das dauert deutlich unter einer Sekunde. HEVC-Videos (H.265) bekommen das `hvc1`-Tag, damit Apple-Geräte und Telegram sie abspielen. Passt der Audio-Codec nicht in MP4, wird ohne Ton umgepackt (einmal geloggt). Ohne ffmpeg wird die MKV unverändert bereitgestellt (ein Info-Log).
+
+ffmpeg wird **nicht** mitgeliefert. Der Adapter sucht es beim Start und auf Anforderung: Einstellung *ffmpeg-Pfad* → `ffmpeg` über `PATH` → `/usr/bin/ffmpeg`, `/usr/local/bin/ffmpeg`, `/opt/homebrew/bin/ffmpeg`, `C:\ffmpeg\bin\ffmpeg.exe`, `%ProgramFiles%\ffmpeg\bin\ffmpeg.exe`. Das Ergebnis steht in `info.ffmpeg` (z. B. `6.1.1 (/usr/bin/ffmpeg)` oder `not found`) und in den Einstellungen neben der MP4-Option, mit einem Knopf **Erneut suchen**. ffmpeg mit dem Paketmanager des Systems installieren:
+
+| System | Befehl |
+|---|---|
+| Debian, Ubuntu, Raspberry Pi OS | `apt install ffmpeg` |
+| Alpine (Docker) | `apk add ffmpeg` |
+| Fedora | `dnf install ffmpeg` |
+| macOS (Homebrew) | `brew install ffmpeg` |
+| Windows | `winget install ffmpeg` |
+
+Den Befehl wie auf dem System üblich als Administrator/root ausführen. Danach in den Einstellungen *Erneut suchen* drücken (oder die Instanz neu starten).
+
+### Aufnahmen verschicken: `sendRecording` und `getRecording`
+
+`sendRecording` lädt eine Aufnahme (in den Arbeitsspeicher), wandelt sie auf Wunsch in MP4 um und schickt sie als Video an eine Messenger-Instanz:
+
+```js
+sendTo('agent-dvr.0', 'sendRecording', {
+    camera: 'cam_8_Reolink',      // Ordner-ID, AgentDVR-oid (8) oder Kameraname
+    recording: 'last',            // 'last' (neueste in AgentDVR), 1-3 (gespeicherter Platz) oder ein AgentDVR-Dateiname
+    target: 'telegram.0',         // Instanz, die das Video bekommt
+    caption: 'Bewegung an der Haustür',
+    // user: 'Max', chatId: 123, // optional, wird an Telegram durchgereicht
+    // mp4: true,                 // optional, übersteuert „Als MP4 bereitstellen"
+}, res => {
+    if (!res.ok) log(res.error, 'warn'); // z. B. zu groß für Telegram
+});
+```
+
+Die Nachricht an das Ziel ist `{ text: <Buffer>, type: 'video', fileName: '<name>.mp4', caption, user, chatId }` — das Format von Telegram ab Version 6. Die Antwort ist `{ ok, error?, size, format }`. **Telegram-Bots können nur Dateien bis 50 MB senden**; größere Aufnahmen werden vor dem Senden mit einer klaren Fehlermeldung abgelehnt.
+
+Jede neue Aufnahme an Telegram schicken (ohne Blockly):
+
+```js
+on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
+    sendTo('agent-dvr.0', 'sendRecording', { camera: 'cam_8_Reolink', recording: 'last', target: 'telegram.0', caption: 'Neue Aufnahme' });
+});
+```
+
+Ist der Dateispeicher eingeschaltet, stattdessen auf `recordings.ts1` triggern und die gespeicherte Kopie senden (`recording: 1`) — oder Telegram ab 6 liest sie selbst: `sendTo('telegram.0', { text: getState('agent-dvr.0.cam_8_Reolink.recordings.uri1').val, type: 'video' })`.
+
+`getRecording` nimmt dieselben `camera`, `recording` und `mp4` und liefert `{ ok, data, fileName, mime, format, size }` für eigene Skripte. `data` ist ein Buffer; nach dem Weg über den Nachrichtenbus kommt er ggf. als `{ type: 'Buffer', data: [...] }` an — `Buffer.from(res.data.data ?? res.data)` verwenden.
 
 ## Bilder für VIS und Skripte
 
@@ -509,6 +593,12 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) feat: die letzten 1–3 Aufnahmen pro Kamera im ioBroker-Dateispeicher (`recordings.file/uri/url/name/ts`), auf Wunsch als MP4 über ffmpeg
+* (ipod86) feat: `sendRecording` / `getRecording` schicken eine Aufnahme als Video an Telegram oder liefern sie an Skripte
+* (ipod86) feat: ffmpeg-Erkennung mit Status in den Einstellungen und `info.ffmpeg`
+* (ipod86) fix: die Einstellungsseite nutzt alle 11 Sprachen
+
 ### 0.8.1 (2026-11-12)
 * (ipod86) fix: Live-Übersicht (Web-Komponente) passt ihre Kacheln an die Widget-Größe an (kein Scrollen, kein Leerraum); Option „An die Widget-Größe anpassen“
 * (ipod86) chore: Beschreibung und Suchbegriffe nennen die Widgets für vis-2 und AURA

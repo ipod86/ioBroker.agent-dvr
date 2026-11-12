@@ -1,8 +1,33 @@
 import * as utils from '@iobroker/adapter-core';
 import * as http from 'node:http';
 import * as https from 'node:https';
+import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { getWidgetLabels, type WidgetLabels } from './lib/widget-i18n';
+import {
+	TELEGRAM_MAX_BYTES,
+	clampNumber,
+	detectFfmpeg,
+	downloadToBuffer,
+	exceedsLimit,
+	extOf,
+	ffmpegCandidates,
+	ffmpegStatusText,
+	findCamera,
+	fmtMb,
+	isValidRecordingName,
+	maxRecordingBytes,
+	mimeOf,
+	recordingAbsPath,
+	recordingSlots,
+	recordingStoragePath,
+	recordingUri,
+	recordingUrl,
+	remuxToMp4,
+	resolveOnPath,
+	type DownloadResult,
+	type FfmpegInfo,
+} from './lib/recording';
 
 // =====================================================================
 //  Agent DVR -> ioBroker Adapter
@@ -466,6 +491,14 @@ class AgentDvr extends utils.Adapter {
 	private readonly camAspect: Record<string | number, string> = {};
 	private readonly devById = new Map<string | number, Device>();
 	private readonly eventBusy: Record<string | number, boolean> = {};
+	// recordings in the file storage: detected ffmpeg, one save at a time per camera (+ the newest waiting one)
+	private ffmpeg: FfmpegInfo | undefined = undefined;
+	private ffmpegDetecting: Promise<FfmpegInfo> | undefined = undefined;
+	private readonly recBusy: Record<string, boolean> = {};
+	private readonly recPending: Record<string, { d: Device; ev: AgentDvrEvent }> = {};
+	private audioDropLogged = false;
+	private noFfmpegLogged = false;
+	private noLocalPathLogged = false;
 
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({ ...options, name: 'agent-dvr' });
@@ -503,10 +536,27 @@ class AgentDvr extends utils.Adapter {
 		}
 
 		await this.buildSystem();
+		await this.setObjectNotExistsAsync('info.ffmpeg', {
+			type: 'state',
+			common: {
+				name: 'ffmpeg (version and path)',
+				type: 'string',
+				role: 'text',
+				read: true,
+				write: false,
+				def: '',
+			},
+			native: {},
+		});
+		void this.runFfmpegDetection();
 		try {
 			await this.poll();
 		} catch (e) {
 			this.log.warn(`First poll error: ${(e as Error).message}`);
+		}
+		if (this.config.enableRecordingFiles) {
+			// a lowered "number of recordings" removes the surplus slots
+			this.pruneAllRecordingSlots().catch(e => this.log.warn(`Recording cleanup: ${(e as Error).message}`));
 		}
 
 		this.schedulePoll(pollSeconds * 1000);
@@ -555,6 +605,32 @@ class AgentDvr extends utils.Adapter {
 			void this.fetchAvailableSources().then(result => {
 				this.sendTo(obj.from, obj.command, result, obj.callback);
 			});
+		} else if (obj.command === 'detectFfmpeg') {
+			const p =
+				typeof obj.message === 'object' && obj.message !== null && typeof obj.message.path === 'string'
+					? (obj.message.path as string)
+					: undefined;
+			void this.runFfmpegDetection(p).then(info => {
+				if (obj.callback) {
+					this.sendTo(obj.from, obj.command, info, obj.callback);
+				}
+			});
+		} else if (obj.command === 'sendRecording' || obj.command === 'getRecording') {
+			const msg = (typeof obj.message === 'object' && obj.message !== null ? obj.message : {}) as Record<
+				string,
+				unknown
+			>;
+			const job = obj.command === 'sendRecording' ? this.sendRecording(msg) : this.getRecording(msg);
+			void job
+				.catch(e => ({ ok: false, error: (e as Error).message }))
+				.then(result => {
+					if (!result.ok) {
+						this.log.warn(`${obj.command}: ${result.error}`);
+					}
+					if (obj.callback) {
+						this.sendTo(obj.from, obj.command, result, obj.callback);
+					}
+				});
 		}
 	}
 
@@ -1117,15 +1193,7 @@ class AgentDvr extends utils.Adapter {
 			return;
 		}
 		const ch = `${fid}.alertPhotos`;
-		if (!this.ensuredFolders.has(this.namespace)) {
-			// meta object required for the file storage — instanceObjects only cover new installs
-			await this.setForeignObjectNotExistsAsync(this.namespace, {
-				type: 'meta',
-				common: { name: 'Alert photos', type: 'meta.user' },
-				native: {},
-			});
-			this.ensuredFolders.add(this.namespace);
-		}
+		await this.ensureFileMeta();
 		await this.ensureAlertPhotoObjects(ch);
 
 		// rotate grab2 → grab3, grab1 → grab2
@@ -1186,6 +1254,7 @@ class AgentDvr extends utils.Adapter {
 				});
 			}
 		}
+		await this.refreshRecordingUrls();
 	}
 
 	// http(s) URL of a stored alert photo via the web extension, for apps that only accept web links
@@ -1245,6 +1314,465 @@ class AgentDvr extends utils.Adapter {
 	// Only valid when the file storage lives on this host's disk (default jsonl/file DB).
 	private alertPhotoPath(fid: string, n: number): string {
 		return path.join(utils.getAbsoluteDefaultDataDir(), 'files', this.namespace, fid, `grab${n}.jpg`);
+	}
+
+	// ---- recordings in the file storage + sendRecording / getRecording ----
+
+	// Detects ffmpeg (configured path → PATH → common locations) and writes info.ffmpeg.
+	// Concurrent calls share one run.
+	private runFfmpegDetection(configPath?: string): Promise<FfmpegInfo> {
+		if (this.ffmpegDetecting && configPath === undefined) {
+			return this.ffmpegDetecting;
+		}
+		const cfg = configPath ?? this.config.ffmpegPath ?? '';
+		const run = detectFfmpeg(ffmpegCandidates(cfg, process.platform, process.env))
+			.catch(() => ({ found: false, version: '', path: '' }))
+			.then(async found => {
+				const info = found.found
+					? { ...found, path: resolveOnPath(found.path, process.env, process.platform) }
+					: found;
+				this.ffmpeg = info;
+				this.noFfmpegLogged = false;
+				if (info.found) {
+					this.log.info(`ffmpeg ${info.version} found (${info.path})`);
+				} else {
+					this.log.debug('ffmpeg not found');
+				}
+				await this.setStateAsync('info.ffmpeg', { val: ffmpegStatusText(info), ack: true }).catch(() => {});
+				return info;
+			})
+			.finally(() => {
+				if (this.ffmpegDetecting === run) {
+					this.ffmpegDetecting = undefined;
+				}
+			});
+		this.ffmpegDetecting = run;
+		return run;
+	}
+
+	private recordingCamEnabled(fid: string): boolean {
+		if (!this.config.enableRecordingFiles) {
+			return false;
+		}
+		const sel = Array.isArray(this.config.recordingFileCams) ? this.config.recordingFileCams : [];
+		return sel.length === 0 || sel.includes(fid);
+	}
+
+	private recordingTimeoutMs(): number {
+		return clampNumber(this.config.recordingTimeoutSec, 120, 10, 900) * 1000;
+	}
+
+	// One save per camera at a time; a recording arriving meanwhile waits (only the newest one).
+	private queueRecordingSave(d: Device, fid: string, ev: AgentDvrEvent): void {
+		if (this.recBusy[fid]) {
+			this.recPending[fid] = { d, ev };
+			return;
+		}
+		this.recBusy[fid] = true;
+		void (async () => {
+			let job: { d: Device; ev: AgentDvrEvent } | undefined = { d, ev };
+			while (job && !this._pollStopped) {
+				try {
+					await this.saveRecording(job.d, fid, job.ev);
+				} catch (e) {
+					this.log.warn(`Recording file ${fid}: ${(e as Error).message}`);
+				}
+				job = this.recPending[fid];
+				delete this.recPending[fid];
+			}
+			this.recBusy[fid] = false;
+		})();
+	}
+
+	// Downloads a recording from AgentDVR into memory (never to disk), with size limit and timeout.
+	private fetchRecording(oid: number | string, fn: string, maxBytes: number): Promise<DownloadResult> {
+		return downloadToBuffer(
+			{
+				hostname: this.config.serverIp,
+				port: this.config.port || 8090,
+				path: `/streamFile.cgi?oid=${encodeURIComponent(String(oid))}&ot=2&fn=${encodeURIComponent(fn)}`,
+				headers: this.authHeader ? { Authorization: this.authHeader } : undefined,
+			},
+			maxBytes,
+			this.recordingTimeoutMs(),
+		);
+	}
+
+	// Remuxes to MP4 if wanted and possible; otherwise (or on failure) the data is returned unchanged.
+	private async toWantedFormat(
+		data: Buffer,
+		srcExt: string,
+		wantMp4: boolean,
+		maxBytes: number,
+	): Promise<{ data: Buffer; ext: string }> {
+		if (!wantMp4 || srcExt === 'mp4') {
+			return { data, ext: srcExt };
+		}
+		const ff = this.ffmpeg ?? (await this.runFfmpegDetection());
+		if (!ff.found) {
+			if (!this.noFfmpegLogged) {
+				this.noFfmpegLogged = true;
+				this.log.info('ffmpeg not found — recordings are provided as MKV (install ffmpeg for MP4)');
+			}
+			return { data, ext: srcExt };
+		}
+		try {
+			const mp4 = await remuxToMp4(ff.path, data, this.recordingTimeoutMs(), maxBytes, reason => {
+				if (!this.audioDropLogged) {
+					this.audioDropLogged = true;
+					this.log.info(
+						`Audio track does not fit into MP4, recordings are remuxed without audio (${reason})`,
+					);
+				}
+			});
+			return { data: mp4, ext: 'mp4' };
+		} catch (e) {
+			this.log.warn(`MP4 remux failed, keeping ${srcExt.toUpperCase()}: ${(e as Error).message}`);
+			return { data, ext: srcExt };
+		}
+	}
+
+	private async ensureFileMeta(): Promise<void> {
+		if (this.ensuredFolders.has(this.namespace)) {
+			return;
+		}
+		// meta object required for the file storage — instanceObjects only cover new installs
+		await this.setForeignObjectNotExistsAsync(this.namespace, {
+			type: 'meta',
+			common: { name: 'Alert photos', type: 'meta.user' },
+			native: {},
+		});
+		this.ensuredFolders.add(this.namespace);
+	}
+
+	private async ensureRecordingObjects(ch: string, count: number): Promise<void> {
+		const key = `${ch}#${count}`;
+		if (this.ensuredFolders.has(key)) {
+			return;
+		}
+		await this.ensureFolder(ch, 'Recordings', 'channel');
+		const defs: { id: string; name: string; type: 'string' | 'number'; role: string }[] = [
+			{ id: 'file', name: 'file path', type: 'string', role: 'text' },
+			{ id: 'uri', name: 'iobfile URI', type: 'string', role: 'text' },
+			{ id: 'url', name: 'http URL', type: 'string', role: 'text.url' },
+			{ id: 'name', name: 'AgentDVR file name', type: 'string', role: 'text' },
+			{ id: 'ts', name: 'time', type: 'number', role: 'value.time' },
+		];
+		for (let i = 1; i <= count; i++) {
+			for (const def of defs) {
+				await this.setObjectNotExistsAsync(`${ch}.${def.id}${i}`, {
+					type: 'state',
+					common: {
+						name: `Recording ${i} (${def.name})`,
+						type: def.type,
+						role: def.role,
+						read: true,
+						write: false,
+					},
+					native: {},
+				});
+			}
+		}
+		this.ensuredFolders.add(key);
+	}
+
+	// Extension of the file stored in a slot, or '' if the slot is empty.
+	private async slotExt(fid: string, slot: number): Promise<string> {
+		for (const ext of ['mp4', 'mkv']) {
+			if (await this.fileExistsAsync(this.namespace, recordingStoragePath(fid, slot, ext)).catch(() => false)) {
+				return ext;
+			}
+		}
+		return '';
+	}
+
+	private async deleteSlotFiles(fid: string, slot: number): Promise<void> {
+		for (const ext of ['mp4', 'mkv']) {
+			const p = recordingStoragePath(fid, slot, ext);
+			if (await this.fileExistsAsync(this.namespace, p).catch(() => false)) {
+				await this.delFileAsync(this.namespace, p).catch(() => {});
+			}
+		}
+	}
+
+	// Local path only if the file storage is on this host's disk (file/jsonl objects DB), else ''.
+	private recordingLocalPath(fid: string, slot: number, ext: string): string {
+		const abs = recordingAbsPath(utils.getAbsoluteDefaultDataDir(), this.namespace, fid, slot, ext);
+		if (fs.existsSync(abs)) {
+			return abs;
+		}
+		if (!this.noLocalPathLogged) {
+			this.noLocalPathLogged = true;
+			this.log.info(
+				'Recording files are not on the local disk (non-file objects DB) — recordings.file* stay empty, use uri*',
+			);
+		}
+		return '';
+	}
+
+	private async writeSlotStates(fid: string, slot: number, ext: string, name: string, ts: unknown): Promise<void> {
+		const ch = `${fid}.recordings`;
+		await this.setStateAsync(`${ch}.file${slot}`, { val: this.recordingLocalPath(fid, slot, ext), ack: true });
+		await this.setStateAsync(`${ch}.uri${slot}`, { val: recordingUri(this.namespace, fid, slot, ext), ack: true });
+		await this.setStateAsync(`${ch}.url${slot}`, { val: await this.recordingWebUrl(fid, slot, ext), ack: true });
+		await this.setStateAsync(`${ch}.name${slot}`, { val: name, ack: true });
+		await this.setStateAsync(`${ch}.ts${slot}`, { val: (ts ?? null) as ioBroker.StateValue, ack: true });
+	}
+
+	private async recordingWebUrl(fid: string, slot: number, ext: string): Promise<string> {
+		if (this.webBaseUrl === undefined) {
+			this.webBaseUrl = await this.findWebBaseUrl();
+		}
+		return recordingUrl(this.webBaseUrl, this.namespace, fid, slot, ext);
+	}
+
+	// Keeps the last N recordings per camera in the file storage (<namespace>/<fid>/rec1..N.mp4|mkv,
+	// rec1 = newest), like the alert photos. ts1 is written last: the file is complete by then.
+	private async saveRecording(d: Device, fid: string, ev: AgentDvrEvent): Promise<void> {
+		const fn = ev.fn ?? '';
+		if (!fn) {
+			return;
+		}
+		const maxBytes = maxRecordingBytes(this.config.recordingMaxSizeMb);
+		const listed = Number(ev.sb ?? 0);
+		if (exceedsLimit(listed, maxBytes)) {
+			this.log.info(`Recording ${fn} (${fmtMb(listed)}) not stored: larger than ${fmtMb(maxBytes)}`);
+			return;
+		}
+		const dl = await this.fetchRecording(d.oid, fn, maxBytes);
+		if (!dl.ok || !dl.data) {
+			if (dl.tooLarge) {
+				this.log.info(`Recording ${fn} not stored: ${dl.error}`);
+			} else {
+				this.log.warn(`Recording ${fn} not downloaded: ${dl.error ?? 'empty response'}`);
+			}
+			return;
+		}
+		const out = await this.toWantedFormat(dl.data, extOf(fn), this.config.recordingMp4 !== false, maxBytes);
+		if (exceedsLimit(out.data.length, maxBytes)) {
+			this.log.info(`Recording ${fn} (${fmtMb(out.data.length)}) not stored: larger than ${fmtMb(maxBytes)}`);
+			return;
+		}
+
+		const count = recordingSlots(this.config.recordingFileCount);
+		const ch = `${fid}.recordings`;
+		await this.ensureFileMeta();
+		await this.ensureRecordingObjects(ch, count);
+
+		// rotate rec(N-1) → recN … rec1 → rec2; the oldest beyond the limit is overwritten/deleted
+		for (let i = count - 1; i >= 1; i--) {
+			const ext = await this.slotExt(fid, i);
+			if (!ext) {
+				continue;
+			}
+			await this.deleteSlotFiles(fid, i + 1);
+			const from = recordingStoragePath(fid, i, ext);
+			const to = recordingStoragePath(fid, i + 1, ext);
+			try {
+				await this.renameAsync(this.namespace, from, to);
+			} catch {
+				const prev = await this.readFileAsync(this.namespace, from);
+				await this.writeFileAsync(this.namespace, to, prev.file);
+				await this.delFileAsync(this.namespace, from).catch(() => {});
+			}
+			const name = await this.getStateAsync(`${ch}.name${i}`);
+			const ts = await this.getStateAsync(`${ch}.ts${i}`);
+			await this.writeSlotStates(fid, i + 1, ext, String(name?.val ?? ''), ts?.val);
+		}
+		await this.deleteSlotFiles(fid, 1);
+		await this.writeFileAsync(this.namespace, recordingStoragePath(fid, 1, out.ext), out.data);
+		const tsMs = (parseFloat(String(ev.c ?? 0)) - 621355968000000000) / 10000;
+		await this.writeSlotStates(
+			fid,
+			1,
+			out.ext,
+			fn,
+			Number.isFinite(tsMs) && tsMs > 0 ? Math.round(tsMs) : Date.now(),
+		);
+		await this.pruneRecordingSlots(fid, count);
+		this.log.debug(
+			`Recording ${fn} stored as ${recordingStoragePath(fid, 1, out.ext)} (${fmtMb(out.data.length)})`,
+		);
+	}
+
+	// Removes files and states of the slots above the configured number.
+	private async pruneRecordingSlots(fid: string, count: number): Promise<void> {
+		const ch = `${fid}.recordings`;
+		for (let i = count + 1; i <= 3; i++) {
+			await this.deleteSlotFiles(fid, i);
+			for (const id of ['file', 'uri', 'url', 'name', 'ts']) {
+				if (await this.getObjectAsync(`${ch}.${id}${i}`)) {
+					await this.delObjectAsync(`${ch}.${id}${i}`).catch(() => {});
+				}
+			}
+		}
+		for (let c = count + 1; c <= 3; c++) {
+			this.ensuredFolders.delete(`${ch}#${c}`);
+		}
+	}
+
+	private async pruneAllRecordingSlots(): Promise<void> {
+		const count = recordingSlots(this.config.recordingFileCount);
+		for (const dev of this.devById.values()) {
+			const fid = this.deviceFolder(dev);
+			if (await this.getObjectAsync(`${fid}.recordings`)) {
+				await this.pruneRecordingSlots(fid, count);
+			}
+		}
+	}
+
+	// Rewrites url1..N after a change of the web instance.
+	private async refreshRecordingUrls(): Promise<void> {
+		for (const dev of this.devById.values()) {
+			const fid = this.deviceFolder(dev);
+			if (!(await this.getObjectAsync(`${fid}.recordings`))) {
+				continue;
+			}
+			for (let n = 1; n <= 3; n++) {
+				const uri = await this.getStateAsync(`${fid}.recordings.uri${n}`).catch(() => null);
+				if (!uri?.val) {
+					continue;
+				}
+				await this.setStateAsync(`${fid}.recordings.url${n}`, {
+					val: await this.recordingWebUrl(fid, n, extOf(String(uri.val))),
+					ack: true,
+				});
+			}
+		}
+	}
+
+	// Loads a recording for sendRecording/getRecording: 'last' (newest in AgentDVR), slot 1..3
+	// (stored file) or an AgentDVR file name. Optional MP4 remux, all in memory.
+	private async loadRecording(msg: Record<string, unknown>): Promise<{
+		ok: boolean;
+		error?: string;
+		data?: Buffer;
+		fileName?: string;
+		format?: string;
+		size?: number;
+	}> {
+		const cams = [...this.devById.values()]
+			.filter(d => d.ot === 2)
+			.map(d => ({ oid: d.oid, name: d.name, fid: this.deviceFolder(d) }));
+		const cam = findCamera(msg.camera, cams);
+		if (!cam) {
+			return { ok: false, error: `Unknown camera "${JSON.stringify(msg.camera ?? '')}"` };
+		}
+		const maxBytes = maxRecordingBytes(this.config.recordingMaxSizeMb);
+		const wantMp4 = typeof msg.mp4 === 'boolean' ? msg.mp4 : this.config.recordingMp4 !== false;
+		const rawRec = msg.recording;
+		const rec: string =
+			typeof rawRec === 'number' ? String(rawRec) : typeof rawRec === 'string' && rawRec ? rawRec : 'last';
+		let data: Buffer;
+		let srcExt: string;
+		let base: string;
+
+		if (/^\d+$/.test(rec)) {
+			const slot = Number(rec);
+			if (slot < 1 || slot > 3) {
+				return { ok: false, error: `Invalid recording slot ${rec} (1-3)` };
+			}
+			const ext = await this.slotExt(cam.fid, slot);
+			if (!ext) {
+				return { ok: false, error: `No stored recording ${slot} for ${cam.fid}` };
+			}
+			const f = await this.readFileAsync(this.namespace, recordingStoragePath(cam.fid, slot, ext));
+			data = Buffer.isBuffer(f.file) ? f.file : Buffer.from(f.file);
+			srcExt = ext;
+			const name = await this.getStateAsync(`${cam.fid}.recordings.name${slot}`).catch(() => null);
+			base = String(name?.val || `${cam.fid}_rec${slot}`).replace(/\.[^.]+$/, '');
+		} else {
+			let fn = rec;
+			if (fn === 'last') {
+				const evRes = await this.apiGet(`/q/getEvents?oid=${encodeURIComponent(String(cam.oid))}&ot=2`);
+				const evJson = asJson(evRes.data);
+				const events = (
+					Array.isArray(evJson?.events) ? evJson.events : Array.isArray(evJson) ? evJson : []
+				) as AgentDvrEvent[];
+				fn = events[0]?.fn ?? '';
+				if (!fn) {
+					return {
+						ok: false,
+						error: `No recording found for ${cam.fid}${evRes.ok ? '' : ` (${evRes.error})`}`,
+					};
+				}
+			} else if (!isValidRecordingName(fn)) {
+				return { ok: false, error: `Invalid recording "${fn}" (use 'last', 1-3 or an AgentDVR file name)` };
+			}
+			const dl = await this.fetchRecording(cam.oid, fn, maxBytes);
+			if (!dl.ok || !dl.data) {
+				return {
+					ok: false,
+					size: dl.size,
+					error: dl.tooLarge
+						? `Recording ${fn} is larger than the configured limit: ${dl.error}`
+						: `Recording ${fn} not downloaded: ${dl.error ?? 'empty response'}`,
+				};
+			}
+			data = dl.data;
+			srcExt = extOf(fn);
+			base = fn.replace(/\.[^.]+$/, '');
+		}
+		const out = await this.toWantedFormat(data, srcExt, wantMp4, maxBytes);
+		return { ok: true, data: out.data, fileName: `${base}.${out.ext}`, format: out.ext, size: out.data.length };
+	}
+
+	private async getRecording(
+		msg: Record<string, unknown>,
+	): Promise<Record<string, unknown> & { ok: boolean; error?: string }> {
+		const r = await this.loadRecording(msg);
+		if (!r.ok || !r.data) {
+			return { ok: false, error: r.error, size: r.size };
+		}
+		return {
+			ok: true,
+			data: r.data,
+			fileName: r.fileName,
+			mime: mimeOf(r.format ?? ''),
+			format: r.format,
+			size: r.size,
+		};
+	}
+
+	private async sendRecording(
+		msg: Record<string, unknown>,
+	): Promise<{ ok: boolean; error?: string; size?: number; format?: string; result?: unknown }> {
+		const target = typeof msg.target === 'string' && msg.target ? msg.target : 'telegram.0';
+		if (!/^[a-z0-9_-]+\.\d+$/i.test(target)) {
+			return { ok: false, error: `Invalid target "${target}" (expected an instance like telegram.0)` };
+		}
+		const r = await this.loadRecording(msg);
+		if (!r.ok || !r.data) {
+			return { ok: false, error: r.error, size: r.size };
+		}
+		if (target.startsWith('telegram.') && r.data.length > TELEGRAM_MAX_BYTES) {
+			return {
+				ok: false,
+				size: r.data.length,
+				format: r.format,
+				error: `Recording is ${fmtMb(r.data.length)} — Telegram bots can only send files up to 50 MB`,
+			};
+		}
+		const payload: Record<string, unknown> = { text: r.data, type: 'video', fileName: r.fileName };
+		for (const k of ['caption', 'user', 'chatId']) {
+			if (msg[k] !== undefined && msg[k] !== null && msg[k] !== '') {
+				payload[k] = msg[k];
+			}
+		}
+		const result = await new Promise<{ timeout?: boolean; res?: unknown }>(resolve => {
+			const timer = this.setTimeout(() => resolve({ timeout: true }), 300000);
+			this.sendTo(target, 'send', payload, res => {
+				if (timer !== undefined) {
+					this.clearTimeout(timer);
+				}
+				resolve({ res });
+			});
+		});
+		if (result.timeout) {
+			return { ok: false, size: r.size, format: r.format, error: `No answer from ${target} within 300 s` };
+		}
+		this.log.debug(`Recording ${r.fileName} (${fmtMb(r.size ?? 0)}) sent to ${target}`);
+		return { ok: true, size: r.size, format: r.format, result: result.res };
 	}
 
 	// ---- device folder name ----
@@ -1968,6 +2496,9 @@ class AgentDvr extends utils.Adapter {
 
 		if (newCount > 0) {
 			await this.pulse(`${fid}.events.new`);
+			if (this.recordingCamEnabled(fid)) {
+				this.queueRecordingSave(d, fid, events[0]);
+			}
 		}
 		if (newCount > 0 || lateTags > 0) {
 			for (const t of tags) {

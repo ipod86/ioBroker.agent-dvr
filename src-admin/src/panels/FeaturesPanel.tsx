@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 import FormField, { SectionHeader } from '../components/FormField';
+import RecordingFilesSection from '../components/RecordingFilesSection';
 
 interface Props {
 	native: any;
 	onChange: (k: string, v: any) => void;
 	socket?: any;
+	instance: number;
 }
 
-const FeaturesPanel: React.FC<Props> = ({ native, onChange, socket }) => {
+const FeaturesPanel: React.FC<Props> = ({ native, onChange, socket, instance }) => {
 	const [webs, setWebs] = useState<{ value: string; labelKey: string }[]>([]);
 	useEffect(() => {
 		socket
@@ -139,6 +141,12 @@ const FeaturesPanel: React.FC<Props> = ({ native, onChange, socket }) => {
 					/>
 				</Grid>
 			</Grid>
+			<RecordingFilesSection
+				native={native}
+				onChange={onChange}
+				socket={socket}
+				instance={instance}
+			/>
 			<SectionHeader textKey="hdrDisplay" />
 			<Grid
 				container

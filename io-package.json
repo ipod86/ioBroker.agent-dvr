@@ -206,6 +206,13 @@
     "enableEventDps": true,
     "enableAlertPhotos": true,
     "photoWebInstance": "",
+    "enableRecordingFiles": false,
+    "recordingFileCams": [],
+    "recordingFileCount": 1,
+    "recordingMaxSizeMb": 50,
+    "recordingTimeoutSec": 120,
+    "recordingMp4": true,
+    "ffmpegPath": "",
     "enableOverview": true,
     "storeRawJson": false,
     "enableWidget": true,
@@ -300,6 +307,19 @@
         "read": true,
         "write": false,
         "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.ffmpeg",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "ffmpeg (version and path)",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
       },
       "native": {}
     }

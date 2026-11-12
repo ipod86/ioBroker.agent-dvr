@@ -11,6 +11,15 @@ import AdvancedPanel from './panels/AdvancedPanel';
 
 import en from '../../admin/i18n/en.json';
 import de from '../../admin/i18n/de.json';
+import ru from '../../admin/i18n/ru.json';
+import pt from '../../admin/i18n/pt.json';
+import nl from '../../admin/i18n/nl.json';
+import fr from '../../admin/i18n/fr.json';
+import it from '../../admin/i18n/it.json';
+import es from '../../admin/i18n/es.json';
+import pl from '../../admin/i18n/pl.json';
+import uk from '../../admin/i18n/uk.json';
+import zhcn from '../../admin/i18n/zh-cn.json';
 
 interface AppState extends GenericAppState {
 	tab: number;
@@ -21,7 +30,7 @@ class App extends GenericApp<GenericAppProps, AppState> {
 		super(props, {
 			encryptedFields: ['pass'],
 			Connection: AdminConnection,
-			translations: { en, de },
+			translations: { en, de, ru, pt, nl, fr, it, es, pl, uk, 'zh-cn': zhcn },
 		} as any);
 	}
 
@@ -77,6 +86,7 @@ class App extends GenericApp<GenericAppProps, AppState> {
 									native={native}
 									onChange={handleChange}
 									socket={(this as any).socket}
+									instance={(this as any).instance ?? 0}
 								/>
 							)}
 							{tab === 2 && (

@@ -17,6 +17,13 @@ declare global {
             enableEventDps: boolean;
             enableAlertPhotos: boolean;
             photoWebInstance: string;
+            enableRecordingFiles: boolean;
+            recordingFileCams: string[];
+            recordingFileCount: number;
+            recordingMaxSizeMb: number;
+            recordingTimeoutSec: number;
+            recordingMp4: boolean;
+            ffmpegPath: string;
             enableOverview: boolean;
             storeRawJson: boolean;
             // Widget

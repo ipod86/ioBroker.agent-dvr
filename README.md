@@ -32,6 +32,12 @@ The recordings gallery, the live tile and the live overview are also available a
 - optionally takes the colors of the visualization's theme
 - needs no credentials: the images and videos use the same AgentDVR links as the HTML widgets; data comes from `widget_config` and `<cam>.widget_data`
 
+### Recordings in the ioBroker file storage and as Telegram video
+- **Provide the last recordings in the ioBroker file storage** (off by default): every new recording of a camera is downloaded from AgentDVR and kept as `rec1` … `rec3` per camera — with file path, `iobfile://` URI and http URL in `<cam>.recordings.*`, just like the alert photos
+- optionally as **MP4** (lossless remux with ffmpeg, no re-encoding) — plays everywhere, also inline in Telegram
+- **`sendRecording`** sends the last, a stored or any recording straight to Telegram (or another instance) as video; **`getRecording`** returns it as data for your own scripts
+- details: [Recordings in the file storage](#recordings-in-the-file-storage)
+
 ## Features
 
 - Auto-discovery of all AgentDVR cameras on startup (microphones excluded)
@@ -88,6 +94,20 @@ The recordings gallery, the live tile and the live overview are also available a
 | Setting | Description | Default |
 |---------|-------------|---------|
 | Event data points | Mirror recording metadata (latest event, count, tags, …) per camera | `true` |
+| Save alert photos | Store the photo of every webhook alert in the file storage (see [Alert photos](#alert-photos)) | `true` |
+| Web instance for photo links | Web instance used for the `url*` links of alert photos and recordings | automatic |
+
+**Recordings in the file storage** — see [Recordings in the file storage](#recordings-in-the-file-storage)
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| Provide the last recordings in the ioBroker file storage | Download every new recording and keep it per camera | `false` |
+| Cameras | All cameras or a selection (the list needs a running instance) | all |
+| Number of stored recordings per camera | 1, 2 or 3 (`rec1` = newest) | `1` |
+| Maximum size (MB) | Larger recordings are skipped with an info log; also the limit for `sendRecording`/`getRecording` | `50` |
+| Download timeout (s) | Download and conversion of one recording (10–900) | `120` |
+| Provide as MP4 | Remux MKV to MP4 with ffmpeg (no re-encoding); without ffmpeg the MKV is kept | `true` |
+| ffmpeg path | Empty = automatic search | — |
 
 **Display**
 
@@ -399,6 +419,7 @@ This adapter stores your AgentDVR admin credentials and exposes `system.control.
 | Data point | Type | R/W | Description |
 |-----------|------|-----|-------------|
 | `<cam>.events.*` | various | R | Latest recording metadata — requires "Event data points" |
+| `<cam>.recordings.*` | various | R | Stored recordings (`file1`, `uri1`, `url1`, `name1`, `ts1`, …) — requires "Provide the last recordings in the ioBroker file storage" |
 | `<cam>.widget_recordings` | string | R | HTML recording gallery — requires "Gallery widget" |
 | `<cam>.widget_live` | string | R | HTML single-camera live tile — requires "Gallery widget"; snapshot refreshes on each adapter poll |
 | `<cam>.widget_data` | string | R | Recordings as JSON for the web components (latest 500) — requires "Gallery widget" or "Event data points" |
@@ -450,6 +471,69 @@ Files: `<namespace>/<cam>/grab1.jpg` … `grab3.jpg` (e.g. `agent-dvr.0/cam_8_Re
 |-----------|------|-----|-------------|
 | `widget_live_overview` | string | R | HTML tile grid of all cameras — snapshot refreshes on each adapter poll |
 | `widget_config` | string | R | Widget settings, cameras and texts as JSON for the web components (always written, no credentials) |
+
+## Recordings in the file storage
+
+With **Provide the last recordings in the ioBroker file storage** (*Features* tab, off by default) the adapter downloads every new recording of a camera from AgentDVR as soon as it shows up in the recording list (the moment `<cam>.events.new` pulses — so *Event data points* must be on) and stores it in the ioBroker file storage. The download goes into memory, never into a temporary file. Like the alert photos, the last 1, 2 or 3 recordings per camera are kept (setting *Number of stored recordings per camera*, default 1):
+
+| Data point | Content |
+|---|---|
+| `<cam>.recordings.file1` … `file3` | Absolute file path, e.g. `/opt/iobroker/iobroker-data/files/agent-dvr.0/cam_8_Reolink/rec1.mp4` (`1` = newest) |
+| `<cam>.recordings.uri1` … `uri3` | ioBroker file URI, e.g. `iobfile://agent-dvr.0/cam_8_Reolink/rec1.mp4` |
+| `<cam>.recordings.url1` … `url3` | http(s) URL via the web instance, e.g. `http://192.168.1.10:8082/agent-dvr.0/recordings/cam_8_Reolink/rec1.mp4` (supports seeking) |
+| `<cam>.recordings.name1` … `name3` | Original AgentDVR file name, e.g. `8_2026-11-12_15-55-29_931.mkv` |
+| `<cam>.recordings.ts1` … `ts3` | Time of the recording |
+
+Files: `<namespace>/<cam>/rec1.mp4` (or `.mkv`) … `rec3`. On each new recording they rotate (rec1 → rec2 → rec3), the oldest one is deleted. When you lower the number, the surplus files and data points are removed at the next start. The disk space stays fixed: number × maximum size per camera. Recordings larger than *Maximum size* (default 50 MB) are skipped with an info log. `ts1` is written **last**, after the file is complete — use it as trigger.
+
+**Storage limitation:** `file1`–`file3` only contain a path when the ioBroker file storage is on the local disk (default file/jsonl objects DB). With Redis or another non-file objects DB they stay empty — use `uri*` (Telegram 6+, scripts) or `url*` instead, which work with every storage.
+
+### MP4 and ffmpeg
+
+AgentDVR records MKV. With **Provide as MP4** (default on) the adapter remuxes the MKV to MP4 with ffmpeg — only the container changes, video and audio are copied, so it takes well under a second. HEVC (H.265) videos get the `hvc1` tag so Apple devices and Telegram play them. If the audio codec does not fit into MP4, the video is remuxed without audio (logged once). Without ffmpeg the MKV is provided unchanged (one info log).
+
+ffmpeg is **not** bundled. The adapter looks for it at start and on demand: the *ffmpeg path* setting → `ffmpeg` via `PATH` → `/usr/bin/ffmpeg`, `/usr/local/bin/ffmpeg`, `/opt/homebrew/bin/ffmpeg`, `C:\ffmpeg\bin\ffmpeg.exe`, `%ProgramFiles%\ffmpeg\bin\ffmpeg.exe`. The result is in `info.ffmpeg` (e.g. `6.1.1 (/usr/bin/ffmpeg)` or `not found`) and in the settings next to the MP4 option, with a **Search again** button. Install ffmpeg with the package manager of your system:
+
+| System | Command |
+|---|---|
+| Debian, Ubuntu, Raspberry Pi OS | `apt install ffmpeg` |
+| Alpine (Docker) | `apk add ffmpeg` |
+| Fedora | `dnf install ffmpeg` |
+| macOS (Homebrew) | `brew install ffmpeg` |
+| Windows | `winget install ffmpeg` |
+
+Run the command as administrator/root as usual on your system. Afterwards press *Search again* in the settings (or restart the instance).
+
+### Sending recordings: `sendRecording` and `getRecording`
+
+`sendRecording` loads a recording (into memory), converts it to MP4 if wanted and sends it to a messenger instance as video:
+
+```js
+sendTo('agent-dvr.0', 'sendRecording', {
+    camera: 'cam_8_Reolink',      // folder id, AgentDVR oid (8) or camera name
+    recording: 'last',            // 'last' (newest in AgentDVR), 1-3 (stored slot) or an AgentDVR file name
+    target: 'telegram.0',         // instance that gets the video
+    caption: 'Motion at the front door',
+    // user: 'Max', chatId: 123, // optional, passed through to Telegram
+    // mp4: true,                 // optional, overrides "Provide as MP4"
+}, res => {
+    if (!res.ok) log(res.error, 'warn'); // e.g. too large for Telegram
+});
+```
+
+The message to the target is `{ text: <Buffer>, type: 'video', fileName: '<name>.mp4', caption, user, chatId }` — the format of Telegram 6 and newer. The answer is `{ ok, error?, size, format }`. **Telegram bots can only send files up to 50 MB**; larger recordings are rejected with a clear error before sending.
+
+Send every new recording to Telegram (no Blockly needed):
+
+```js
+on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
+    sendTo('agent-dvr.0', 'sendRecording', { camera: 'cam_8_Reolink', recording: 'last', target: 'telegram.0', caption: 'New recording' });
+});
+```
+
+With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`) — or let Telegram 6+ read it itself: `sendTo('telegram.0', { text: getState('agent-dvr.0.cam_8_Reolink.recordings.uri1').val, type: 'video' })`.
+
+`getRecording` takes the same `camera`, `recording` and `mp4` and returns `{ ok, data, fileName, mime, format, size }` for your own scripts. `data` is a Buffer; after the trip through the message bus it may arrive as `{ type: 'Buffer', data: [...] }` — use `Buffer.from(res.data.data ?? res.data)`.
 
 ## Getting images for VIS and scripts
 
@@ -509,6 +593,12 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (ipod86) feat: keep the last 1–3 recordings per camera in the ioBroker file storage (`recordings.file/uri/url/name/ts`), optionally as MP4 via ffmpeg
+* (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or return it to scripts
+* (ipod86) feat: ffmpeg detection with status in the settings and `info.ffmpeg`
+* (ipod86) fix: the settings page uses all 11 languages
+
 ### 0.8.1 (2026-11-12)
 * (ipod86) fix: live overview web component fits its tiles to the widget size (no scrolling, no empty space); option "Fit to the widget size"
 * (ipod86) chore: description and keywords mention the widgets for vis-2 and AURA
