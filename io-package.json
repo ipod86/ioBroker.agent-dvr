@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "news": {
+      "0.8.0": {
+        "en": "feat: web components for AURA (0.106.0+), vis-2 (2.20.7+) and devices (4.3.0+) – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones",
+        "de": "Feat: Webkomponenten für AURA (0.106.0+), Vis-2 (2.20.7+) und Geräte (4.3.0+) — Aufnahmegalerie, Live-Tile und Live-Übersicht, mit oder eigenen Widget-Einstellungen",
+        "ru": "feat: веб-компоненты для AURA (0.106.0+), vis-2 (2.20.7+) и устройств (4.3.0+) — галерея записей, живая плитка и обзор в реальном времени с настройками виджета адаптера или собственными",
+        "pt": "feat: componentes web para AURA (0.106.0+), vis-2 (2.20.7+) e dispositivos (4.3.0+) — galeria de gravações, live tile e live view, com ou sem o widget do adaptador",
+        "nl": "feat: webcomponenten voor AURA (0.106.0+), vis-2 (2.20.7+) en apparaten (4.3.0+) — opnamegalerij, live tile en live-overzicht, met de widgetinstellingen van de adapter of eigen instellingen",
+        "fr": "exploit : composants Web pour AURA (0.106.0+), vis-2 (2.20.7+) et appareils (4.3.0+) — galerie d'enregistrements, vignette et aperçu en direct, avec les paramètres du widget de l'adaptateur ou ses propres",
+        "it": "feat: componenti web per AURA (0.106.0+), vis-2 (2.20.7+) e dispositivi (4.3.0+) — galleria di registrazioni, live tile e live overview, con i widget dell'adattatore",
+        "es": "feat: componentes web para AURA (0.106.0+), vis-2 (2.20.7+) y dispositivos (4.3.0+): galería de grabaciones, mosaico en vivo y resumen en vivo, con la configuración del widget del adaptador o propia",
+        "pl": "feat: komponenty internetowe dla AURA (0.106.0+), vis-2 (2.20.7+) i urządzeń (4.3.0+) - galeria nagrań, live kafelki i przegląd na żywo, z ustawieniami widżetu adaptera lub własnymi",
+        "uk": "feat: веб-компоненти для AURA (0.106.0+), vis-2 (2.20.7+) та пристроїв (4.3.0+) - галерея записів, жива плитка та огляд у прямому ефірі, з налаштуваннями віджета адаптера або власними",
+        "zh-cn": "壮举：适用于 AURA (0.106.0+)、vis-2 (2.20.7+) 和设备 (4.3.0+) 的 Web 组件 — 录音库、实时磁贴和实时概览，包括适配器的控件设置或自己的控件设置"
+      },
       "0.7.0": {
         "en": "* feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV and kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances and the host address\n* feat: `<cam>.events.webhookParams` with all parameters of the latest webhook call as JSON",
         "de": "* feat: `alertPhotos.url1–3` mit festem http(s)-Link zu jedem Foto, für TV- und Kiosk-Apps, die nur Web-Links annehmen; Web-Instanz wählbar, Links folgen Änderungen an den Web-Instanzen und der Host-Adresse\n* feat: `<cam>.events.webhookParams` mit allen Parametern des letzten Webhook-Aufrufs als JSON",
@@ -80,19 +93,6 @@
         "pl": "feat: zmiana nazwy DP overview na widget_live_overview dla spójnego nazewnictwa widżetów",
         "uk": "feat: перейменування DP overview на widget_live_overview для узгодженого іменування віджетів",
         "zh-cn": "feat: 将overview数据点重命名为widget_live_overview以保持一致的小部件命名"
-      },
-      "0.5.1": {
-        "en": "feat: per-instance URL routing (agent-dvr.0/, agent-dvr.1/, …); rename per-camera widget DP to widget_recordings; add widget_live DP with single-camera live tile",
-        "de": "feat: instanzeigenes URL-Routing (agent-dvr.0/, agent-dvr.1/, …); Aufnahme-Widget-Datenpunkt pro Kamera in widget_recordings umbenannt; neuer widget_live-Datenpunkt mit Live-Einzelkachel der Kamera",
-        "ru": "feat: маршрутизация URL для каждого экземпляра (agent-dvr.0/, agent-dvr.1/, …); переименование DP виджета записей камеры в widget_recordings; добавление DP widget_live с живой плиткой одной камеры",
-        "pt": "feat: roteamento de URL por instância (agent-dvr.0/, agent-dvr.1/, …); renomear DP do widget de gravações por câmera para widget_recordings; adicionar DP widget_live com tile ao vivo de câmera única",
-        "nl": "feat: URL-routing per instantie (agent-dvr.0/, agent-dvr.1/, …); hernoem per-camera opname-widget-DP naar widget_recordings; voeg widget_live-DP toe met live-tegel voor één camera",
-        "fr": "feat: routage d'URL par instance (agent-dvr.0/, agent-dvr.1/, …); renommage du DP widget d'enregistrement par caméra en widget_recordings; ajout du DP widget_live avec vignette en direct d'une seule caméra",
-        "it": "feat: routing URL per istanza (agent-dvr.0/, agent-dvr.1/, …); rinominare DP widget registrazioni per telecamera in widget_recordings; aggiunto DP widget_live con tile live a singola telecamera",
-        "es": "feat: enrutamiento de URL por instancia (agent-dvr.0/, agent-dvr.1/, …); renombrar DP de widget de grabaciones por cámara a widget_recordings; agregar DP widget_live con tile en vivo de cámara única",
-        "pl": "feat: routing URL dla każdej instancji (agent-dvr.0/, agent-dvr.1/, …); zmiana nazwy DP widgetu nagrań kamery na widget_recordings; dodanie DP widget_live z kafelkiem podglądu na żywo pojedynczej kamery",
-        "uk": "feat: маршрутизація URL для кожного екземпляра (agent-dvr.0/, agent-dvr.1/, …); перейменування DP віджета записів камери на widget_recordings; додано DP widget_live з живою плиткою однієї камери",
-        "zh-cn": "feat: 每实例URL路由 (agent-dvr.0/, agent-dvr.1/, …)；将每摄像头录像小部件DP重命名为widget_recordings；新增widget_live DP，显示单摄像头直播磁贴"
       }
     },
     "titleLang": {
