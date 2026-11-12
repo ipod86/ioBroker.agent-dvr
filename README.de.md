@@ -509,7 +509,7 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.8.0 (2026-11-12)
 * (ipod86) feat: Web-Komponenten für AURA (ab 0.106.0), vis-2 (ab 2.20.7) und devices (ab 4.3.0) – Aufnahmen-Galerie, Live-Kachel und Live-Übersicht, mit den Widget-Einstellungen des Adapters oder eigenen
 
 ### 0.7.0 (2026-10-29)
