@@ -615,7 +615,7 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.9.0 (2026-11-12)
 * (ipod86) feat: die letzten 1–3 Aufnahmen pro Kamera im ioBroker-Dateispeicher (`recordings.file/uri/url/name/ts`), auf Wunsch als MP4 über ffmpeg
 * (ipod86) feat: `sendRecording` / `getRecording` schicken eine Aufnahme als Video an Telegram oder stellen sie als Datei für Skripte bereit
 * (ipod86) feat: Erstbefüllung beim Einschalten; Aufnahmen und Dateien werden beim Abschalten, Abwählen oder Entfernen der Kamera aufgeräumt
