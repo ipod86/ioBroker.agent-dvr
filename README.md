@@ -615,7 +615,7 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.9.0 (2026-11-12)
 * (ipod86) feat: keep the last 1–3 recordings per camera in the ioBroker file storage (`recordings.file/uri/url/name/ts`), optionally as MP4 via ffmpeg
 * (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or provide it as a file for scripts
 * (ipod86) feat: initial fill on enabling; recordings and files are cleaned up when switched off, deselected or the camera is removed
@@ -642,15 +642,6 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 * (ipod86) feat: alert photos — on a webhook call with `oid` the full-resolution photo is stored in the file storage, last 3 per camera (`alertPhotos.grab1–3`, `ts1–3`)
 * (ipod86) feat: alert photos served for VIS at `/agent-dvr.0/photos/<cam>/grab1.jpg`; new README section on getting images for VIS and scripts
 * (ipod86) feat: `alertPhotos.uri1–3` with the `iobfile://` URI of each photo, sendable directly with Telegram 6
-
-<!-- markdownlint-disable-next-line MD024 -->
-
-### 0.5.5 (2026-10-08)
-* (ipod86) fix: live preview video no longer gets stretched/distorted — AgentDVR's live stream squishes the full picture into a fixed container format regardless of the camera's actual aspect ratio; now corrected (`object-fit:fill`) instead of shown distorted
-* (ipod86) feat: configurable live-tile refresh interval (`widgetLiveRefreshSec`) — trade thumbnail freshness against keeping an open video modal open, since rewriting the widget's HTML state resets it
-* (ipod86) feat: optional full-JS live-tile refresh mode (`widgetLiveMode`) — refreshes only the snapshot image via a small embedded script, so an open video modal never closes regardless of refresh frequency (requires script execution, same tradeoff as the existing gallery JS mode)
-* (ipod86) feat: live widgets now share the gallery's theme colors, thumbnail size and compact setting, which previously only applied to the recordings widget
-* (ipod86) refactor: reorganized the Widget settings panel into clearly scoped General / Recordings Widget / Live Widget / Theme sections with a proper two-level heading hierarchy, instead of one long section whose subsections looked like independent categories
 
 <!-- markdownlint-disable-next-line MD024 -->
 

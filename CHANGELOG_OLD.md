@@ -1,6 +1,15 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.5.5 (2026-10-08)
+* (ipod86) fix: live preview video no longer gets stretched/distorted — AgentDVR's live stream squishes the full picture into a fixed container format regardless of the camera's actual aspect ratio; now corrected (`object-fit:fill`) instead of shown distorted
+* (ipod86) feat: configurable live-tile refresh interval (`widgetLiveRefreshSec`) — trade thumbnail freshness against keeping an open video modal open, since rewriting the widget's HTML state resets it
+* (ipod86) feat: optional full-JS live-tile refresh mode (`widgetLiveMode`) — refreshes only the snapshot image via a small embedded script, so an open video modal never closes regardless of refresh frequency (requires script execution, same tradeoff as the existing gallery JS mode)
+* (ipod86) feat: live widgets now share the gallery's theme colors, thumbnail size and compact setting, which previously only applied to the recordings widget
+* (ipod86) refactor: reorganized the Widget settings panel into clearly scoped General / Recordings Widget / Live Widget / Theme sections with a proper two-level heading hierarchy, instead of one long section whose subsections looked like independent categories
+
+<!-- markdownlint-disable-next-line MD024 -->
+
 ## 0.5.4 (2026-10-08)
 * (ipod86) fix: single-camera live widget snapshot never refreshed (missing cache-busting timestamp + signature-based dedup skipped rewriting the state)
 * (ipod86) fix: live video element now receives the correct aspect ratio instead of the browser's default placeholder box before playback starts
