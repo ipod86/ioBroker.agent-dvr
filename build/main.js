@@ -425,6 +425,7 @@ class AgentDvr extends utils.Adapter {
     callback();
   }
   onMessage(obj) {
+    var _a;
     if (!obj) {
       return;
     }
@@ -435,6 +436,14 @@ class AgentDvr extends utils.Adapter {
       });
     } else if (obj.command === "getAgentDvrCameras") {
       this.sendTo(obj.from, obj.command, { cameras: this.lastCamNames }, obj.callback);
+    } else if (obj.command === "getCameras") {
+      const opts = this.lastCamNames.map((c) => ({ value: `${this.namespace}.${c.key}`, label: c.name }));
+      this.sendTo(obj.from, obj.command, opts, obj.callback);
+    } else if (obj.command === "getWidgets") {
+      const msg = (_a = obj.message) != null ? _a : {};
+      const kind = msg.kind === "live" ? "live" : "recordings";
+      const opts = this.config.enableWidget ? this.lastCamNames.map((c) => ({ value: `${this.namespace}.${c.key}.widget_${kind}`, label: c.name })) : [];
+      this.sendTo(obj.from, obj.command, opts, obj.callback);
     } else if (obj.command === "getAvailableSources") {
       void this.fetchAvailableSources().then((result) => {
         this.sendTo(obj.from, obj.command, result, obj.callback);

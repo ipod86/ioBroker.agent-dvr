@@ -615,6 +615,9 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (ipod86) feat: messages `getCameras` and `getWidgets` for the web components (prepares dropdowns instead of the object browser)
+
 ### 0.9.0 (2026-11-12)
 * (ipod86) feat: keep the last 1–3 recordings per camera in the ioBroker file storage (`recordings.file/uri/url/name/ts`), optionally as MP4 via ffmpeg
 * (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or provide it as a file for scripts

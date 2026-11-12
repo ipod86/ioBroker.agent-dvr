@@ -610,6 +610,18 @@ class AgentDvr extends utils.Adapter {
 			});
 		} else if (obj.command === 'getAgentDvrCameras') {
 			this.sendTo(obj.from, obj.command, { cameras: this.lastCamNames }, obj.callback);
+		} else if (obj.command === 'getCameras') {
+			// selectSendTo of the web components: value = full device id, as the former object picker stored it
+			const opts = this.lastCamNames.map(c => ({ value: `${this.namespace}.${c.key}`, label: c.name }));
+			this.sendTo(obj.from, obj.command, opts, obj.callback);
+		} else if (obj.command === 'getWidgets') {
+			// selectSendTo: the HTML widget states of one kind (recordings | live), value = full state id
+			const msg = (obj.message ?? {}) as { kind?: unknown };
+			const kind = msg.kind === 'live' ? 'live' : 'recordings';
+			const opts = this.config.enableWidget
+				? this.lastCamNames.map(c => ({ value: `${this.namespace}.${c.key}.widget_${kind}`, label: c.name }))
+				: [];
+			this.sendTo(obj.from, obj.command, opts, obj.callback);
 		} else if (obj.command === 'getAvailableSources') {
 			void this.fetchAvailableSources().then(result => {
 				this.sendTo(obj.from, obj.command, result, obj.callback);
