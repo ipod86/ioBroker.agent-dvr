@@ -509,7 +509,7 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.8.1 (2026-11-12)
 * (ipod86) fix: live overview web component fits its tiles to the widget size (no scrolling, no empty space); option "Fit to the widget size"
 * (ipod86) chore: description and keywords mention the widgets for vis-2 and AURA
 
@@ -538,13 +538,6 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 * (ipod86) feat: optional full-JS live-tile refresh mode (`widgetLiveMode`) — refreshes only the snapshot image via a small embedded script, so an open video modal never closes regardless of refresh frequency (requires script execution, same tradeoff as the existing gallery JS mode)
 * (ipod86) feat: live widgets now share the gallery's theme colors, thumbnail size and compact setting, which previously only applied to the recordings widget
 * (ipod86) refactor: reorganized the Widget settings panel into clearly scoped General / Recordings Widget / Live Widget / Theme sections with a proper two-level heading hierarchy, instead of one long section whose subsections looked like independent categories
-
-<!-- markdownlint-disable-next-line MD024 -->
-
-### 0.5.4 (2026-10-08)
-* (ipod86) fix: single-camera live widget snapshot never refreshed (missing cache-busting timestamp + signature-based dedup skipped rewriting the state)
-* (ipod86) fix: live video element now receives the correct aspect ratio instead of the browser's default placeholder box before playback starts
-* (ipod86) fix: live/recording video no longer gets stretched to fill a mismatched aspect-ratio box — degrades to letterboxing (`object-fit:contain`) instead
 
 <!-- markdownlint-disable-next-line MD024 -->
 

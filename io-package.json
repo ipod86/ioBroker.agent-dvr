@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "agent-dvr",
-    "version": "0.8.0",
+    "version": "0.8.1",
     "news": {
+      "0.8.1": {
+        "en": "fix: live overview web component fits its tiles to the widget size (no scrolling, no empty space); option \"Fit to the widget size\"\nchore: description and keywords mention the widgets for vis-2 and AURA",
+        "de": "Fix: Live-Übersichts-Webkomponente passt Kacheln an Widget-Größe an (kein Scrollen, kein Leerzeichen); Option „An Widget-Größe anpassen“\nAufgabe: Beschreibung und Keywords erwähnen Widgets für Vis-2 und AURA",
+        "ru": "исправлено: веб-компонент live overview подгоняет свои плитки к размеру виджета (без прокрутки, без пустого места); опция «Подгонять под размер виджета»\nрутинная работа: описание и ключевые слова упоминают виджеты для vis-2 и AURA",
+        "pt": "correção: live overview web component ajusta seus blocos ao tamanho do widget (sem rolagem, sem espaço vazio); opção “Ajustar ao widget”\ntarefa: descrição e palavras-chave citam widgets para vis-2 e AURA",
+        "nl": "oplossing: de webcomponent voor live overzicht past de tegels aan de grootte van de widget aan (niet scrollen, geen lege ruimte); optie „Aanpassen aan de grootte van de widget”\nkarwei: in de beschrijving en de trefwoorden staan de widgets voor vis-2 en AURA",
+        "fr": "fix : le composant Web Live Overview adapte ses vignettes à la taille du widget (pas de défilement, pas d'espace vide) ; option « Adapter à la taille du widget »\ncorvée : description et mots clés mentionnent les widgets pour vis-2 et AURA",
+        "it": "fix: il componente web Live Overview adatta i riquadri al widget (senza spazi vuoti); opzione «Adatta al widget»\nlavoro: descrizione e parole chiave citano i widget per vis-2 e AURA",
+        "es": "corrección: el componente web Live Overview ajusta sus mosaicos al tamaño del widget (sin desplazamiento ni espacio vacío); opción «Ajustar al tamaño del widget»\ntarea: descripción y palabras clave mencionan los widgets de vis-2 y AURA",
+        "pl": "poprawka: komponent internetowy z przeglądem aktywnym dopasowuje swoje kafelki do rozmiaru widżetu (bez przewijania, bez pustej przestrzeni); opcja „Dopasuj do rozmiaru widżetu”\nobowiązek: opis i słowa kluczowe wspominają o widżetach dla vis-2 i AURA",
+        "uk": "виправлено: веб-компонент огляду в режимі реального часу пристосовує свої плитки до розміру віджета (без прокрутки, немає порожнього місця); опція «Підібрати до розміру віджета»\nробота: опис та ключові слова згадують віджети для vis-2 та AURA",
+        "zh-cn": "修复：实时概览 Web 组件根据控件大小调整其图块（不滚动，没有空白空间）；选项 “适合小部件大小”\n琐事：描述和关键字提到 vis-2 和 AURA 的小工具"
+      },
       "0.8.0": {
         "en": "feat: web components for AURA (0.106.0+), vis-2 (2.20.7+) and devices (4.3.0+) – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones",
         "de": "Feat: Webkomponenten für AURA (0.106.0+), Vis-2 (2.20.7+) und Geräte (4.3.0+) — Aufnahmegalerie, Live-Tile und Live-Übersicht, mit oder eigenen Widget-Einstellungen",
@@ -80,19 +93,6 @@
         "pl": "poprawka: wyczyść pamięć podręczną EnsuredFolders podczas usuwania obiektów, aby zapobiec nieaktualnym ostrzeżeniom „brak istniejącego obiektu” dla ponownie odkrytych dysków/kamer",
         "uk": "виправлення: очистіть кеш EnsuredFolders при видаленні об'єкта, щоб запобігти застарілим попередженням «немає існуючого об'єкта» для повторно виявлених дисків/камер",
         "zh-cn": "修复：删除对象时清除 EnsuredFolders 缓存，以防止对重新发现的驱动器/相机发出过时的 “无现有对象” 警告"
-      },
-      "0.5.2": {
-        "en": "feat: rename overview DP to widget_live_overview for consistent widget naming",
-        "de": "feat: overview-Datenpunkt in widget_live_overview umbenannt für konsistentes Widget-Namensschema",
-        "ru": "feat: переименование DP overview в widget_live_overview для единообразного именования виджетов",
-        "pt": "feat: renomear DP overview para widget_live_overview para nomenclatura consistente de widgets",
-        "nl": "feat: overview-DP hernoemd naar widget_live_overview voor consistente widgetnaamgeving",
-        "fr": "feat: renommage du DP overview en widget_live_overview pour une nomenclature cohérente des widgets",
-        "it": "feat: rinominare DP overview in widget_live_overview per nomenclatura widget coerente",
-        "es": "feat: renombrar DP overview a widget_live_overview para nomenclatura consistente de widgets",
-        "pl": "feat: zmiana nazwy DP overview na widget_live_overview dla spójnego nazewnictwa widżetów",
-        "uk": "feat: перейменування DP overview на widget_live_overview для узгодженого іменування віджетів",
-        "zh-cn": "feat: 将overview数据点重命名为widget_live_overview以保持一致的小部件命名"
       }
     },
     "titleLang": {

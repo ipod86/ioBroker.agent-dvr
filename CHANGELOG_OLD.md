@@ -1,6 +1,13 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.5.4 (2026-10-08)
+* (ipod86) fix: single-camera live widget snapshot never refreshed (missing cache-busting timestamp + signature-based dedup skipped rewriting the state)
+* (ipod86) fix: live video element now receives the correct aspect ratio instead of the browser's default placeholder box before playback starts
+* (ipod86) fix: live/recording video no longer gets stretched to fill a mismatched aspect-ratio box — degrades to letterboxing (`object-fit:contain`) instead
+
+<!-- markdownlint-disable-next-line MD024 -->
+
 ## 0.5.3 (2026-10-04)
 * (ipod86) fix: clear ensuredFolders cache on object deletion to prevent stale "no existing object" warnings for rediscovered drives/cameras
 

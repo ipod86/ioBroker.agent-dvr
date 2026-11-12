@@ -1,6 +1,6 @@
 {
   "name": "iobroker.agent-dvr",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Connects ioBroker to AgentDVR: auto-discovers cameras, mirrors all device values as data points, delivers real-time triggers on new recordings and brings gallery and live widgets for vis-2, AURA and other dashboards.",
   "author": {
     "name": "ipod86",
