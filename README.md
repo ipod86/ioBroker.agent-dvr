@@ -510,6 +510,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (ipod86) fix: live overview web component fits its tiles to the widget size (no scrolling, no empty space); option "Fit to the widget size"
 * (ipod86) chore: description and keywords mention the widgets for vis-2 and AURA
 
 ### 0.8.0 (2026-11-12)

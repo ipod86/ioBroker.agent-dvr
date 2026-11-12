@@ -1,3 +1,4 @@
+/* global ResizeObserver, getComputedStyle */
 /* Gemeinsame Basis der Live-Komponenten (eine Kamera / alle Kameras): Schnappschuss-Kacheln, die sich
    im Browser im eingestellten Intervall erneuern, und ein Klick öffnet den Live-Stream im Player. */
 import { IobWebComponent } from '@iobroker/web-components/element';
@@ -97,6 +98,66 @@ export class AgentDvrLiveBase extends IobWebComponent {
 		for (const cell of root.querySelectorAll('.cell')) {
 			cell.addEventListener('click', () => this._open(cell.getAttribute('data-cam')));
 		}
+		this._fit();
+	}
+
+	/** @returns {boolean} tiles are sized to fit the component without scrolling */
+	_fits() {
+		return !this._single() && (this.settings || {}).fit !== false;
+	}
+
+	/**
+	 * Fit mode: picks the column count with the largest tiles that still fit the component without scrolling,
+	 * and centres the grid. Runs on every render and whenever the component changes its size.
+	 */
+	_fit() {
+		const root = this.shadowRoot.querySelector('.root');
+		const grid = root && root.querySelector('.grid');
+		if (!this._fits() || !grid) {
+			root && root.classList.remove('fitted');
+			return;
+		}
+		if (!this._ro && typeof ResizeObserver !== 'undefined') {
+			this._ro = new ResizeObserver(() => this._fit());
+			this._ro.observe(root);
+		}
+		const cs = getComputedStyle(root);
+		const W = root.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+		const H = root.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+		const n = grid.children.length;
+		if (!n || W <= 0 || H <= 0) {
+			return;
+		}
+		const gap = parseFloat(getComputedStyle(grid).rowGap) || 8;
+		const capEl = grid.querySelector('.cap');
+		const cap = capEl
+			? capEl.getBoundingClientRect().height + (parseFloat(getComputedStyle(capEl).marginTop) || 0)
+			: 0;
+		// höchstes Seitenverhältnis (Höhe/Breite) aller Kameras, damit keine Kachel überläuft
+		let ratio = 0;
+		for (const cam of this._cams) {
+			const m = String(cam.aspect || this._cfg.liveAspect || '16/9').split(/[/:x]/);
+			const r = Number(m[1]) / Number(m[0]);
+			ratio = Math.max(ratio, r > 0 && isFinite(r) ? r : 9 / 16);
+		}
+		let best = { cols: 1, w: 0 };
+		for (let cols = 1; cols <= n; cols++) {
+			const rows = Math.ceil(n / cols);
+			const byWidth = (W - (cols - 1) * gap) / cols;
+			const byHeight = ((H - (rows - 1) * gap) / rows - cap) / ratio;
+			const w = Math.floor(Math.min(byWidth, byHeight));
+			if (w > best.w) {
+				best = { cols, w };
+			}
+		}
+		if (best.w < 40) {
+			// zu klein für alle Kameras: normales Raster mit Scrollen
+			root.classList.remove('fitted');
+			grid.style.gridTemplateColumns = '';
+			return;
+		}
+		root.classList.add('fitted');
+		grid.style.gridTemplateColumns = `repeat(${best.cols}, ${best.w}px)`;
 	}
 
 	/**
@@ -136,5 +197,7 @@ export class AgentDvrLiveBase extends IobWebComponent {
 		super.disconnectedCallback && super.disconnectedCallback();
 		this._timer.stop();
 		this._player.el.open && this._player.el.close();
+		this._ro && this._ro.disconnect();
+		this._ro = null;
 	}
 }

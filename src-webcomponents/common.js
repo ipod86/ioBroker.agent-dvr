@@ -200,6 +200,7 @@ export function css(c, follow, editMode) {
 		`.tagbtn{padding:4px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:.8rem}` +
 		`.tagbtn.on{background:var(--adv-accent);color:${follow ? 'var(--iob-primary-contrast)' : '#fff'};border-color:var(--adv-accent)}` +
 		`.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(${Number(c.minCol) || 150}px,1fr));gap:${gap}px}` +
+		`.fitted{overflow:hidden;display:flex;align-items:center;justify-content:center}.fitted .grid{justify-content:center;align-content:center}` +
 		`.cell{display:flex;flex-direction:column;cursor:pointer;min-width:0}` +
 		`.img{position:relative;display:block;border-radius:var(--adv-radius);overflow:hidden;background:var(--adv-card-bg)}` +
 		`.img img{width:100%;height:auto;display:block}` +
