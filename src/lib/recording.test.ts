@@ -29,6 +29,8 @@ import {
 	containsBinary,
 	safeMessage,
 	sendFileStoragePath,
+	cameraRecordingFiles,
+	needsInitialFill,
 } from './recording';
 
 describe('recording → ffmpeg detection', () => {
@@ -302,5 +304,29 @@ describe('recording → message bus guard', () => {
 		expect(r.ok).to.equal(false);
 		expect(r.error).to.match(/binary/);
 		expect(r).to.not.have.property('data');
+	});
+});
+
+describe('recording → initial fill and cleanup', () => {
+	it('fills slot 1 when it is empty or holds another recording', () => {
+		expect(needsInitialFill(false, null, '8_a.mkv')).to.equal(true);
+		expect(needsInitialFill(true, '8_old.mkv', '8_a.mkv')).to.equal(true);
+		expect(needsInitialFill(true, '8_a.mkv', '8_a.mkv')).to.equal(false);
+		expect(needsInitialFill(false, null, '')).to.equal(false);
+	});
+
+	it('cleans all slot files and the send file in both formats', () => {
+		const files = cameraRecordingFiles();
+		expect(files).to.have.members([
+			'rec1.mp4',
+			'rec2.mp4',
+			'rec3.mp4',
+			'send.mp4',
+			'rec1.mkv',
+			'rec2.mkv',
+			'rec3.mkv',
+			'send.mkv',
+		]);
+		expect(files.some(f => f.startsWith('grab'))).to.equal(false);
 	});
 });

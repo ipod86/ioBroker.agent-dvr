@@ -67,6 +67,15 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 
 	const sel: string[] = Array.isArray(native.recordingFileCams) ? native.recordingFileCams : [];
 	const allCams = sel.length === 0;
+	// selected cameras that AgentDVR no longer reports stay visible, so they can be unchecked
+	const listed = cams.length
+		? [
+				...cams,
+				...sel
+					.filter(k => !cams.some(c => c.key === k))
+					.map(k => ({ key: k, name: I18n.t('cfgRecordingCamGone', k) })),
+			]
+		: sel.map(k => ({ key: k, name: k }));
 
 	return (
 		<div>
@@ -162,7 +171,7 @@ const RecordingFilesSection: React.FC<Props> = ({ native, onChange, socket, inst
 					/>
 					{!allCams || cams.length ? (
 						<Box sx={{ display: 'flex', flexWrap: 'wrap', ml: 3 }}>
-							{(cams.length ? cams : sel.map(k => ({ key: k, name: k }))).map(c => (
+							{listed.map(c => (
 								<FormControlLabel
 									key={c.key}
 									control={

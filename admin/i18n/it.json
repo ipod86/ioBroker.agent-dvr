@@ -182,5 +182,6 @@
   "ffmpegNotFound": "⚠ ffmpeg non trovato – installalo con il gestore pacchetti del sistema (ad es. apt install ffmpeg, su Windows winget install ffmpeg) o inserisci il percorso qui sotto",
   "ffmpegNotRunning": "L'istanza non è in esecuzione – lo stato di ffmpeg viene mostrato dopo l'avvio",
   "ffmpegChecking": "Verifica di ffmpeg …",
-  "ffmpegSearchAgain": "Cerca di nuovo"
+  "ffmpegSearchAgain": "Cerca di nuovo",
+  "cfgRecordingCamGone": "%s (non più presente in AgentDVR)"
 }

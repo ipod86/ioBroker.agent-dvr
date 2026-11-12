@@ -32,6 +32,7 @@ __export(recording_exports, {
   MB: () => MB,
   TELEGRAM_MAX_BYTES: () => TELEGRAM_MAX_BYTES,
   assertNoBinary: () => assertNoBinary,
+  cameraRecordingFiles: () => cameraRecordingFiles,
   clampNumber: () => clampNumber,
   containsBinary: () => containsBinary,
   detectFfmpeg: () => detectFfmpeg,
@@ -46,6 +47,7 @@ __export(recording_exports, {
   isValidRecordingName: () => isValidRecordingName,
   maxRecordingBytes: () => maxRecordingBytes,
   mimeOf: () => mimeOf,
+  needsInitialFill: () => needsInitialFill,
   parseFfmpegVersion: () => parseFfmpegVersion,
   probeFfmpeg: () => probeFfmpeg,
   recordingAbsPath: () => recordingAbsPath,
@@ -95,6 +97,22 @@ function recordingStoragePath(fid, slot, ext) {
 }
 function sendFileStoragePath(fid, ext) {
   return `${fid}/send.${ext}`;
+}
+function cameraRecordingFiles() {
+  const out = [];
+  for (const ext of ["mp4", "mkv"]) {
+    for (let i = 1; i <= 3; i++) {
+      out.push(`rec${i}.${ext}`);
+    }
+    out.push(`send.${ext}`);
+  }
+  return out;
+}
+function needsInitialFill(slot1Exists, name1, lastFn) {
+  if (!lastFn) {
+    return false;
+  }
+  return !slot1Exists || name1 !== lastFn;
 }
 function recordingUri(namespace, fid, slot, ext) {
   return `iobfile://${namespace}/${recordingStoragePath(fid, slot, ext)}`;
@@ -398,6 +416,7 @@ function safeMessage(value) {
   MB,
   TELEGRAM_MAX_BYTES,
   assertNoBinary,
+  cameraRecordingFiles,
   clampNumber,
   containsBinary,
   detectFfmpeg,
@@ -412,6 +431,7 @@ function safeMessage(value) {
   isValidRecordingName,
   maxRecordingBytes,
   mimeOf,
+  needsInitialFill,
   parseFfmpegVersion,
   probeFfmpeg,
   recordingAbsPath,

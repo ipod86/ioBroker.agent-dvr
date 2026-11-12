@@ -107,6 +107,34 @@ export function sendFileStoragePath(fid: string, ext: string): string {
 }
 
 /**
+ * All recording files a camera can have in the file storage (slots and the send file).
+ */
+export function cameraRecordingFiles(): string[] {
+	const out: string[] = [];
+	for (const ext of ['mp4', 'mkv']) {
+		for (let i = 1; i <= 3; i++) {
+			out.push(`rec${i}.${ext}`);
+		}
+		out.push(`send.${ext}`);
+	}
+	return out;
+}
+
+/**
+ * True if the current last recording should be stored on start: slot 1 empty or holding another recording.
+ *
+ * @param slot1Exists slot 1 file exists
+ * @param name1 value of recordings.name1
+ * @param lastFn file name of the newest recording in AgentDVR
+ */
+export function needsInitialFill(slot1Exists: boolean, name1: unknown, lastFn: string): boolean {
+	if (!lastFn) {
+		return false;
+	}
+	return !slot1Exists || name1 !== lastFn;
+}
+
+/**
  * ioBroker file URI resolved by telegram >= 6 (same format as the alert photos).
  *
  * @param namespace adapter namespace (meta object id), e.g. agent-dvr.0

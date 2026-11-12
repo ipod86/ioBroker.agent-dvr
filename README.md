@@ -488,6 +488,18 @@ Files: `<namespace>/<cam>/rec1.mp4` (or `.mkv`) … `rec3`. On each new recordin
 
 **Storage limitation:** `file1`–`file3` only contain a path when the ioBroker file storage is on the local disk (default file/jsonl objects DB). With Redis or another non-file objects DB they stay empty — use `uri*` (Telegram 6+, scripts) or `url*` instead, which work with every storage.
 
+### What happens when…
+
+- **…the option is switched on:** at the next start (saving the settings restarts the instance) every selected camera gets its current last recording, if slot 1 is empty or holds an older one — one camera after the other, with the size limit. After that each new recording is stored as it appears.
+- **…a camera is newly selected:** same as above, it gets its current last recording right away.
+- **…a new camera is added in AgentDVR:** it shows up at the next poll (the camera list in the settings is read live from the running instance); with *All cameras* it is filled and stored like the others.
+- **…a camera is deselected:** at the next start its `recordings` data points and its files `rec1`–`rec3` and `send.*` are deleted.
+- **…the option is switched off:** at the next start the `recordings` data points and the `rec*`/`send.*` files of all cameras are deleted.
+- **…a camera is removed from AgentDVR:** its data points are removed as before, and its whole folder in the file storage (`agent-dvr.0/<cam>/` — recordings, `send.*` and alert photos) is deleted. If AgentDVR suddenly reports no camera at all, nothing is deleted (assumed to be a hiccup).
+- **…a selected camera no longer exists:** the settings list it as *"<cam> (no longer in AgentDVR)"* so you can uncheck it; the adapter simply ignores it.
+
+`send.mp4|mkv` (used by `sendRecording`/`getRecording` for recordings that are not in a slot) stays until the camera's recordings are cleaned up — one file per camera, overwritten each time.
+
 ### MP4 and ffmpeg
 
 AgentDVR records MKV. With **Provide as MP4** (default on) the adapter remuxes the MKV to MP4 with ffmpeg — only the container changes, video and audio are copied, so it takes well under a second. HEVC (H.265) videos get the `hvc1` tag so Apple devices and Telegram play them. If the audio codec does not fit into MP4, the video is remuxed without audio (logged once). Without ffmpeg the MKV is provided unchanged (one info log).
@@ -606,6 +618,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 ### **WORK IN PROGRESS**
 * (ipod86) feat: keep the last 1–3 recordings per camera in the ioBroker file storage (`recordings.file/uri/url/name/ts`), optionally as MP4 via ffmpeg
 * (ipod86) feat: `sendRecording` / `getRecording` send a recording to Telegram as video or provide it as a file for scripts
+* (ipod86) feat: initial fill on enabling; recordings and files are cleaned up when switched off, deselected or the camera is removed
 * (ipod86) feat: ffmpeg detection with status in the settings and `info.ffmpeg`
 * (ipod86) fix: the settings page uses all 11 languages
 

@@ -483,6 +483,18 @@ Dateien: `<namespace>/<cam>/rec1.mp4` (bzw. `.mkv`) … `rec3`. Bei jeder neuen 
 
 **Einschränkung Dateispeicher:** `file1`–`file3` enthalten nur dann einen Pfad, wenn der ioBroker-Dateispeicher auf der lokalen Platte liegt (Standard: Datei-/jsonl-Objekt-DB). Mit Redis oder einer anderen nicht dateibasierten Objekt-DB bleiben sie leer — dann `uri*` (Telegram ab 6, Skripte) oder `url*` verwenden, die mit jedem Speicher funktionieren.
 
+### Was passiert, wenn…
+
+- **…die Option eingeschaltet wird:** beim nächsten Start (Speichern der Einstellungen startet die Instanz neu) bekommt jede ausgewählte Kamera ihre aktuelle letzte Aufnahme, wenn Platz 1 leer ist oder eine ältere enthält — eine Kamera nach der anderen, mit Größenlimit. Danach wird jede neue Aufnahme abgelegt, sobald sie erscheint.
+- **…eine Kamera neu ausgewählt wird:** wie oben, sie bekommt sofort ihre aktuelle letzte Aufnahme.
+- **…in AgentDVR eine Kamera hinzukommt:** sie erscheint beim nächsten Poll (die Kameraliste in den Einstellungen kommt live von der laufenden Instanz); mit *Alle Kameras* wird sie wie die anderen befüllt und gespeichert.
+- **…eine Kamera abgewählt wird:** beim nächsten Start werden ihre `recordings`-Datenpunkte und ihre Dateien `rec1`–`rec3` und `send.*` gelöscht.
+- **…die Option ausgeschaltet wird:** beim nächsten Start werden die `recordings`-Datenpunkte und die `rec*`/`send.*`-Dateien aller Kameras gelöscht.
+- **…eine Kamera aus AgentDVR entfernt wird:** ihre Datenpunkte werden wie bisher entfernt, und ihr ganzer Ordner im Dateispeicher (`agent-dvr.0/<cam>/` — Aufnahmen, `send.*` und Alarmfotos) wird gelöscht. Meldet AgentDVR plötzlich gar keine Kamera, wird nichts gelöscht (vermutlich ein Aussetzer).
+- **…eine ausgewählte Kamera nicht mehr existiert:** die Einstellungen zeigen sie als *„<cam> (nicht mehr in AgentDVR)“*, damit man sie abwählen kann; der Adapter ignoriert sie einfach.
+
+`send.mp4|mkv` (von `sendRecording`/`getRecording` für Aufnahmen, die in keinem Platz liegen) bleibt bestehen, bis die Aufnahmen der Kamera aufgeräumt werden — eine Datei pro Kamera, wird jedes Mal überschrieben.
+
 ### MP4 und ffmpeg
 
 AgentDVR nimmt als MKV auf. Mit **Als MP4 bereitstellen** (Standard: an) packt der Adapter die MKV mit ffmpeg in MP4 um — nur der Container ändert sich, Video und Ton werden kopiert, das dauert deutlich unter einer Sekunde. HEVC-Videos (H.265) bekommen das `hvc1`-Tag, damit Apple-Geräte und Telegram sie abspielen. Passt der Audio-Codec nicht in MP4, wird ohne Ton umgepackt (einmal geloggt). Ohne ffmpeg wird die MKV unverändert bereitgestellt (ein Info-Log).
@@ -606,6 +618,7 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 ### **WORK IN PROGRESS**
 * (ipod86) feat: die letzten 1–3 Aufnahmen pro Kamera im ioBroker-Dateispeicher (`recordings.file/uri/url/name/ts`), auf Wunsch als MP4 über ffmpeg
 * (ipod86) feat: `sendRecording` / `getRecording` schicken eine Aufnahme als Video an Telegram oder stellen sie als Datei für Skripte bereit
+* (ipod86) feat: Erstbefüllung beim Einschalten; Aufnahmen und Dateien werden beim Abschalten, Abwählen oder Entfernen der Kamera aufgeräumt
 * (ipod86) feat: ffmpeg-Erkennung mit Status in den Einstellungen und `info.ffmpeg`
 * (ipod86) fix: die Einstellungsseite nutzt alle 11 Sprachen
 

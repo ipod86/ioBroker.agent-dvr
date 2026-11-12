@@ -348,6 +348,10 @@ class AgentDvr extends utils.Adapter {
   audioDropLogged = false;
   noFfmpegLogged = false;
   noLocalPathLogged = false;
+  // initial fill of the recording slots runs one camera after the other, after the start cleanup
+  recGate = () => {
+  };
+  recChain = new Promise((resolve) => this.recGate = resolve);
   constructor(options = {}) {
     super({ ...options, name: "agent-dvr" });
     this.on("ready", this.onReady.bind(this));
@@ -397,9 +401,7 @@ class AgentDvr extends utils.Adapter {
     } catch (e) {
       this.log.warn(`First poll error: ${e.message}`);
     }
-    if (this.config.enableRecordingFiles) {
-      this.pruneAllRecordingSlots().catch((e) => this.log.warn(`Recording cleanup: ${e.message}`));
-    }
+    void this.syncRecordingStorage().catch((e) => this.log.warn(`Recording cleanup: ${e.message}`)).finally(() => this.recGate());
     this.schedulePoll(pollSeconds * 1e3);
     this.subscribeStates("*");
     this.subscribeForeignObjects("system.adapter.web.*");
@@ -1134,10 +1136,10 @@ class AgentDvr extends utils.Adapter {
   queueRecordingSave(d, fid, ev) {
     if (this.recBusy[fid]) {
       this.recPending[fid] = { d, ev };
-      return;
+      return Promise.resolve();
     }
     this.recBusy[fid] = true;
-    void (async () => {
+    return (async () => {
       let job = { d, ev };
       while (job && !this._pollStopped) {
         try {
@@ -1363,14 +1365,82 @@ class AgentDvr extends utils.Adapter {
       this.ensuredFolders.delete(`${ch}#${c}`);
     }
   }
-  async pruneAllRecordingSlots() {
+  // Start: cameras that are switched off or deselected lose their recordings (states and files),
+  // the others lose the slots above the configured number.
+  async syncRecordingStorage() {
     const count = (0, import_recording.recordingSlots)(this.config.recordingFileCount);
     for (const dev of this.devById.values()) {
+      if (dev.ot !== 2) {
+        continue;
+      }
       const fid = this.deviceFolder(dev);
-      if (await this.getObjectAsync(`${fid}.recordings`)) {
-        await this.pruneRecordingSlots(fid, count);
+      if (this.recordingCamEnabled(fid)) {
+        if (await this.getObjectAsync(`${fid}.recordings`)) {
+          await this.pruneRecordingSlots(fid, count);
+        }
+      } else {
+        await this.cleanupCameraRecordings(fid);
       }
     }
+  }
+  // Removes <cam>.recordings (recursive) and the files rec1..3.* and send.* of a camera.
+  async cleanupCameraRecordings(fid) {
+    let removed = 0;
+    for (const name of (0, import_recording.cameraRecordingFiles)()) {
+      const p = `${fid}/${name}`;
+      if (await this.fileExistsAsync(this.namespace, p).catch(() => false)) {
+        await this.delFileAsync(this.namespace, p).catch(() => {
+        });
+        removed++;
+      }
+    }
+    const ch = `${fid}.recordings`;
+    if (await this.getObjectAsync(ch)) {
+      await this.delObjectAsync(ch, { recursive: true });
+      removed++;
+    }
+    this.forgetEnsured(ch);
+    for (let c = 1; c <= 3; c++) {
+      this.ensuredFolders.delete(`${ch}#${c}`);
+    }
+    if (removed) {
+      this.log.info(`Recordings of ${fid} removed (option off or camera not selected)`);
+    }
+  }
+  // Removes a folder in the file storage recursively (recordings, send file, alert photos of a camera).
+  async deleteStorageFolder(dir) {
+    const entries = await this.readDirAsync(this.namespace, dir).catch(() => []);
+    for (const e of entries) {
+      const p = `${dir}/${e.file}`;
+      if (e.isDir) {
+        await this.deleteStorageFolder(p);
+      } else {
+        await this.delFileAsync(this.namespace, p).catch(() => {
+        });
+      }
+    }
+    await this.delFileAsync(this.namespace, dir).catch(() => {
+    });
+  }
+  // Stores the current last recording if slot 1 is empty or holds an older one. Runs in a chain,
+  // one camera after the other, and only after the start cleanup.
+  queueInitialFill(d, fid, ev) {
+    this.recChain = this.recChain.then(async () => {
+      if (this._pollStopped || !this.recordingCamEnabled(fid) || this.recBusy[fid] || !ev.fn) {
+        return;
+      }
+      try {
+        const name1 = await this.getStateAsync(`${fid}.recordings.name1`).catch(() => null);
+        const slot1 = await this.slotExt(fid, 1);
+        if (!(0, import_recording.needsInitialFill)(!!slot1, name1 == null ? void 0 : name1.val, ev.fn)) {
+          return;
+        }
+        this.log.debug(`Initial fill ${fid}: ${ev.fn}`);
+        await this.queueRecordingSave(d, fid, ev);
+      } catch (e) {
+        this.log.warn(`Initial recording ${fid}: ${e.message}`);
+      }
+    });
   }
   // Rewrites url1..N after a change of the web instance.
   async refreshRecordingUrls() {
@@ -1811,6 +1881,13 @@ class AgentDvr extends utils.Adapter {
       this.log.info(`[agent-dvr] removing stale device: ${rel}`);
       await this.delObjectAsync(rel, { recursive: true });
       this.forgetEnsured(rel);
+      for (let c = 1; c <= 3; c++) {
+        this.ensuredFolders.delete(`${rel}.recordings#${c}`);
+      }
+      delete this.recPending[rel];
+      await this.deleteStorageFolder(rel).catch(
+        (e) => this.log.debug(`File storage cleanup ${rel}: ${e.message}`)
+      );
       for (const [oid, d] of this.devById) {
         if (this.deviceFolder(d) === rel) {
           this.devById.delete(oid);
@@ -2125,6 +2202,9 @@ class AgentDvr extends utils.Adapter {
     }
     let newCount = 0;
     const firstRun = this.lastEventFn[oid] === void 0;
+    if (firstRun && events.length && this.recordingCamEnabled(fid)) {
+      this.queueInitialFill(d, fid, events[0]);
+    }
     if (events.length) {
       const prev = this.lastEventFn[oid];
       if (prev !== void 0) {
@@ -2158,7 +2238,7 @@ class AgentDvr extends utils.Adapter {
     if (newCount > 0) {
       await this.pulse(`${fid}.events.new`);
       if (this.recordingCamEnabled(fid)) {
-        this.queueRecordingSave(d, fid, events[0]);
+        void this.queueRecordingSave(d, fid, events[0]);
       }
     }
     if (newCount > 0 || lateTags > 0) {
@@ -2277,7 +2357,9 @@ class AgentDvr extends utils.Adapter {
       for (const d of devices) {
         await this.buildDevice(d);
       }
-      await this.pruneStaleDevices(activeFolders);
+      if (devices.length) {
+        await this.pruneStaleDevices(activeFolders);
+      }
       const stats = asJson((await this.apiGet("/command/getSystemStats")).data);
       if (stats) {
         const {

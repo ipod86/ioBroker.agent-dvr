@@ -182,5 +182,6 @@
   "ffmpegNotFound": "⚠ 未找到 ffmpeg – 请使用系统包管理器安装（例如 apt install ffmpeg，Windows 上 winget install ffmpeg），或在下方填写路径",
   "ffmpegNotRunning": "实例未运行 – 启动后将显示 ffmpeg 状态",
   "ffmpegChecking": "正在检查 ffmpeg …",
-  "ffmpegSearchAgain": "重新搜索"
+  "ffmpegSearchAgain": "重新搜索",
+  "cfgRecordingCamGone": "%s（AgentDVR 中已不存在）"
 }
