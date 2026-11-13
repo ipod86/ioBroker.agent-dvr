@@ -623,7 +623,7 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.9.1 (2026-11-13)
 * (ipod86) fix: Aufnahmen wurden gespeichert, während AgentDVR sie noch schrieb (Video abgeschnitten) — der Adapter wartet jetzt, bis die Aufnahme fertig ist
 * (ipod86) fix: `sendRecording` gibt Breite, Höhe und Dauer an Telegram mit — größere Videos wurden im Chat im falschen Seitenverhältnis gezeigt; `sendRecording`/`getRecording` warten außerdem, bis eine Aufnahme fertig ist
 * (ipod86) feat: Nachrichten `getCameras` und `getWidgets` für die Web-Komponenten (Vorbereitung für Auswahllisten statt Objektbaum)
