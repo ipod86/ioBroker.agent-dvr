@@ -616,6 +616,7 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) fix: Aufnahmen wurden gespeichert, während AgentDVR sie noch schrieb (Video abgeschnitten) — der Adapter wartet jetzt, bis die Aufnahme fertig ist
 * (ipod86) feat: Nachrichten `getCameras` und `getWidgets` für die Web-Komponenten (Vorbereitung für Auswahllisten statt Objektbaum)
 
 ### 0.9.0 (2026-11-12)

@@ -52,6 +52,7 @@ __export(recording_exports, {
   probeFfmpeg: () => probeFfmpeg,
   recordingAbsPath: () => recordingAbsPath,
   recordingFileName: () => recordingFileName,
+  recordingFinished: () => recordingFinished,
   recordingSlots: () => recordingSlots,
   recordingStoragePath: () => recordingStoragePath,
   recordingUri: () => recordingUri,
@@ -226,6 +227,9 @@ async function detectFfmpeg(candidates, probe = (b) => probeFfmpeg(b)) {
 }
 function ffmpegStatusText(info) {
   return info.found ? `${info.version} (${info.path})` : "not found";
+}
+function recordingFinished(prevSize, size, recording) {
+  return !recording && size > 0 && size === prevSize;
 }
 function isHevcMkv(buf) {
   return buf.subarray(0, 256 * 1024).includes("V_MPEGH/ISO/HEVC");
@@ -433,6 +437,7 @@ function safeMessage(value) {
   probeFfmpeg,
   recordingAbsPath,
   recordingFileName,
+  recordingFinished,
   recordingSlots,
   recordingStoragePath,
   recordingUri,

@@ -616,6 +616,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 
 ## Changelog
 ### **WORK IN PROGRESS**
+* (ipod86) fix: recordings were stored while AgentDVR was still writing them (video cut off) — the adapter now waits until the recording is finished
 * (ipod86) feat: messages `getCameras` and `getWidgets` for the web components (prepares dropdowns instead of the object browser)
 
 ### 0.9.0 (2026-11-12)

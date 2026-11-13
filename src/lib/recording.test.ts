@@ -31,6 +31,7 @@ import {
 	sendFileStoragePath,
 	cameraRecordingFiles,
 	needsInitialFill,
+	recordingFinished,
 } from './recording';
 
 describe('recording → ffmpeg detection', () => {
@@ -326,5 +327,19 @@ describe('recording → initial fill and cleanup', () => {
 			'send.mkv',
 		]);
 		expect(files.some(f => f.startsWith('grab'))).to.equal(false);
+	});
+
+	describe('recordingFinished', () => {
+		it('needs two equal sizes', () => {
+			expect(recordingFinished(-1, 1000, false)).to.equal(false);
+			expect(recordingFinished(900, 1000, false)).to.equal(false);
+			expect(recordingFinished(1000, 1000, false)).to.equal(true);
+		});
+		it('waits while the camera records', () => {
+			expect(recordingFinished(1000, 1000, true)).to.equal(false);
+		});
+		it('ignores an empty size', () => {
+			expect(recordingFinished(0, 0, false)).to.equal(false);
+		});
 	});
 });

@@ -347,6 +347,18 @@ export function ffmpegStatusText(info: FfmpegInfo): string {
 	return info.found ? `${info.version} (${info.path})` : 'not found';
 }
 
+/**
+ * AgentDVR lists a recording in getEvents while it is still being written. A recording counts as
+ * finished when the camera no longer records and the listed size did not change since the last check.
+ *
+ * @param prevSize listed size at the previous check (-1 before the first check)
+ * @param size listed size now
+ * @param recording true while the camera records
+ */
+export function recordingFinished(prevSize: number, size: number, recording: boolean): boolean {
+	return !recording && size > 0 && size === prevSize;
+}
+
 // ---- remux ----
 
 /**

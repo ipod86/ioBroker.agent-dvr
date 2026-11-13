@@ -28,6 +28,7 @@ import {
 	assertNoBinary,
 	cameraRecordingFiles,
 	needsInitialFill,
+	recordingFinished,
 	safeMessage,
 	sendFileStoragePath,
 	type DownloadResult,
@@ -1404,6 +1405,45 @@ class AgentDvr extends utils.Adapter {
 		})();
 	}
 
+	// AgentDVR lists a recording while it is still being written: waits until the camera stops recording
+	// and the listed size stays the same between two checks (at most 10 minutes). false = adapter stops
+	// or the recording disappeared.
+	private async waitRecordingFinished(oid: number | string, fn: string): Promise<boolean> {
+		const deadline = Date.now() + 10 * 60_000;
+		let prev = -1;
+		let waited = false;
+		while (!this._pollStopped) {
+			const res = await this.apiGet(`/q/getEvents?oid=${encodeURIComponent(String(oid))}&ot=2`);
+			const json = asJson(res.data);
+			const events = (
+				Array.isArray(json?.events) ? json.events : Array.isArray(json) ? json : []
+			) as AgentDvrEvent[];
+			const ev = res.ok && json ? events.find(e => e.fn === fn) : undefined;
+			if (res.ok && json && !ev) {
+				this.log.debug(`Recording ${fn} no longer listed`);
+				return false;
+			}
+			const size = Number(ev?.sb ?? 0);
+			const dev = [...this.devById.values()].find(x => x.ot === 2 && String(x.oid) === String(oid));
+			const data = dev?.raw.data as Record<string, unknown> | undefined;
+			const recording = data?.recording === true;
+			if (recordingFinished(prev, size, recording)) {
+				if (waited) {
+					this.log.debug(`Recording ${fn} finished (${fmtMb(size)})`);
+				}
+				return true;
+			}
+			if (Date.now() > deadline) {
+				this.log.info(`Recording ${fn} still growing after 10 minutes, storing the current state`);
+				return true;
+			}
+			prev = size;
+			waited = true;
+			await this.delay(4000);
+		}
+		return false;
+	}
+
 	// Downloads a recording from AgentDVR into memory (never to disk), with size limit and timeout.
 	private fetchRecording(oid: number | string, fn: string, maxBytes: number): Promise<DownloadResult> {
 		return downloadToBuffer(
@@ -1557,6 +1597,9 @@ class AgentDvr extends utils.Adapter {
 		const listed = Number(ev.sb ?? 0);
 		if (exceedsLimit(listed, maxBytes)) {
 			this.log.info(`Recording ${fn} (${fmtMb(listed)}) not stored: larger than ${fmtMb(maxBytes)}`);
+			return;
+		}
+		if (!(await this.waitRecordingFinished(d.oid, fn))) {
 			return;
 		}
 		const dl = await this.fetchRecording(d.oid, fn, maxBytes);
