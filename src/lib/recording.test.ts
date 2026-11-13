@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import * as fs from 'node:fs';
 import * as http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import * as path from 'node:path';
@@ -32,6 +33,7 @@ import {
 	cameraRecordingFiles,
 	needsInitialFill,
 	recordingFinished,
+	videoInfo,
 } from './recording';
 
 describe('recording → ffmpeg detection', () => {
@@ -340,6 +342,28 @@ describe('recording → initial fill and cleanup', () => {
 		});
 		it('ignores an empty size', () => {
 			expect(recordingFinished(0, 0, false)).to.equal(false);
+		});
+	});
+
+	describe('videoInfo', () => {
+		const fixture = (name: string): Buffer =>
+			fs.readFileSync(path.join(__dirname, '..', '..', 'test', 'fixtures', name));
+		it('reads a fragmented MP4 (as remuxed by the adapter)', () => {
+			expect(videoInfo(fixture('video-fragmented.mp4'), 'mp4')).to.deep.equal({
+				width: 160,
+				height: 90,
+				duration: 3,
+			});
+		});
+		it('reads a normal MP4', () => {
+			expect(videoInfo(fixture('video.mp4'), 'mp4')).to.deep.equal({ width: 160, height: 90, duration: 3 });
+		});
+		it('reads an MKV', () => {
+			expect(videoInfo(fixture('video.mkv'), 'mkv')).to.deep.equal({ width: 160, height: 90, duration: 3 });
+		});
+		it('returns zeros for garbage', () => {
+			expect(videoInfo(Buffer.from('not a video'), 'mp4')).to.deep.equal({ width: 0, height: 0, duration: 0 });
+			expect(videoInfo(Buffer.alloc(0), 'mkv')).to.deep.equal({ width: 0, height: 0, duration: 0 });
 		});
 	});
 });

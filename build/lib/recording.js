@@ -62,7 +62,8 @@ __export(recording_exports, {
   resolveOnPath: () => resolveOnPath,
   runFfmpeg: () => runFfmpeg,
   safeMessage: () => safeMessage,
-  sendFileStoragePath: () => sendFileStoragePath
+  sendFileStoragePath: () => sendFileStoragePath,
+  videoInfo: () => videoInfo
 });
 module.exports = __toCommonJS(recording_exports);
 var import_node_child_process = require("node:child_process");
@@ -230,6 +231,203 @@ function ffmpegStatusText(info) {
 }
 function recordingFinished(prevSize, size, recording) {
   return !recording && size > 0 && size === prevSize;
+}
+function* mp4Boxes(buf, from, to) {
+  let p = from;
+  while (p + 8 <= to) {
+    let size = buf.readUInt32BE(p);
+    const type = buf.toString("latin1", p + 4, p + 8);
+    let head = 8;
+    if (size === 1) {
+      if (p + 16 > to) {
+        return;
+      }
+      size = Number(buf.readBigUInt64BE(p + 8));
+      head = 16;
+    } else if (size === 0) {
+      size = to - p;
+    }
+    if (size < head) {
+      return;
+    }
+    yield { type, start: p + head, end: Math.min(p + size, to) };
+    p += size;
+  }
+}
+function mp4Child(buf, parent, type) {
+  for (const b of mp4Boxes(buf, parent.start, parent.end)) {
+    if (b.type === type) {
+      return b;
+    }
+  }
+  return void 0;
+}
+function mp4Info(buf) {
+  const info = { width: 0, height: 0, duration: 0 };
+  const top = [...mp4Boxes(buf, 0, buf.length)];
+  const moov = top.find((b) => b.type === "moov");
+  if (!moov) {
+    return info;
+  }
+  let videoId = 0;
+  let videoScale = 0;
+  for (const trak of mp4Boxes(buf, moov.start, moov.end)) {
+    if (trak.type !== "trak") {
+      continue;
+    }
+    const tkhd = mp4Child(buf, trak, "tkhd");
+    if (!tkhd || tkhd.end - tkhd.start < 84) {
+      continue;
+    }
+    const w = buf.readUInt32BE(tkhd.end - 8) / 65536;
+    const h = buf.readUInt32BE(tkhd.end - 4) / 65536;
+    if (w > 0 && h > 0) {
+      const v1 = buf[tkhd.start] === 1;
+      videoId = buf.readUInt32BE(tkhd.start + (v1 ? 20 : 12));
+      info.width = Math.round(w);
+      info.height = Math.round(h);
+      const mdia = mp4Child(buf, trak, "mdia");
+      const mdhd = mdia && mp4Child(buf, mdia, "mdhd");
+      if (mdhd) {
+        videoScale = buf.readUInt32BE(mdhd.start + (buf[mdhd.start] === 1 ? 20 : 12));
+      }
+      break;
+    }
+  }
+  const mvhd = mp4Child(buf, moov, "mvhd");
+  if (mvhd) {
+    const v1 = buf[mvhd.start] === 1;
+    const scale = buf.readUInt32BE(mvhd.start + (v1 ? 20 : 12));
+    const dur = v1 ? Number(buf.readBigUInt64BE(mvhd.start + 24)) : buf.readUInt32BE(mvhd.start + 16);
+    if (scale > 0 && dur > 0) {
+      info.duration = Math.round(dur / scale);
+    }
+  }
+  if (!info.duration && videoId && videoScale) {
+    let end = 0;
+    for (const moof of top) {
+      if (moof.type !== "moof") {
+        continue;
+      }
+      for (const traf of mp4Boxes(buf, moof.start, moof.end)) {
+        if (traf.type !== "traf") {
+          continue;
+        }
+        const tfhd = mp4Child(buf, traf, "tfhd");
+        if (!tfhd || buf.readUInt32BE(tfhd.start + 4) !== videoId) {
+          continue;
+        }
+        const tfFlags = buf.readUInt32BE(tfhd.start) & 16777215;
+        let q = tfhd.start + 8;
+        if (tfFlags & 1) {
+          q += 8;
+        }
+        if (tfFlags & 2) {
+          q += 4;
+        }
+        const defDur = tfFlags & 8 ? buf.readUInt32BE(q) : 0;
+        const tfdt = mp4Child(buf, traf, "tfdt");
+        let t = 0;
+        if (tfdt) {
+          t = buf[tfdt.start] === 1 ? Number(buf.readBigUInt64BE(tfdt.start + 4)) : buf.readUInt32BE(tfdt.start + 4);
+        }
+        for (const trun of mp4Boxes(buf, traf.start, traf.end)) {
+          if (trun.type !== "trun") {
+            continue;
+          }
+          const flags = buf.readUInt32BE(trun.start) & 16777215;
+          const count = buf.readUInt32BE(trun.start + 4);
+          let r = trun.start + 8 + (flags & 1 ? 4 : 0) + (flags & 4 ? 4 : 0);
+          const per = (flags & 256 ? 4 : 0) + (flags & 512 ? 4 : 0) + (flags & 1024 ? 4 : 0) + (flags & 2048 ? 4 : 0);
+          for (let i = 0; i < count && r + per <= trun.end; i++) {
+            t += flags & 256 ? buf.readUInt32BE(r) : defDur;
+            r += per;
+          }
+        }
+        end = Math.max(end, t);
+      }
+    }
+    if (end > 0) {
+      info.duration = Math.round(end / videoScale);
+    }
+  }
+  return info;
+}
+function ebmlVint(buf, p, keepMarker) {
+  if (p >= buf.length) {
+    return null;
+  }
+  const first = buf[p];
+  let len = 1;
+  while (len <= 8 && !(first & 128 >> len - 1)) {
+    len++;
+  }
+  if (len > 8 || p + len > buf.length) {
+    return null;
+  }
+  let val = keepMarker ? first : first & 255 >> len;
+  let allOnes = (first & 255 >> len) === 255 >> len;
+  for (let i = 1; i < len; i++) {
+    val = val * 256 + buf[p + i];
+    if (buf[p + i] !== 255) {
+      allOnes = false;
+    }
+  }
+  return { val, len, unknown: allOnes };
+}
+function mkvInfo(buf) {
+  const info = { width: 0, height: 0, duration: 0 };
+  let scale = 1e6;
+  let durTicks = 0;
+  const MASTER = /* @__PURE__ */ new Set([408125543, 357149030, 374648427, 174, 224]);
+  const walk = (from, to, depth) => {
+    let p = from;
+    while (p < to && depth < 6) {
+      const id = ebmlVint(buf, p, true);
+      const size = id && ebmlVint(buf, p + id.len, false);
+      if (!id || !size) {
+        return;
+      }
+      const start = p + id.len + size.len;
+      const end = size.unknown ? to : Math.min(start + size.val, to);
+      if (id.val === 524531317) {
+        return;
+      }
+      if (MASTER.has(id.val)) {
+        walk(start, end, depth + 1);
+      } else if (id.val === 176 || id.val === 186 || id.val === 2807729) {
+        let v = 0;
+        for (let i = start; i < end; i++) {
+          v = v * 256 + buf[i];
+        }
+        if (id.val === 176 && !info.width) {
+          info.width = v;
+        } else if (id.val === 186 && !info.height) {
+          info.height = v;
+        } else if (id.val === 2807729) {
+          scale = v;
+        }
+      } else if (id.val === 17545) {
+        durTicks = end - start === 8 ? buf.readDoubleBE(start) : end - start === 4 ? buf.readFloatBE(start) : 0;
+      }
+      if (size.unknown) {
+        return;
+      }
+      p = end;
+    }
+  };
+  walk(0, buf.length, 0);
+  if (durTicks > 0) {
+    info.duration = Math.round(durTicks * scale / 1e9);
+  }
+  return info;
+}
+function videoInfo(buf, format) {
+  try {
+    return format === "mkv" ? mkvInfo(buf) : mp4Info(buf);
+  } catch {
+    return { width: 0, height: 0, duration: 0 };
+  }
 }
 function isHevcMkv(buf) {
   return buf.subarray(0, 256 * 1024).includes("V_MPEGH/ISO/HEVC");
@@ -447,6 +645,7 @@ function safeMessage(value) {
   resolveOnPath,
   runFfmpeg,
   safeMessage,
-  sendFileStoragePath
+  sendFileStoragePath,
+  videoInfo
 });
 //# sourceMappingURL=recording.js.map

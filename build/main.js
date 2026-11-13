@@ -1574,6 +1574,9 @@ class AgentDvr extends utils.Adapter {
     if ((0, import_recording.exceedsLimit)(listedSize, limitBytes)) {
       return { ok: false, size: listedSize, error: `Recording ${fn} is ${(0, import_recording.fmtMb)(listedSize)} \u2014 ${limitName}` };
     }
+    if (!await this.waitRecordingFinished(cam.oid, fn)) {
+      return { ok: false, error: `Recording ${fn} is no longer available` };
+    }
     const dl = await this.fetchRecording(cam.oid, fn, limitBytes);
     if (!dl.ok || !dl.data) {
       return {
@@ -1601,7 +1604,13 @@ class AgentDvr extends utils.Adapter {
     }
     const storagePath = (0, import_recording.sendFileStoragePath)(cam.fid, out.ext);
     await this.writeFileAsync(this.namespace, storagePath, out.data);
-    return this.describeStored(storagePath, `${fn.replace(/\.[^.]+$/, "")}.${out.ext}`, out.ext, out.data.length);
+    return this.describeStored(
+      storagePath,
+      `${fn.replace(/\.[^.]+$/, "")}.${out.ext}`,
+      out.ext,
+      out.data.length,
+      out.data
+    );
   }
   async storedFileSize(storagePath) {
     const local = this.localFilePath(storagePath);
@@ -1620,10 +1629,11 @@ class AgentDvr extends utils.Adapter {
     const abs = path.join(utils.getAbsoluteDefaultDataDir(), "files", this.namespace, ...storagePath.split("/"));
     return fs.existsSync(abs) ? abs : "";
   }
-  async describeStored(storagePath, fileName, format, size) {
+  async describeStored(storagePath, fileName, format, size, data) {
     if (this.webBaseUrl === void 0) {
       this.webBaseUrl = await this.findWebBaseUrl();
     }
+    const v = (0, import_recording.videoInfo)(data != null ? data : await this.readStoredFile(storagePath), format);
     return {
       ok: true,
       fileName,
@@ -1632,8 +1642,25 @@ class AgentDvr extends utils.Adapter {
       size,
       uri: `iobfile://${this.namespace}/${storagePath}`,
       url: this.webBaseUrl ? `${this.webBaseUrl}/${this.namespace}/recordings/${storagePath}` : "",
-      file: this.localFilePath(storagePath)
+      file: this.localFilePath(storagePath),
+      width: v.width,
+      height: v.height,
+      duration: v.duration
     };
+  }
+  // Reads a stored file inside the adapter process (never over the message bus); empty buffer on error.
+  async readStoredFile(storagePath) {
+    const local = this.localFilePath(storagePath);
+    try {
+      if (local) {
+        return await fs.promises.readFile(local);
+      }
+      const f = await this.readFileAsync(this.namespace, storagePath);
+      const file = f == null ? void 0 : f.file;
+      return Buffer.isBuffer(file) ? file : Buffer.from(file != null ? file : "");
+    } catch {
+      return Buffer.alloc(0);
+    }
   }
   async getRecording(msg) {
     return this.provideRecording(
@@ -1671,6 +1698,13 @@ class AgentDvr extends utils.Adapter {
       type: "video",
       fileName: r.fileName
     };
+    if (telegram) {
+      for (const k of ["width", "height", "duration"]) {
+        if (r[k]) {
+          payload[k] = r[k];
+        }
+      }
+    }
     for (const k of ["caption", "user", "chatId"]) {
       const v = msg[k];
       if (typeof v === "string" || typeof v === "number") {

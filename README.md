@@ -533,7 +533,7 @@ sendTo('agent-dvr.0', 'sendRecording', {
 });
 ```
 
-The message to the target is `{ text: 'iobfile://agent-dvr.0/<cam>/<file>', type: 'video', fileName: '<name>.mp4', caption, user, chatId }` — Telegram 6 and newer reads the file itself from the file storage. Other targets get the absolute file path instead (or the URI if the file storage is not on the local disk). The answer is `{ ok, error?, fileName, format, mime, size, uri, url, file }`. **Telegram bots can only send files up to 50 MB**; larger recordings are rejected with a clear error — before downloading when AgentDVR already lists the size.
+The message to the target is `{ text: 'iobfile://agent-dvr.0/<cam>/<file>', type: 'video', fileName: '<name>.mp4', width, height, duration, caption, user, chatId }` — Telegram 6 and newer reads the file itself from the file storage. `width`, `height` and `duration` are read from the video file: Telegram does not detect them itself for larger bot uploads and would otherwise show the video in the chat in a wrong aspect ratio until it is opened. Other targets get the absolute file path instead (or the URI if the file storage is not on the local disk). The answer is `{ ok, error?, fileName, format, mime, size, uri, url, file, width, height, duration }`. A recording AgentDVR is still writing is sent once it is finished. **Telegram bots can only send files up to 50 MB**; larger recordings are rejected with a clear error — before downloading when AgentDVR already lists the size.
 
 > **No video data goes over the ioBroker message bus.** Large messages (tens of MB) can block the states DB and with it the whole ioBroker. That is why the adapter passes only the file reference and refuses to send or answer anything that contains binary data.
 
@@ -545,9 +545,9 @@ on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
 });
 ```
 
-With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`) — or let Telegram 6+ read it itself: `sendTo('telegram.0', { text: getState('agent-dvr.0.cam_8_Reolink.recordings.uri1').val, type: 'video' })`.
+With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`). Prefer `sendRecording` over sending `recordings.uri1` to Telegram yourself — only `sendRecording` adds the picture size, so the chat shows the right aspect ratio.
 
-`getRecording` takes the same `camera`, `recording` and `mp4`, makes the recording available the same way and returns only where it is: `{ ok, error?, fileName, mime, format, size, uri, url, file }`. Read the file in your script yourself, e.g.:
+`getRecording` takes the same `camera`, `recording` and `mp4`, makes the recording available the same way and returns only where it is: `{ ok, error?, fileName, mime, format, size, uri, url, file, width, height, duration }`. Read the file in your script yourself, e.g.:
 
 ```js
 sendTo('agent-dvr.0', 'getRecording', { camera: 'cam_8_Reolink', recording: 'last' }, res => {
@@ -617,6 +617,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 ## Changelog
 ### **WORK IN PROGRESS**
 * (ipod86) fix: recordings were stored while AgentDVR was still writing them (video cut off) — the adapter now waits until the recording is finished
+* (ipod86) fix: `sendRecording` passes width, height and duration to Telegram — larger videos were shown in a wrong aspect ratio in the chat; `sendRecording`/`getRecording` also wait until a recording is finished
 * (ipod86) feat: messages `getCameras` and `getWidgets` for the web components (prepares dropdowns instead of the object browser)
 
 ### 0.9.0 (2026-11-12)

@@ -359,6 +359,242 @@ export function recordingFinished(prevSize: number, size: number, recording: boo
 	return !recording && size > 0 && size === prevSize;
 }
 
+/** Picture size and length of a video file */
+export interface VideoInfo {
+	/** width in pixels (0 = unknown) */
+	width: number;
+	/** height in pixels (0 = unknown) */
+	height: number;
+	/** duration in whole seconds (0 = unknown) */
+	duration: number;
+}
+
+interface Box {
+	type: string;
+	start: number;
+	end: number;
+}
+
+function* mp4Boxes(buf: Buffer, from: number, to: number): Generator<Box> {
+	let p = from;
+	while (p + 8 <= to) {
+		let size = buf.readUInt32BE(p);
+		const type = buf.toString('latin1', p + 4, p + 8);
+		let head = 8;
+		if (size === 1) {
+			if (p + 16 > to) {
+				return;
+			}
+			size = Number(buf.readBigUInt64BE(p + 8));
+			head = 16;
+		} else if (size === 0) {
+			size = to - p;
+		}
+		if (size < head) {
+			return;
+		}
+		yield { type, start: p + head, end: Math.min(p + size, to) };
+		p += size;
+	}
+}
+
+function mp4Child(buf: Buffer, parent: Box, type: string): Box | undefined {
+	for (const b of mp4Boxes(buf, parent.start, parent.end)) {
+		if (b.type === type) {
+			return b;
+		}
+	}
+	return undefined;
+}
+
+function mp4Info(buf: Buffer): VideoInfo {
+	const info: VideoInfo = { width: 0, height: 0, duration: 0 };
+	const top = [...mp4Boxes(buf, 0, buf.length)];
+	const moov = top.find(b => b.type === 'moov');
+	if (!moov) {
+		return info;
+	}
+	// video track: tkhd width/height (16.16), mdhd timescale
+	let videoId = 0;
+	let videoScale = 0;
+	for (const trak of mp4Boxes(buf, moov.start, moov.end)) {
+		if (trak.type !== 'trak') {
+			continue;
+		}
+		const tkhd = mp4Child(buf, trak, 'tkhd');
+		if (!tkhd || tkhd.end - tkhd.start < 84) {
+			continue;
+		}
+		const w = buf.readUInt32BE(tkhd.end - 8) / 65536;
+		const h = buf.readUInt32BE(tkhd.end - 4) / 65536;
+		if (w > 0 && h > 0) {
+			const v1 = buf[tkhd.start] === 1;
+			videoId = buf.readUInt32BE(tkhd.start + (v1 ? 20 : 12));
+			info.width = Math.round(w);
+			info.height = Math.round(h);
+			const mdia = mp4Child(buf, trak, 'mdia');
+			const mdhd = mdia && mp4Child(buf, mdia, 'mdhd');
+			if (mdhd) {
+				videoScale = buf.readUInt32BE(mdhd.start + (buf[mdhd.start] === 1 ? 20 : 12));
+			}
+			break;
+		}
+	}
+	// duration: mvhd (normal MP4), else mehd, else the end of the last fragment of the video track
+	const mvhd = mp4Child(buf, moov, 'mvhd');
+	if (mvhd) {
+		const v1 = buf[mvhd.start] === 1;
+		const scale = buf.readUInt32BE(mvhd.start + (v1 ? 20 : 12));
+		const dur = v1 ? Number(buf.readBigUInt64BE(mvhd.start + 24)) : buf.readUInt32BE(mvhd.start + 16);
+		if (scale > 0 && dur > 0) {
+			info.duration = Math.round(dur / scale);
+		}
+	}
+	if (!info.duration && videoId && videoScale) {
+		let end = 0;
+		for (const moof of top) {
+			if (moof.type !== 'moof') {
+				continue;
+			}
+			for (const traf of mp4Boxes(buf, moof.start, moof.end)) {
+				if (traf.type !== 'traf') {
+					continue;
+				}
+				const tfhd = mp4Child(buf, traf, 'tfhd');
+				if (!tfhd || buf.readUInt32BE(tfhd.start + 4) !== videoId) {
+					continue;
+				}
+				const tfFlags = buf.readUInt32BE(tfhd.start) & 0xffffff;
+				let q = tfhd.start + 8;
+				if (tfFlags & 0x1) {
+					q += 8;
+				}
+				if (tfFlags & 0x2) {
+					q += 4;
+				}
+				const defDur = tfFlags & 0x8 ? buf.readUInt32BE(q) : 0;
+				const tfdt = mp4Child(buf, traf, 'tfdt');
+				let t = 0;
+				if (tfdt) {
+					t =
+						buf[tfdt.start] === 1
+							? Number(buf.readBigUInt64BE(tfdt.start + 4))
+							: buf.readUInt32BE(tfdt.start + 4);
+				}
+				for (const trun of mp4Boxes(buf, traf.start, traf.end)) {
+					if (trun.type !== 'trun') {
+						continue;
+					}
+					const flags = buf.readUInt32BE(trun.start) & 0xffffff;
+					const count = buf.readUInt32BE(trun.start + 4);
+					let r = trun.start + 8 + (flags & 0x1 ? 4 : 0) + (flags & 0x4 ? 4 : 0);
+					const per =
+						(flags & 0x100 ? 4 : 0) +
+						(flags & 0x200 ? 4 : 0) +
+						(flags & 0x400 ? 4 : 0) +
+						(flags & 0x800 ? 4 : 0);
+					for (let i = 0; i < count && r + per <= trun.end; i++) {
+						t += flags & 0x100 ? buf.readUInt32BE(r) : defDur;
+						r += per;
+					}
+				}
+				end = Math.max(end, t);
+			}
+		}
+		if (end > 0) {
+			info.duration = Math.round(end / videoScale);
+		}
+	}
+	return info;
+}
+
+function ebmlVint(buf: Buffer, p: number, keepMarker: boolean): { val: number; len: number; unknown: boolean } | null {
+	if (p >= buf.length) {
+		return null;
+	}
+	const first = buf[p];
+	let len = 1;
+	while (len <= 8 && !(first & (0x80 >> (len - 1)))) {
+		len++;
+	}
+	if (len > 8 || p + len > buf.length) {
+		return null;
+	}
+	let val = keepMarker ? first : first & (0xff >> len);
+	let allOnes = (first & (0xff >> len)) === 0xff >> len;
+	for (let i = 1; i < len; i++) {
+		val = val * 256 + buf[p + i];
+		if (buf[p + i] !== 0xff) {
+			allOnes = false;
+		}
+	}
+	return { val, len, unknown: allOnes };
+}
+
+function mkvInfo(buf: Buffer): VideoInfo {
+	const info: VideoInfo = { width: 0, height: 0, duration: 0 };
+	let scale = 1000000;
+	let durTicks = 0;
+	const MASTER = new Set([0x18538067, 0x1549a966, 0x1654ae6b, 0xae, 0xe0]);
+	const walk = (from: number, to: number, depth: number): void => {
+		let p = from;
+		while (p < to && depth < 6) {
+			const id = ebmlVint(buf, p, true);
+			const size = id && ebmlVint(buf, p + id.len, false);
+			if (!id || !size) {
+				return;
+			}
+			const start = p + id.len + size.len;
+			const end = size.unknown ? to : Math.min(start + size.val, to);
+			if (id.val === 0x1f43b675) {
+				return; // first Cluster: all header data is before it
+			}
+			if (MASTER.has(id.val)) {
+				walk(start, end, depth + 1);
+			} else if (id.val === 0xb0 || id.val === 0xba || id.val === 0x2ad7b1) {
+				let v = 0;
+				for (let i = start; i < end; i++) {
+					v = v * 256 + buf[i];
+				}
+				if (id.val === 0xb0 && !info.width) {
+					info.width = v;
+				} else if (id.val === 0xba && !info.height) {
+					info.height = v;
+				} else if (id.val === 0x2ad7b1) {
+					scale = v;
+				}
+			} else if (id.val === 0x4489) {
+				durTicks = end - start === 8 ? buf.readDoubleBE(start) : end - start === 4 ? buf.readFloatBE(start) : 0;
+			}
+			if (size.unknown) {
+				return;
+			}
+			p = end;
+		}
+	};
+	walk(0, buf.length, 0);
+	if (durTicks > 0) {
+		info.duration = Math.round((durTicks * scale) / 1e9);
+	}
+	return info;
+}
+
+/**
+ * Width, height and duration from the headers of an MP4 (also fragmented) or MKV file. Unknown values are 0.
+ * Telegram does not read them itself from larger bot uploads and then shows the video in a wrong
+ * aspect ratio in the chat, so sendRecording passes them on.
+ *
+ * @param buf the whole file
+ * @param format 'mp4' or 'mkv'
+ */
+export function videoInfo(buf: Buffer, format: string): VideoInfo {
+	try {
+		return format === 'mkv' ? mkvInfo(buf) : mp4Info(buf);
+	} catch {
+		return { width: 0, height: 0, duration: 0 };
+	}
+}
+
 // ---- remux ----
 
 /**
@@ -627,6 +863,12 @@ export interface ProvidedRecording {
 	url?: string;
 	/** absolute path on the ioBroker host ('' if the file storage is not on the local disk) */
 	file?: string;
+	/** video width in pixels (0 = unknown) */
+	width?: number;
+	/** video height in pixels (0 = unknown) */
+	height?: number;
+	/** duration in seconds (0 = unknown) */
+	duration?: number;
 }
 
 /** Largest message the adapter puts on the message bus (sendTo answers and forwards) */
