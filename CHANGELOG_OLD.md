@@ -1,6 +1,16 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.6.0 (2026-10-29)
+* (ipod86) chore: clearer adapter title ("Agent DVR – Cameras & Recordings") and keywords
+* (ipod86) fix: `events.detected_*` now also fires when AgentDVR adds the AI tag (e.g. `people`) to a recording after it was first listed
+* (ipod86) feat: webhook with `?oid={ID}&ot={OT}` pulses `<cam>.events.webhook` immediately (20 s cooldown per camera) for the fastest possible alert photo
+* (ipod86) feat: alert photos — on a webhook call with `oid` the full-resolution photo is stored in the file storage, last 3 per camera (`alertPhotos.grab1–3`, `ts1–3`)
+* (ipod86) feat: alert photos served for VIS at `/agent-dvr.0/photos/<cam>/grab1.jpg`; new README section on getting images for VIS and scripts
+* (ipod86) feat: `alertPhotos.uri1–3` with the `iobfile://` URI of each photo, sendable directly with Telegram 6
+
+<!-- markdownlint-disable-next-line MD024 -->
+
 ## 0.5.5 (2026-10-08)
 * (ipod86) fix: live preview video no longer gets stretched/distorted — AgentDVR's live stream squishes the full picture into a fixed container format regardless of the camera's actual aspect ratio; now corrected (`object-fit:fill`) instead of shown distorted
 * (ipod86) feat: configurable live-tile refresh interval (`widgetLiveRefreshSec`) — trade thumbnail freshness against keeping an open video modal open, since rewriting the widget's HTML state resets it

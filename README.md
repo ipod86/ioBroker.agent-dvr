@@ -623,7 +623,7 @@ http://<iobroker>:<webport>/agent-dvr.0/photos/<cam>/grab1.jpg
 e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also `grab2.jpg`, `grab3.jpg`). Use it in an image widget and refresh it on changes of `alertPhotos.ts1`. The same applies when you push the link to a TV or another app: send it on `alertPhotos.ts1`, not on `events.webhook` — otherwise the app loads the previous photo. For a live image use `urls.snapshot` or `urls.photo` with a refresh interval.
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 0.9.1 (2026-11-13)
 * (ipod86) fix: recordings were stored while AgentDVR was still writing them (video cut off) — the adapter now waits until the recording is finished
 * (ipod86) fix: `sendRecording` passes width, height and duration to Telegram — larger videos were shown in a wrong aspect ratio in the chat; `sendRecording`/`getRecording` also wait until a recording is finished
 * (ipod86) feat: messages `getCameras` and `getWidgets` for the web components (prepares dropdowns instead of the object browser)
@@ -645,16 +645,6 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 ### 0.7.0 (2026-10-29)
 * (ipod86) feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV/kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances
 * (ipod86) feat: `<cam>.events.webhookParams` with all parameters of the latest webhook call as JSON
-
-<!-- markdownlint-disable-next-line MD024 -->
-
-### 0.6.0 (2026-10-29)
-* (ipod86) chore: clearer adapter title ("Agent DVR – Cameras & Recordings") and keywords
-* (ipod86) fix: `events.detected_*` now also fires when AgentDVR adds the AI tag (e.g. `people`) to a recording after it was first listed
-* (ipod86) feat: webhook with `?oid={ID}&ot={OT}` pulses `<cam>.events.webhook` immediately (20 s cooldown per camera) for the fastest possible alert photo
-* (ipod86) feat: alert photos — on a webhook call with `oid` the full-resolution photo is stored in the file storage, last 3 per camera (`alertPhotos.grab1–3`, `ts1–3`)
-* (ipod86) feat: alert photos served for VIS at `/agent-dvr.0/photos/<cam>/grab1.jpg`; new README section on getting images for VIS and scripts
-* (ipod86) feat: `alertPhotos.uri1–3` with the `iobfile://` URI of each photo, sendable directly with Telegram 6
 
 <!-- markdownlint-disable-next-line MD024 -->
 
