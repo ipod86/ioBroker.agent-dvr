@@ -540,7 +540,15 @@ on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
 });
 ```
 
-Ist der Dateispeicher eingeschaltet, stattdessen auf `recordings.ts1` triggern und die gespeicherte Kopie senden (`recording: 1`). Besser `sendRecording` nehmen, statt `recordings.uri1` selbst an Telegram zu schicken — nur `sendRecording` gibt die Bildgröße mit, damit der Chat das richtige Seitenverhältnis zeigt.
+Ist der Dateispeicher eingeschaltet, stattdessen auf `recordings.ts1` triggern und die gespeicherte Kopie senden (`recording: 1`):
+
+```js
+on({ id: 'agent-dvr.0.cam_8_Reolink.recordings.ts1', change: 'ne', ack: true }, () => {
+    sendTo('agent-dvr.0', 'sendRecording', { camera: 'cam_8_Reolink', recording: 1, target: 'telegram.0', caption: 'Neue Aufnahme' });
+});
+```
+
+> **Tipp: das richtige Seitenverhältnis im Chat.** Schickst du die Videodatei selbst an Telegram (Telegram-Block in Blockly, `recordings.file1`/`uri1`), zeigt Telegram größere Videos in der Chat-Vorschau oft im falschen Format (z. B. 3:4), bis man sie öffnet — Telegram liest die Bildgröße bei größeren Bot-Uploads nicht selbst aus. `sendRecording` liest Breite, Höhe und Dauer aus der Videodatei und gibt sie mit, so läuft das Video im Chat sofort im Seitenverhältnis der Kamera. Nichts einzustellen — es klappt einfach, wenn du `sendRecording` nimmst.
 
 `getRecording` nimmt dieselben `camera`, `recording` und `mp4`, stellt die Aufnahme genauso bereit und liefert nur, wo sie liegt: `{ ok, error?, fileName, mime, format, size, uri, url, file, width, height, duration }`. Die Datei liest das Skript selbst, z. B.:
 

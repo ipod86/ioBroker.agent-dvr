@@ -545,7 +545,15 @@ on({ id: 'agent-dvr.0.cam_8_Reolink.events.new', val: true }, () => {
 });
 ```
 
-With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`). Prefer `sendRecording` over sending `recordings.uri1` to Telegram yourself — only `sendRecording` adds the picture size, so the chat shows the right aspect ratio.
+With the file storage feature enabled, trigger on `recordings.ts1` and send the stored copy instead (`recording: 1`):
+
+```js
+on({ id: 'agent-dvr.0.cam_8_Reolink.recordings.ts1', change: 'ne', ack: true }, () => {
+    sendTo('agent-dvr.0', 'sendRecording', { camera: 'cam_8_Reolink', recording: 1, target: 'telegram.0', caption: 'New recording' });
+});
+```
+
+> **Tip: the right aspect ratio in the chat.** If you send the video file to Telegram yourself (Telegram Blockly block, `recordings.file1`/`uri1`), Telegram often shows larger videos in the chat preview in a wrong format (e.g. 3:4) until you open them — Telegram does not read the picture size from larger bot uploads itself. `sendRecording` reads width, height and duration from the video file and passes them along, so the video plays in the chat right away in the camera's aspect ratio. Nothing to configure, it simply works when you use `sendRecording`.
 
 `getRecording` takes the same `camera`, `recording` and `mp4`, makes the recording available the same way and returns only where it is: `{ ok, error?, fileName, mime, format, size, uri, url, file, width, height, duration }`. Read the file in your script yourself, e.g.:
 
