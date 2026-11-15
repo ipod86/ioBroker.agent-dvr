@@ -248,7 +248,7 @@ Jeder Punkt ist optional und anfangs aus. Die Benachrichtigungen gehen an das io
 | Agent-DVR-Server offline / wieder online | Der Agent-DVR-Server antwortet die eingestellte Zeit nicht | `nein` |
 | Offline nach (Minuten) | Ausfalldauer, ab der gemeldet wird (1–1440) | `10` |
 | Person / Tier / Fahrzeug erkannt | Erkennungs-Tags von Agent DVR (`people`, `dog_cat`, `vehicle`, …) | `nein` |
-| Sonstige Erkennungen | Alle anderen Tags, z. B. von eigenen KI-Modellen | `nein` |
+| Sonstige Erkennungen | Alle anderen Tags, z. B. von eigenen KI-Modellen (reine Bewegung `detected`, von Hand ausgelöst `trigger` und `timelapse` sind keine Erkennung und werden nicht gemeldet) | `nein` |
 | Neue Aufnahme | Agent DVR hat eine neue Aufnahme gemacht | `nein` |
 | Kameras | Liste aller Kameras mit Haken; Kameras ohne Haken senden keine Benachrichtigungen. Neue Kameras sind automatisch angehakt, Umbenennen in Agent DVR schadet nicht | alle angehakt |
 

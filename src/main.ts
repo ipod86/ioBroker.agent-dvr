@@ -492,6 +492,8 @@ class AgentDvr extends utils.Adapter {
 	private offline = new OfflineTracker();
 	/** cameras whose outage state was read back after the start */
 	private offlineRestored = new Set<string>();
+	/** notifications are sent one after another, so the notification-manager sends each only once */
+	private notifyQueue: Promise<void> = Promise.resolve();
 
 	private readonly ensuredFolders = new Set<string>();
 	private readonly registry = new Map<string, RegistryEntry>();
@@ -2186,11 +2188,22 @@ class AgentDvr extends utils.Adapter {
 		if (!categoryEnabled(this.config, cat) || (camera !== null && !cameraSelected(this.config, camera))) {
 			return;
 		}
-		try {
-			await this.registerNotification('agent-dvr', cat, notifyText(cat, this.lang, params));
-		} catch (e) {
-			this.log.debug(`Notification ${cat}: ${(e as Error).message}`);
-		}
+		const text = notifyText(cat, this.lang, params);
+		// the notification-manager sends all open notifications on every new one; notifications
+		// registered at the same moment would be sent twice, so they get a few seconds in between
+		this.notifyQueue = this.notifyQueue.then(async () => {
+			if (this._pollStopped) {
+				return;
+			}
+			try {
+				await this.registerNotification('agent-dvr', cat, text);
+			} catch (e) {
+				this.log.debug(`Notification ${cat}: ${(e as Error).message}`);
+			}
+			await new Promise<void>(resolve => {
+				this.setTimeout(() => resolve(), 3000);
+			});
+		});
 	}
 
 	// ---- build device data points ----
@@ -2897,7 +2910,10 @@ class AgentDvr extends utils.Adapter {
 				const tid = `${fid}.events.detected_${sanitize(t)}`;
 				await this.ensureFlag(tid, `Detected: ${t}`);
 				await this.pulse(tid);
-				await this.notify(tagCategory(t), d.oid, { name: d.name, tag: t });
+				const cat = tagCategory(t);
+				if (cat) {
+					await this.notify(cat, d.oid, { name: d.name, tag: t });
+				}
 			}
 			this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(',')}]`);
 		}

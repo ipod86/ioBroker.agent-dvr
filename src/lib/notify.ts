@@ -41,18 +41,24 @@ export interface NotifyConfig {
 
 const PERSON = new Set(['people', 'person', 'persons', 'face', 'faces', 'human']);
 const ANIMAL = new Set(['dog_cat', 'dog', 'cat', 'animal', 'animals', 'bird', 'pet', 'pets', 'horse']);
+/** Tags of Agent DVR that are no detection of an object (plain motion, manual trigger, timelapse) */
+const TECHNICAL = new Set(['detected', 'trigger', 'triggered', 'timelapse', 'motion', 'alert', 'manual']);
 const VEHICLE = new Set(['vehicle', 'vehicles', 'car', 'cars', 'truck', 'bus', 'motorcycle', 'bicycle', 'bike']);
 
 /**
  * Category of a detection tag from Agent DVR (e.g. "people", "dog_cat", "vehicle").
+ * Technical tags (plain motion, manual trigger, timelapse) are no detection: undefined.
  *
  * @param tag tag of the event
  */
-export function tagCategory(tag: string): NotifyCategory {
+export function tagCategory(tag: string): NotifyCategory | undefined {
 	const t = tag
 		.trim()
 		.toLowerCase()
 		.replace(/[\s-]+/g, '_');
+	if (TECHNICAL.has(t)) {
+		return undefined;
+	}
 	if (PERSON.has(t)) {
 		return 'personDetected';
 	}

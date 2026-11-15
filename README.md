@@ -253,7 +253,7 @@ Every point is optional and off by default. Notifications are sent to the ioBrok
 | Agent DVR server offline / online again | The Agent DVR server does not answer for the set time | `false` |
 | Offline after (minutes) | Outage duration that is reported (1–1440) | `10` |
 | Person / Animal / Vehicle detected | Detection tags of Agent DVR (`people`, `dog_cat`, `vehicle`, …) | `false` |
-| Other detections | All other tags, e.g. from your own AI models | `false` |
+| Other detections | All other tags, e.g. from your own AI models (plain motion `detected`, manual `trigger` and `timelapse` are no detection and are not reported) | `false` |
 | New recording | Agent DVR made a new recording | `false` |
 | Cameras | List of all cameras with a checkbox; unchecked cameras send no notifications. New cameras are checked automatically; the setting survives renaming a camera | all checked |
 

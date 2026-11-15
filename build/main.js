@@ -326,6 +326,8 @@ class AgentDvr extends utils.Adapter {
   offline = new import_notify.OfflineTracker();
   /** cameras whose outage state was read back after the start */
   offlineRestored = /* @__PURE__ */ new Set();
+  /** notifications are sent one after another, so the notification-manager sends each only once */
+  notifyQueue = Promise.resolve();
   ensuredFolders = /* @__PURE__ */ new Set();
   registry = /* @__PURE__ */ new Map();
   ptzActive = /* @__PURE__ */ new Map();
@@ -1872,11 +1874,20 @@ class AgentDvr extends utils.Adapter {
     if (!(0, import_notify.categoryEnabled)(this.config, cat) || camera !== null && !(0, import_notify.cameraSelected)(this.config, camera)) {
       return;
     }
-    try {
-      await this.registerNotification("agent-dvr", cat, (0, import_notify.notifyText)(cat, this.lang, params));
-    } catch (e) {
-      this.log.debug(`Notification ${cat}: ${e.message}`);
-    }
+    const text = (0, import_notify.notifyText)(cat, this.lang, params);
+    this.notifyQueue = this.notifyQueue.then(async () => {
+      if (this._pollStopped) {
+        return;
+      }
+      try {
+        await this.registerNotification("agent-dvr", cat, text);
+      } catch (e) {
+        this.log.debug(`Notification ${cat}: ${e.message}`);
+      }
+      await new Promise((resolve) => {
+        this.setTimeout(() => resolve(), 3e3);
+      });
+    });
   }
   // ---- build device data points ----
   async buildDevice(d) {
@@ -2441,7 +2452,10 @@ class AgentDvr extends utils.Adapter {
         const tid = `${fid}.events.detected_${sanitize(t)}`;
         await this.ensureFlag(tid, `Detected: ${t}`);
         await this.pulse(tid);
-        await this.notify((0, import_notify.tagCategory)(t), d.oid, { name: d.name, tag: t });
+        const cat = (0, import_notify.tagCategory)(t);
+        if (cat) {
+          await this.notify(cat, d.oid, { name: d.name, tag: t });
+        }
       }
       this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(",")}]`);
     }

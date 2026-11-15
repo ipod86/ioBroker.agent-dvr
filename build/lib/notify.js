@@ -28,9 +28,13 @@ __export(notify_exports, {
 module.exports = __toCommonJS(notify_exports);
 const PERSON = /* @__PURE__ */ new Set(["people", "person", "persons", "face", "faces", "human"]);
 const ANIMAL = /* @__PURE__ */ new Set(["dog_cat", "dog", "cat", "animal", "animals", "bird", "pet", "pets", "horse"]);
+const TECHNICAL = /* @__PURE__ */ new Set(["detected", "trigger", "triggered", "timelapse", "motion", "alert", "manual"]);
 const VEHICLE = /* @__PURE__ */ new Set(["vehicle", "vehicles", "car", "cars", "truck", "bus", "motorcycle", "bicycle", "bike"]);
 function tagCategory(tag) {
   const t = tag.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (TECHNICAL.has(t)) {
+    return void 0;
+  }
   if (PERSON.has(t)) {
     return "personDetected";
   }

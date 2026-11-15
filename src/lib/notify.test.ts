@@ -10,6 +10,9 @@ describe('notify', () => {
 		expect(tagCategory('vehicle')).to.equal('vehicleDetected');
 		expect(tagCategory('car')).to.equal('vehicleDetected');
 		expect(tagCategory('package')).to.equal('otherDetected');
+		expect(tagCategory('trigger')).to.equal(undefined);
+		expect(tagCategory('detected')).to.equal(undefined);
+		expect(tagCategory('timelapse')).to.equal(undefined);
 	});
 
 	it('categoryEnabled: everything off by default', () => {
