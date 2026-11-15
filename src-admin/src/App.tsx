@@ -8,6 +8,7 @@ import FeaturesPanel from './panels/FeaturesPanel';
 import WidgetPanel from './panels/WidgetPanel';
 import DashboardPanel from './panels/DashboardPanel';
 import AdvancedPanel from './panels/AdvancedPanel';
+import NotificationsPanel from './panels/NotificationsPanel';
 
 import en from '../../admin/i18n/en.json';
 import de from '../../admin/i18n/de.json';
@@ -71,6 +72,7 @@ class App extends GenericApp<GenericAppProps, AppState> {
 								<Tab label={I18n.t('tabFeatures')} />
 								<Tab label={I18n.t('tabWidget')} />
 								<Tab label={I18n.t('tabDashboard')} />
+								<Tab label={I18n.t('tabNotifications')} />
 								<Tab label={I18n.t('tabAdvanced')} />
 							</Tabs>
 						</Box>
@@ -104,6 +106,12 @@ class App extends GenericApp<GenericAppProps, AppState> {
 								/>
 							)}
 							{tab === 4 && (
+								<NotificationsPanel
+									native={native}
+									onChange={handleChange}
+								/>
+							)}
+							{tab === 5 && (
 								<AdvancedPanel
 									native={native}
 									onChange={handleChange}

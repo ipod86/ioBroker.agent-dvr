@@ -264,7 +264,17 @@
     "dashColorBorder": "#1e2a38",
     "dashColorOnline": "#22c55e",
     "dashColorOffline": "#ef4444",
-    "go2rtcMapping": []
+    "go2rtcMapping": [],
+    "notifyCameraOffline": false,
+    "notifyCameraOnline": false,
+    "notifyServerOffline": false,
+    "notifyOfflineMinutes": 10,
+    "notifyPerson": false,
+    "notifyAnimal": false,
+    "notifyVehicle": false,
+    "notifyOtherTags": false,
+    "notifyNewRecording": false,
+    "notifyCameras": ""
   },
   "objects": [],
   "instanceObjects": [
@@ -322,6 +332,327 @@
         "def": ""
       },
       "native": {}
+    }
+  ],
+  "notifications": [
+    {
+      "scope": "agent-dvr",
+      "name": {
+        "en": "Agent DVR",
+        "de": "Agent DVR",
+        "ru": "Agent DVR",
+        "pt": "Agent DVR",
+        "nl": "Agent DVR",
+        "fr": "Agent DVR",
+        "it": "Agent DVR",
+        "es": "Agent DVR",
+        "pl": "Agent DVR",
+        "uk": "Agent DVR",
+        "zh-cn": "Agent DVR"
+      },
+      "description": {
+        "en": "Cameras and recordings of Agent DVR",
+        "de": "Kameras und Aufnahmen von Agent DVR",
+        "ru": "Камеры и записи Agent DVR",
+        "pt": "Câmeras e gravações do Agent DVR",
+        "nl": "Camera’s en opnamen van Agent DVR",
+        "fr": "Caméras et enregistrements d’Agent DVR",
+        "it": "Telecamere e registrazioni di Agent DVR",
+        "es": "Cámaras y grabaciones de Agent DVR",
+        "pl": "Kamery i nagrania Agent DVR",
+        "uk": "Камери та записи Agent DVR",
+        "zh-cn": "Agent DVR 的摄像头和录像"
+      },
+      "categories": [
+        {
+          "category": "cameraOffline",
+          "name": {
+            "en": "Camera offline",
+            "de": "Kamera offline",
+            "ru": "Камера не в сети",
+            "pt": "Câmera offline",
+            "nl": "Camera offline",
+            "fr": "Caméra hors ligne",
+            "it": "Telecamera offline",
+            "es": "Cámara sin conexión",
+            "pl": "Kamera offline",
+            "uk": "Камера не в мережі",
+            "zh-cn": "摄像头离线"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "A camera has not been connected to Agent DVR for longer than the set time",
+            "de": "Eine Kamera ist länger als die eingestellte Zeit nicht mit Agent DVR verbunden",
+            "ru": "Камера дольше заданного времени не подключена к Agent DVR",
+            "pt": "Uma câmera não está conectada ao Agent DVR há mais tempo que o definido",
+            "nl": "Een camera is langer dan de ingestelde tijd niet met Agent DVR verbonden",
+            "fr": "Une caméra n'est plus connectée à Agent DVR depuis plus longtemps que le délai défini",
+            "it": "Una telecamera non è collegata ad Agent DVR da più del tempo impostato",
+            "es": "Una cámara lleva más tiempo del configurado sin conexión con Agent DVR",
+            "pl": "Kamera nie jest połączona z Agent DVR dłużej niż ustawiony czas",
+            "uk": "Камера довше за заданий час не підключена до Agent DVR",
+            "zh-cn": "摄像头未连接 Agent DVR 的时间超过设定值"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "cameraOnline",
+          "name": {
+            "en": "Camera online again",
+            "de": "Kamera wieder online",
+            "ru": "Камера снова в сети",
+            "pt": "Câmera online novamente",
+            "nl": "Camera weer online",
+            "fr": "Caméra de nouveau en ligne",
+            "it": "Telecamera di nuovo online",
+            "es": "Cámara de nuevo en línea",
+            "pl": "Kamera znowu online",
+            "uk": "Камера знову в мережі",
+            "zh-cn": "摄像头已恢复在线"
+          },
+          "severity": "info",
+          "description": {
+            "en": "A camera is connected again after an outage",
+            "de": "Eine Kamera ist nach einem Ausfall wieder verbunden",
+            "ru": "Камера снова подключена после сбоя",
+            "pt": "Uma câmera está conectada novamente após uma falha",
+            "nl": "Een camera is na een storing weer verbonden",
+            "fr": "Une caméra est de nouveau connectée après une panne",
+            "it": "Una telecamera è di nuovo collegata dopo un guasto",
+            "es": "Una cámara vuelve a estar conectada tras una caída",
+            "pl": "Kamera jest ponownie połączona po awarii",
+            "uk": "Камера знову підключена після збою",
+            "zh-cn": "摄像头在故障后已重新连接"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "serverOffline",
+          "name": {
+            "en": "Agent DVR server offline",
+            "de": "Agent-DVR-Server offline",
+            "ru": "Сервер Agent DVR не в сети",
+            "pt": "Servidor Agent DVR offline",
+            "nl": "Agent DVR-server offline",
+            "fr": "Serveur Agent DVR hors ligne",
+            "it": "Server Agent DVR offline",
+            "es": "Servidor de Agent DVR sin conexión",
+            "pl": "Serwer Agent DVR offline",
+            "uk": "Сервер Agent DVR не в мережі",
+            "zh-cn": "Agent DVR 服务器离线"
+          },
+          "severity": "alert",
+          "description": {
+            "en": "The Agent DVR server has not been reachable for longer than the set time",
+            "de": "Der Agent-DVR-Server ist länger als die eingestellte Zeit nicht erreichbar",
+            "ru": "Сервер Agent DVR недоступен дольше заданного времени",
+            "pt": "O servidor Agent DVR está inacessível há mais tempo que o definido",
+            "nl": "De Agent DVR-server is langer dan de ingestelde tijd onbereikbaar",
+            "fr": "Le serveur Agent DVR est injoignable depuis plus longtemps que le délai défini",
+            "it": "Il server Agent DVR non è raggiungibile da più del tempo impostato",
+            "es": "El servidor de Agent DVR lleva más tiempo del configurado inaccesible",
+            "pl": "Serwer Agent DVR jest nieosiągalny dłużej niż ustawiony czas",
+            "uk": "Сервер Agent DVR недоступний довше за заданий час",
+            "zh-cn": "Agent DVR 服务器无法访问的时间超过设定值"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "serverOnline",
+          "name": {
+            "en": "Agent DVR server online again",
+            "de": "Agent-DVR-Server wieder online",
+            "ru": "Сервер Agent DVR снова в сети",
+            "pt": "Servidor Agent DVR online novamente",
+            "nl": "Agent DVR-server weer online",
+            "fr": "Serveur Agent DVR de nouveau en ligne",
+            "it": "Server Agent DVR di nuovo online",
+            "es": "Servidor de Agent DVR de nuevo en línea",
+            "pl": "Serwer Agent DVR znowu online",
+            "uk": "Сервер Agent DVR знову в мережі",
+            "zh-cn": "Agent DVR 服务器已恢复在线"
+          },
+          "severity": "info",
+          "description": {
+            "en": "The Agent DVR server is reachable again after an outage",
+            "de": "Der Agent-DVR-Server ist nach einem Ausfall wieder erreichbar",
+            "ru": "Сервер Agent DVR снова доступен после сбоя",
+            "pt": "O servidor Agent DVR está acessível novamente após uma falha",
+            "nl": "De Agent DVR-server is na een storing weer bereikbaar",
+            "fr": "Le serveur Agent DVR est de nouveau joignable après une panne",
+            "it": "Il server Agent DVR è di nuovo raggiungibile dopo un guasto",
+            "es": "El servidor de Agent DVR vuelve a estar accesible tras una caída",
+            "pl": "Serwer Agent DVR jest ponownie osiągalny po awarii",
+            "uk": "Сервер Agent DVR знову доступний після збою",
+            "zh-cn": "Agent DVR 服务器在故障后已恢复访问"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "personDetected",
+          "name": {
+            "en": "Person detected",
+            "de": "Person erkannt",
+            "ru": "Обнаружен человек",
+            "pt": "Pessoa detectada",
+            "nl": "Persoon gedetecteerd",
+            "fr": "Personne détectée",
+            "it": "Persona rilevata",
+            "es": "Persona detectada",
+            "pl": "Wykryto osobę",
+            "uk": "Виявлено людину",
+            "zh-cn": "检测到人员"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Agent DVR detected a person",
+            "de": "Agent DVR hat eine Person erkannt",
+            "ru": "Agent DVR обнаружил человека",
+            "pt": "O Agent DVR detectou uma pessoa",
+            "nl": "Agent DVR heeft een persoon gedetecteerd",
+            "fr": "Agent DVR a détecté une personne",
+            "it": "Agent DVR ha rilevato una persona",
+            "es": "Agent DVR ha detectado una persona",
+            "pl": "Agent DVR wykrył osobę",
+            "uk": "Agent DVR виявив людину",
+            "zh-cn": "Agent DVR 检测到人员"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "animalDetected",
+          "name": {
+            "en": "Animal detected",
+            "de": "Tier erkannt",
+            "ru": "Обнаружено животное",
+            "pt": "Animal detectado",
+            "nl": "Dier gedetecteerd",
+            "fr": "Animal détecté",
+            "it": "Animale rilevato",
+            "es": "Animal detectado",
+            "pl": "Wykryto zwierzę",
+            "uk": "Виявлено тварину",
+            "zh-cn": "检测到动物"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Agent DVR detected an animal",
+            "de": "Agent DVR hat ein Tier erkannt",
+            "ru": "Agent DVR обнаружил животное",
+            "pt": "O Agent DVR detectou um animal",
+            "nl": "Agent DVR heeft een dier gedetecteerd",
+            "fr": "Agent DVR a détecté un animal",
+            "it": "Agent DVR ha rilevato un animale",
+            "es": "Agent DVR ha detectado un animal",
+            "pl": "Agent DVR wykrył zwierzę",
+            "uk": "Agent DVR виявив тварину",
+            "zh-cn": "Agent DVR 检测到动物"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "vehicleDetected",
+          "name": {
+            "en": "Vehicle detected",
+            "de": "Fahrzeug erkannt",
+            "ru": "Обнаружено транспортное средство",
+            "pt": "Veículo detectado",
+            "nl": "Voertuig gedetecteerd",
+            "fr": "Véhicule détecté",
+            "it": "Veicolo rilevato",
+            "es": "Vehículo detectado",
+            "pl": "Wykryto pojazd",
+            "uk": "Виявлено транспортний засіб",
+            "zh-cn": "检测到车辆"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Agent DVR detected a vehicle",
+            "de": "Agent DVR hat ein Fahrzeug erkannt",
+            "ru": "Agent DVR обнаружил транспортное средство",
+            "pt": "O Agent DVR detectou um veículo",
+            "nl": "Agent DVR heeft een voertuig gedetecteerd",
+            "fr": "Agent DVR a détecté un véhicule",
+            "it": "Agent DVR ha rilevato un veicolo",
+            "es": "Agent DVR ha detectado un vehículo",
+            "pl": "Agent DVR wykrył pojazd",
+            "uk": "Agent DVR виявив транспортний засіб",
+            "zh-cn": "Agent DVR 检测到车辆"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "otherDetected",
+          "name": {
+            "en": "Other detection",
+            "de": "Sonstige Erkennung",
+            "ru": "Другое обнаружение",
+            "pt": "Outra detecção",
+            "nl": "Andere detectie",
+            "fr": "Autre détection",
+            "it": "Altro rilevamento",
+            "es": "Otra detección",
+            "pl": "Inne wykrycie",
+            "uk": "Інше виявлення",
+            "zh-cn": "其他检测"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Agent DVR detected another object (tag)",
+            "de": "Agent DVR hat ein anderes Objekt (Tag) erkannt",
+            "ru": "Agent DVR обнаружил другой объект (тег)",
+            "pt": "O Agent DVR detectou outro objeto (tag)",
+            "nl": "Agent DVR heeft een ander object (tag) gedetecteerd",
+            "fr": "Agent DVR a détecté un autre objet (tag)",
+            "it": "Agent DVR ha rilevato un altro oggetto (tag)",
+            "es": "Agent DVR ha detectado otro objeto (etiqueta)",
+            "pl": "Agent DVR wykrył inny obiekt (tag)",
+            "uk": "Agent DVR виявив інший об’єкт (тег)",
+            "zh-cn": "Agent DVR 检测到其他对象（标签）"
+          },
+          "regex": [],
+          "limit": 10
+        },
+        {
+          "category": "newRecording",
+          "name": {
+            "en": "New recording",
+            "de": "Neue Aufnahme",
+            "ru": "Новая запись",
+            "pt": "Nova gravação",
+            "nl": "Nieuwe opname",
+            "fr": "Nouvel enregistrement",
+            "it": "Nuova registrazione",
+            "es": "Nueva grabación",
+            "pl": "Nowe nagranie",
+            "uk": "Новий запис",
+            "zh-cn": "新录像"
+          },
+          "severity": "notify",
+          "description": {
+            "en": "Agent DVR made a new recording",
+            "de": "Agent DVR hat eine neue Aufnahme gemacht",
+            "ru": "Agent DVR сделал новую запись",
+            "pt": "O Agent DVR fez uma nova gravação",
+            "nl": "Agent DVR heeft een nieuwe opname gemaakt",
+            "fr": "Agent DVR a fait un nouvel enregistrement",
+            "it": "Agent DVR ha effettuato una nuova registrazione",
+            "es": "Agent DVR ha realizado una nueva grabación",
+            "pl": "Agent DVR wykonał nowe nagranie",
+            "uk": "Agent DVR зробив новий запис",
+            "zh-cn": "Agent DVR 已生成新录像"
+          },
+          "regex": [],
+          "limit": 10
+        }
+      ]
     }
   ]
 }

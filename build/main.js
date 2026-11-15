@@ -27,6 +27,7 @@ var https = __toESM(require("node:https"));
 var fs = __toESM(require("node:fs"));
 var path = __toESM(require("node:path"));
 var import_widget_i18n = require("./lib/widget-i18n");
+var import_notify = require("./lib/notify");
 var import_recording = require("./lib/recording");
 const CAM_COMMANDS = [
   { id: "record", path: "/command/record", params: ["oid", "ot"], name: "Start recording" },
@@ -319,6 +320,12 @@ class AgentDvr extends utils.Adapter {
   authHeader = null;
   baseUrl = "";
   wt = (0, import_widget_i18n.getWidgetLabels)("en");
+  /** system language for notification texts */
+  lang = "en";
+  /** connection outages of cameras and the server */
+  offline = new import_notify.OfflineTracker();
+  /** cameras whose outage state was read back after the start */
+  offlineRestored = /* @__PURE__ */ new Set();
   ensuredFolders = /* @__PURE__ */ new Set();
   registry = /* @__PURE__ */ new Map();
   ptzActive = /* @__PURE__ */ new Map();
@@ -377,6 +384,7 @@ class AgentDvr extends utils.Adapter {
     const sysConfig = await this.getForeignObjectAsync("system.config");
     const rawLang = (_a = sysConfig == null ? void 0 : sysConfig.common) == null ? void 0 : _a.language;
     this.wt = (0, import_widget_i18n.getWidgetLabels)(rawLang != null ? rawLang : "en");
+    this.lang = rawLang != null ? rawLang : "en";
     const pollSeconds = Math.max(5, Math.min(3600, this.config.pollSeconds || 30));
     this.baseUrl = `http://${this.config.serverIp}:${this.config.port || 8090}`;
     if (this.config.user || this.config.pass) {
@@ -1740,8 +1748,10 @@ class AgentDvr extends utils.Adapter {
   // ---- device status data points ----
   STATUS_DPS = [
     { key: "recording", role: "indicator.working", name: "Active recording" },
-    { key: "online", role: "indicator.reachable", name: "Online" },
-    { key: "connected", role: "indicator.connected", name: "Stream connected" },
+    // "online" in Agent DVR means: switched on in Agent DVR, not reachable
+    { key: "online", role: "indicator", name: "Switched on in Agent DVR" },
+    // the stream connection is what tells whether the camera is reachable
+    { key: "connected", role: "indicator.reachable", name: "Connected (camera reachable)" },
     { key: "detected", role: "indicator", name: "Motion detected" },
     { key: "alerted", role: "indicator.alarm", name: "Alert active" }
   ];
@@ -1760,7 +1770,7 @@ class AgentDvr extends utils.Adapter {
       }
       const id = `${sfid}.${dp.key}`;
       if (!this.ensuredFolders.has(id)) {
-        await this.setObjectNotExistsAsync(id, {
+        await this.extendObjectAsync(id, {
           type: "state",
           common: { name: dp.name, type: "boolean", role: dp.role, read: true, write: false, def: false },
           native: {}
@@ -1768,6 +1778,104 @@ class AgentDvr extends utils.Adapter {
         this.ensuredFolders.add(id);
       }
       await this.setStateAsync(id, { val: !!data[dp.key], ack: true });
+    }
+    if (d.ot === 2 && "connected" in data) {
+      await this.trackCameraOffline(d, sfid, !!data.connected, data.online !== false);
+    }
+  }
+  /**
+   * Follows the connection of a camera: offlineSince, offlineAlarm and notifications.
+   *
+   * @param d camera
+   * @param sfid id of the status channel
+   * @param connected stream connected
+   * @param enabled camera switched on in Agent DVR
+   */
+  async trackCameraOffline(d, sfid, connected, enabled) {
+    var _a;
+    const sinceId = `${sfid}.offlineSince`;
+    const alarmId = `${sfid}.offlineAlarm`;
+    if (!this.ensuredFolders.has(alarmId)) {
+      await this.extendObjectAsync(sinceId, {
+        type: "state",
+        common: {
+          name: "Not connected since",
+          type: "number",
+          role: "date",
+          read: true,
+          write: false,
+          def: null
+        },
+        native: {}
+      });
+      await this.extendObjectAsync(alarmId, {
+        type: "state",
+        common: {
+          name: "Offline longer than the set time",
+          type: "boolean",
+          role: "indicator.alarm",
+          read: true,
+          write: false,
+          def: false
+        },
+        native: {}
+      });
+      this.ensuredFolders.add(alarmId);
+    }
+    const key = `cam_${d.oid}`;
+    if (!this.offlineRestored.has(key)) {
+      const since = await this.getStateAsync(sinceId);
+      const alarm = await this.getStateAsync(alarmId);
+      this.offline.restore(key, typeof (since == null ? void 0 : since.val) === "number" ? since.val : void 0, (alarm == null ? void 0 : alarm.val) === true);
+      this.offlineRestored.add(key);
+    }
+    const limit = (0, import_notify.offlineMinutes)(this.config) * 6e4;
+    const ch = this.offline.update(key, connected, enabled, Date.now(), limit);
+    await this.setStateChangedAsync(sinceId, { val: (_a = ch.since) != null ? _a : null, ack: true });
+    await this.setStateChangedAsync(alarmId, { val: ch.alarm, ack: true });
+    if (ch.alarmStart) {
+      this.log.warn(`Camera ${d.name} has not been connected for ${(0, import_notify.offlineMinutes)(this.config)} minutes`);
+      await this.notify("cameraOffline", d.name, { name: d.name, min: (0, import_notify.offlineMinutes)(this.config) });
+    }
+    if (ch.alarmEnd !== void 0) {
+      this.log.info(`Camera ${d.name} is connected again (outage about ${ch.alarmEnd} minutes)`);
+      await this.notify("cameraOnline", d.name, { name: d.name, min: ch.alarmEnd });
+    }
+  }
+  /**
+   * Follows the reachability of the Agent DVR server.
+   *
+   * @param reachable server answered
+   */
+  async trackServerOffline(reachable) {
+    const limit = (0, import_notify.offlineMinutes)(this.config) * 6e4;
+    const ch = this.offline.update("server", reachable, true, Date.now(), limit);
+    if (ch.alarmStart) {
+      await this.notify("serverOffline", "", { min: (0, import_notify.offlineMinutes)(this.config) });
+    }
+    if (ch.alarmEnd !== void 0) {
+      await this.notify("serverOnline", "", { min: ch.alarmEnd });
+    }
+  }
+  /**
+   * Sends a notification to the ioBroker notification system, if switched on in the settings.
+   * The notification-manager adapter forwards it, e.g. to Telegram or e-mail.
+   *
+   * @param cat category
+   * @param camera camera name ('' = not camera related)
+   * @param params text placeholders
+   * @param params.name camera name
+   * @param params.min minutes
+   * @param params.tag detection tag
+   */
+  async notify(cat, camera, params) {
+    if (!(0, import_notify.categoryEnabled)(this.config, cat) || camera && !(0, import_notify.cameraSelected)(this.config, camera)) {
+      return;
+    }
+    try {
+      await this.registerNotification("agent-dvr", cat, (0, import_notify.notifyText)(cat, this.lang, params));
+    } catch (e) {
+      this.log.debug(`Notification ${cat}: ${e.message}`);
     }
   }
   // ---- build device data points ----
@@ -2320,6 +2428,7 @@ class AgentDvr extends utils.Adapter {
     this.eventTagsSeen[oid] = nextKnown;
     if (newCount > 0) {
       await this.pulse(`${fid}.events.new`);
+      await this.notify("newRecording", d.name, { name: d.name });
       if (this.recordingCamEnabled(fid)) {
         void this.queueRecordingSave(d, fid, events[0]);
       }
@@ -2332,6 +2441,7 @@ class AgentDvr extends utils.Adapter {
         const tid = `${fid}.events.detected_${sanitize(t)}`;
         await this.ensureFlag(tid, `Detected: ${t}`);
         await this.pulse(tid);
+        await this.notify((0, import_notify.tagCategory)(t), d.name, { name: d.name, tag: t });
       }
       this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(",")}]`);
     }
@@ -2420,11 +2530,13 @@ class AgentDvr extends utils.Adapter {
       if (!res.ok || !json) {
         await this.setStateAsync("info.connection", false, true);
         await this.setStateAsync("system.online", { val: false, ack: true });
+        await this.trackServerOffline(false);
         this.log.warn(`AgentDVR unreachable: ${res.error || "invalid response"}`);
         return;
       }
       await this.setStateAsync("info.connection", true, true);
       await this.setStateAsync("system.online", { val: true, ack: true });
+      await this.trackServerOffline(true);
       if (json.settings) {
         await this.flattenWrite(json.settings, "system.settings", 0);
       }

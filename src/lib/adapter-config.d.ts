@@ -75,6 +75,16 @@ declare global {
             eventTagsDynamic: boolean;
             eventTagsIgnore: string;
             eventTags: string;
+            notifyCameraOffline: boolean;
+            notifyCameraOnline: boolean;
+            notifyServerOffline: boolean;
+            notifyOfflineMinutes: number;
+            notifyPerson: boolean;
+            notifyAnimal: boolean;
+            notifyVehicle: boolean;
+            notifyOtherTags: boolean;
+            notifyNewRecording: boolean;
+            notifyCameras: string;
         }
     }
 }

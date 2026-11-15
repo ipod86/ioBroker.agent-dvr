@@ -27,6 +27,12 @@ Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponen
 - übernimmt auf Wunsch die Farben aus dem Theme der Visualisierung
 - braucht keine Zugangsdaten: Bilder und Videos nutzen dieselben AgentDVR-Links wie die HTML-Widgets; die Daten kommen aus `widget_config` und `<cam>.widget_data`
 
+### Benachrichtigungen (Kamera offline, Person/Tier/Fahrzeug erkannt, neue Aufnahme)
+- Eigener Reiter **Benachrichtigungen**: jede Art lässt sich einzeln einschalten – Kamera offline, Kamera wieder online, Agent-DVR-Server offline/online, Person, Tier, Fahrzeug oder sonstige Erkennung, neue Aufnahme – auf Wunsch nur für ausgewählte Kameras
+- Die Benachrichtigungen gehen an das ioBroker-Benachrichtigungssystem (Glocke im Admin); der Adapter **notification-manager** leitet sie weiter, z. B. an Telegram oder E-Mail – im Adapter selbst muss kein Messenger eingerichtet werden
+- **Kamera offline** wird gemeldet, wenn eine in Agent DVR eingeschaltete Kamera die eingestellte Zeit nicht verbunden ist (Standard 10 Minuten). Ohne Verbindung gibt es kein Bild und keine Bewegungserkennung; kurze Aussetzer wie ein Kamera-Neustart werden nicht gemeldet
+- Neue Datenpunkte pro Kamera: `status.offlineSince` und `status.offlineAlarm` für eigene Skripte und Visualisierungen
+
 ### Aufnahmen im ioBroker-Dateispeicher und als Telegram-Video
 - **Letzte Aufnahmen im ioBroker-Dateispeicher bereitstellen** (standardmäßig aus): jede neue Aufnahme einer Kamera wird von AgentDVR geladen und pro Kamera als `rec1` … `rec3` abgelegt – mit Dateipfad, `iobfile://`-URI und http-URL in `<cam>.recordings.*`, genau wie die Alarmfotos
 - auf Wunsch als **MP4** (verlustfreies Umpacken mit ffmpeg, keine Neukodierung) – spielt überall, auch direkt in Telegram
@@ -231,6 +237,23 @@ Die go2rtc-Streamnamen werden automatisch vom go2rtc-Server abgerufen, wenn das 
 | Modal-Hintergrund | Hintergrundfarbe des Video-Modals |
 | Border-Radius (px) | Abrundungsradius der Kartenecken | `4` |
 
+### Tab: Benachrichtigungen
+
+Jeder Punkt ist optional und anfangs aus. Die Benachrichtigungen gehen an das ioBroker-Benachrichtigungssystem; den Adapter **notification-manager** installieren und dort bei *Agent DVR* wählen, wohin welche Art geht (Telegram, E-Mail, …).
+
+| Einstellung | Beschreibung | Standard |
+|-------------|-------------|---------|
+| Kamera offline | Eine in Agent DVR eingeschaltete Kamera ist die eingestellte Zeit nicht verbunden | `nein` |
+| Kamera wieder online | Nur nach einer Offline-Benachrichtigung, mit der Dauer des Ausfalls | `nein` |
+| Agent-DVR-Server offline / wieder online | Der Agent-DVR-Server antwortet die eingestellte Zeit nicht | `nein` |
+| Offline nach (Minuten) | Ausfalldauer, ab der gemeldet wird (1–1440) | `10` |
+| Person / Tier / Fahrzeug erkannt | Erkennungs-Tags von Agent DVR (`people`, `dog_cat`, `vehicle`, …) | `nein` |
+| Sonstige Erkennungen | Alle anderen Tags, z. B. von eigenen KI-Modellen | `nein` |
+| Neue Aufnahme | Agent DVR hat eine neue Aufnahme gemacht | `nein` |
+| Nur diese Kameras | Kameranamen wie in Agent DVR, durch Kommas getrennt; leer = alle | — |
+
+Erkennungen und neue Aufnahmen brauchen *Ereignis-Datenpunkte* oder das Widget (Reiter Funktionen).
+
 ### Tab: Erweitert
 
 | Einstellung | Beschreibung | Standard |
@@ -345,8 +368,12 @@ Dieser Adapter speichert deine AgentDVR-Admin-Zugangsdaten und stellt `system.co
 | Datenpunkt | Typ | R/W | Beschreibung |
 |-----------|-----|-----|-------------|
 | `<cam>.name` | string | R | Kameraname |
-| `<cam>.data.online` | boolean | R | Kamera ist online |
+| `<cam>.data.online` | boolean | R | Kamera ist in Agent DVR eingeschaltet |
 | `<cam>.data.connected` | boolean | R | Stream ist verbunden |
+| `<cam>.status.online` | boolean | R | Kamera ist in Agent DVR eingeschaltet (sagt nichts über die Erreichbarkeit) |
+| `<cam>.status.connected` | boolean | R | Kamera erreichbar: Agent DVR bekommt ihr Bild (Rolle `indicator.reachable`) |
+| `<cam>.status.offlineSince` | number | R | Zeitpunkt, seit dem die Kamera nicht verbunden ist (leer, wenn verbunden) |
+| `<cam>.status.offlineAlarm` | boolean | R | Länger als die eingestellte Zeit nicht verbunden (Reiter Benachrichtigungen) |
 | `<cam>.data.recording` | boolean | R | Nimmt gerade auf |
 | `<cam>.data.detected` | boolean | R | Bewegung/Objekt erkannt |
 | `<cam>.data.detectorActive` | boolean | R | Bewegungserkennung aktiv |
