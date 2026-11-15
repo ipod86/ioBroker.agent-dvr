@@ -274,7 +274,7 @@
     "notifyVehicle": false,
     "notifyOtherTags": false,
     "notifyNewRecording": false,
-    "notifyCameras": ""
+    "notifyCamerasOff": []
   },
   "objects": [],
   "instanceObjects": [

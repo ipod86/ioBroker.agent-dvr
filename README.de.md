@@ -28,7 +28,7 @@ Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponen
 - braucht keine Zugangsdaten: Bilder und Videos nutzen dieselben AgentDVR-Links wie die HTML-Widgets; die Daten kommen aus `widget_config` und `<cam>.widget_data`
 
 ### Benachrichtigungen (Kamera offline, Person/Tier/Fahrzeug erkannt, neue Aufnahme)
-- Eigener Reiter **Benachrichtigungen**: jede Art lässt sich einzeln einschalten – Kamera offline, Kamera wieder online, Agent-DVR-Server offline/online, Person, Tier, Fahrzeug oder sonstige Erkennung, neue Aufnahme – auf Wunsch nur für ausgewählte Kameras
+- Eigener Reiter **Benachrichtigungen**: jede Art lässt sich einzeln einschalten – Kamera offline, Kamera wieder online, Agent-DVR-Server offline/online, Person, Tier, Fahrzeug oder sonstige Erkennung, neue Aufnahme – pro Kamera per Haken-Liste abschaltbar
 - Die Benachrichtigungen gehen an das ioBroker-Benachrichtigungssystem (Glocke im Admin); der Adapter **notification-manager** leitet sie weiter, z. B. an Telegram oder E-Mail – im Adapter selbst muss kein Messenger eingerichtet werden
 - **Kamera offline** wird gemeldet, wenn eine in Agent DVR eingeschaltete Kamera die eingestellte Zeit nicht verbunden ist (Standard 10 Minuten). Ohne Verbindung gibt es kein Bild und keine Bewegungserkennung; kurze Aussetzer wie ein Kamera-Neustart werden nicht gemeldet
 - Neue Datenpunkte pro Kamera: `status.offlineSince` und `status.offlineAlarm` für eigene Skripte und Visualisierungen
@@ -250,7 +250,7 @@ Jeder Punkt ist optional und anfangs aus. Die Benachrichtigungen gehen an das io
 | Person / Tier / Fahrzeug erkannt | Erkennungs-Tags von Agent DVR (`people`, `dog_cat`, `vehicle`, …) | `nein` |
 | Sonstige Erkennungen | Alle anderen Tags, z. B. von eigenen KI-Modellen | `nein` |
 | Neue Aufnahme | Agent DVR hat eine neue Aufnahme gemacht | `nein` |
-| Nur diese Kameras | Kameranamen wie in Agent DVR, durch Kommas getrennt; leer = alle | — |
+| Kameras | Liste aller Kameras mit Haken; Kameras ohne Haken senden keine Benachrichtigungen. Neue Kameras sind automatisch angehakt, Umbenennen in Agent DVR schadet nicht | alle angehakt |
 
 Erkennungen und neue Aufnahmen brauchen *Ereignis-Datenpunkte* oder das Widget (Reiter Funktionen).
 

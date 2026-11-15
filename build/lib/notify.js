@@ -64,10 +64,9 @@ function categoryEnabled(cfg, cat) {
   }
   return false;
 }
-function cameraSelected(cfg, name) {
-  var _a;
-  const list = String((_a = cfg.notifyCameras) != null ? _a : "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
-  return list.length === 0 || list.includes(name.trim().toLowerCase());
+function cameraSelected(cfg, id) {
+  const off = Array.isArray(cfg.notifyCamerasOff) ? cfg.notifyCamerasOff.map(String) : [];
+  return !off.includes(String(id));
 }
 function offlineMinutes(cfg) {
   const n = Number(cfg.notifyOfflineMinutes);

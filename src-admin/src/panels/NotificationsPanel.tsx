@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { I18n } from '@iobroker/adapter-react-v5';
-import { Alert, Grid } from '@mui/material';
+import { Alert, Checkbox, FormControlLabel, FormGroup, Grid, Typography } from '@mui/material';
 import FormField, { SectionHeader } from '../components/FormField';
 
 interface Props {
 	native: any;
 	onChange: (k: string, v: any) => void;
+	socket?: any;
+	instance?: number;
+}
+
+interface Cam {
+	oid: string;
+	name: string;
 }
 
 const Check: React.FC<{ native: any; onChange: Props['onChange']; attr: string; help?: string }> = ({
@@ -30,8 +37,42 @@ const Check: React.FC<{ native: any; onChange: Props['onChange']; attr: string; 
 );
 
 /** Settings of the notifications (ioBroker notification system, forwarded by the notification-manager) */
-const NotificationsPanel: React.FC<Props> = ({ native, onChange }) => {
+const NotificationsPanel: React.FC<Props> = ({ native, onChange, socket, instance }) => {
 	const eventsOff = !native.enableEventDps && !native.enableWidget;
+	const [cams, setCams] = useState<Cam[] | null>(null);
+
+	// cameras of the running instance; the ids stay valid when a camera is renamed in Agent DVR
+	useEffect(() => {
+		if (!socket) {
+			return;
+		}
+		let gone = false;
+		const target = `agent-dvr.${instance ?? 0}`;
+		const timeout = new Promise<null>(resolve => setTimeout(() => resolve(null), 5000));
+		void Promise.race([socket.sendTo(target, 'getAgentDvrCameras', null), timeout])
+			.then((res: any) => {
+				if (!gone) {
+					setCams(
+						Array.isArray(res?.cameras)
+							? res.cameras.filter((c: any) => c.oid !== undefined).map((c: any) => ({ oid: String(c.oid), name: c.name }))
+							: [],
+					);
+				}
+			})
+			.catch(() => !gone && setCams([]));
+		return () => {
+			gone = true;
+		};
+	}, [socket, instance]);
+
+	const off: string[] = Array.isArray(native.notifyCamerasOff) ? native.notifyCamerasOff.map(String) : [];
+	// unchecked cameras that Agent DVR no longer reports stay visible, so they can be checked again
+	const listed: Cam[] = [
+		...(cams ?? []),
+		...off.filter(id => !(cams ?? []).some(c => c.oid === id)).map(id => ({ oid: id, name: I18n.t('notifyCamGone', id) })),
+	];
+	const toggle = (id: string, on: boolean): void =>
+		onChange('notifyCamerasOff', on ? off.filter(x => x !== id) : [...off, id]);
 	return (
 		<Grid
 			container
@@ -136,15 +177,33 @@ const NotificationsPanel: React.FC<Props> = ({ native, onChange }) => {
 			<Grid
 				item
 				xs={12}
-				md={8}
 			>
-				<FormField
-					type="text"
-					labelKey="cfg_notifyCameras"
-					helpKey="cfg_notifyCameras_help"
-					value={native.notifyCameras ?? ''}
-					onChange={v => onChange('notifyCameras', v)}
-				/>
+				<Typography
+					variant="body2"
+					sx={{ color: 'text.secondary', mb: 1 }}
+				>
+					{I18n.t('notifyCamerasHelp')}
+				</Typography>
+				{cams === null ? (
+					<Typography variant="body2">{I18n.t('notifyCamsLoading')}</Typography>
+				) : listed.length === 0 ? (
+					<Alert severity="info">{I18n.t('notifyCamsNone')}</Alert>
+				) : (
+					<FormGroup>
+						{listed.map(c => (
+							<FormControlLabel
+								key={c.oid}
+								control={
+									<Checkbox
+										checked={!off.includes(c.oid)}
+										onChange={e => toggle(c.oid, e.target.checked)}
+									/>
+								}
+								label={c.name}
+							/>
+						))}
+					</FormGroup>
+				)}
 			</Grid>
 		</Grid>
 	);

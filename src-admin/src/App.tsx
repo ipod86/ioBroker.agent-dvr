@@ -109,6 +109,8 @@ class App extends GenericApp<GenericAppProps, AppState> {
 								<NotificationsPanel
 									native={native}
 									onChange={handleChange}
+									socket={(this as any).socket}
+									instance={(this as any).instance ?? 0}
 								/>
 							)}
 							{tab === 5 && (

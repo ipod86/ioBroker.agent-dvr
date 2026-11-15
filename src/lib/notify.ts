@@ -35,8 +35,8 @@ export interface NotifyConfig {
 	notifyOtherTags?: boolean;
 	/** Notify on a new recording */
 	notifyNewRecording?: boolean;
-	/** Comma separated camera names, empty = all */
-	notifyCameras?: string;
+	/** Ids of the cameras without notifications (empty = all cameras notify) */
+	notifyCamerasOff?: string[];
 }
 
 const PERSON = new Set(['people', 'person', 'persons', 'face', 'faces', 'human']);
@@ -95,17 +95,14 @@ export function categoryEnabled(cfg: NotifyConfig, cat: NotifyCategory): boolean
 }
 
 /**
- * Checks whether a camera is selected for notifications. Empty list = all cameras.
+ * Checks whether a camera sends notifications. All cameras do, except the unchecked ones.
  *
  * @param cfg adapter settings
- * @param name camera name in Agent DVR
+ * @param id camera id (oid) in Agent DVR
  */
-export function cameraSelected(cfg: NotifyConfig, name: string): boolean {
-	const list = String(cfg.notifyCameras ?? '')
-		.split(',')
-		.map(s => s.trim().toLowerCase())
-		.filter(Boolean);
-	return list.length === 0 || list.includes(name.trim().toLowerCase());
+export function cameraSelected(cfg: NotifyConfig, id: string | number): boolean {
+	const off = Array.isArray(cfg.notifyCamerasOff) ? cfg.notifyCamerasOff.map(String) : [];
+	return !off.includes(String(id));
 }
 
 /**

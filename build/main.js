@@ -1835,11 +1835,11 @@ class AgentDvr extends utils.Adapter {
     await this.setStateChangedAsync(alarmId, { val: ch.alarm, ack: true });
     if (ch.alarmStart) {
       this.log.warn(`Camera ${d.name} has not been connected for ${(0, import_notify.offlineMinutes)(this.config)} minutes`);
-      await this.notify("cameraOffline", d.name, { name: d.name, min: (0, import_notify.offlineMinutes)(this.config) });
+      await this.notify("cameraOffline", d.oid, { name: d.name, min: (0, import_notify.offlineMinutes)(this.config) });
     }
     if (ch.alarmEnd !== void 0) {
       this.log.info(`Camera ${d.name} is connected again (outage about ${ch.alarmEnd} minutes)`);
-      await this.notify("cameraOnline", d.name, { name: d.name, min: ch.alarmEnd });
+      await this.notify("cameraOnline", d.oid, { name: d.name, min: ch.alarmEnd });
     }
   }
   /**
@@ -1851,10 +1851,10 @@ class AgentDvr extends utils.Adapter {
     const limit = (0, import_notify.offlineMinutes)(this.config) * 6e4;
     const ch = this.offline.update("server", reachable, true, Date.now(), limit);
     if (ch.alarmStart) {
-      await this.notify("serverOffline", "", { min: (0, import_notify.offlineMinutes)(this.config) });
+      await this.notify("serverOffline", null, { min: (0, import_notify.offlineMinutes)(this.config) });
     }
     if (ch.alarmEnd !== void 0) {
-      await this.notify("serverOnline", "", { min: ch.alarmEnd });
+      await this.notify("serverOnline", null, { min: ch.alarmEnd });
     }
   }
   /**
@@ -1862,14 +1862,14 @@ class AgentDvr extends utils.Adapter {
    * The notification-manager adapter forwards it, e.g. to Telegram or e-mail.
    *
    * @param cat category
-   * @param camera camera name ('' = not camera related)
+   * @param camera camera id in Agent DVR (null = not camera related)
    * @param params text placeholders
    * @param params.name camera name
    * @param params.min minutes
    * @param params.tag detection tag
    */
   async notify(cat, camera, params) {
-    if (!(0, import_notify.categoryEnabled)(this.config, cat) || camera && !(0, import_notify.cameraSelected)(this.config, camera)) {
+    if (!(0, import_notify.categoryEnabled)(this.config, cat) || camera !== null && !(0, import_notify.cameraSelected)(this.config, camera)) {
       return;
     }
     try {
@@ -2428,7 +2428,7 @@ class AgentDvr extends utils.Adapter {
     this.eventTagsSeen[oid] = nextKnown;
     if (newCount > 0) {
       await this.pulse(`${fid}.events.new`);
-      await this.notify("newRecording", d.name, { name: d.name });
+      await this.notify("newRecording", d.oid, { name: d.name });
       if (this.recordingCamEnabled(fid)) {
         void this.queueRecordingSave(d, fid, events[0]);
       }
@@ -2441,7 +2441,7 @@ class AgentDvr extends utils.Adapter {
         const tid = `${fid}.events.detected_${sanitize(t)}`;
         await this.ensureFlag(tid, `Detected: ${t}`);
         await this.pulse(tid);
-        await this.notify((0, import_notify.tagCategory)(t), d.name, { name: d.name, tag: t });
+        await this.notify((0, import_notify.tagCategory)(t), d.oid, { name: d.name, tag: t });
       }
       this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(",")}]`);
     }
@@ -2546,7 +2546,7 @@ class AgentDvr extends utils.Adapter {
         await this.writeLeaf("system.raw_getObjects", JSON.stringify(clean).slice(0, 6e4));
       }
       const devices = findDevices(json);
-      this.lastCamNames = devices.filter((d) => d.ot === 2).map((d) => ({ key: this.deviceFolder(d), name: d.name }));
+      this.lastCamNames = devices.filter((d) => d.ot === 2).map((d) => ({ key: this.deviceFolder(d), name: d.name, oid: String(d.oid) }));
       await this.setStateAsync("system.cameraCount", { val: devices.filter((d) => d.ot === 2).length, ack: true });
       const activeFolders = new Set(devices.map((d) => this.deviceFolder(d)));
       for (const d of devices) {

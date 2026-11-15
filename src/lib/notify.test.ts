@@ -21,9 +21,10 @@ describe('notify', () => {
 	});
 
 	it('cameraSelected', () => {
-		expect(cameraSelected({}, 'Reolink')).to.equal(true);
-		expect(cameraSelected({ notifyCameras: 'reolink, Trift' }, 'Reolink')).to.equal(true);
-		expect(cameraSelected({ notifyCameras: 'Trift' }, 'Reolink')).to.equal(false);
+		expect(cameraSelected({}, 8)).to.equal(true);
+		expect(cameraSelected({ notifyCamerasOff: ['9'] }, 8)).to.equal(true);
+		expect(cameraSelected({ notifyCamerasOff: ['8'] }, 8)).to.equal(false);
+		expect(cameraSelected({ notifyCamerasOff: ['8'] }, '8')).to.equal(false);
 	});
 
 	it('offlineMinutes', () => {

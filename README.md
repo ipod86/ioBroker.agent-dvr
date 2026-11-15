@@ -33,7 +33,7 @@ The recordings gallery, the live tile and the live overview are also available a
 - needs no credentials: the images and videos use the same AgentDVR links as the HTML widgets; data comes from `widget_config` and `<cam>.widget_data`
 
 ### Notifications (camera offline, person/animal/vehicle detected, new recording)
-- A separate **Notifications** tab: every kind of notification can be switched on on its own — camera offline, camera online again, Agent DVR server offline/online, person, animal, vehicle or other detection, new recording — optionally only for selected cameras
+- A separate **Notifications** tab: every kind of notification can be switched on on its own — camera offline, camera online again, Agent DVR server offline/online, person, animal, vehicle or other detection, new recording — per camera switchable with a checkbox list
 - Notifications go to the ioBroker notification system (bell in the admin); the **notification-manager** adapter forwards them, e.g. to Telegram or e-mail — no messenger settings in this adapter
 - **Camera offline** is reported when a camera that is switched on in Agent DVR has not been connected for the set time (default 10 minutes). Without a connection there is no picture and no motion detection; short outages like a camera reboot are not reported
 - New data points per camera: `status.offlineSince` and `status.offlineAlarm` for your own scripts and visualisations
@@ -255,7 +255,7 @@ Every point is optional and off by default. Notifications are sent to the ioBrok
 | Person / Animal / Vehicle detected | Detection tags of Agent DVR (`people`, `dog_cat`, `vehicle`, …) | `false` |
 | Other detections | All other tags, e.g. from your own AI models | `false` |
 | New recording | Agent DVR made a new recording | `false` |
-| Only these cameras | Camera names as in Agent DVR, separated by commas; empty = all | — |
+| Cameras | List of all cameras with a checkbox; unchecked cameras send no notifications. New cameras are checked automatically; the setting survives renaming a camera | all checked |
 
 Detections and new recordings need *Event data points* or the widget (tab Features).
 

@@ -206,6 +206,8 @@
   "cfg_notifyOtherTags_help": "All other tags from Agent DVR, e.g. from your own AI models",
   "cfg_notifyNewRecording": "New recording",
   "notifyHeaderCameras": "Cameras",
-  "cfg_notifyCameras": "Only these cameras",
-  "cfg_notifyCameras_help": "Camera names as in Agent DVR, separated by commas. Empty = all cameras."
+  "notifyCamerasHelp": "Notifications are sent for the checked cameras. Uncheck a camera to get no notifications from it. New cameras are checked automatically.",
+  "notifyCamsLoading": "Loading cameras …",
+  "notifyCamsNone": "No cameras found. The adapter instance has to run and be connected to Agent DVR.",
+  "notifyCamGone": "Camera %s (no longer in Agent DVR)"
 }

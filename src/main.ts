@@ -502,7 +502,7 @@ class AgentDvr extends utils.Adapter {
 	// last JSON written to the data states of the web components, to skip unchanged writes
 	private readonly jsonLastWrite: Record<string, string> = {};
 	private profileSig = '';
-	private lastCamNames: { key: string; name: string }[] = [];
+	private lastCamNames: { key: string; name: string; oid: string }[] = [];
 	private readonly lastEventFn: Record<string | number, string> = {};
 	// tags per recent recording — AgentDVR often adds the AI tag (e.g. "people")
 	// only after the recording was first listed, so late tags must still pulse
@@ -2143,11 +2143,11 @@ class AgentDvr extends utils.Adapter {
 		await this.setStateChangedAsync(alarmId, { val: ch.alarm, ack: true });
 		if (ch.alarmStart) {
 			this.log.warn(`Camera ${d.name} has not been connected for ${offlineMinutes(this.config)} minutes`);
-			await this.notify('cameraOffline', d.name, { name: d.name, min: offlineMinutes(this.config) });
+			await this.notify('cameraOffline', d.oid, { name: d.name, min: offlineMinutes(this.config) });
 		}
 		if (ch.alarmEnd !== undefined) {
 			this.log.info(`Camera ${d.name} is connected again (outage about ${ch.alarmEnd} minutes)`);
-			await this.notify('cameraOnline', d.name, { name: d.name, min: ch.alarmEnd });
+			await this.notify('cameraOnline', d.oid, { name: d.name, min: ch.alarmEnd });
 		}
 	}
 
@@ -2160,10 +2160,10 @@ class AgentDvr extends utils.Adapter {
 		const limit = offlineMinutes(this.config) * 60000;
 		const ch = this.offline.update('server', reachable, true, Date.now(), limit);
 		if (ch.alarmStart) {
-			await this.notify('serverOffline', '', { min: offlineMinutes(this.config) });
+			await this.notify('serverOffline', null, { min: offlineMinutes(this.config) });
 		}
 		if (ch.alarmEnd !== undefined) {
-			await this.notify('serverOnline', '', { min: ch.alarmEnd });
+			await this.notify('serverOnline', null, { min: ch.alarmEnd });
 		}
 	}
 
@@ -2172,7 +2172,7 @@ class AgentDvr extends utils.Adapter {
 	 * The notification-manager adapter forwards it, e.g. to Telegram or e-mail.
 	 *
 	 * @param cat category
-	 * @param camera camera name ('' = not camera related)
+	 * @param camera camera id in Agent DVR (null = not camera related)
 	 * @param params text placeholders
 	 * @param params.name camera name
 	 * @param params.min minutes
@@ -2180,10 +2180,10 @@ class AgentDvr extends utils.Adapter {
 	 */
 	private async notify(
 		cat: NotifyCategory,
-		camera: string,
+		camera: string | number | null,
 		params: { name?: string; min?: number; tag?: string },
 	): Promise<void> {
-		if (!categoryEnabled(this.config, cat) || (camera && !cameraSelected(this.config, camera))) {
+		if (!categoryEnabled(this.config, cat) || (camera !== null && !cameraSelected(this.config, camera))) {
 			return;
 		}
 		try {
@@ -2884,7 +2884,7 @@ class AgentDvr extends utils.Adapter {
 
 		if (newCount > 0) {
 			await this.pulse(`${fid}.events.new`);
-			await this.notify('newRecording', d.name, { name: d.name });
+			await this.notify('newRecording', d.oid, { name: d.name });
 			if (this.recordingCamEnabled(fid)) {
 				void this.queueRecordingSave(d, fid, events[0]);
 			}
@@ -2897,7 +2897,7 @@ class AgentDvr extends utils.Adapter {
 				const tid = `${fid}.events.detected_${sanitize(t)}`;
 				await this.ensureFlag(tid, `Detected: ${t}`);
 				await this.pulse(tid);
-				await this.notify(tagCategory(t), d.name, { name: d.name, tag: t });
+				await this.notify(tagCategory(t), d.oid, { name: d.name, tag: t });
 			}
 			this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(',')}]`);
 		}
@@ -3015,7 +3015,9 @@ class AgentDvr extends utils.Adapter {
 			}
 
 			const devices = findDevices(json);
-			this.lastCamNames = devices.filter(d => d.ot === 2).map(d => ({ key: this.deviceFolder(d), name: d.name }));
+			this.lastCamNames = devices
+				.filter(d => d.ot === 2)
+				.map(d => ({ key: this.deviceFolder(d), name: d.name, oid: String(d.oid) }));
 			await this.setStateAsync('system.cameraCount', { val: devices.filter(d => d.ot === 2).length, ack: true });
 
 			const activeFolders = new Set(devices.map(d => this.deviceFolder(d)));

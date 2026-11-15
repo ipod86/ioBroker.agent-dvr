@@ -84,7 +84,7 @@ declare global {
             notifyVehicle: boolean;
             notifyOtherTags: boolean;
             notifyNewRecording: boolean;
-            notifyCameras: string;
+            notifyCamerasOff: string[];
         }
     }
 }
