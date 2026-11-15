@@ -23,8 +23,8 @@ Connects ioBroker to [AgentDVR](https://www.ispyconnect.com): auto-discovers all
 
 ## Highlights
 
-### Web components for AURA, vis-2 and devices
-The recordings gallery, the live tile and the live overview are also available as web components (`@iobroker/web-components`). AURA (0.106.0+, 0.112.0+ recommended), vis-2 (2.20.7+) and the devices adapter (4.3.0+) list them in their widget palette — no HTML binding needed. They draw natively in the browser instead of showing the HTML data points, so a refresh never closes an open player.
+### Widgets (web components) for AURA, vis-2, devices and other visualisations
+The recordings gallery, the live tile and the live overview are also available as web components (`@iobroker/web-components`). AURA (0.106.0+, 0.112.0+ recommended), vis-2 (2.20.7+), the devices adapter (4.3.0+) and every other visualisation that supports web components list them in their widget palette — no HTML binding needed. They draw natively in the browser instead of showing the HTML data points, so a refresh never closes an open player.
 - **Agent DVR recordings** — the recordings gallery of a camera, with search and tag filter, built-in player or external player URL
 - **Agent DVR live camera** — the live tile of one camera; the snapshot refreshes in the browser, a click opens the live stream
 - **Agent DVR live overview** — the live tiles of all cameras of an instance
@@ -637,10 +637,10 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 
 ### 0.8.1 (2026-11-12)
 * (ipod86) fix: live overview web component fits its tiles to the widget size (no scrolling, no empty space); option "Fit to the widget size"
-* (ipod86) chore: description and keywords mention the widgets for vis-2 and AURA
+* (ipod86) chore: description and keywords mention the widgets for vis-2, AURA and other visualisations
 
 ### 0.8.0 (2026-11-12)
-* (ipod86) feat: web components for AURA (0.106.0+), vis-2 (2.20.7+) and devices (4.3.0+) – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones
+* (ipod86) feat: widgets (web components) for AURA (0.106.0+), vis-2 (2.20.7+), devices (4.3.0+) and other visualisations – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones
 
 ### 0.7.0 (2026-10-29)
 * (ipod86) feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV/kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances

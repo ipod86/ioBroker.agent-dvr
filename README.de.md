@@ -18,8 +18,8 @@ Verbindet ioBroker mit [AgentDVR](https://www.ispyconnect.com): erkennt automati
 
 ## Highlights
 
-### Web-Komponenten für AURA, vis-2 und devices
-Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponenten (`@iobroker/web-components`). AURA (ab 0.106.0, empfohlen ab 0.112.0), vis-2 (ab 2.20.7) und der Geräte-Adapter devices (ab 4.3.0) bieten sie in ihrer Widget-Auswahl an – ohne HTML-Bindung. Sie zeichnen direkt im Browser statt die HTML-Datenpunkte anzuzeigen, ein Aktualisieren schließt daher nie einen offenen Player.
+### Widgets (Web-Komponenten) für AURA, vis-2, devices und andere Visualisierungen
+Aufnahmen-Galerie, Live-Kachel und Live-Übersicht gibt es auch als Web-Komponenten (`@iobroker/web-components`). AURA (ab 0.106.0, empfohlen ab 0.112.0), vis-2 (ab 2.20.7), der Geräte-Adapter devices (ab 4.3.0) und jede andere Visualisierung, die Web-Komponenten unterstützt, bieten sie in ihrer Widget-Auswahl an – ohne HTML-Bindung. Sie zeichnen direkt im Browser statt die HTML-Datenpunkte anzuzeigen, ein Aktualisieren schließt daher nie einen offenen Player.
 - **Agent DVR Aufnahmen** – die Aufnahmen-Galerie einer Kamera, mit Suche und Tag-Filter, eingebautem Player oder externer Player-URL
 - **Agent DVR Live-Kamera** – die Live-Kachel einer Kamera; das Vorschaubild erneuert sich im Browser, ein Klick öffnet den Livestream
 - **Agent DVR Live-Übersicht** – die Live-Kacheln aller Kameras einer Instanz
@@ -637,10 +637,10 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 
 ### 0.8.1 (2026-11-12)
 * (ipod86) fix: Live-Übersicht (Web-Komponente) passt ihre Kacheln an die Widget-Größe an (kein Scrollen, kein Leerraum); Option „An die Widget-Größe anpassen“
-* (ipod86) chore: Beschreibung und Suchbegriffe nennen die Widgets für vis-2 und AURA
+* (ipod86) chore: Beschreibung und Suchbegriffe nennen die Widgets für vis-2, AURA und andere Visualisierungen
 
 ### 0.8.0 (2026-11-12)
-* (ipod86) feat: Web-Komponenten für AURA (ab 0.106.0), vis-2 (ab 2.20.7) und devices (ab 4.3.0) – Aufnahmen-Galerie, Live-Kachel und Live-Übersicht, mit den Widget-Einstellungen des Adapters oder eigenen
+* (ipod86) feat: Widgets (Web-Komponenten) für AURA (ab 0.106.0), vis-2 (ab 2.20.7), devices (ab 4.3.0) und andere Visualisierungen – Aufnahmen-Galerie, Live-Kachel und Live-Übersicht, mit den Widget-Einstellungen des Adapters oder eigenen
 
 ### 0.7.0 (2026-10-29)
 * (ipod86) feat: `alertPhotos.url1–3` mit festem http(s)-Link zu jedem Foto, für TV-/Kiosk-Apps, die nur Web-Links annehmen; Web-Instanz wählbar, Links folgen Änderungen an den Web-Instanzen
