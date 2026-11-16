@@ -654,7 +654,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.10.0 (2026-11-16)
 * (ipod86) feat: Notifications tab – camera offline/online again, server offline, person/animal/vehicle/other detection, new recording via the ioBroker notification system (notification-manager), each optional
 * (ipod86) feat: choose per camera which ones send notifications (checkbox list, survives renaming in Agent DVR)
 * (ipod86) feat: `status.offlineSince` and `status.offlineAlarm` per camera
@@ -678,12 +678,6 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 
 ### 0.8.0 (2026-11-12)
 * (ipod86) feat: widgets (web components) for AURA (0.106.0+), vis-2 (2.20.7+), devices (4.3.0+) and other visualisations – recordings gallery, live tile and live overview, with the adapter's widget settings or own ones
-
-### 0.7.0 (2026-10-29)
-* (ipod86) feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV/kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances
-* (ipod86) feat: `<cam>.events.webhookParams` with all parameters of the latest webhook call as JSON
-
-<!-- markdownlint-disable-next-line MD024 -->
 
 [Older changelog entries in CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 

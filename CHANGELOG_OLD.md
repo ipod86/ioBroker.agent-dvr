@@ -1,6 +1,12 @@
 # Older Changelog
 
 <!-- older entries moved here by release-script -->
+## 0.7.0 (2026-10-29)
+* (ipod86) feat: `alertPhotos.url1–3` with a fixed http(s) link to each photo, for TV/kiosk apps that only accept web links; web instance selectable, links follow changes of the web instances
+* (ipod86) feat: `<cam>.events.webhookParams` with all parameters of the latest webhook call as JSON
+
+<!-- markdownlint-disable-next-line MD024 -->
+
 ## 0.6.0 (2026-10-29)
 * (ipod86) chore: clearer adapter title ("Agent DVR – Cameras & Recordings") and keywords
 * (ipod86) fix: `events.detected_*` now also fires when AgentDVR adds the AI tag (e.g. `people`) to a recording after it was first listed
