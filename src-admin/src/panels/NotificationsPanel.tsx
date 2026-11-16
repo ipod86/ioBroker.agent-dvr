@@ -36,7 +36,15 @@ const Check: React.FC<{ native: any; onChange: Props['onChange']; attr: string; 
 	</Grid>
 );
 
-/** Settings of the notifications (ioBroker notification system, forwarded by the notification-manager) */
+/**
+ * Settings of the notifications (ioBroker notification system, forwarded by the notification-manager)
+ *
+ * @param props properties of the panel
+ * @param props.native adapter settings
+ * @param props.onChange changes one setting
+ * @param props.socket connection to the adapter
+ * @param props.instance instance number
+ */
 const NotificationsPanel: React.FC<Props> = ({ native, onChange, socket, instance }) => {
 	const eventsOff = !native.enableEventDps && !native.enableWidget;
 	const [cams, setCams] = useState<Cam[] | null>(null);
@@ -54,7 +62,9 @@ const NotificationsPanel: React.FC<Props> = ({ native, onChange, socket, instanc
 				if (!gone) {
 					setCams(
 						Array.isArray(res?.cameras)
-							? res.cameras.filter((c: any) => c.oid !== undefined).map((c: any) => ({ oid: String(c.oid), name: c.name }))
+							? res.cameras
+									.filter((c: any) => c.oid !== undefined)
+									.map((c: any) => ({ oid: String(c.oid), name: c.name }))
 							: [],
 					);
 				}
@@ -69,7 +79,9 @@ const NotificationsPanel: React.FC<Props> = ({ native, onChange, socket, instanc
 	// unchecked cameras that Agent DVR no longer reports stay visible, so they can be checked again
 	const listed: Cam[] = [
 		...(cams ?? []),
-		...off.filter(id => !(cams ?? []).some(c => c.oid === id)).map(id => ({ oid: id, name: I18n.t('notifyCamGone', id) })),
+		...off
+			.filter(id => !(cams ?? []).some(c => c.oid === id))
+			.map(id => ({ oid: id, name: I18n.t('notifyCamGone', id) })),
 	];
 	const toggle = (id: string, on: boolean): void =>
 		onChange('notifyCamerasOff', on ? off.filter(x => x !== id) : [...off, id]);

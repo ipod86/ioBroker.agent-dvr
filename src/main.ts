@@ -2145,11 +2145,11 @@ class AgentDvr extends utils.Adapter {
 		await this.setStateChangedAsync(alarmId, { val: ch.alarm, ack: true });
 		if (ch.alarmStart) {
 			this.log.warn(`Camera ${d.name} has not been connected for ${offlineMinutes(this.config)} minutes`);
-			await this.notify('cameraOffline', d.oid, { name: d.name, min: offlineMinutes(this.config) });
+			this.notify('cameraOffline', d.oid, { name: d.name, min: offlineMinutes(this.config) });
 		}
 		if (ch.alarmEnd !== undefined) {
 			this.log.info(`Camera ${d.name} is connected again (outage about ${ch.alarmEnd} minutes)`);
-			await this.notify('cameraOnline', d.oid, { name: d.name, min: ch.alarmEnd });
+			this.notify('cameraOnline', d.oid, { name: d.name, min: ch.alarmEnd });
 		}
 	}
 
@@ -2158,14 +2158,14 @@ class AgentDvr extends utils.Adapter {
 	 *
 	 * @param reachable server answered
 	 */
-	private async trackServerOffline(reachable: boolean): Promise<void> {
+	private trackServerOffline(reachable: boolean): void {
 		const limit = offlineMinutes(this.config) * 60000;
 		const ch = this.offline.update('server', reachable, true, Date.now(), limit);
 		if (ch.alarmStart) {
-			await this.notify('serverOffline', null, { min: offlineMinutes(this.config) });
+			this.notify('serverOffline', null, { min: offlineMinutes(this.config) });
 		}
 		if (ch.alarmEnd !== undefined) {
-			await this.notify('serverOnline', null, { min: ch.alarmEnd });
+			this.notify('serverOnline', null, { min: ch.alarmEnd });
 		}
 	}
 
@@ -2180,11 +2180,11 @@ class AgentDvr extends utils.Adapter {
 	 * @param params.min minutes
 	 * @param params.tag detection tag
 	 */
-	private async notify(
+	private notify(
 		cat: NotifyCategory,
 		camera: string | number | null,
 		params: { name?: string; min?: number; tag?: string },
-	): Promise<void> {
+	): void {
 		if (!categoryEnabled(this.config, cat) || (camera !== null && !cameraSelected(this.config, camera))) {
 			return;
 		}
@@ -2897,7 +2897,7 @@ class AgentDvr extends utils.Adapter {
 
 		if (newCount > 0) {
 			await this.pulse(`${fid}.events.new`);
-			await this.notify('newRecording', d.oid, { name: d.name });
+			this.notify('newRecording', d.oid, { name: d.name });
 			if (this.recordingCamEnabled(fid)) {
 				void this.queueRecordingSave(d, fid, events[0]);
 			}
@@ -2912,7 +2912,7 @@ class AgentDvr extends utils.Adapter {
 				await this.pulse(tid);
 				const cat = tagCategory(t);
 				if (cat) {
-					await this.notify(cat, d.oid, { name: d.name, tag: t });
+					this.notify(cat, d.oid, { name: d.name, tag: t });
 				}
 			}
 			this.log.debug(`${newCount} new event(s), ${lateTags} late tag(s) cam ${oid} [${[...tags].join(',')}]`);
@@ -3011,14 +3011,14 @@ class AgentDvr extends utils.Adapter {
 			if (!res.ok || !json) {
 				await this.setStateAsync('info.connection', false, true);
 				await this.setStateAsync('system.online', { val: false, ack: true });
-				await this.trackServerOffline(false);
+				this.trackServerOffline(false);
 				this.log.warn(`AgentDVR unreachable: ${res.error || 'invalid response'}`);
 				return;
 			}
 
 			await this.setStateAsync('info.connection', true, true);
 			await this.setStateAsync('system.online', { val: true, ack: true });
-			await this.trackServerOffline(true);
+			this.trackServerOffline(true);
 
 			if (json.settings) {
 				await this.flattenWrite(json.settings, 'system.settings', 0);

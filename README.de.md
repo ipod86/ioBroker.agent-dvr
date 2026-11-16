@@ -650,6 +650,12 @@ z. B. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (ebe
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.10.0 (2026-11-16)
+* (ipod86) Neu: Tab „Benachrichtigungen“ – Kamera offline/wieder online, Server offline, Erkennung von Person/Tier/Fahrzeug/Sonstigem, neue Aufnahme über das ioBroker-Benachrichtigungssystem (notification-manager), jeweils einzeln wählbar
+* (ipod86) Neu: pro Kamera wählbar, welche benachrichtigt (Häkchenliste, bleibt beim Umbenennen in Agent DVR erhalten)
+* (ipod86) Neu: `status.offlineSince` und `status.offlineAlarm` je Kamera
+* (ipod86) Fix: `status.connected` hat jetzt die Rolle `indicator.reachable` (Kamera erreichbar), `status.online` bedeutet „in Agent DVR eingeschaltet“
+
 ### 0.9.1 (2026-11-13)
 * (ipod86) fix: Aufnahmen wurden gespeichert, während AgentDVR sie noch schrieb (Video abgeschnitten) — der Adapter wartet jetzt, bis die Aufnahme fertig ist
 * (ipod86) fix: `sendRecording` gibt Breite, Höhe und Dauer an Telegram mit — größere Videos wurden im Chat im falschen Seitenverhältnis gezeigt; `sendRecording`/`getRecording` warten außerdem, bis eine Aufnahme fertig ist

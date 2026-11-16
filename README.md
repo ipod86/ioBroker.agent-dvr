@@ -656,6 +656,7 @@ e.g. `http://192.168.1.10:8082/agent-dvr.0/photos/cam_8_Reolink/grab1.jpg` (also
 -->
 ### **WORK IN PROGRESS**
 * (ipod86) feat: Notifications tab – camera offline/online again, server offline, person/animal/vehicle/other detection, new recording via the ioBroker notification system (notification-manager), each optional
+* (ipod86) feat: choose per camera which ones send notifications (checkbox list, survives renaming in Agent DVR)
 * (ipod86) feat: `status.offlineSince` and `status.offlineAlarm` per camera
 * (ipod86) fix: `status.connected` now has the role `indicator.reachable` (camera reachable), `status.online` means "switched on in Agent DVR"
 
